@@ -1,0 +1,21 @@
+# Railway-конфиг сервера BotVille.
+# ВАЖНО: в настройках сервиса Railway оставь Root Directory ПУСТЫМ (= корень репо).
+# Это монорепо с npm workspaces — сервер зависит от @botville/shared, поэтому
+# install/build должны идти из корня, иначе workspace-зависимость не разрешится.
+#
+# Node закреплён на 24 через .nvmrc + engines (нужен для node:sqlite без флага).
+
+[build]
+builder = "nixpacks"
+# turbo соберёт @botville/shared (зависимость) и затем сервер — клиент не трогаем.
+# --include=dev ОБЯЗАТЕЛЕН: на сервисе выставлен NODE_ENV=production, из-за чего
+# `npm install` по умолчанию пропускает devDependencies (typescript, turbo) →
+# сборка @botville/shared падала с `tsc: exited (127)`. Флаг форсит dev-инструменты
+# в билд-образе (в рантайме они не нужны, start запускает готовый dist).
+buildCommand = "npm install --include=dev && npx turbo build --filter=@botville/server"
+
+[deploy]
+startCommand = "node packages/server/dist/index.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"

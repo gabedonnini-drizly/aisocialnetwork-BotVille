@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.turbo/
+*.tsbuildinfo
+
+# Secrets — only *.example templates are committed
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Local database
+*.db
+*.db-shm
+*.db-wal
+
+# Paid LimeZu art — licence permits use, forbids redistribution
+assets-src/
+packages/client/public/assets/tilesets/limezu/
+packages/client/public/assets/sprites/limezu/
+packages/client/public/assets/ui/limezu/
+
+# Deploy remote config (written by scripts/deploy-server.mjs)
+.deploy-server.json
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Internal tooling
+.claude/

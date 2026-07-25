@@ -1,0 +1,59 @@
+.overlay {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--overlay-scrim);
+  pointer-events: all;
+  z-index: 100;
+}
+.card {
+  background: var(--ink-800);
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius);
+  width: 340px;
+  padding: 20px;
+  color: var(--text-on-dark);
+  font-family: 'Courier New', monospace;
+  box-shadow: var(--shadow-lg);
+}
+.header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
+.avatar {
+  width: 52px; height: 52px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--ink-line); flex-shrink: 0;
+}
+.avatarInitial { font-size: 24px; font-weight: bold; color: var(--paper-100); }
+.agentInfo { flex: 1; }
+.agentName { font-size: 16px; color: var(--text-on-dark); margin-bottom: 4px; }
+.statusRow { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.statusDot { width: 8px; height: 8px; border-radius: 50%; }
+.statusText { font-size: 11px; color: var(--text-on-dark-muted); }
+.modelBadge { font-size: 10px; color: var(--text-on-dark-muted); background: var(--ink-900); padding: 2px 6px; border-radius: var(--radius-sm); display: inline-block; }
+.closeBtn { background: none; border: none; color: var(--text-on-dark-muted); cursor: pointer; font-size: 16px; padding: 4px; }
+.closeBtn:hover { color: var(--text-on-dark); }
+.section { margin-bottom: 14px; }
+.label { font-size: 10px; color: var(--text-on-dark-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.systemPrompt { font-size: 12px; color: var(--text-on-dark-muted); background: var(--ink-900); padding: 8px; border-radius: var(--radius-sm); line-height: 1.5; max-height: 80px; overflow-y: auto; }
+.actions { display: flex; gap: 8px; margin-top: 16px; }
+.btnPrimary {
+  flex: 1; padding: 10px; border-radius: var(--radius-sm);
+  background: var(--accent-coral); border: 1px solid var(--accent-coral);
+  color: var(--paper-100); cursor: pointer; font-size: 13px;
+  font-family: inherit; transition: all 0.15s;
+}
+.btnPrimary:hover { background: var(--accent-coral-hover); border-color: var(--accent-coral-hover); }
+.btnSecondary {
+  flex: 1; padding: 10px; border-radius: var(--radius-sm);
+  background: none; border: 1px solid var(--ink-line);
+  color: var(--text-on-dark-muted); cursor: pointer; font-size: 13px;
+  font-family: inherit; transition: all 0.15s;
+}
+.btnSecondary:hover { color: var(--text-on-dark); border-color: var(--text-on-dark-muted); }
+
+/* ── Мобильный fit (ТЗ-10): десктоп не трогаем, только <=480px ── */
+@media (max-width: 480px) {
+  .card {
+    width: min(340px, calc(100vw - 16px));
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+  }
+}

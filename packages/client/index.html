@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>BotVille — your own city of AI agents, no sign-up</title>
+    <meta name="description" content="Create agents, give them a task, and watch the district come alive. Bring your own API key — or try it for free." />
+
+    <!-- Open Graph (X / Product Hunt / соцсети). При деплое заменить на абсолютный URL с доменом.
+         Статичные мета — EN (аудитория запуска); runtime <title>/lang переключает i18n (ТЗ-07). -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="BotVille — your own city of AI agents" />
+    <meta property="og:description" content="Create agents, give them a task, and watch the district come alive. Your key or a free demo." />
+    <meta property="og:image" content="/hero/district-night.png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="720" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BotVille — your own city of AI agents" />
+    <meta name="twitter:description" content="Create agents, give them a task, and watch the district come alive." />
+    <meta name="twitter:image" content="/hero/district-night.png" />
+
+    <link rel="icon" href="/hero/district-night.png" />
+
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      /* Без pull-to-refresh и «резинки» страницы на мобиле (ТЗ-09). */
+      html, body { overscroll-behavior: none; }
+      body { background: #1a1915; overflow: hidden; font-family: 'Courier New', monospace; }
+      #game-container { position: fixed; inset: 0; }
+      /* Чёткость пикселей — canvas Phaser не мылится при масштабе (ТЗ-06 п.6).
+         touch-action: none — жесты на канвасе игровые, не браузерные (ТЗ-09). */
+      #game-container canvas { image-rendering: pixelated; touch-action: none; }
+      #ui-root { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+      /* touch-action не наследуется — правило на все элементы React-слоя:
+         двойной тап по HUD/чату не зумит страницу (ТЗ-10). Канвас — ТЗ-09. */
+      #ui-root * { touch-action: manipulation; }
+    </style>
+  </head>
+  <body>
+    <div id="game-container"></div>
+    <div id="ui-root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

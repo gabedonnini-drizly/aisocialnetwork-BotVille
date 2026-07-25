@@ -1,0 +1,121 @@
+.hud {
+  position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+  background: var(--panel-bg);
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-lg); padding: 8px 14px;
+  pointer-events: all; z-index: 50;
+  backdrop-filter: blur(8px);
+  font-family: 'Courier New', monospace;
+  box-shadow: var(--shadow-md);
+}
+.logo {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--text-on-dark); font-size: 11px; font-weight: bold;
+  letter-spacing: 2px; white-space: nowrap;
+}
+.logoIcon { font-size: 14px; }
+.divider { width: 1px; height: 32px; background: var(--ink-line); margin: 0 2px; }
+.slots { display: flex; gap: 6px; }
+.slot {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; cursor: pointer; padding: 5px 8px;
+  border-radius: var(--radius-sm); border: 1px solid transparent;
+  transition: all 0.15s; min-width: 56px; user-select: none;
+}
+.slot:hover { background: var(--panel-raised); border-color: var(--ink-line); }
+.slotAvatar {
+  position: relative; width: 30px; height: 30px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--paper-100); font-size: 13px; font-weight: bold;
+  border: 1px solid var(--ink-line);
+}
+.slotDot {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1.5px solid var(--ink-900);
+}
+.slotName { font-size: 9px; color: var(--text-on-dark-muted); }
+.slotStatus { font-size: 8px; color: var(--text-on-dark-muted); opacity: 0.7; }
+/* ТЗ-16: место агента — вторая подстрока; длинные подписи режем, не раздувая слот */
+.slotLoc {
+  font-size: 8px; color: var(--text-on-dark-muted); opacity: 0.55;
+  /* 80px вмещает самую длинную подпись «Спит (общежитие)» без обрезки */
+  max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.emptySlot { opacity: 0.35; }
+.emptySlot:hover { opacity: 0.7; }
+.addIcon {
+  font-size: 18px; color: var(--text-on-dark-muted);
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px dashed var(--ink-line); border-radius: var(--radius-sm);
+}
+.clock {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border: 1px solid var(--ink-line); border-radius: var(--radius-sm);
+  background: var(--ink-800); white-space: nowrap; user-select: none;
+}
+.clockIcon { font-size: 12px; line-height: 1; }
+.clockTime {
+  font-size: 12px; font-weight: bold; letter-spacing: 2px;
+  color: var(--text-on-dark); font-variant-numeric: tabular-nums;
+}
+.meetingBtn {
+  padding: 6px 12px; background: var(--accent-coral);
+  border: 1px solid var(--accent-coral); color: var(--paper-100);
+  border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
+  font-size: 11px; white-space: nowrap; transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+.meetingBtn:hover { background: var(--accent-coral-hover); border-color: var(--accent-coral-hover); }
+/* ТЗ-14: вход в панель ключей — иконка, чтобы HUD не поехал по ширине */
+.keysBtn {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; padding: 0;
+  background: var(--ink-800); border: 1px solid var(--ink-line);
+  border-radius: var(--radius-sm); cursor: pointer;
+  font-family: inherit; font-size: 13px; line-height: 1; transition: all 0.15s;
+}
+.keysBtn:hover { background: var(--ink-700); border-color: var(--text-on-dark-muted); }
+.contextMenu {
+  position: fixed; background: var(--ink-800); border: 1px solid var(--ink-line);
+  border-radius: var(--radius-sm); padding: 4px; z-index: 500;
+  pointer-events: all; box-shadow: var(--shadow-md);
+  font-family: 'Courier New', monospace; min-width: 160px;
+}
+.contextItem {
+  padding: 8px 12px; font-size: 12px; color: var(--text-on-dark-muted);
+  cursor: pointer; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 8px;
+}
+.contextItem:hover { background: var(--ink-700); color: var(--text-on-dark); }
+
+/* ── Мобильный fit (ТЗ-10): десктоп не трогаем, только <=480px ── */
+@media (max-width: 480px) {
+  .hud {
+    top: 8px; gap: 3px; row-gap: 6px; padding: 6px 8px;
+    max-width: calc(100vw - 16px);
+    /* страховка: если что-то не влезло (кнопка «Собрание») — перенос
+       на вторую строку, а не обрезка за краем экрана */
+    flex-wrap: wrap; justify-content: center;
+  }
+  /* лого — только иконка (font-size:0 прячет текстовый узел «BotVille») */
+  .logo { font-size: 0; letter-spacing: 0; gap: 0; }
+  .logoIcon { font-size: 14px; }
+  .divider { height: 24px; margin: 0; }
+  .slots { gap: 3px; }
+  /* слот = touch-мишень >=44px по ширине; высота у занятого ~60px */
+  .slot { min-width: 44px; padding: 5px 2px; }
+  .slotLoc { max-width: 52px; }
+  /* пустой слот: подпись «Новый» скрыта, «+» остаётся; 30px иконка + 2x7px = 44px */
+  .emptySlot { padding-top: 7px; padding-bottom: 7px; }
+  .emptySlot .slotName { display: none; }
+  .clock { padding: 4px 5px; gap: 3px; }
+  .clockTime { letter-spacing: 1px; }
+  .meetingBtn { padding: 6px 8px; font-size: 10px; position: relative; }
+  /* невидимая hit-area до ~44px по высоте, визуал не растёт */
+  .meetingBtn::after { content: ''; position: absolute; inset: -8px 0; }
+  /* та же уловка для иконки ключей: визуал 30px, мишень ~44px */
+  .keysBtn { position: relative; }
+  .keysBtn::after { content: ''; position: absolute; inset: -7px; }
+}

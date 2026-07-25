@@ -1,0 +1,71 @@
+/* ТЗ-14: компактная панель ключей из HUD (не вкладка — HUD должен остаться узким). */
+
+.overlay {
+  position: fixed; inset: 0; background: var(--overlay-scrim);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 300; pointer-events: all;
+}
+.panel {
+  background: var(--ink-800); border: 1px solid var(--ink-line);
+  border-radius: var(--radius-lg); width: 360px; padding: 18px;
+  font-family: 'Courier New', monospace; color: var(--text-on-dark);
+  max-height: 86vh; overflow-y: auto; box-shadow: var(--shadow-lg);
+}
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.title { font-size: 15px; font-weight: bold; }
+.closeBtn {
+  background: none; border: none; color: var(--text-on-dark-muted);
+  font-family: inherit; font-size: 15px; cursor: pointer;
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+}
+.closeBtn:hover { color: var(--text-on-dark); background: var(--panel-raised); }
+
+.intro { font-size: 11px; color: var(--text-on-dark-muted); line-height: 1.5; margin-bottom: 12px; }
+.flash { font-size: 11px; color: var(--accent-sage); margin-bottom: 10px; }
+
+.item { border-top: 1px solid var(--ink-line); padding: 10px 0; }
+.itemRow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.itemInfo { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.providerName { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.statusOn { font-size: 10px; color: var(--accent-sage); }
+.statusOff { font-size: 10px; color: var(--text-on-dark-muted); }
+.itemActions { display: flex; gap: 6px; flex-shrink: 0; }
+
+.editBtn, .deleteBtn {
+  background: none; border: 1px solid var(--ink-line); color: var(--text-on-dark-muted);
+  padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer;
+  font-family: inherit; font-size: 11px; white-space: nowrap; min-height: 32px;
+}
+.editBtn:hover { color: var(--text-on-dark); border-color: var(--text-on-dark-muted); }
+.deleteBtn { border-color: var(--accent-bordeaux); color: var(--accent-bordeaux); }
+.deleteBtn:hover { background: var(--accent-bordeaux); color: var(--paper-100); }
+
+.editor { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.input {
+  width: 100%; padding: 8px; background: var(--ink-900); border: 1px solid var(--ink-line);
+  color: var(--text-on-dark); border-radius: var(--radius-sm); font-family: inherit; font-size: 13px;
+}
+.input:focus { outline: none; border-color: var(--accent-coral); }
+.saveBtn {
+  padding: 9px; background: var(--accent-coral); border: 1px solid var(--accent-coral);
+  color: var(--paper-100); border-radius: var(--radius-sm); cursor: pointer;
+  font-family: inherit; font-size: 12px;
+}
+.saveBtn:hover:not(:disabled) { background: var(--accent-coral-hover); border-color: var(--accent-coral-hover); }
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.bad { font-size: 11px; color: var(--accent-bordeaux); }
+
+.footNote {
+  border-top: 1px solid var(--ink-line); margin-top: 4px; padding-top: 10px;
+  font-size: 10px; color: var(--text-on-dark-muted); line-height: 1.5;
+}
+
+/* ── Мобильный fit (ТЗ-10) ── */
+@media (max-width: 480px) {
+  .panel { width: 100%; max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); padding: 14px; }
+  /* кнопки уходят под инфо-строку — иначе имя провайдера сжимается в многоточие */
+  .itemRow { flex-wrap: wrap; }
+  .itemActions { width: 100%; }
+  .editBtn, .deleteBtn { flex: 1; min-height: 44px; }
+  .saveBtn { min-height: 44px; }
+}
