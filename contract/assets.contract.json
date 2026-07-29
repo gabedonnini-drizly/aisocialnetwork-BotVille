@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "tileSize": 16,
+  "groundAtlases": {
+    "district_ground": {
+      "columns": 8,
+      "tiles": [
+        "grass", "grassA", "grassB",
+        "sideA", "sideB", "sideC", "sideD",
+        "asphA", "asphB", "asphC", "asphD",
+        "dashH", "dashV",
+        "zebHa1", "zebHb1", "zebHa2", "zebHb2",
+        "zebVa1", "zebVb1", "zebVa2", "zebVb2",
+        "dirt", "dirtA"
+      ]
+    },
+    "interiors_ground": {
+      "columns": 8,
+      "tiles": [
+        "border",
+        "wallOfficeA", "wallOfficeB",
+        "wallCafeA", "wallCafeB",
+        "wallDormA", "wallDormB",
+        "wallLibA", "wallLibB",
+        "floorOffice", "floorCafe", "floorDorm", "floorLib"
+      ]
+    }
+  },
+  "props": {
+    "district": {
+      "office_building":   { "maxSize": [208, 320] },
+      "cafe_building":     { "maxSize": [128, 208] },
+      "villa_building":    { "maxSize": [168, 240] },
+      "library_building":  { "maxSize": [144, 160] },
+      "barn":              { "maxSize": [144, 176] },
+      "tree_oak_big":      { "maxSize": [96, 112] },
+      "tree_oak_med":      { "maxSize": [80, 96] },
+      "tree_birch":        { "maxSize": [64, 80] },
+      "street_lamp":       { "maxSize": [48, 80] },
+      "bench":             { "maxSize": [48, 48] },
+      "trash_can":         { "maxSize": [48, 48] },
+      "hydrant":           { "maxSize": [32, 48] },
+      "car_right_1":       { "maxSize": [80, 64] },
+      "car_left_1":        { "maxSize": [80, 64] },
+      "car_right_2":       { "maxSize": [80, 64] },
+      "car_down_1":        { "maxSize": [80, 64] },
+      "car_down_2":        { "maxSize": [80, 64] },
+      "bush_1":            { "maxSize": [32, 32] },
+      "bush_2":            { "maxSize": [32, 32] },
+      "crop_cabbage":      { "maxSize": [32, 32] },
+      "crop_berry":        { "maxSize": [32, 32] },
+      "soil_left":         { "maxSize": [32, 48] },
+      "soil_mid":          { "maxSize": [32, 48] },
+      "soil_right":        { "maxSize": [32, 48] },
+      "fence_top_left":      { "maxSize": [32, 32] },
+      "fence_top_middle":    { "maxSize": [32, 32] },
+      "fence_top_right":     { "maxSize": [32, 32] },
+      "fence_middle_left":   { "maxSize": [32, 32] },
+      "fence_middle_right":  { "maxSize": [32, 32] },
+      "fence_bottom_left":   { "maxSize": [32, 32] },
+      "fence_bottom_middle": { "maxSize": [32, 32] },
+      "fence_bottom_right":  { "maxSize": [32, 32] }
+    },
+    "interior": {
+      "bed_green":       { "maxSize": [48, 64] },
+      "bed_blue":        { "maxSize": [48, 64] },
+      "bed_teal":        { "maxSize": [48, 64] },
+      "nightstand":      { "maxSize": [32, 32] },
+      "rug_pink":        { "maxSize": [48, 48] },
+      "chair_blue_r":    { "maxSize": [24, 40] },
+      "chair_blue_l":    { "maxSize": [24, 40] },
+      "chair_red_r":     { "maxSize": [24, 40] },
+      "chair_red_l":     { "maxSize": [24, 40] },
+      "chair_yellow_r":  { "maxSize": [24, 40] },
+      "chair_yellow_l":  { "maxSize": [24, 40] },
+      "table_plain":     { "maxSize": [48, 48] },
+      "armchair_grey_r": { "maxSize": [32, 48] },
+      "armchair_grey_l": { "maxSize": [32, 48] },
+      "armchair_blue_r": { "maxSize": [32, 48] },
+      "armchair_blue_l": { "maxSize": [32, 48] },
+      "lamp_red":        { "maxSize": [24, 48] },
+      "plant_palm":      { "maxSize": [32, 64] },
+      "bookshelf_a":     { "maxSize": [48, 64] },
+      "bookshelf_b":     { "maxSize": [48, 64] },
+      "bookshelf_narrow":{ "maxSize": [16, 64] },
+      "lectern":         { "maxSize": [32, 48] },
+      "globe":           { "maxSize": [16, 32] },
+      "chalkboard":      { "maxSize": [32, 48] },
+      "counter_wide":    { "maxSize": [64, 32] },
+      "stool":           { "maxSize": [16, 16] },
+      "doormat":         { "maxSize": [32, 48] },
+      "plant_small":     { "maxSize": [32, 32] },
+      "plant_pot":       { "maxSize": [32, 32] },
+      "office_chair_right": { "maxSize": [32, 48] },
+      "office_chair_left":  { "maxSize": [32, 48] },
+      "whiteboard":      { "maxSize": [48, 48] },
+      "printer":         { "maxSize": [32, 48] },
+      "workstation_single": { "maxSize": [48, 48] },
+      "workstation_double": { "maxSize": [80, 48] },
+      "coffee_machine":  { "maxSize": [32, 48] }
+    }
+  },
+  "characters": {
+    "frameWidth": 16,
+    "frameHeight": 32,
+    "directionOrder": ["right", "up", "left", "down"],
+    "parts": ["body", "eyes", "hair", "outfit", "accessory"],
+    "anims": {
+      "idle":  { "framesPerDirection": 6, "directions": 4 },
+      "walk":  { "framesPerDirection": 6, "directions": 4 },
+      "sit":   { "framesPerDirection": 6, "sides": ["right", "left"] },
+      "sleep": { "framesPerDirection": 6 }
+    }
+  },
+  "animatedObjects": {
+    "coffee_steam":  { "frameWidth": 16, "frameHeight": 32, "frames": 6,  "frameRate": 4 },
+    "cake_fridge":   { "frameWidth": 32, "frameHeight": 48, "frames": 14, "frameRate": 3 },
+    "tv_news":       { "frameWidth": 32, "frameHeight": 32, "frames": 36, "frameRate": 5 },
+    "office_screen": { "frameWidth": 32, "frameHeight": 32, "frames": 6,  "frameRate": 3 },
+    "cuckoo_clock":  { "frameWidth": 16, "frameHeight": 32, "frames": 10, "frameRate": 4 }
+  },
+  "emotes": {
+    "think": { "frameWidth": 16, "frameHeight": 32, "appearFrames": 4, "loopFrames": 2, "frameRate": 6 },
+    "icons": {
+      "frameWidth": 16,
+      "frameHeight": 16,
+      "frameRate": 2,
+      "statuses": ["work", "task_running", "task_done", "chat_npc", "rest", "error"]
+    }
+  }
+}

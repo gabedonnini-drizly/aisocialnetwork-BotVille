@@ -14,6 +14,7 @@
     "test": "node --import ./test/ts-resolve.mjs --test --test-concurrency=4 --test-reporter=spec \"test/*.test.mjs\" \"test/*.test.ts\"",
     "test:bake": "npm run pretest && node --import ./test/ts-resolve.mjs --test --test-concurrency=2 \"test/bake/**/*.test.mjs\" \"test/bake/**/*.test.ts\"",
     "test:all": "npm test && npm run test:bake && node -e \"const d=require('child_process').execSync('git status --porcelain',{encoding:'utf8'}).split('\\n').filter(Boolean);if(d.length){console.error('tests left the tree dirty (modified or untracked):\\n'+d.join('\\n'));process.exit(1)}\"",
+    "golden:names": "node scripts/snapshot-legacy-names.mjs",
     "dev:server": "npm run dev --workspace=packages/server",
     "dev:client": "npm run dev --workspace=packages/client",
     "deploy:client": "node scripts/sync-assets.mjs && vercel pull --yes --environment=production && vercel build --prod && vercel deploy --prebuilt --prod",
