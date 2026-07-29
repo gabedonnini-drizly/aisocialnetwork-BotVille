@@ -1,13 +1,13 @@
-// Живая проверка ТЗ-14: локальный OpenAI-совместимый провайдер.
+// Live check for TZ-14: a local OpenAI-compatible provider.
 //
-// Нужен, чтобы проверить сквозной путь «ключ юзера → любой агент» по-настоящему
-// (реальный HTTP, реальный SSE, реальная проверка ключа), не тратя платный ключ
-// и не завися от внешней сети. Провайдер 'custom' ходит сюда ровно так же, как
-// ходил бы в Groq/Together: GET /v1/models для health-check ключа и
-// POST /v1/chat/completions со стримом.
+// Needed to exercise the end-to-end "user key → any agent" path for real
+// (real HTTP, real SSE, real key validation) without spending a paid key
+// and without depending on the external network. The 'custom' provider talks to
+// this exactly as it would to Groq/Together: GET /v1/models for the key
+// health-check and POST /v1/chat/completions with streaming.
 //
-//   node scripts/mock-openai-provider.mjs [порт]
-// Верный ключ — MOCK_API_KEY (по умолчанию mock-key-ok), всё остальное → 401.
+//   node scripts/mock-openai-provider.mjs [port]
+// The valid key is MOCK_API_KEY (mock-key-ok by default), anything else → 401.
 import http from 'node:http';
 
 const PORT = Number(process.argv[2] ?? 4010);
@@ -33,7 +33,7 @@ const server = http.createServer(async (req, res) => {
     for await (const chunk of req) raw += chunk;
     const body = JSON.parse(raw || '{}');
     const agent = body.messages?.find(m => m.role === 'system')?.content ?? '';
-    const words = `Отвечает ${agent || 'агент'} на модели ${body.model}. Ключ принят.`.split(' ');
+    const words = `This is ${agent || 'the agent'} replying on model ${body.model}. Key accepted.`.split(' ');
 
     res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' });
     for (const w of words) {

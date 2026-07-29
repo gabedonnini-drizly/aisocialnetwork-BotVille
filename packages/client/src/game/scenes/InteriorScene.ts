@@ -31,21 +31,21 @@ function propsOf(o: Phaser.Types.Tilemaps.TiledObject): TiledProps {
 }
 
 /**
- * Базовая сцена интерьера: комната из TMJ (scripts/build-interiors.mjs),
- * места с занятостью (два агента на один стул не сядут), заметная
- * дверь-выход (коврик с hover-подсветкой), анимированные объекты.
+ * Base interior scene: a room from a TMJ (scripts/build-interiors.mjs),
+ * seats with occupancy (two agents will not take the same chair), a prominent
+ * exit door (a doormat with hover highlight), animated objects.
  *
- * ТЗ-16: сцена рисует ТОЛЬКО агентов, чей серверный location — это здание.
- * Пустая комната — нормально. Вход игрока на агентов больше не влияет.
+ * TZ-16: the scene draws ONLY agents whose server-side location is this building.
+ * An empty room is fine. The player entering no longer affects agents.
  */
 export class InteriorScene extends Phaser.Scene {
   protected agentSprites: Map<string, AgentSprite> = new Map();
   private seats: Seat[] = [];
   private pathfinder!: Pathfinder;
   private spawnPoint = { x: 160, y: 200 };
-  /** агент -> место, к которому он идёт */
+  /** agent -> the seat they are walking to */
   private pendingSeat: Map<string, Seat> = new Map();
-  /** агент в кровати -> личный час пробуждения (7:00-9:00). */
+  /** agent in bed -> personal wake-up hour (7:00-9:00). */
   private bedWakeHours: Map<string, number> = new Map();
   private roomW = 320;
   private roomH = 240;
@@ -54,7 +54,7 @@ export class InteriorScene extends Phaser.Scene {
   constructor(
     private sceneKey: string,
     private mapKey: string,
-    /** Локация этого здания в терминах сервера (ТЗ-16): кто здесь — тех и рисуем. */
+    /** This building's location in server terms (TZ-16): whoever is here is who we draw. */
     private locationId: AgentLocation,
   ) {
     super({ key: sceneKey });
@@ -71,7 +71,7 @@ export class InteriorScene extends Phaser.Scene {
     this.roomW = map.widthInPixels;
     this.roomH = map.heightInPixels;
 
-    // мебель (Y-sort по нижней кромке); коврик — с подсветкой выхода
+    // furniture (Y-sorted by bottom edge); the doormat gets the exit highlight
     let doormat: Phaser.GameObjects.Image | null = null;
     for (const o of map.getObjectLayer('furniture')?.objects ?? []) {
       const img = this.add.image(o.x!, o.y!, o.name).setOrigin(0, 0);
@@ -79,7 +79,7 @@ export class InteriorScene extends Phaser.Scene {
       if (propsOf(o).doormat) doormat = img;
     }
 
-    // анимированные объекты
+    // animated objects
     for (const o of map.getObjectLayer('animated')?.objects ?? []) {
       const def = ANIMATED_OBJECTS[o.name];
       if (!def) continue;
@@ -88,7 +88,7 @@ export class InteriorScene extends Phaser.Scene {
       spr.play(`anim-${o.name}`);
     }
 
-    // места
+    // seats
     this.seats = (map.getObjectLayer('seats')?.objects ?? []).map(o => {
       const p = propsOf(o);
       return {
@@ -99,7 +99,7 @@ export class InteriorScene extends Phaser.Scene {
       };
     });
 
-    // выход: зона над ковриком, hover подсвечивает коврик
+    // exit: a zone over the doormat, hover highlights the doormat
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
       if (typeof p.targetScene !== 'string') continue;
@@ -111,7 +111,7 @@ export class InteriorScene extends Phaser.Scene {
       onTap(zone, () => this.transitionTo(target));
     }
 
-    // спавн и проходимость
+    // spawn and walkability
     const sp = map.getObjectLayer('spawns')?.objects?.[0];
     if (sp) this.spawnPoint = { x: sp.x!, y: sp.y! };
     this.pathfinder = new Pathfinder(map.width, map.height);
@@ -119,27 +119,27 @@ export class InteriorScene extends Phaser.Scene {
       this.pathfinder.blockRect(o.x!, o.y!, o.width!, o.height!);
     }
 
-    // камера: комната целиком по центру, зум по размеру вьюпорта
+    // camera: the whole room centered, zoom sized to the viewport
     const cam = this.cameras.main;
     const fitZoom = Math.min(this.scale.width / this.roomW, this.scale.height / this.roomH);
     cam.setZoom(Phaser.Math.Clamp(fitZoom, 1.5, INTERIOR_CAMERA_ZOOM + 1));
     cam.centerOn(this.roomW / 2, this.roomH / 2);
     cam.setBackgroundColor('#0a0a14');
-    // на телефоне комната шире вьюпорта: пан/пинч (ТЗ-09); влезает целиком —
-    // кламп держит её по центру и управление камеру просто не двигает
+    // on a phone the room is wider than the viewport: pan/pinch (TZ-09); if it fits
+    // entirely — the clamp keeps it centered and camera controls simply do nothing
     attachCameraControls(this, {
       minZoom: cam.zoom,
       bounds: { width: this.roomW, height: this.roomH },
     });
 
-    // клик по спящему в кровати будит его (профиль/чат при этом открываются)
+    // clicking someone asleep in bed wakes them (profile/chat still opens)
     const onAgentClicked = ({ agentId }: { agentId: string }) => {
       const sprite = this.agentSprites.get(agentId);
       if (sprite?.isSeated && sprite.currentSeatKind === 'bed') this.wakeFromBed(agentId);
     };
     GameBridge.on('agent:clicked', onAgentClicked);
 
-    // клик по агенту в HUD — камера наезжает на него и в интерьере (ТЗ-16)
+    // clicking an agent in the HUD — the camera pans onto them in interiors too (TZ-16)
     const onFocusAgent = ({ agentId }: { agentId: string }) => {
       const sprite = this.agentSprites.get(agentId);
       if (!sprite) return;
@@ -151,7 +151,7 @@ export class InteriorScene extends Phaser.Scene {
       GameBridge.off('agent:clicked', onAgentClicked);
       GameBridge.off('agent:focus', onFocusAgent);
       sceneRegistry.unregister(this.sceneKey);
-      // уход из локации = все места свободны (спрайты уничтожаются сценой)
+      // leaving the location = all seats free (sprites are destroyed by the scene)
       this.agentSprites.clear();
       this.pendingSeat.clear();
       this.bedWakeHours.clear();
@@ -161,7 +161,7 @@ export class InteriorScene extends Phaser.Scene {
     GameBridge.emit('scene:changed', { scene: this.sceneKey });
   }
 
-  // ------- интерфейс проходимости для AgentSprite
+  // ------- walkability interface for AgentSprite
   randomWalkableNear(x: number, y: number): { x: number; y: number } {
     return this.pathfinder.randomWalkableNear(x, y, 80);
   }
@@ -175,7 +175,7 @@ export class InteriorScene extends Phaser.Scene {
     const hour = GameTime.hour;
     this.agentSprites.forEach(a => {
       a.update(dt);
-      // дошёл до места — садится
+      // reached the seat — sits down
       const seat = this.pendingSeat.get(a.agentId);
       if (seat && !a.isSeated) {
         const dist = Math.hypot(a.x - seat.x, a.y - seat.y);
@@ -188,7 +188,7 @@ export class InteriorScene extends Phaser.Scene {
           }
         }
       }
-      // утро: спящие в кроватях встают каждый в свой час
+      // morning: sleepers in beds get up, each at their own hour
       if (a.isSeated && a.currentSeatKind === 'bed' && !isSleepTime(hour)) {
         const wakeAt = this.bedWakeHours.get(a.agentId) ?? NIGHT_SCHEDULE.wakeStart;
         if (hour >= wakeAt && hour < NIGHT_SCHEDULE.sleepStart) this.wakeFromBed(a.agentId);
@@ -196,7 +196,7 @@ export class InteriorScene extends Phaser.Scene {
     });
   }
 
-  /** Поднять агента из кровати: место освобождается, агент гуляет по комнате. */
+  /** Get an agent out of bed: the seat is freed, the agent wanders around the room. */
   private wakeFromBed(agentId: string) {
     const sprite = this.agentSprites.get(agentId);
     if (!sprite) return;
@@ -205,7 +205,7 @@ export class InteriorScene extends Phaser.Scene {
     sprite.releaseSeat();
   }
 
-  /** Переход в другую сцену с fade (дверь-коврик и agent:goto из HUD). */
+  /** Transition to another scene with fade (the doormat door and agent:goto from the HUD). */
   transitionTo(target: string) {
     if (this.transitioning) return;
     this.transitioning = true;
@@ -217,8 +217,8 @@ export class InteriorScene extends Phaser.Scene {
   }
 
   syncAgents(fullList: SyncedAgent[]) {
-    // ГЛАВНЫЙ ФИКС ТЗ-16: рисуем только тех, кто по серверу реально в этом
-    // здании — а не всех агентов юзера в точке входа, как раньше.
+    // THE KEY FIX of TZ-16: draw only those who per the server are actually in this
+    // building — not all of the user's agents at the entry point, as before.
     const agentList = fullList.filter(a => a.location === this.locationId);
     const incoming = new Set(agentList.map(a => a.id));
     this.agentSprites.forEach((sprite, id) => {
@@ -235,8 +235,8 @@ export class InteriorScene extends Phaser.Scene {
       const y = this.spawnPoint.y;
       const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y);
       this.agentSprites.set(a.id, sprite);
-      // агент занимает свободное место; животные на кровати не забираются.
-      // Люди ночью предпочитают кровати (кончились — кресла), днём — наоборот.
+      // the agent takes a free seat; animals don't climb into beds.
+      // At night people prefer beds (falling back to chairs), by day the opposite.
       const isAnimal = getVariant(a.avatarVariant).kind === 'animal';
       const wantBed = !isAnimal && isSleepTime(GameTime.hour);
       const preferred = this.seats.find(s => !s.occupiedBy
@@ -250,7 +250,7 @@ export class InteriorScene extends Phaser.Scene {
       }
     });
 
-    // сюда шли за конкретным агентом из HUD — навести камеру (ТЗ-16)
+    // we came here for a specific agent from the HUD — aim the camera (TZ-16)
     consumePendingFocus(this.sceneKey, id => this.agentSprites.has(id));
   }
 

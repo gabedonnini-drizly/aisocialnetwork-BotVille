@@ -4,14 +4,14 @@ import { sceneRegistry } from './SceneRegistry.js';
 import { LOCATION_SCENES } from './config.js';
 
 /**
- * ТЗ-16: клик по агенту в HUD ведёт к нему.
- * - агент в текущей сцене — просто agent:focus (пан+зум, как раньше);
- * - агент в другой локации — переход в её сцену (fade, как через дверь),
- *   и после первого syncAgents новая сцена наводит камеру на агента.
- * Модуль подключается импортом из GameInit (слушатели — на весь срок игры).
+ * TZ-16: clicking an agent in the HUD takes you to them.
+ * - agent in the current scene — just agent:focus (pan+zoom, as before);
+ * - agent in another location — transition to its scene (fade, as through a door),
+ *   and after the first syncAgents the new scene aims the camera at the agent.
+ * The module is wired up by an import from GameInit (listeners live for the whole game).
  */
 
-/** Сцена, умеющая переходить в другую сцену с fade (район и интерьеры). */
+/** A scene that can transition to another scene with a fade (the district and interiors). */
 interface TransitionCapable extends Phaser.Scene {
   transitionTo(targetScene: string): void;
 }
@@ -33,18 +33,18 @@ GameBridge.on('agent:goto', ({ agentId, location }) => {
     return;
   }
   const active = sceneRegistry.get(currentSceneKey);
-  if (!canTransition(active)) return; // мир ещё грузится — некому переходить
+  if (!canTransition(active)) return; // the world is still loading — nobody to transition
   pendingFocusId = agentId;
   active.transitionTo(targetScene);
 });
 
 /**
- * Сцены зовут в конце syncAgents: если сюда шли за конкретным агентом и он
- * уже отрисован — навести камеру. Отложенный фокус живёт до первого синка.
+ * Scenes call this at the end of syncAgents: if we came here for a specific agent and
+ * they are already drawn — aim the camera. The pending focus lives until the first sync.
  */
 export function consumePendingFocus(sceneKey: string, hasAgent: (id: string) => boolean): void {
   if (!pendingFocusId || sceneKey !== currentSceneKey) return;
-  if (!hasAgent(pendingFocusId)) { pendingFocusId = null; return; } // уже ушёл
+  if (!hasAgent(pendingFocusId)) { pendingFocusId = null; return; } // already gone
   const agentId = pendingFocusId;
   pendingFocusId = null;
   GameBridge.emit('agent:focus', { agentId });

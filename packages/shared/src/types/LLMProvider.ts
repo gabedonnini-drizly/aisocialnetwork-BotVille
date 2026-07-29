@@ -19,13 +19,13 @@ export interface LLMProvider {
   models: LLMModel[];
   requiresApiKey: boolean;
   baseUrl?: string;
-  /** Список моделей приходит с сервера (живой каталог), а не из этого файла. */
+  /** The model list comes from the server (live catalog), not from this file. */
   dynamicModels?: boolean;
-  /** Базовый URL задаёт пользователь (Ollama, custom). */
+  /** The base URL is set by the user (Ollama, custom). */
   userBaseUrl?: boolean;
 }
 
-/** Фиксированный базовый URL OpenRouter — пользовательские URL сюда не попадают. */
+/** Fixed OpenRouter base URL — user-supplied URLs never end up here. */
 export const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
 
 export const LLM_PROVIDERS: LLMProvider[] = [
@@ -57,8 +57,9 @@ export const LLM_PROVIDERS: LLMProvider[] = [
     ],
   },
   {
-    // ТЗ-14: агрегатор с OpenAI-совместимым API — один ключ на сотни моделей,
-    // включая бесплатные (:free). Каталог живой, см. GET /api/models/openrouter.
+    // TZ-14: an aggregator with an OpenAI-compatible API — one key for hundreds
+    // of models, free ones (:free) included. The catalog is live, see
+    // GET /api/models/openrouter.
     id: 'openrouter',
     name: 'OpenRouter (100+ models)',
     requiresApiKey: true,
@@ -79,8 +80,8 @@ export const LLM_PROVIDERS: LLMProvider[] = [
     ],
   },
   {
-    // ТЗ-14: любой OpenAI-совместимый endpoint (Groq, Together, локальный прокси).
-    // baseUrl и имя модели вводит пользователь.
+    // TZ-14: any OpenAI-compatible endpoint (Groq, Together, a local proxy).
+    // The user enters the baseUrl and the model name.
     id: 'custom',
     name: 'Custom (OpenAI-compatible)',
     requiresApiKey: true,
@@ -89,22 +90,22 @@ export const LLM_PROVIDERS: LLMProvider[] = [
   },
 ];
 
-/** Модель из живого каталога OpenRouter (GET /api/models/openrouter). */
+/** A model from the live OpenRouter catalog (GET /api/models/openrouter). */
 export interface CatalogModel {
   id: string;
   name: string;
   contextWindow: number;
-  /** Цена за 1M входных токенов в USD; null — цену провайдер не отдал. */
+  /** Price per 1M input tokens in USD; null — the provider didn't report a price. */
   promptPrice: number | null;
-  /** Цена за 1M выходных токенов в USD; null — цену провайдер не отдал. */
+  /** Price per 1M output tokens in USD; null — the provider didn't report a price. */
   completionPrice: number | null;
   isFree: boolean;
 }
 
-/** Статус сохранённого ключа юзера. Сам ключ наружу не отдаётся — только маска. */
+/** Status of a saved user key. The key itself is never returned — only the mask. */
 export interface UserKeyStatus {
   provider: LLMProviderType;
-  /** Хвост ключа для узнавания, напр. `…f3a9`. Никогда не полный ключ. */
+  /** Key tail for recognition, e.g. `…f3a9`. Never the full key. */
   maskedKey: string;
   baseUrl?: string;
   updatedAt: number;
@@ -112,6 +113,6 @@ export interface UserKeyStatus {
 
 export interface SetUserKeyDto {
   apiKey: string;
-  /** Только для провайдеров с userBaseUrl (custom). */
+  /** Only for providers with userBaseUrl (custom). */
   baseUrl?: string;
 }

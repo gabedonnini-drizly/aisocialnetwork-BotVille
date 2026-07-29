@@ -1,17 +1,17 @@
-# Railway-конфиг сервера BotVille.
-# ВАЖНО: в настройках сервиса Railway оставь Root Directory ПУСТЫМ (= корень репо).
-# Это монорепо с npm workspaces — сервер зависит от @botville/shared, поэтому
-# install/build должны идти из корня, иначе workspace-зависимость не разрешится.
+# Railway config for the BotVille server.
+# IMPORTANT: in the Railway service settings leave Root Directory EMPTY (= repo root).
+# This is a monorepo with npm workspaces — the server depends on @botville/shared, so
+# install/build must run from the root, otherwise the workspace dependency won't resolve.
 #
-# Node закреплён на 24 через .nvmrc + engines (нужен для node:sqlite без флага).
+# Node is pinned to 24 via .nvmrc + engines (required for node:sqlite without a flag).
 
 [build]
 builder = "nixpacks"
-# turbo соберёт @botville/shared (зависимость) и затем сервер — клиент не трогаем.
-# --include=dev ОБЯЗАТЕЛЕН: на сервисе выставлен NODE_ENV=production, из-за чего
-# `npm install` по умолчанию пропускает devDependencies (typescript, turbo) →
-# сборка @botville/shared падала с `tsc: exited (127)`. Флаг форсит dev-инструменты
-# в билд-образе (в рантайме они не нужны, start запускает готовый dist).
+# turbo will build @botville/shared (the dependency) and then the server — we don't touch the client.
+# --include=dev is MANDATORY: the service has NODE_ENV=production set, which makes
+# `npm install` skip devDependencies (typescript, turbo) by default →
+# the @botville/shared build failed with `tsc: exited (127)`. The flag forces the dev tools
+# into the build image (they aren't needed at runtime, start runs the prebuilt dist).
 buildCommand = "npm install --include=dev && npx turbo build --filter=@botville/server"
 
 [deploy]

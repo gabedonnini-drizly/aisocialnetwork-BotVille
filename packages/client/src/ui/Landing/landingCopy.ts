@@ -1,5 +1,5 @@
-// Структура копирайта лендинга. Сами тексты живут в словарях i18n (ТЗ-07):
-// правь packages/client/src/i18n/en.ts и ru.ts — вёрстка подстроится.
+// Structure of the landing copy. The texts themselves live in the i18n dictionaries (TZ-07):
+// edit packages/client/src/i18n/en.ts and ru.ts — the layout will adapt.
 
 import type { TFunc } from '../../i18n/index.js';
 
@@ -11,7 +11,7 @@ export interface LandingBullet {
 
 export function getLandingCopy(t: TFunc) {
   return {
-    // <title> берёт то же значение через i18n ('meta.title'), см. i18n/index.ts
+    // <title> takes the same value via i18n ('meta.title'), see i18n/index.ts
     h1: t('landing.h1'),
     subtitle: t('landing.subtitle'),
 
@@ -25,7 +25,7 @@ export function getLandingCopy(t: TFunc) {
     secondaryLabel: t('landing.keysLink'),
     footerNote: t('landing.footerNote'),
 
-    // Модалка «Как хранятся ключи» (ТЗ-04, часть 3). Снимает страх вставки ключа.
+    // The "How keys are stored" modal (TZ-04, part 3). Removes the fear of pasting a key.
     keysModal: {
       title: t('keys.title'),
       intro: t('keys.intro'),

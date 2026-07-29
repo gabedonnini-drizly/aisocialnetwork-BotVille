@@ -11,8 +11,9 @@ import { gameHour } from '../world/clock.js';
 
 export const agentsRouter = Router();
 
-// GET /api/agents/locations — лёгкий поллинг ТЗ-16: где кто + серверный час.
-// Клиент зовёт раз в ~15 сек, чтобы сцены рисовали только тех, кто реально здесь.
+// GET /api/agents/locations — lightweight TZ-16 polling: who is where + the
+// server hour. The client calls it about every 15 s so scenes only draw agents
+// who are actually there.
 agentsRouter.get('/locations', (req, res) => {
   const userId = req.userId;
   if (!userId) return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing user id' } });
@@ -27,8 +28,8 @@ agentsRouter.get('/', (req, res) => {
   const userId = req.userId;
   if (!userId) return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing user id' } });
   const db = getDb();
-  // hasKey — есть ли сохранённый ключ (сам ключ не отдаём), чтобы UI показал
-  // кнопку «Удалить ключ». EXISTS-подзапрос, без изменения схемы.
+  // hasKey — whether a saved key exists (the key itself is never returned), so
+  // the UI can show a "Delete key" button. An EXISTS subquery, no schema change.
   const agents = db.prepare(`
     SELECT a.*, (SELECT COUNT(*) FROM agent_keys k WHERE k.agent_id = a.id) AS has_key
     FROM agents a WHERE a.user_id = ? ORDER BY a.slot_index
@@ -49,7 +50,7 @@ agentsRouter.post('/', (req, res) => {
   if (!body.name || !body.providerType || !body.modelId) {
     return res.status(400).json({ error: { code: 'INVALID_BODY', message: 'name, providerType, modelId required' } });
   }
-  // ТЗ-14: свой endpoint провайдера 'custom' — валидируем до записи
+  // TZ-14: the 'custom' provider's own endpoint — validate before writing
   let customBaseUrl: string | null = null;
   if (body.providerType === 'custom') {
     const check = validateBaseUrl(body.customBaseUrl ?? '');
@@ -104,7 +105,7 @@ agentsRouter.delete('/:id', (req, res) => {
   res.json({ data: { ok: true } });
 });
 
-// PUT /api/agents/:id/key — save encrypted API key + health-check ключа
+// PUT /api/agents/:id/key — save encrypted API key + health-check the key
 agentsRouter.put('/:id/key', async (req, res) => {
   const userId = req.userId;
   const db = getDb();
@@ -120,8 +121,8 @@ agentsRouter.put('/:id/key', async (req, res) => {
     VALUES (?, ?, ?, ?)
     ON CONFLICT(agent_id) DO UPDATE SET encrypted_key=excluded.encrypted_key, iv=excluded.iv, updated_at=excluded.updated_at
   `).run(req.params.id, encrypted, iv, Date.now());
-  // Минимальный запрос к провайдеру: valid true/false, null — проверка не удалась
-  // (сетевая ошибка не блокирует сохранение)
+  // Minimal request to the provider: valid true/false, null — the check failed
+  // (a network error does not block saving)
   const valid = await checkApiKey(
     agent.provider_type as LLMProviderType,
     apiKey,
@@ -130,8 +131,8 @@ agentsRouter.put('/:id/key', async (req, res) => {
   res.json({ data: { ok: true, valid } });
 });
 
-// DELETE /api/agents/:id/key — удалить сохранённый ключ (ТЗ-04, чеклист 4).
-// После удаления агент снова требует ключ / уходит в demo.
+// DELETE /api/agents/:id/key — delete the saved key (TZ-04, checklist item 4).
+// After deletion the agent requires a key again / falls back to demo.
 agentsRouter.delete('/:id/key', (req, res) => {
   const userId = req.userId;
   const db = getDb();

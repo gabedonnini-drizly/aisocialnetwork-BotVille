@@ -2,9 +2,9 @@ import Phaser from 'phaser';
 import { GLOW_TEXTURE } from './config.js';
 
 /**
- * Белый радиальный градиент для ночных глоу (фонари, окна, фары).
- * Генерится ОДИН раз в RenderTexture (Light2D не используем — дорого);
- * цвет задаётся тинтом спрайта, blend — ADD.
+ * A white radial gradient for night glows (street lamps, windows, headlights).
+ * Generated ONCE into a RenderTexture (we don't use Light2D — too expensive);
+ * the color comes from the sprite tint, the blend mode is ADD.
  */
 export function ensureGlowTexture(scene: Phaser.Scene) {
   if (scene.textures.exists(GLOW_TEXTURE.key)) return;
@@ -15,7 +15,7 @@ export function ensureGlowTexture(scene: Phaser.Scene) {
 
   const g = scene.make.graphics({}, false);
   for (let i = steps; i >= 1; i--) {
-    // концентрические круги: к центру альфа накапливается, край сходит в ноль
+    // concentric circles: alpha accumulates towards the center, the edge fades to zero
     const t = i / steps;
     g.fillStyle(0xffffff, (1 - t) * 0.12 + 0.015);
     g.fillCircle(r, r, r * t);

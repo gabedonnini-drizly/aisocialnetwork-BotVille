@@ -4,16 +4,16 @@ import { useT } from '../../i18n/index.js';
 import { LocaleToggle } from '../LocaleToggle.js';
 import styles from './Landing.module.css';
 
-// Пути к hero-медиа. Часть 2 положит сюда рендер ночного района;
-// пока есть только poster — <video> без источника показывает его же.
+// Paths to the hero media. Part 2 will put a render of the night district here;
+// for now there is only the poster — a <video> without a source shows the same thing.
 const HERO = {
   poster: '/hero/district-night.png',
-  // Веб-версия ролика (Часть 2). Пусто → hero показывает статичный poster.
+  // Web version of the clip (Part 2). Empty → the hero shows the static poster.
   videoWebm: '/hero/district-night.webm',
   videoMp4: '/hero/district-night.mp4',
 };
 
-// Переход в приложение: полная навигация — Phaser инициализируется с нуля.
+// Entering the app: a full navigation — Phaser initializes from scratch.
 function launchApp() {
   window.location.href = '/app';
 }
@@ -21,16 +21,16 @@ function launchApp() {
 export function Landing() {
   const t = useT();
   const landingCopy = getLandingCopy(t);
-  // Если видео не подгрузилось — прячем <video>, остаётся poster-фон (деградация).
+  // If the video failed to load — hide the <video>, the poster background remains (graceful degradation).
   const [videoOk, setVideoOk] = useState(true);
-  // Модалка «Как хранятся ключи» (ТЗ-04, часть 3).
+  // The "How keys are stored" modal (TZ-04, part 3).
   const [keysOpen, setKeysOpen] = useState(false);
   const keys = landingCopy.keysModal;
 
   return (
     <div className={styles.page}>
       <section className={styles.hero}>
-        {/* Hero-медиа: ночной район. Poster — фолбэк, пока/если видео нет. */}
+        {/* Hero media: the night district. The poster is the fallback while/if there is no video. */}
         <div className={styles.heroMedia} style={{ backgroundImage: `url(${HERO.poster})` }}>
           {videoOk && (
             <video
@@ -94,7 +94,7 @@ export function Landing() {
         <div className={styles.footerNote}>{landingCopy.footerNote}</div>
       </footer>
 
-      {/* «Как хранятся ключи» — BYOK-доверие (ТЗ-04, часть 3) */}
+      {/* "How keys are stored" — BYOK trust (TZ-04, part 3) */}
       {keysOpen && (
         <div className={styles.modalOverlay} onClick={() => setKeysOpen(false)} role="dialog" aria-modal="true" aria-label={keys.title}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>

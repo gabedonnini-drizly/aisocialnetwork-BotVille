@@ -1,29 +1,30 @@
 import type { Request, Response, NextFunction } from 'express';
 
-// ТЗ-04, чеклист 7: единый обработчик ошибок. Клиенту уходит только код и
-// человекочитаемое сообщение — никаких стек-трейсов, путей файлов и сырых тел
-// провайдера. Полная ошибка логируется на сервере (без секретов из тела).
+// TZ-04, checklist item 7: single error handler. The client receives only a
+// code and a human-readable message — no stack traces, file paths, or raw
+// provider bodies. The full error is logged on the server (without secrets
+// from the request body).
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function errorHandler(err: unknown, req: Request, res: Response, _next: NextFunction) {
   const isCors = err instanceof Error && err.message === 'Not allowed by CORS';
 
-  // Лог на сервере: message + stack, без тела запроса (там могут быть ключи).
+  // Server-side log: message + stack, without the request body (it may contain keys).
   console.error(`[error] ${req.method} ${req.path}:`, err instanceof Error ? err.stack ?? err.message : err);
 
-  // Если ответ уже начат (например, SSE-стрим) — просто закрываем соединение.
+  // If the response has already started (e.g. an SSE stream) — just close the connection.
   if (res.headersSent) return res.end();
 
   if (isCors) {
-    return res.status(403).json({ error: { code: 'CORS_FORBIDDEN', message: 'Origin не разрешён' } });
+    return res.status(403).json({ error: { code: 'CORS_FORBIDDEN', message: 'Origin not allowed' } });
   }
 
-  // Клиентские ошибки (например, битый JSON от body-parser) — отдаём их статус
-  // с обобщённым сообщением, без сырого текста ошибки. Всё прочее — 500.
+  // Client errors (e.g. broken JSON from body-parser) — return their status
+  // with a generic message, without the raw error text. Everything else — 500.
   const status = (err as { status?: number; statusCode?: number })?.status
     ?? (err as { statusCode?: number })?.statusCode;
   if (typeof status === 'number' && status >= 400 && status < 500) {
-    return res.status(status).json({ error: { code: 'BAD_REQUEST', message: 'Некорректный запрос' } });
+    return res.status(status).json({ error: { code: 'BAD_REQUEST', message: 'Invalid request' } });
   }
-  res.status(500).json({ error: { code: 'INTERNAL', message: 'Что-то пошло не так на сервере' } });
+  res.status(500).json({ error: { code: 'INTERNAL', message: 'Something went wrong on the server' } });
 }

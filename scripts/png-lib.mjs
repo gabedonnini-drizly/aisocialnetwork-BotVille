@@ -1,7 +1,7 @@
 /**
- * Мини-библиотека PNG без зависимостей: decode (non-interlaced, 8-bit),
- * encode (RGBA), blit. Используется инструментами разведки ассетов и
- * генератором карт/атласов.
+ * Minimal dependency-free PNG library: decode (non-interlaced, 8-bit),
+ * encode (RGBA), blit. Used by the asset reconnaissance tools and by the
+ * map/atlas generator.
  */
 import { readFileSync } from 'node:fs';
 import { inflateSync, deflateSync, crc32 } from 'node:zlib';
@@ -76,7 +76,7 @@ export function decodePng(file) {
   return { w, h, px };
 }
 
-/** Изменяемый RGBA-холст. */
+/** A mutable RGBA canvas. */
 export function createCanvas(w, h) {
   const data = Buffer.alloc(w * h * 4);
   return {
@@ -86,7 +86,7 @@ export function createCanvas(w, h) {
       const i = (y * w + x) * 4;
       data[i] = r; data[i + 1] = g; data[i + 2] = b; data[i + 3] = a;
     },
-    /** Копирует регион из декодированного PNG (альфа поверх — простой over). */
+    /** Copies a region from a decoded PNG (alpha on top — a simple over). */
     blit(src, sx, sy, sw, sh, dx, dy) {
       for (let y = 0; y < sh; y++) {
         for (let x = 0; x < sw; x++) {

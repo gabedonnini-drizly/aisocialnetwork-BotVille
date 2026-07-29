@@ -1,22 +1,22 @@
-// ТЗ-14: пользовательский baseUrl (провайдер 'custom') — единственное место,
-// где URL приходит снаружи. Валидируем строго, чтобы эндпоинт не превратился
-// в SSRF-педаль и чтобы в URL не уехали пути-инъекции.
+// TZ-14: a user-supplied baseUrl (the 'custom' provider) is the only place
+// where a URL comes from outside. Validate it strictly, so the endpoint doesn't
+// turn into an SSRF lever and so no path injections sneak into the URL.
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
 
 export interface BaseUrlCheck {
   ok: boolean;
-  /** Нормализованный URL без хвостового слэша (только при ok). */
+  /** The normalized URL without a trailing slash (only when ok). */
   url?: string;
-  /** Машинный код причины отказа — текст подставляет клиент из i18n. */
+  /** Machine-readable rejection reason — the client supplies the text from i18n. */
   code?: 'invalid_url' | 'insecure_scheme' | 'bad_url_parts';
 }
 
 /**
- * Разрешаем только https:// (любой хост) и http:// для localhost/127.0.0.1
- * — локальные прокси иначе не подключить. Query, hash, credentials в URL
- * запрещены: адаптер клеит `${baseUrl}/chat/completions`, и хвост из строки
- * запроса сломал бы путь.
+ * Only https:// (any host) and http:// for localhost/127.0.0.1 are allowed —
+ * otherwise local proxies couldn't be connected. Query, hash, and credentials
+ * in the URL are forbidden: the adapter concatenates
+ * `${baseUrl}/chat/completions`, and a query-string tail would break the path.
  */
 export function validateBaseUrl(raw: string): BaseUrlCheck {
   const trimmed = raw.trim();

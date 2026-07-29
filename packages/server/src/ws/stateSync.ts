@@ -7,8 +7,9 @@ const clients = new Map<string, Set<WebSocket>>();
 
 export function createWSSServer(wss: WebSocketServer) {
   wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
-    // userId — только из подписанного значения: cookie upgrade-запроса либо
-    // токен в `?token=` (cross-site, ТЗ-12). Сырой id от клиента не принимаем.
+    // userId comes only from a signed value: the upgrade request's cookie or
+    // the `?token=` token (cross-site, TZ-12). A raw id from the client is
+    // never accepted.
     const userId = userIdFromUpgrade(req);
     if (!userId) {
       ws.close(4001, 'valid session cookie or token required');

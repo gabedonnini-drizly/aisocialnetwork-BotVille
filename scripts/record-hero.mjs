@@ -1,24 +1,25 @@
-// Запись hero-медиа ночного района BotVille (ТЗ-03, Часть 2).
+// Recording the hero media of the BotVille district at night (TZ-03, Part 2).
 //
-// Что делает: открывает клиент на /app в системном Chrome (puppeteer-core,
-// headless 'new' — в нём тикает requestAnimationFrame), создаёт 4 агента
-// (3 человека + корова, в пределах FREE_SLOT_LIMIT), ставит ночь через
-// window.__setGameHour, скрывает React-HUD (в кадре только Phaser-район),
-// снимает кадры канваса и кодирует статическим ffmpeg в:
-//   public/hero/district-night.png   — чистый poster (og:image + фолбэк)
-//   public/hero/district-night.webm  — веб-hero (VP9)
-//   public/hero/district-night.mp4   — веб-hero фолбэк (H.264)
-//   public/hero/district-night.gif   — версия для X / Product Hunt
+// What it does: opens the client at /app in the system Chrome (puppeteer-core,
+// headless 'new' — requestAnimationFrame ticks in it), creates 4 agents
+// (3 humans + a cow, within FREE_SLOT_LIMIT), sets night via
+// window.__setGameHour, hides the React HUD (only the Phaser district in frame),
+// captures canvas frames and encodes them with the static ffmpeg into:
+//   public/hero/district-night.png   — clean poster (og:image + fallback)
+//   public/hero/district-night.webm  — web hero (VP9)
+//   public/hero/district-night.mp4   — web hero fallback (H.264)
+//   public/hero/district-night.gif   — version for X / Product Hunt
 //
-// Требования (dev-only, не в зависимостях приложения):
+// Requirements (dev-only, not in the app's dependencies):
 //   npm i -D puppeteer-core @ffmpeg-installer/ffmpeg
-//   системный Google Chrome; запущенные dev-серверы (client :5173, server :3001)
+//   the system Google Chrome; running dev servers (client :5173, server :3001)
 //
-// Запуск из корня репозитория:  node scripts/record-hero.mjs
+// Run from the repo root:  node scripts/record-hero.mjs
 //
-// Почему 21:00, а не 22:00: в 22–7 включается ночной уход на сон (люди в дорм,
-// животные в загон) и улицы за 12 c пустеют. 21:00 — та же ночь с полным глоу,
-// но агенты свободно бродят. Камера статична (зум сцены 1.8, весь перекрёсток).
+// Why 21:00 and not 22:00: from 22–7 the nightly go-to-sleep routine kicks in
+// (people to the dorm, animals to the pen) and the streets empty out in 12 s.
+// 21:00 is the same night with the full glow, but agents roam freely.
+// The camera is static (scene zoom 1.8, the whole intersection).
 
 import puppeteer from 'puppeteer-core';
 import { execFileSync } from 'node:child_process';
@@ -35,17 +36,17 @@ const REPO = path.resolve(__dirname, '..');
 const HERO = path.join(REPO, 'packages/client/public/hero');
 const TMP = path.join(REPO, '.hero-frames');
 
-// ── Настройки ────────────────────────────────────────────────────────────────
+// ── Settings ─────────────────────────────────────────────────────────────────
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const URL = process.env.CLIENT_URL ?? 'http://localhost:5173/app';
 const W = 1280, H = 720;
 const HOUR = 21;
-const SETTLE_MS = 2000;   // пауза перед захватом: глоу устаканился, агенты у центра
+const SETTLE_MS = 2000;   // pause before capture: the glow has settled, agents near the center
 const FRAME_COUNT = 150;
-const FPS = 12;           // 150 / 12 ≈ 12.5 c
+const FPS = 12;           // 150 / 12 ≈ 12.5 s
 const GIF_W = 800, GIF_FPS = 12;
 
-// 4 агента (FREE_SLOT_LIMIT=4): 3 человека + корова. Варианты — из assetManifest.
+// 4 agents (FREE_SLOT_LIMIT=4): 3 humans + a cow. Variants come from assetManifest.
 const AGENTS = [
   { name: 'Alex',    avatarVariant: 0,  providerType: 'claude', modelId: 'claude-sonnet-4-6', systemPrompt: '' },
   { name: 'Pinky',   avatarVariant: 10, providerType: 'claude', modelId: 'claude-sonnet-4-6', systemPrompt: '' },
@@ -73,7 +74,7 @@ await page.goto(URL, { waitUntil: 'networkidle2' });
 await page.waitForFunction(() => window.__game && typeof window.__setGameHour === 'function', { timeout: 20000 });
 await sleep(1000);
 
-// Создать недостающих агентов (свежая сессия puppeteer → пусто)
+// Create the missing agents (a fresh puppeteer session → empty)
 await page.evaluate(async (list) => {
   const existing = (await (await fetch('/api/agents', { credentials: 'include' })).json()).data ?? [];
   const names = new Set(existing.map(a => a.name));
@@ -85,16 +86,16 @@ await page.evaluate(async (list) => {
 await page.reload({ waitUntil: 'networkidle2' });
 await page.waitForFunction(() => window.__game && typeof window.__setGameHour === 'function', { timeout: 20000 });
 
-// Ночь + скрыть React-HUD
+// Night + hide the React HUD
 await page.evaluate((hr) => window.__setGameHour(hr), HOUR);
 await page.evaluate(() => { const u = document.getElementById('ui-root'); if (u) u.style.display = 'none'; });
 await sleep(SETTLE_MS);
 
-// Poster (чистый, без HUD)
+// Poster (clean, no HUD)
 await page.screenshot({ path: path.join(HERO, 'district-night.png') });
 console.log('poster:', mb(path.join(HERO, 'district-night.png')), 'MB');
 
-// Кадры
+// Frames
 const t0 = Date.now();
 for (let i = 0; i < FRAME_COUNT; i++) {
   await page.screenshot({ path: path.join(TMP, `f${String(i).padStart(4, '0')}.png`) });
@@ -102,7 +103,7 @@ for (let i = 0; i < FRAME_COUNT; i++) {
 console.log(`captured ${FRAME_COUNT} frames in ${((Date.now() - t0) / 1000).toFixed(1)}s → ${(FRAME_COUNT / FPS).toFixed(1)}s clip`);
 await browser.close();
 
-// ── Кодирование ───────────────────────────────────────────────────────────
+// ── Encoding ──────────────────────────────────────────────────────────────
 const frames = path.join(TMP, 'f%04d.png');
 const input = ['-y', '-framerate', String(FPS), '-i', frames];
 

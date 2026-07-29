@@ -6,7 +6,7 @@ import type { AgentLocation } from '@botville/shared';
 export interface GameEvents {
   'agent:clicked': { agentId: string };
   'agent:focus': { agentId: string };
-  /** ТЗ-16: клик в HUD «отведи меня к агенту» — с переходом между сценами. */
+  /** TZ-16: the HUD click "take me to the agent" — with a transition between scenes. */
   'agent:goto': { agentId: string; location: AgentLocation };
   'agent:moved': { agentId: string; x: number; y: number };
   'task:started': { agentId: string };

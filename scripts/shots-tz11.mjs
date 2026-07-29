@@ -1,15 +1,15 @@
-// Сдача ТЗ-11 (мобильный баг создания агента): скриншоты + контроль десктопа.
+// TZ-11 delivery (mobile agent-creation bug): screenshots + a desktop control check.
 //
-// Режимы:
-//   node scripts/shots-tz11.mjs before   — десктоп 1280x800: create-модалка (бейзлайн для diff)
-//   node scripts/shots-tz11.mjs after    — то же ПОСЛЕ правок
-//   node scripts/shots-tz11.mjs diff      — пиксельное сравнение before/after (диффа быть не должно)
-//   node scripts/shots-tz11.mjs mobile    — 375x667 iPhone SE, реальный тач:
-//        офлайн-API → видимая сетевая ошибка (submit + demo) и успешное создание (submit + demo)
+// Modes:
+//   node scripts/shots-tz11.mjs before   — desktop 1280x800: the create modal (baseline for the diff)
+//   node scripts/shots-tz11.mjs after    — the same AFTER the changes
+//   node scripts/shots-tz11.mjs diff      — pixel comparison of before/after (there must be no diff)
+//   node scripts/shots-tz11.mjs mobile    — 375x667 iPhone SE, real touch:
+//        offline API → a visible network error (submit + demo) and successful creation (submit + demo)
 //
-// Сервер НЕ нужен: все /api замоканы перехватом запросов (это и есть сценарий
-// «Railway недостижим»). Требуется только dev-клиент (:5173).
-// Выход: docs/screenshots/tz11/
+// The server is NOT needed: all /api calls are mocked by request interception (that is exactly the
+// "Railway unreachable" scenario). Only the dev client (:5173) is required.
+// Output: docs/screenshots/tz11/
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -29,7 +29,7 @@ const BASE = process.env.CLIENT_URL ?? 'http://localhost:5173';
 mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-// ── diff: попиксельное сравнение бейзлайна и after (десктоп React-слой) ──
+// ── diff: pixel-by-pixel comparison of the baseline and after (desktop React layer) ──
 if (MODE === 'diff') {
   let bad = 0;
   for (const name of ['create']) {
@@ -45,24 +45,24 @@ if (MODE === 'diff') {
         }
       }
     }
-    console.log(`desk-${name}: ${diff === -1 ? 'РАЗНЫЙ РАЗМЕР' : diff + ' px diff'}`);
+    console.log(`desk-${name}: ${diff === -1 ? 'DIFFERENT SIZE' : diff + ' px diff'}`);
     if (diff !== 0) bad++;
   }
   process.exit(bad ? 1 : 0);
 }
 
-// одна запись существует → есть занятый слот И свободный «+»
+// one record exists → there is both an occupied slot AND a free "+"
 const AGENTS = [
   { id: 'a1', user_id: 'u', slot_index: 0, name: 'Alex', avatar_variant: 0, system_prompt: '', provider_type: 'claude', model_id: 'claude-sonnet-4-6', created_at: Date.now(), has_key: 0 },
 ];
 
-// postMode: 'ok' | 'fail' (abort — сервер недостижим) | 'hang'
+// postMode: 'ok' | 'fail' (abort — the server is unreachable) | 'hang'
 function installMock(page, state) {
   page.on('request', (req) => {
     const url = req.url(), m = req.method();
     if (url.includes('/api/agents') && m === 'POST') {
-      if (state.postMode === 'hang') return;               // зависание без таймаута
-      if (state.postMode === 'fail') return req.abort('failed'); // сервер недостижим
+      if (state.postMode === 'hang') return;               // hang with no timeout
+      if (state.postMode === 'fail') return req.abort('failed'); // the server is unreachable
       const created = { ...AGENTS[0], id: 'new1', slot_index: 1, name: state.newName };
       state.extra = created;
       return req.respond({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: { id: 'new1' } }) });
@@ -115,8 +115,8 @@ async function tapButton(page, reSrc, reFlags) {
     const r = btn.getBoundingClientRect();
     return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
   }, { src: reSrc, flags: reFlags });
-  if (!box) throw new Error('кнопка не найдена: ' + reSrc);
-  await page.touchscreen.tap(box.x, box.y); // РЕАЛЬНЫЙ тач
+  if (!box) throw new Error('button not found: ' + reSrc);
+  await page.touchscreen.tap(box.x, box.y); // a REAL touch
 }
 
 const browser = await puppeteer.launch({
@@ -124,7 +124,7 @@ const browser = await puppeteer.launch({
   args: ['--no-sandbox', '--use-gl=angle', '--use-angle=metal', '--ignore-gpu-blocklist'],
 });
 
-// ── десктоп-контроль (before/after) ──
+// ── desktop control check (before/after) ──
 if (MODE === 'before' || MODE === 'after') {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
@@ -132,7 +132,7 @@ if (MODE === 'before' || MODE === 'after') {
   await boot(page, state);
   await page.waitForSelector('[class*="slotAvatar"]', { timeout: 15000 });
   await page.evaluate(() => { document.getElementById('game-container').style.display = 'none'; });
-  await openModal(page, 'Тест');
+  await openModal(page, 'Test');
   await page.evaluate(() => { document.querySelector('[class*="modal"]').scrollTop = 0; });
   await page.evaluate(() => window.__setGameHour(12));
   await sleep(300);
@@ -142,42 +142,43 @@ if (MODE === 'before' || MODE === 'after') {
   process.exit(0);
 }
 
-// ── мобила: сдаточные скрины ──
+// ── mobile: the delivery screenshots ──
 const shot = async (page, name) => { await page.screenshot({ path: path.join(OUT, `mob-${name}.png`) }); console.log(`✓ mob-${name}.png`); };
 
-// 1) офлайн-API → видимая сетевая ошибка, обычная кнопка «Создать агента»
+// 1) offline API → a visible network error, the regular "Create Agent" button
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 375, height: 667, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const state = { postMode: 'fail' };
   await boot(page, state);
-  await openModal(page, 'Тестик');
+  await openModal(page, 'Testy');
+  // NB: the Russian alternatives below match the RU button labels the client renders — do not translate.
   await tapButton(page, 'Создать агента|Create Agent|Создаю|Creating', '');
   await sleep(800);
   await shot(page, 'error-submit');
   await page.close();
 }
 
-// 2) офлайн-API → видимая сетевая ошибка, кнопка «Позже — начать с демо»
+// 2) offline API → a visible network error, the "Skip for now — start with the demo" button
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 375, height: 667, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const state = { postMode: 'fail' };
   await boot(page, state);
-  await openModal(page, 'Тестик');
+  await openModal(page, 'Testy');
   await tapButton(page, 'Позже|Skip for now', 'i');
   await sleep(800);
   await shot(page, 'error-demo');
   await page.close();
 }
 
-// 3) успешное создание через обычную кнопку → агент в HUD
+// 3) successful creation via the regular button → the agent appears in the HUD
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 375, height: 667, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-  const state = { postMode: 'ok', newName: 'Барсик' };
+  const state = { postMode: 'ok', newName: 'Barsik' };
   await boot(page, state);
-  await openModal(page, 'Барсик');
+  await openModal(page, 'Barsik');
   await tapButton(page, 'Создать агента|Create Agent|Создаю|Creating', '');
   await page.waitForFunction(() => !document.querySelector('[class*="modal"]'), { timeout: 5000 });
   await page.evaluate(() => window.__setGameHour(12));
@@ -186,13 +187,13 @@ const shot = async (page, name) => { await page.screenshot({ path: path.join(OUT
   await page.close();
 }
 
-// 4) успешное создание через кнопку «демо» → агент в HUD
+// 4) successful creation via the "demo" button → the agent appears in the HUD
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 375, height: 667, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
-  const state = { postMode: 'ok', newName: 'Мурзик' };
+  const state = { postMode: 'ok', newName: 'Murzik' };
   await boot(page, state);
-  await openModal(page, 'Мурзик');
+  await openModal(page, 'Murzik');
   await tapButton(page, 'Позже|Skip for now', 'i');
   await page.waitForFunction(() => !document.querySelector('[class*="modal"]'), { timeout: 5000 });
   await page.evaluate(() => window.__setGameHour(12));
@@ -202,4 +203,4 @@ const shot = async (page, name) => { await page.screenshot({ path: path.join(OUT
 }
 
 await browser.close();
-console.log('готово:', OUT);
+console.log('done:', OUT);

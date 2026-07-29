@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { type AvatarVariantDef, animStartFrame } from '../../game/assetManifest.js';
 
-/** Кэш листов: один Image на файл, общий для всех превью. */
+/** Sheet cache: one Image per file, shared by all previews. */
 const sheetCache = new Map<string, Promise<HTMLImageElement>>();
 
 function loadSheet(src: string): Promise<HTMLImageElement> {
@@ -18,7 +18,7 @@ function loadSheet(src: string): Promise<HTMLImageElement> {
   return p;
 }
 
-/** Целочисленный масштаб превью по высоте кадра (пиксель-арт не мылим). */
+/** Integer preview scale by frame height (don't blur the pixel art). */
 const SCALE_BY_FRAME_H: Record<number, number> = { 16: 3, 32: 2, 48: 1 };
 
 const PREVIEW_FPS = 5;
@@ -27,7 +27,7 @@ interface Props {
   variant: AvatarVariantDef;
 }
 
-/** Живое превью варианта: зацикленная idle-анимация лицом к зрителю. */
+/** Live variant preview: a looped idle animation facing the viewer. */
 export function VariantPreview({ variant }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -57,7 +57,7 @@ export function VariantPreview({ variant }: Props) {
       };
       draw();
       timer = setInterval(draw, 1000 / PREVIEW_FPS);
-    }).catch(() => { /* нет ассетов — оставляем пустую ячейку */ });
+    }).catch(() => { /* no assets — leave the cell empty */ });
 
     return () => {
       cancelled = true;

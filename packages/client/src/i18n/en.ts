@@ -1,11 +1,11 @@
-// ТЗ-07: английский словарь — ЕДИНЫЙ источник user-facing текста (дефолтный язык).
-// Плоские ключи `раздел.имя`; подстановки — {плейсхолдер}, см. format() в index.ts.
-// Правь тексты здесь (и зеркально в ru.ts) — вёрстка подстроится.
+// TZ-07: the English dictionary is the SINGLE source of user-facing text (default language).
+// Flat `section.name` keys; substitutions — {placeholder}, see format() in index.ts.
+// Edit texts here (and mirror them in ru.ts) — the layout will adapt.
 
 export const en = {
   'meta.title': 'BotVille — your own city of AI agents, no sign-up',
 
-  // ── Лендинг ──
+  // ── Landing ──
   'landing.h1': 'Your own city of AI agents. Live in two minutes, no sign-up.',
   'landing.subtitle':
     'Create agents, give them a task, and watch the district come alive. Bring your own API key — or try it for free.',
@@ -19,7 +19,7 @@ export const en = {
   'landing.keysLink': 'How keys are stored',
   'landing.footerNote': 'BotVille · a living city of AI agents',
 
-  // ── Модалка «Как хранятся ключи» ──
+  // ── "How keys are stored" modal ──
   'keys.title': 'How your keys are stored',
   'keys.intro':
     'BotVille is BYOK — “bring your own key”. We built it so pasting a key isn’t scary:',
@@ -40,14 +40,14 @@ export const en = {
     'Ollama mode runs the model locally on your machine — no API key needed, and not a single request leaves your computer.',
   'keys.close': 'Got it',
 
-  // ── Общее ──
+  // ── Common ──
   'common.close': 'Close',
   'common.cancel': 'Cancel',
   'common.save': 'Save',
   'common.saving': 'Saving...',
   'common.saved': '✓ Saved',
 
-  // ── Создание агента ──
+  // ── Agent creation ──
   'create.title': 'Create Agent',
   'create.people': 'People',
   'create.animals': 'Animals',
@@ -76,7 +76,7 @@ export const en = {
   'create.errCreateFailed': 'Failed to create agent',
   'create.errNetwork': "Can't reach the server. Check your connection and try again.",
 
-  // ── Чат ──
+  // ── Chat ──
   'chat.demoRemaining': 'Demo: {n} messages left',
   'chat.retry': '↻ Retry',
   'chat.empty': 'Start a conversation with {name}',
@@ -86,7 +86,7 @@ export const en = {
   'chat.later': 'Later',
   'chat.addKey': 'Add key',
 
-  // ── Статусы агентов (HUD + профиль) ──
+  // ── Agent statuses (HUD + profile) ──
   'status.idle': 'Idle',
   'status.wander': 'Wandering',
   'status.rest': 'Resting',
@@ -95,7 +95,7 @@ export const en = {
   'status.task_done': 'Done',
   'status.chat_npc': 'Chatting',
 
-  // ── Местоположение агента (ТЗ-16, HUD + профиль) ──
+  // ── Agent location (TZ-16, HUD + profile) ──
   'loc.district': 'On the street',
   'loc.office': 'In the office',
   'loc.cafe': 'In the café',
@@ -116,14 +116,14 @@ export const en = {
   'hud.keysHint': 'API keys — add once, all agents use them',
   'clock.tooltip': 'Game time: 1 minute = 1 hour',
 
-  // ── Профиль агента ──
+  // ── Agent profile ──
   'profile.personality': 'Personality',
   'profile.noPersonality': 'No personality set.',
   'profile.chat': '💬 Chat',
   'profile.sendTask': '⚡ Send Task',
   'profile.change': 'Change',
 
-  // ── Настройки модели/ключа ──
+  // ── Model/key settings ──
   'model.provider': 'Provider',
   'model.model': 'Model',
   'model.ollamaUrl': 'Ollama URL',
@@ -146,7 +146,7 @@ export const en = {
   'model.catalogFailed': 'Couldn’t load the list — type the model name manually',
   'model.customModelPlaceholder': 'Model name, e.g. llama-3.3-70b',
 
-  // ── Панель ключей (ТЗ-14) ──
+  // ── Keys panel (TZ-14) ──
   'keysPanel.title': '🔑 Your API keys',
   'keysPanel.intro':
     'Add a key once — every new agent uses it. Encrypted on the server, never logged, never shown back.',
@@ -167,7 +167,7 @@ export const en = {
   'keysPanel.footNote':
     'An agent can still have its own key — it wins over the saved one.',
 
-  // ── Собрание ──
+  // ── Meeting ──
   'meeting.title': 'Team Meeting',
   'meeting.subtitle': 'All {n} agents work on one task simultaneously',
   'meeting.placeholder':
@@ -178,7 +178,7 @@ export const en = {
   'meeting.thinking': 'Thinking',
   'meeting.noAgents': 'Create at least one agent to start a meeting',
 
-  // ── Ошибки чата: клиент маппит серверный code → текст (сервер НЕ переводим) ──
+  // ── Chat errors: the client maps the server code → text (we do NOT translate the server) ──
   'error.invalid_key': 'Key didn’t work. Check it in the agent’s settings',
   'error.rate_limited': 'The provider asks to wait. Try again in a minute',
   'error.no_credits': 'Your key ran out of credits',
@@ -190,7 +190,7 @@ export const en = {
   'error.too_many_requests': 'Too many requests. Wait a minute',
   'error.generic': 'Something went wrong. Try again',
 
-  // ── Phaser-лоадер ──
+  // ── Phaser loader ──
   'game.initializing': 'Initializing...',
   'game.loading': 'Loading {pct}%',
 };

@@ -377,7 +377,7 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
   } from '@botville/shared';
   ```
 
-  then append this block at the end of the "Местоположения агентов (ТЗ-16)" section, directly after `fetchAgentLocations` (which stays exactly as it is — it IS the fixture-mode path) — FULL code of the added block:
+  then append this block at the end of the "Agent locations (TZ-16)" section, directly after `fetchAgentLocations` (which stays exactly as it is — it IS the fixture-mode path) — FULL code of the added block:
 
   ```ts
   // ── Integrated mode (world addendum II.1/II.2): the platform presence seam ──
@@ -518,7 +518,7 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
   import { LOCATION_POLL_MS } from '../game/config.js';
   import type { Agent, AgentLocation } from '@botville/shared';
 
-  /** Что сцена знает об агенте; location решает, рисовать ли его здесь (ТЗ-16). */
+  /** What a scene knows about an agent; location decides whether to draw it here (TZ-16). */
   export interface SyncedAgent {
     id: string;
     name: string;
@@ -528,7 +528,7 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
     activity?: string;
   }
 
-  /** Сцены, в которые синкается список агентов (район и все интерьеры). */
+  /** Scenes the agent list is synced into (the district and all interiors). */
   interface AgentSyncScene extends Phaser.Scene {
     syncAgents(list: SyncedAgent[]): void;
   }
@@ -559,7 +559,7 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
       fetchAgents();
     }, [fetchAgents]);
 
-    // Синк в активную сцену; ретраи, пока она не зарегистрируется
+    // Sync into the active scene; retries until it registers
     const syncToScene = useCallback((retries = 30) => {
       if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
       const scene = sceneRegistry.get(sceneKeyRef.current);
@@ -578,9 +578,9 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
       }
     }, []);
 
-    // ТЗ-16 + addendum II.2: поллинг «кто где» + игровой час. Integrated —
-    // платформа; fixture — свой сервер. Сервер (какой бы ни был) — правда о
-    // месте, клиент лишь дорисовывает.
+    // TZ-16 + addendum II.2: "who is where" polling + game hour. Integrated —
+    // the platform; fixture — this repo's own server. Whichever server it is,
+    // it is the source of truth for location; the client only renders.
     useEffect(() => {
       let stopped = false;
       const poll = async () => {
@@ -615,12 +615,12 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
       };
     }, [agents, syncToScene]);
 
-    // Смена сцены — синк агентов в новую сцену
+    // Scene change — sync agents into the new scene
     useEffect(() => {
       const handler = ({ scene }: { scene: string }) => {
         setScene(scene);
         sceneKeyRef.current = scene;
-        // небольшая пауза, чтобы Phaser дорегистрировал новую сцену
+        // a short pause so Phaser finishes registering the new scene
         setTimeout(() => syncToScene(), 100);
       };
       GameBridge.on('scene:changed', handler);
@@ -694,15 +694,15 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 
   ```ts
   /**
-   * Addendum O-2 #1 «where + what»: подпись занятия агента ("sleeping",
-   * "working") — грубый ярлык из слота распорядка, приходит в AgentPresence
-   * только в integrated-режиме. Чистая функция: спрайту остаётся рисовать.
+   * Addendum O-2 #1 "where + what": the agent's activity caption ("sleeping",
+   * "working") — a coarse label from the routine slot, arriving in AgentPresence
+   * only in integrated mode. Pure function: the sprite is left with just drawing.
    */
 
   /** Cap for the on-sprite activity label, characters (incl. the ellipsis). */
   export const ACTIVITY_LABEL_MAX_CHARS = 24;
 
-  /** null — не рисовать плашку вовсе (клиент не рисует то, чего платформа не утверждала). */
+  /** null — draw no plate at all (the client renders nothing the platform did not assert). */
   export function formatActivityLabel(activity: string | undefined): string | null {
     const trimmed = activity?.trim();
     if (!trimmed) return null;
@@ -724,14 +724,14 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   2. Add the field, directly under `private nameLabel: Phaser.GameObjects.Text;`:
 
      ```ts
-     /** Addendum O-2 #1: плашка занятия под ногами; null — платформа ничего не утверждала. */
+     /** Addendum O-2 #1: activity plate under the feet; null — the platform asserted nothing. */
      private activityLabel: Phaser.GameObjects.Text | null = null;
      ```
 
   3. Add the method, directly after `standUp()`:
 
      ```ts
-     /** Addendum O-2 #1 «where + what»: показать/обновить/снять подпись занятия. */
+     /** Addendum O-2 #1 "where + what": show/update/remove the activity caption. */
      setActivity(activity?: string) {
        const text = formatActivityLabel(activity);
        if (text === null) {
@@ -740,7 +740,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
          return;
        }
        if (!this.activityLabel) {
-         // Тот же рецепт, что nameLabel: вне контейнера, поверх props-above.
+         // Same recipe as nameLabel: outside the container, above props-above.
          this.activityLabel = this.scene.add.text(this.x, this.y + 3, text, {
            fontSize: '6px',
            color: UI.textOnDark,
@@ -898,9 +898,9 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 - [ ] Implement — append to `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.ts` (after the integrated-mode block from Task 2) — FULL code of the addition:
 
   ```ts
-  // ── Заметки площадки (addendum II.4 botville_venue_notes; render per II.6) ──
-  // Публичное чтение с платформы; шести venueId клиента соответствуют интерьеры.
-  // Толерантный парсер: любой сбой сети/формы — просто пустой список.
+  // ── Venue notes (addendum II.4 botville_venue_notes; render per II.6) ──
+  // Public reads from the platform; the client's six venueIds map to the interiors.
+  // Tolerant parser: any network/shape failure just yields an empty list.
 
   export interface VenueNote {
     id: string;
@@ -908,7 +908,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
     createdAt: string; // ISO-8601, per the platform's VenueNoteSchema
   }
 
-  /** Показываем не больше этого числа заметок, свежие сверху. */
+  /** Show at most this many notes, newest first. */
   export const VENUE_NOTES_MAX_SHOWN = 10;
 
   export async function fetchVenueNotes(venueId: string): Promise<VenueNote[]> {
@@ -934,7 +934,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
         createdAt: typeof entry.createdAt === 'string' ? entry.createdAt : '',
       });
     }
-    // ISO-8601 сортируется лексикографически — свежие сверху без Date.parse.
+    // ISO-8601 sorts lexicographically — newest first without Date.parse.
     return notes
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
       .slice(0, VENUE_NOTES_MAX_SHOWN);
@@ -953,9 +953,9 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   import { useT } from '../../i18n/index.js';
   import styles from './VenueNotesPanel.module.css';
 
-  // Addendum II.6 «render notes»: минимальный оверлей заметок площадки.
-  // Монтируется из App.tsx ТОЛЬКО в integrated-режиме; в fixture его нет вовсе.
-  // Сцена → venueId: ключи карт в INTERIORS и есть venueId интерьеров.
+  // Addendum II.6 "render notes": a minimal venue-notes overlay.
+  // Mounted from App.tsx ONLY in integrated mode; in fixture mode it does not exist at all.
+  // Scene → venueId: the map keys in INTERIORS are exactly the interiors' venueIds.
 
   function venueIdOf(scene: string): string | null {
     return (INTERIORS as Record<string, string>)[scene] ?? null;
@@ -996,7 +996,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 - [ ] Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/ui/VenueNotes/VenueNotesPanel.module.css` — FULL code (tokens from `ui/theme.css`, same family as `KeysPanel.module.css`):
 
   ```css
-  /* Addendum II.6: плавающая карточка заметок площадки (integrated-режим). */
+  /* Addendum II.6: floating venue-notes card (integrated mode). */
 
   .panel {
     position: fixed; left: 12px; bottom: 12px; z-index: 250; pointer-events: all;
@@ -1024,7 +1024,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   In `/Users/home/aisocialnetwork-BotVille/packages/client/src/i18n/ru.ts`, before the closing `};` add:
 
   ```ts
-  // Addendum II.6: заметки площадки (только integrated-режим)
+  // Addendum II.6: venue notes (integrated mode only)
   'venueNotes.title': '📝 Заметки здесь',
   'venueNotes.empty': 'Заметок пока нет.',
   ```
@@ -1062,7 +1062,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 
 **Steps:**
 
-- [ ] In `/Users/home/aisocialnetwork-BotVille/packages/server/src/world/agentLife.ts`, extend the module doc comment: after the line `* ходит внутри локации — косметика клиента.` (end of the first paragraph), insert:
+- [ ] In `/Users/home/aisocialnetwork-BotVille/packages/server/src/world/agentLife.ts`, extend the module doc comment: after the line `* agent looks and walks within a location is client-side cosmetics.` (end of the first paragraph), insert:
 
   ```ts
    *

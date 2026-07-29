@@ -158,14 +158,14 @@ export const VENUES: VenueDescriptor[] = ${JSON.stringify(venues, null, 2)};
 
 ```ts
 /**
- * Единственный рантайм-авторитет: какие места существуют.
+ * The single runtime authority on which venues exist.
  *
- * get() для неизвестного id возвращает undefined — это путь `unknown`
- * (спец §8.1), а не ошибка. Именно он позволяет платформе добавлять,
- * переименовывать и убирать места, не заставляя BotVille врать о том,
- * где находится агент.
+ * get() returns undefined for an unknown id — that is the `unknown` path
+ * (spec §8.1), not an error. It is exactly what lets the platform add,
+ * rename and retire venues without forcing BotVille to lie about where
+ * an agent is.
  *
- * Не импортировать Phaser: модуль тестируется под node --test.
+ * Do not import Phaser: the module is tested under node --test.
  */
 import type { PublishedVenue, VenueDescriptor } from '@botville/shared';
 import { VENUES } from './venues.generated.js';
@@ -191,8 +191,8 @@ export const venueRegistry = {
 };
 
 /**
- * Место -> ключ сцены Phaser. Район рисуется своей сценой (машины, глоу,
- * день/ночь); все интерьеры — одной параметризованной VenueScene.
+ * Venue -> Phaser scene key. The district is drawn by its own scene (cars,
+ * glow, day/night); all the interiors share one parameterised VenueScene.
  */
 export function sceneKeyFor(venueId: string): string {
   return venueId === 'district' ? 'DistrictScene' : `VenueScene:${venueId}`;
@@ -231,9 +231,10 @@ Replace `InteriorScene.ts:54-61`:
 
 ```ts
   /**
-   * Явное поле, не parameter property: `node --test` стирает типы, но не
-   * умеет генерировать присваивание (ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX).
-   * Здесь Phaser и тестов под node нет — но отсюда конструктор копируют.
+   * An explicit field, not a parameter property: `node --test` strips types
+   * but cannot generate the assignment (ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX).
+   * There is no Phaser and no node testing here — but this constructor is
+   * what gets copied from.
    */
   private readonly venue: VenueDescriptor;
 
@@ -242,9 +243,9 @@ Replace `InteriorScene.ts:54-61`:
     this.venue = venue;
   }
 
-  /** Ключ карты = id места; .tmj печёт scripts/world-bake.mjs. */
+  /** Map key = venue id; the .tmj is baked by scripts/world-bake.mjs. */
   private get mapKey() { return this.venue.id; }
-  /** Локация этого места в терминах сервера: кто здесь — тех и рисуем. */
+  /** This venue's location in server terms: whoever is here is whom we draw. */
   private get locationId() { return this.venue.id; }
   private get sceneKey() { return sceneKeyFor(this.venue.id); }
 ```
@@ -259,10 +260,10 @@ import type { VenueDescriptor } from '@botville/shared';
 
 - [ ] **Step 2: Follow the door property rename**
 
-`VenueBaker` (Task 15) writes `targetVenue`, not `targetScene`. Replace `InteriorScene.ts:102-112` (the range starts at the `// выход:` comment on 102 — the snippet below includes it, so leaving 102 in place would duplicate it):
+`VenueBaker` (Task 15) writes `targetVenue`, not `targetScene`. Replace `InteriorScene.ts:102-112` (the range starts at the `// exit:` comment on 102 — the snippet below includes it, so leaving 102 in place would duplicate it):
 
 ```ts
-    // выход: зона над ковриком, hover подсвечивает коврик
+    // exit: a zone over the doormat, hover highlights the doormat
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
       if (typeof p.targetVenue !== 'string') continue;
@@ -280,7 +281,7 @@ import type { VenueDescriptor } from '@botville/shared';
 Rename `export class InteriorScene` to `export class VenueScene`, and keep the file name for now. At the bottom of the file add, so nothing breaks mid-refactor:
 
 ```ts
-/** @deprecated имя оставлено на время миграции; удаляется в задаче 24. */
+/** @deprecated name kept for the duration of the migration; removed in Task 24. */
 export const InteriorScene = VenueScene;
 ```
 
@@ -289,8 +290,8 @@ export const InteriorScene = VenueScene;
 `InteriorScene.ts:222` reads `a.location === this.locationId`. `locationId` is now `venue.id`, and both `AGENT_LOCATIONS` (`Agent.ts:17`) and the venue ids use the same five strings plus `farm`. Leave the comparison as-is; only its source changed. Add above it:
 
 ```ts
-    // ТЗ-16 + spec §8.1: id места == серверная локация. Неизвестный id
-    // сюда просто не доходит — его отсеивает PresenceModel (задача 34).
+    // TZ-16 + spec §8.1: venue id == server location. An unknown id simply
+    // never reaches this point — PresenceModel filters it out (Task 34).
 ```
 
 - [ ] **Step 5: Typecheck**
@@ -373,7 +374,7 @@ In `scripts/world-bake.mjs`, after the `venues.generated.ts` write:
 export const DISTRICT_PROPS: string[] = ${JSON.stringify(Object.keys(contract.props.district))};
 export const INTERIOR_PROPS: string[] = ${JSON.stringify(Object.keys(contract.props.interior))};
 export const ANIMATED_OBJECT_KEYS: string[] = ${JSON.stringify(Object.keys(contract.animatedObjects))};
-/** Пары кадров иконок статусов. Специфичны для пака — живут в адаптере (I-1). */
+/** Frame pairs for the status icons. Pack-specific — they live in the adapter (I-1). */
 export const EMOTE_FRAMES: Record<string, [number, number]> = ${JSON.stringify(
     Object.fromEntries(contract.emotes.icons.statuses.map(s => [s, adapter.emoteFrames[s]])), null, 2)};
 `;
@@ -409,7 +410,7 @@ test('the committed asset index was generated from a real pack, not the fixture'
 Replace `PreloaderScene.ts:39-69` with:
 
 ```ts
-    // Карты и атласы всех мест (генерирует scripts/world-bake.mjs)
+    // Maps and atlases for every venue (generated by scripts/world-bake.mjs)
     for (const v of venueRegistry.all()) {
       this.load.tilemapTiledJSON(v.id, `assets/tilemaps/${v.id}.tmj`);
     }
@@ -417,11 +418,11 @@ Replace `PreloaderScene.ts:39-69` with:
       this.load.image(atlasId, `assets/tilesets/pack/${atlasId}.png`);
     }
 
-    // Пропсы: имя = ключ текстуры = имя файла
+    // Props: name = texture key = file name
     for (const key of DISTRICT_PROPS) this.load.image(key, `assets/sprites/pack/district/${key}.png`);
     for (const key of INTERIOR_PROPS) this.load.image(key, `assets/sprites/pack/interior/${key}.png`);
 
-    // Спрайтшиты агентов (люди + животные) — размеры кадров из манифеста
+    // Agent spritesheets (humans + animals) — frame sizes come from the manifest
     for (const v of AVATAR_VARIANTS) {
       this.load.spritesheet(v.textureKey, v.file, {
         frameWidth: v.frameWidth,
@@ -448,8 +449,8 @@ import { DISTRICT_PROPS, INTERIOR_PROPS, EMOTE_FRAMES } from '../assets.generate
 And replace the `byStatus` loop at lines 122-124:
 
 ```ts
-    // Иконки статусов — двухкадровая пульсация. Индексы кадров приходят
-    // из адаптера пака через assets.generated.ts, не из кода (I-1).
+    // Status icons — a two-frame pulse. The frame indices come from the pack
+    // adapter via assets.generated.ts, not from code (I-1).
     for (const [statusName, pair] of Object.entries(EMOTE_FRAMES)) {
       mk(`emote-icon-${statusName}`, EMOTES.icons.textureKey, [...pair], EMOTES.icons.frameRate);
     }
@@ -461,8 +462,8 @@ Replace `assetManifest.ts:211-218` (the `byStatus` object) with:
 
 ```ts
     /**
-     * Пары кадров по статусам агента специфичны для ПАКА и живут в
-     * sources/<pack>.json (I-1). Читаются из assets.generated.ts.
+     * The frame pairs per agent status are PACK-specific and live in
+     * sources/<pack>.json (I-1). They are read from assets.generated.ts.
      */
 ```
 
@@ -482,7 +483,7 @@ import { venueRegistry } from './venueRegistry.js';
 ```
 
 ```ts
-    // Сцены перечисляются по реестру мест — добавление места кода не требует
+    // Scenes are enumerated from the venue registry — adding a venue needs no code
     scene: [
       PreloaderScene,
       DistrictScene,
@@ -544,9 +545,9 @@ Replace the `LOCATION_SCENES` block with a pointer, so the next reader knows whe
 
 ```ts
 /**
- * ТЗ-16: локация (правда сервера) -> сцена, которая её рисует.
- * Теперь это реестр мест: см. sceneKeyFor() в venueRegistry.ts.
- * 'farm' — загон/двор фермы, живёт на карте района.
+ * TZ-16: location (the server's truth) -> the scene that draws it.
+ * This is now the venue registry: see sceneKeyFor() in venueRegistry.ts.
+ * 'farm' — the farm pen/yard, which lives on the district map.
  */
 ```
 
@@ -555,7 +556,7 @@ Replace the `LOCATION_SCENES` block with a pointer, so the next reader knows whe
 Anywhere that read `LOCATION_SCENES[loc]`, call `sceneKeyFor(loc)` instead, importing from `./venueRegistry.js`. `'farm'` has no descriptor, so guard it explicitly where it appears:
 
 ```ts
-// ферма рисуется на карте района, отдельного места у неё нет
+// the farm is drawn on the district map; it has no venue of its own
 const sceneFor = (loc: AgentLocation) => (loc === 'farm' ? 'DistrictScene' : sceneKeyFor(loc));
 ```
 
@@ -569,7 +570,7 @@ The stray `import Phaser from 'phaser';` at line 25 sits *below* its use. Move i
 import Phaser from 'phaser';
 import type { DistrictScene } from './scenes/DistrictScene.js';
 
-/** Ссылки на активные сцены, чтобы React/store могли вызывать их методы. */
+/** References to the live scenes, so React/the store can call their methods. */
 class SceneRegistry {
   private scenes: Map<string, Phaser.Scene> = new Map();
 
@@ -687,17 +688,17 @@ Expected: FAIL — `Cannot find module '.../PresenceModel.ts'`.
 
 ```ts
 /**
- * Присутствие: РОВНО три состояния (I-3).
+ * Presence: EXACTLY three states (I-3).
  *
- *   venueId есть и известен  -> somewhere: рисуем в этом месте
- *   venueId === null         -> absent:    не рисуем, в HUD «нет на месте»
- *   venueId есть, но НЕ известен -> unknown: не рисуем нигде, в HUD «неизвестно»
+ *   venueId present and known    -> somewhere: draw in that venue
+ *   venueId === null             -> absent:    don't draw, HUD shows "not here"
+ *   venueId present but NOT known -> unknown:  draw nowhere, HUD shows "unknown"
  *
- * Третья строка — то, что позволяет платформе добавлять, переименовывать и
- * убирать места в любой момент, а BotVille при этом не врёт о том, где
- * находится агент. Никакого четвёртого состояния клиент не придумывает.
+ * That third line is what lets the platform add, rename and remove venues at any
+ * time while BotVille never lies about where an agent is. The client does not
+ * invent any fourth state.
  *
- * Не импортирует Phaser: тестируется под node --test.
+ * Does not import Phaser: tested under node --test.
  */
 import type { AgentPresence, PresenceState } from '@botville/shared';
 
@@ -710,14 +711,14 @@ export function resolvePresence(p: AgentPresence, registry: VenueLookup): Presen
 }
 
 export interface PresencePartition {
-  /** место -> кто в нём */
+  /** venue -> who is in it */
   somewhere: Map<string, AgentPresence[]>;
   absent: AgentPresence[];
   unknown: AgentPresence[];
 }
 
 export class PresenceModel {
-  /** Явное поле: parameter property не переживает strip-only type stripping. */
+  /** An explicit field: a parameter property does not survive strip-only type stripping. */
   private readonly registry: VenueLookup;
 
   constructor(registry: VenueLookup) {
@@ -728,7 +729,7 @@ export class PresenceModel {
     return resolvePresence(p, this.registry);
   }
 
-  /** Разложить ростер по состояниям. Никто не теряется. */
+  /** Sort the roster into states. Nobody gets lost. */
   partition(roster: AgentPresence[]): PresencePartition {
     const out: PresencePartition = { somewhere: new Map(), absent: [], unknown: [] };
     for (const p of roster) {
@@ -823,9 +824,9 @@ Expected: FAIL — `ZOOM_LADDER` is not exported from `config.ts`.
 
 ```ts
 /**
- * Лестница зума: только чистые кратности. Нецелый зум на 16px-арте даёт
- * мерцание и неровный размер пикселя (спец §10.1) — старый шаг 1.3 от
- * initialZoom 1.8 попадал ровно в это. Управление ходит по ступеням.
+ * Zoom ladder: clean multiples only. Non-integer zoom on 16px art produces
+ * shimmer and uneven pixel size (spec §10.1) — the old step of 1.3 from
+ * initialZoom 1.8 landed exactly there. The controls move rung by rung.
  */
 export const ZOOM_LADDER: readonly number[] = [0.5, 1, 2, 3, 4] as const;
 
@@ -835,12 +836,12 @@ export const CAMERA = {
   maxZoom: ZOOM_LADDER[ZOOM_LADDER.length - 1],
 } as const;
 
-/** Ближайшая ступень лестницы — для пинча и любого произвольного зума. */
+/** The nearest rung of the ladder — for pinch and any arbitrary zoom. */
 export function snapZoom(z: number): number {
   return ZOOM_LADDER.reduce((best, r) => (Math.abs(r - z) < Math.abs(best - z) ? r : best), ZOOM_LADDER[0]);
 }
 
-/** Ровно одна ступень вверх (+1) или вниз (-1), с зажимом на концах. */
+/** Exactly one rung up (+1) or down (-1), clamped at the ends. */
 export function nextZoom(current: number, direction: 1 | -1): number {
   const i = ZOOM_LADDER.indexOf(snapZoom(current));
   return ZOOM_LADDER[Math.min(ZOOM_LADDER.length - 1, Math.max(0, i + direction))];
@@ -1098,21 +1099,21 @@ Expected: FAIL — `Cannot find module '.../venueSlots.ts'`.
 
 ```ts
 /**
- * Детерминированное распределение агентов по местам внутри места.
+ * Deterministic distribution of agents across the slots inside a venue.
  *
- * Шесть мест и город на 150 агентов — это ~25 агентов на комнату 20x15 с
- * 4-9 стульями (спец §10.3). Раньше syncAgents раскладывал новичков по трём
- * колонкам от точки спавна и назначал первый свободный стул — то есть
- * зависел от порядка прихода: один и тот же агент при перезагрузке
- * оказывался в разных местах.
+ * Six venues and a town of 150 agents means ~25 agents per 20x15 room with
+ * 4-9 chairs (spec §10.3). Previously syncAgents laid newcomers out in three
+ * columns from the spawn point and assigned the first free chair — i.e. it
+ * depended on arrival order: the same agent ended up in different places
+ * after a reload.
  *
- * Здесь порядок не участвует: место выводится из agentId и id места.
- * Одинаковый ростер -> одинаковая расстановка, всегда.
+ * Here order plays no part: the slot is derived from the agentId and the venue id.
+ * The same roster -> the same arrangement, always.
  *
- * В scope: capacity и раскладка. НЕ в scope: UX переполнения — его надо
- * оценивать на населённом мире, придумывать сейчас было бы гаданием (R-3).
+ * In scope: capacity and layout. NOT in scope: the over-capacity UX — that has to
+ * be judged on a populated world; inventing it now would be guesswork (R-3).
  *
- * Не импортирует Phaser: тестируется под node --test.
+ * Does not import Phaser: tested under node --test.
  */
 import { hashString } from '@botville/shared/hash.mjs';
 import type { VenueDescriptor } from '@botville/shared';
@@ -1121,7 +1122,7 @@ const T = 16;
 
 export interface Slot { x: number; y: number; seatIndex: number | null }
 
-/** Прямоугольник футпринта в пикселях — как его хранит слой collision в .tmj. */
+/** A footprint rectangle in pixels — as the collision layer stores it in the .tmj. */
 export interface FootprintRect { x: number; y: number; w: number; h: number }
 
 export function isOverCapacity(venue: VenueDescriptor, count: number): boolean {
@@ -1129,10 +1130,10 @@ export function isOverCapacity(venue: VenueDescriptor, count: number): boolean {
 }
 
 /**
- * Наибольший шаг, взаимно простой с числом клеток. Гарантирует, что
- * rank -> cell — БИЕКЦИЯ на первых N рангах: двое стоящих агентов не могут
- * попасть в одну клетку. Прежний вариант подмешивал в cell хеш агента, и
- * коллизии становились возможны — тест мог падать через раз.
+ * The largest stride coprime with the number of cells. This guarantees that
+ * rank -> cell is a BIJECTION over the first N ranks: two standing agents cannot
+ * land in the same cell. The previous version mixed the agent's hash into cell,
+ * which made collisions possible — the test could fail intermittently.
  */
 function strideFor(cells: number): number {
   const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
@@ -1141,17 +1142,17 @@ function strideFor(cells: number): number {
 }
 
 /**
- * Клетки СВОБОДНОГО пола (F-14): сетка между стенами МИНУС клетки, которых
- * касается футпринт мебели. Bake выводит слой collision ровно из этих
- * футпринтов (Plan 2 Task 15) — система знает, какие клетки заняты, и
- * раскладка обязана этим знанием пользоваться, иначе агенты стоят в столах.
+ * FREE floor cells (F-14): the grid between the walls MINUS the cells touched by
+ * a furniture footprint. The bake derives the collision layer from exactly these
+ * footprints (Plan 2 Task 15) — the system knows which cells are occupied, and
+ * the layout is obliged to use that knowledge, otherwise agents stand inside tables.
  *
- * Структурные прямоугольники стен из того же слоя не пересекают сетку
- * (она отступает от стен), так что сцена может передавать слой целиком.
+ * Structural wall rectangles from the same layer do not intersect the grid
+ * (it is inset from the walls), so the scene can pass the whole layer through.
  */
 function freeFloorCells(venue: VenueDescriptor, footprints: FootprintRect[]): { cx: number; cy: number }[] {
   const [W, H] = venue.sizeTiles;
-  // пол: от 2-го ряда (под стенами) до предпоследнего, без крайних колонок
+  // floor: from the 2nd row (below the walls) to the second-to-last, excluding the edge columns
   const cells: { cx: number; cy: number }[] = [];
   for (let cy = 3; cy < H - 2; cy++) {
     for (let cx = 2; cx < W - 2; cx++) {
@@ -1165,13 +1166,14 @@ function freeFloorCells(venue: VenueDescriptor, footprints: FootprintRect[]): { 
 }
 
 /**
- * Позиция стоящего агента: клетка свободного пола, выведенная из ранга.
+ * A standing agent's position: a free-floor cell derived from the rank.
  *
- * Индивидуальность даёт не хеш ЗДЕСЬ, а порядок в assignSlots: ранг агента
- * выводится из его seed. Поэтому раскладка одновременно детерминированная,
- * зависящая от агента и БЕЗ коллизий, пока стоящих меньше, чем клеток.
- * Биекция ранг -> клетка живёт на СВОБОДНЫХ клетках: cells — это их число,
- * и аргумент из strideFor переносится без изменений (F-14).
+ * Individuality comes not from a hash HERE but from the ordering in assignSlots:
+ * an agent's rank is derived from its seed. That makes the layout simultaneously
+ * deterministic, agent-dependent and collision-FREE as long as there are fewer
+ * standing agents than cells. The rank -> cell bijection operates on the FREE
+ * cells: cells is their count, and the argument from strideFor carries over
+ * unchanged (F-14).
  */
 export function standingSlot(
   venue: VenueDescriptor,
@@ -1180,30 +1182,30 @@ export function standingSlot(
   footprints: FootprintRect[] = [],
 ): { x: number; y: number } {
   let free = freeFloorCells(venue, footprints);
-  // Патология «мебель покрыла весь пол»: деградируем к сырой сетке —
-  // стоять в столе хуже, чем не стоять нигде, но упасть нельзя.
+  // The pathological "furniture covered the whole floor" case: degrade to the raw
+  // grid — standing inside a table is worse than standing nowhere, but crashing is not an option.
   if (free.length === 0) free = freeFloorCells(venue, []);
   const cells = free.length;
 
-  // Сдвиг — свойство МЕСТА, не агента: разные комнаты заполняются по-разному,
-  // но внутри комнаты отображение остаётся биекцией.
+  // The offset is a property of the VENUE, not the agent: different rooms fill
+  // differently, but within a room the mapping stays a bijection.
   const offset = hashString(venue.id, 'slot:offset') % cells;
   const { cx, cy } = free[(rank * strideFor(cells) + offset) % cells];
   return { x: cx * T + T / 2, y: cy * T + T / 2 };
 }
 
 /**
- * Раздать места всему ростеру за один проход.
- * Стулья заполняются раньше, чем кто-то встаёт; порядок ростера не влияет.
- * footprints — слой collision из запечённой карты: стоящие агенты обходят
- * мебель (F-14).
+ * Hand out slots to the whole roster in a single pass.
+ * Chairs fill up before anyone stands; the roster's order has no effect.
+ * footprints is the collision layer from the baked map: standing agents route
+ * around furniture (F-14).
  */
 export function assignSlots(
   venue: VenueDescriptor,
   agentIds: string[],
   footprints: FootprintRect[] = [],
 ): Map<string, Slot> {
-  // стабильный порядок независимо от того, в каком порядке пришёл ростер
+  // a stable order regardless of the order the roster arrived in
   const ordered = [...agentIds].sort((a, b) => {
     const ha = hashString(a, `order:${venue.id}`);
     const hb = hashString(b, `order:${venue.id}`);
@@ -1229,8 +1231,8 @@ export function assignSlots(
 First, capture the derived footprints. In `create()`, immediately after the seats read (the block ending at `InteriorScene.ts:100` with `});`), add a field read from the baked map:
 
 ```ts
-    // F-14: стоящие агенты обходят мебель. Слой collision выведен при
-    // запекании ровно из футпринтов (Plan 2 Task 15) — читаем его из карты.
+    // F-14: standing agents route around furniture. The collision layer was
+    // derived at bake time from exactly those footprints (Plan 2 Task 15) — read it from the map.
     this.furnitureFootprints = (map.getObjectLayer('collision')?.objects ?? [])
       .map(o => ({ x: o.x ?? 0, y: o.y ?? 0, w: o.width ?? 0, h: o.height ?? 0 }));
 ```
@@ -1238,19 +1240,19 @@ First, capture the derived footprints. In `create()`, immediately after the seat
 with the field declared beside the other scene fields:
 
 ```ts
-  /** Прямоугольники слоя collision — вход F-14 для venueSlots. */
+  /** The collision layer's rectangles — the F-14 input for venueSlots. */
   private furnitureFootprints: FootprintRect[] = [];
 ```
 
 Then replace `InteriorScene.ts:232-251`:
 
 ```ts
-    // Детерминированная раскладка: стулья заполняются раньше стоящих, и
-    // один и тот же агент при перезагрузке садится на то же место.
-    // Футпринты мебели исключают занятые клетки (F-14).
+    // Deterministic layout: chairs fill before anyone stands, and the same agent
+    // sits in the same place after a reload.
+    // Furniture footprints exclude the occupied cells (F-14).
     const slots = assignSlots(this.venue, agentList.map(a => a.id), this.furnitureFootprints);
     if (isOverCapacity(this.venue, agentList.length)) {
-      // R-3: UX переполнения отложен; факт фиксируем, чтобы он был виден
+      // R-3: the over-capacity UX is deferred; we record the fact so it stays visible
       console.debug(`[${this.venue.id}] over capacity: ${agentList.length}/${this.venue.capacity}`);
     }
 
@@ -1260,7 +1262,7 @@ Then replace `InteriorScene.ts:232-251`:
       const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, this.spawnPoint.x, this.spawnPoint.y);
       this.agentSprites.set(a.id, sprite);
 
-      // животные на кровати не забираются
+      // animals do not climb onto beds
       const isAnimal = getVariant(a.avatarVariant).kind === 'animal';
       const seat = slot.seatIndex !== null ? this.seats[slot.seatIndex] : undefined;
       const seatAllowed = seat && !(isAnimal && seat.kind === 'bed');
@@ -1272,9 +1274,9 @@ Then replace `InteriorScene.ts:232-251`:
         return;
       }
 
-      // Место есть, но оно запрещено (животное + кровать) — slot.x/y указывают
-      // на ТО ЖЕ сиденье, поэтому идти туда нельзя: получится ровно то, что
-      // мы только что запретили. Отправляем на свободный пол по тому же рангу.
+      // There is a slot, but it is forbidden (animal + bed) — slot.x/y point at
+      // the SAME seat, so walking there is not allowed: it would produce exactly
+      // what we just forbade. Send them to free floor at the same rank.
       const rank = [...slots.keys()].indexOf(a.id);
       const floor = seat ? standingSlot(this.venue, a.id, rank, this.furnitureFootprints) : slot;
       sprite.walkTo(floor.x, floor.y);

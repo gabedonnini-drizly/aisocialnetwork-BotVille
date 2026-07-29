@@ -191,7 +191,7 @@ npm run golden:capture
 npm run dev
 ```
 
-Expected: `sync-assets: скопировано 90/90` with no `ОТСУТСТВУЮТ` block — the script's 61 hardcoded `[source, destination]` pair literals expand to **90 files at runtime** (39 `FILES` + 22 `PROPS` + 8 looped fence parts + 9 office singles + 12 premade character sheets); `district.tmj: 48x46, атлас 23 тайлов, объектов: 272`; four interior lines; then `golden baseline: 121 images (<m> generated), 5 tilemaps`. The client at http://localhost:5173 renders the district with buildings, trees, lamps and agents — no missing-texture placeholders.
+Expected: `sync-assets: copied 90/90` with no `MISSING` block — the script's 61 hardcoded `[source, destination]` pair literals expand to **90 files at runtime** (39 `FILES` + 22 `PROPS` + 8 looped fence parts + 9 office singles + 12 premade character sheets); `district.tmj: 48x46, atlas of 23 tiles, objects: 272`; four interior lines; then `golden baseline: 121 images (<m> generated), 5 tilemaps`. The client at http://localhost:5173 renders the district with buildings, trees, lamps and agents — no missing-texture placeholders.
 
 If `sync-assets.mjs` reports missing files, its path does not match your unpack layout. Where to fix it depends on where you are in the sequence: **before Task 19a**, the paths live in `scripts/sync-assets.mjs`'s explicit list; **after Task 19a**, the list is derived from the contract and the paths live in the `files` block of `sources/limezu.json`. Record the correction in `docs/ASSETS.md` either way.
 
@@ -249,7 +249,7 @@ Go through both sheets once and look for four things:
    golden gate cannot catch, because the old scripts had the same wrong crop.
 2. **A sprite that vanishes at night.** Dark props on dark ground stop existing
    under the tint. Spec §10.2 makes legibility a requirement, not a preference.
-3. **A sprite that fights its floor** — the ТЗ-08 note on `armchair_grey_r`
+3. **A sprite that fights its floor** — the TZ-08 note on `armchair_grey_r`
    records exactly this ("read as a concrete slab on warm parquet"), and it was
    found by accident. Now it is findable on purpose.
 4. **Anything hovering `[UNPINNED]`** after Step 5. There should be none.
@@ -1099,8 +1099,8 @@ Expected: FAIL — `ENOENT … ArtCredit.tsx`.
 `packages/client/src/ui/ArtCredit.tsx`:
 
 ```tsx
-// Лицензии LimeZu (Modern Interiors, Modern UI) ТРЕБУЮТ указания авторства.
-// Эта строка — условие лицензии, а не украшение: не удалять при редизайне.
+// The LimeZu licences (Modern Interiors, Modern UI) REQUIRE attribution.
+// This line is a licence condition, not decoration: do not remove during a redesign.
 export function ArtCredit() {
   return (
     <a

@@ -30,7 +30,7 @@ export function HUD() {
   const statusLabel = (status: string) =>
     STATUS_KEYS[status] ? t(STATUS_KEYS[status]) : status;
 
-  // ТЗ-16: место агента в HUD; ночью в дорме — «Спит (общежитие)»
+  // TZ-16: the agent's location in the HUD; at night in the dorm — "Sleeping (dorm)"
   const night = isSleepTime(useWorldStore(s => s.timeOfDay));
   const locationLabel = (location: AgentLocation) =>
     night && location === 'dorm' ? t('loc.dormSleeping') : t(LOCATION_KEYS[location] ?? 'loc.district');
@@ -57,8 +57,8 @@ export function HUD() {
                 className={styles.slot}
                 onClick={() => {
                   openProfile(agent.id);
-                  // клик ведёт к агенту (ТЗ-16): на улице — пан камеры,
-                  // внутри здания — переход в его интерьер с наведением
+                  // a click leads to the agent (TZ-16): on the street — camera pan,
+                  // inside a building — switch to its interior and point at them
                   GameBridge.emit('agent:goto', { agentId: agent.id, location: agent.location });
                 }}
                 onContextMenu={(e) => {
@@ -101,7 +101,7 @@ export function HUD() {
 
         <div className={styles.divider} />
 
-        {/* ТЗ-14: ключи — компактная панель из HUD, а не отдельная вкладка */}
+        {/* TZ-14: keys — a compact panel opened from the HUD, not a separate tab */}
         <button className={styles.keysBtn} onClick={() => setShowKeys(true)} title={t('hud.keysHint')}>
           🔑
         </button>

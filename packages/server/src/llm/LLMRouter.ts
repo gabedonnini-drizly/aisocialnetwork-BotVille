@@ -6,7 +6,7 @@ import { OllamaAdapter } from './adapters/OllamaAdapter.js';
 import { openRouterConfig } from '../config.js';
 import type { LLMAdapter } from './LLMAdapter.js';
 
-/** Заголовки атрибуции OpenRouter (ТЗ-14) — ключа в них нет. */
+/** OpenRouter attribution headers (TZ-14) — they contain no key. */
 export function openRouterHeaders(): Record<string, string> {
   return {
     'HTTP-Referer': openRouterConfig.appUrl,
@@ -15,8 +15,8 @@ export function openRouterHeaders(): Record<string, string> {
 }
 
 /**
- * Адаптер для demo-режима: провайдер из DEMO_PROVIDER, базовый URL можно
- * переопределить через DEMO_BASE_URL (OpenAI-совместимые провайдеры).
+ * Adapter for demo mode: the provider comes from DEMO_PROVIDER, and the base
+ * URL can be overridden via DEMO_BASE_URL (OpenAI-compatible providers).
  */
 export function getDemoAdapter(provider: LLMProviderType, baseUrl?: string): LLMAdapter {
   if (baseUrl && (provider === 'openai' || provider === 'deepseek')) {
@@ -26,8 +26,8 @@ export function getDemoAdapter(provider: LLMProviderType, baseUrl?: string): LLM
 }
 
 /**
- * @param baseUrl пользовательский базовый URL — обязателен для 'custom'
- *   (уже провалидированный validateBaseUrl), для остальных игнорируется.
+ * @param baseUrl user-supplied base URL — required for 'custom' (already
+ *   validated by validateBaseUrl), ignored for the rest.
  */
 export function getAdapter(provider: LLMProviderType, baseUrl?: string): LLMAdapter {
   switch (provider) {
@@ -38,7 +38,7 @@ export function getAdapter(provider: LLMProviderType, baseUrl?: string): LLMAdap
     case 'deepseek':
       return new OpenAIAdapter(process.env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com/v1');
     case 'openrouter':
-      // OpenAI-совместимый агрегатор — свой адаптер не нужен (ТЗ-14)
+      // An OpenAI-compatible aggregator — no dedicated adapter needed (TZ-14)
       return new OpenAIAdapter(OPENROUTER_BASE_URL, openRouterHeaders());
     case 'custom':
       if (!baseUrl) throw new Error('custom provider requires baseUrl');

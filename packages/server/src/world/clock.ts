@@ -1,19 +1,19 @@
 /**
- * ТЗ-16: серверные игровые часы — ЕДИНСТВЕННЫЙ источник игрового времени.
- * Клиентский GameTime подстраивается под этот час при загрузке и в поллинге
- * (иначе клиент, стартующий всегда с 10:00, спорил бы с серверным тиком).
+ * TZ-16: the server game clock — the SINGLE source of game time. The client-side
+ * GameTime adjusts to this hour on load and during polling (otherwise the
+ * client, which always starts at 10:00, would disagree with the server tick).
  *
- * Час выводится из wall-clock детерминированно, поэтому переживает рестарты
- * сервера без какого-либо состояния в БД.
+ * The hour is derived from the wall clock deterministically, so it survives
+ * server restarts without any state in the DB.
  */
 
-/** Зеркало клиентского TIME.msPerGameHour: 1 реальная минута = 1 игровой час. */
+/** Mirror of the client-side TIME.msPerGameHour: 1 real minute = 1 game hour. */
 export const MS_PER_GAME_HOUR = 60_000;
 
-/** Debug-override (dev-эндпоинт приёмки): часы продолжают идти от заданного часа. */
+/** Debug override (dev acceptance endpoint): the clock keeps running from the given hour. */
 let overrideBase: { hour: number; atMs: number } | null = null;
 
-/** Текущий игровой час, 0 <= h < 24 (float). */
+/** Current game hour, 0 <= h < 24 (float). */
 export function gameHour(): number {
   if (overrideBase) {
     return (overrideBase.hour + (Date.now() - overrideBase.atMs) / MS_PER_GAME_HOUR) % 24;
@@ -21,7 +21,7 @@ export function gameHour(): number {
   return (Date.now() / MS_PER_GAME_HOUR) % 24;
 }
 
-/** Перевести часы мира (только dev/приёмка; в памяти, до рестарта). */
+/** Set the world clock (dev/acceptance only; in memory, until restart). */
 export function setGameHour(h: number): void {
   overrideBase = { hour: ((h % 24) + 24) % 24, atMs: Date.now() };
 }

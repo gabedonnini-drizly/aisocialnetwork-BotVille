@@ -10,7 +10,7 @@ import type { ChatRequest, LLMProviderType } from '@botville/shared';
 
 export const chatRouter = Router();
 
-// ── Demo-режим: учёт использования ───────────────────────────────────────────
+// ── Demo mode: usage accounting ──────────────────────────────────────────────
 
 function getDemoUsed(userId: string): number {
   const row = getDb().prepare('SELECT demo_messages_used AS used FROM users WHERE id = ?').get(userId) as
@@ -39,7 +39,7 @@ function recordDemoUsage(userId: string, ip: string) {
   `).run(ip, today());
 }
 
-// GET /api/chat/demo-status — состояние demo для текущей сессии (для UI)
+// GET /api/chat/demo-status — demo state for the current session (for the UI)
 chatRouter.get('/demo-status', (req, res) => {
   if (!demoConfig.enabled) return res.json({ data: { demoEnabled: false } });
   const remaining = Math.max(0, demoConfig.messageLimit - getDemoUsed(req.userId));
@@ -60,12 +60,12 @@ chatRouter.post('/', async (req, res) => {
   const agent = db.prepare('SELECT * FROM agents WHERE id = ? AND user_id = ?').get(agentId, userId) as Record<string, unknown> | undefined;
   if (!agent) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Agent not found' } });
 
-  // ТЗ-16: агент в активном чате «занят» — серверный тик его не двигает
+  // TZ-16: an agent in an active chat is "busy" — the server tick doesn't move it
   markAgentBusy(agentId);
 
   const providerType = agent.provider_type as LLMProviderType;
 
-  // ТЗ-14: ключ агента → сохранённый ключ юзера → demo → человеческая ошибка
+  // TZ-14: agent key → saved user key → demo → a human-readable error
   const resolved = resolveAgentKey(agent, userId);
   let model = agent.model_id as string;
   let apiKey = resolved.apiKey;
@@ -79,8 +79,8 @@ chatRouter.post('/', async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    // Отключаем буферизацию ответа reverse-прокси хостинга (Railway/nginx),
-    // иначе SSE копится и приходит пачкой, а не токен-за-токеном (ТЗ-05).
+    // Disable response buffering in the hosting reverse proxy (Railway/nginx),
+    // otherwise SSE piles up and arrives in a batch instead of token-by-token (TZ-05).
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders();
   };
@@ -90,11 +90,11 @@ chatRouter.post('/', async (req, res) => {
     if (!demoConfig.enabled) {
       return res.status(400).json({ error: { code: 'NO_API_KEY', message: 'No API key set for this agent' } });
     }
-    // Ни личного ключа, ни сохранённого — пробуем demo-режим
+    // Neither a personal key nor a saved one — try demo mode
     const used = getDemoUsed(userId);
     const ip = req.ip ?? 'unknown';
     if (used >= demoConfig.messageLimit || getDemoIpCount(ip) >= demoConfig.ipDailyLimit) {
-      // Лимит исчерпан — SSE-событие, не HTTP-ошибка
+      // Limit exhausted — an SSE event, not an HTTP error
       startSSE();
       sendEvent({ type: 'demo_limit_reached', demoRemaining: 0 });
       return res.end();
@@ -117,7 +117,7 @@ chatRouter.post('/', async (req, res) => {
   db.prepare('INSERT INTO chat_history (id, agent_id, role, content, timestamp) VALUES (?, ?, ?, ?, ?)')
     .run(crypto.randomUUID(), agentId, 'user', message, Date.now());
 
-  // Остаток demo-сообщений с учётом текущего — во всех SSE-ответах demo-режима
+  // Remaining demo messages including the current one — in every demo-mode SSE response
   const demoRemaining = isDemo
     ? Math.max(0, demoConfig.messageLimit - getDemoUsed(userId) - 1)
     : undefined;

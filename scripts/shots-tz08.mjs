@@ -1,8 +1,8 @@
-// Скриншоты ТЗ-08 (полиш: интерьеры + Y-оффсет животных).
-// Требует запущенного dev-клиента (:5173) и системный Chrome. Сервер НЕ нужен:
-// агенты для кадра инжектируются прямо в сцену через syncAgents (чисто визуально).
-// Запуск из корня:  node scripts/shots-tz08.mjs before|after
-// Выход: docs/screenshots/tz08/{office,cafe,dorm,library,animals}-<mode>.png
+// Screenshots for TZ-08 (polish: interiors + animal Y-offset).
+// Requires a running dev client (:5173) and the system Chrome. The server is NOT needed:
+// the agents for the frame are injected straight into the scene via syncAgents (purely visual).
+// Run from the repo root:  node scripts/shots-tz08.mjs before|after
+// Output: docs/screenshots/tz08/{office,cafe,dorm,library,animals}-<mode>.png
 
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
@@ -30,18 +30,18 @@ page.on('pageerror', e => console.error('PAGE ERROR:', e.message));
 
 await page.goto(BASE + '/app', { waitUntil: 'networkidle0' });
 
-// ── ждём загрузку игры: активна DistrictScene ──
+// ── wait for the game to load: DistrictScene is active ──
 await page.waitForFunction(
   () => window.__game?.scene.getScene('DistrictScene')?.scene.isActive(),
   { timeout: 60_000, polling: 250 },
 );
-console.log('игра загружена, DistrictScene активна');
+console.log('game loaded, DistrictScene is active');
 
-// день, чтобы не мешала тонировка
+// daytime, so the tint doesn't get in the way
 await page.evaluate(() => window.__setGameHour(12));
 await sleep(400);
 
-// ── 4 животных в ряд на улице, крупный план ──
+// ── 4 animals in a row on the street, close-up ──
 await page.evaluate(() => {
   const g = window.__game;
   const d = g.scene.getScene('DistrictScene');
@@ -56,7 +56,7 @@ await sleep(300);
 const focus = await page.evaluate(() => {
   const g = window.__game;
   const d = g.scene.getScene('DistrictScene');
-  // ряд на открытом месте у первого спавна
+  // a row in the open, next to the first spawn
   const sp = d.spawnPoints[0];
   const ids = ['shot-cow', 'shot-pig', 'shot-dog', 'shot-chicken'];
   ids.forEach((id, i) => {
@@ -65,7 +65,7 @@ const focus = await page.evaluate(() => {
     s.setPosition(sp.x - 60 + i * 40, sp.y);
     s.update(0);
   });
-  d.scene.pause(); // стоп update: никто не разбредается
+  d.scene.pause(); // stop update: nobody wanders off
   const cam = d.cameras.main;
   cam.setZoom(4);
   cam.centerOn(sp.x, sp.y - 8);
@@ -73,9 +73,9 @@ const focus = await page.evaluate(() => {
 });
 await sleep(400);
 await page.screenshot({ path: path.join(OUT, `animals-${MODE}.png`) });
-console.log(`✓ animals-${MODE}.png (спавн ${focus.x},${focus.y})`);
+console.log(`✓ animals-${MODE}.png (spawn ${focus.x},${focus.y})`);
 
-// ── те же животные в walk-анимации (проверка оффсета в движении) ──
+// ── the same animals in the walk animation (checking the offset while moving) ──
 await page.evaluate(() => {
   const g = window.__game;
   const d = g.scene.getScene('DistrictScene');
@@ -85,14 +85,14 @@ await page.evaluate(() => {
     s.walkTo(s.x + 90, s.y);
   });
 });
-await sleep(900); // идут ~40px — кадр в движении
+await sleep(900); // they walk ~40px — a frame mid-motion
 await page.evaluate(() => window.__game.scene.getScene('DistrictScene').scene.pause());
 await sleep(200);
 await page.screenshot({ path: path.join(OUT, `animals-walk-${MODE}.png`) });
 console.log(`✓ animals-walk-${MODE}.png`);
 await page.evaluate(() => window.__game.scene.getScene('DistrictScene').scene.resume());
 
-// ── интерьеры: заходим в каждый, 2 человека рассаживаются ──
+// ── interiors: enter each one, 2 humans take their seats ──
 const INTERIORS = [
   ['OfficeScene', 'office'],
   ['CafeScene', 'cafe'],
@@ -118,10 +118,10 @@ for (const [sceneKey, name] of INTERIORS) {
       { id: 'shot-h2', name: 'Molly', avatarVariant: 3 },
     ]);
   }, sceneKey);
-  await sleep(4500); // дошли до мест и сели
+  await sleep(4500); // they reached the seats and sat down
   await page.screenshot({ path: path.join(OUT, `${name}-${MODE}.png`) });
   console.log(`✓ ${name}-${MODE}.png`);
 }
 
 await browser.close();
-console.log('готово:', OUT);
+console.log('done:', OUT);

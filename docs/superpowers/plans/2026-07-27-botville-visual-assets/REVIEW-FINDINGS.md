@@ -362,7 +362,7 @@ every tier.
 
 **The evidence.** Task 3 Step 3 says:
 
-> Expected: `sync-assets: скопировано 110/110` … **Fix the path in
+> Expected: `sync-assets: copied 110/110` … **Fix the path in
 > `scripts/sync-assets.mjs` (that is what the explicit list is for)**
 
 Task 19a deletes that list and adds a test forbidding its paths:
@@ -594,7 +594,7 @@ Applying these verbatim produces duplicated or deleted code:
   fall inside the range but are **absent from the replacement**, while `spriteH`
   is consumed at `:89` and `this.shadow` throughout.
 - **`InteriorScene.ts`** — Task 22 Step 2 says `103-112`; the snippet's first
-  line is the `// выход:` comment at **102**.
+  line is the `// exit:` comment at **102**.
 
 **The fix.** Correct all three ranges and re-derive the snippets from the current
 file contents.
@@ -812,8 +812,8 @@ per row, which is the intent.
 - **`appearanceHashAt` and `BUILDS` are used by Task 26's own tests** but absent
   from its declared "Produces" list.
 - **`PresenceModel` is never wired**, yet Task 22 adds a comment to
-  `InteriorScene` asserting *"Неизвестный id сюда просто не доходит — его
-  отсеивает PresenceModel"*. `00-INDEX.md:349` concedes it is unwired. The
+  `InteriorScene` asserting *"An unknown id simply never reaches this point —
+  PresenceModel filters it out"*. `00-INDEX.md:349` concedes it is unwired. The
   comment states as fact something no code does.
 - **`indexPack` decodes every PNG twice** (`01-foundations.md:1241,1245`).
 - **Duplicate index** — 037's `idx_users_schedules_lookup` largely duplicates

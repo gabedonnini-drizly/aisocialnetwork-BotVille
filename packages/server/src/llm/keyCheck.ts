@@ -2,14 +2,14 @@ import type { LLMProviderType } from '@botville/shared';
 import { OPENROUTER_BASE_URL } from '@botville/shared';
 import { openRouterHeaders } from './LLMRouter.js';
 
-// ТЗ-02, часть 3: минимальная проверка ключа при сохранении (list models).
-// true/false — вердикт провайдера; null — проверить не удалось (сеть, таймаут,
-// 5xx) — сохранение не блокируем.
+// TZ-02, part 3: a minimal key check on save (list models). true/false is the
+// provider's verdict; null means the check couldn't be performed (network,
+// timeout, 5xx) — saving is not blocked.
 
 const CHECK_TIMEOUT_MS = Number(process.env.KEY_CHECK_TIMEOUT_MS ?? 5000);
 
 /**
- * @param baseUrl базовый URL для провайдера 'custom' (уже провалидированный)
+ * @param baseUrl base URL for the 'custom' provider (already validated)
  */
 export async function checkApiKey(
   provider: LLMProviderType,
@@ -39,8 +39,8 @@ export async function checkApiKey(
         });
         break;
       case 'openrouter':
-        // ВАЖНО: /models у OpenRouter публичный и ответит 200 на любой мусор —
-        // для проверки ключа годится только авторизованный /key (ТЗ-14).
+        // IMPORTANT: OpenRouter's /models is public and answers 200 to any
+        // garbage — only the authorized /key works for checking a key (TZ-14).
         res = await fetch(`${OPENROUTER_BASE_URL}/key`, {
           headers: { ...openRouterHeaders(), Authorization: `Bearer ${apiKey}` },
           signal,
@@ -54,7 +54,7 @@ export async function checkApiKey(
         });
         break;
       default:
-        // ollama и прочие — ключ не используется
+        // ollama and the rest — no key is used
         return null;
     }
     if (res.ok) return true;

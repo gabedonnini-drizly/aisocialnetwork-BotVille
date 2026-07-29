@@ -3,9 +3,9 @@ import type { Agent, AgentLocation, AgentStatus, CreateAgentDto } from '@botvill
 import { AGENT_LOCATIONS } from '@botville/shared';
 import { apiFetch } from '../lib/api.js';
 
-// Сессия — анонимная: httpOnly-cookie av_session плюс подписанный токен в
-// localStorage для cross-site (ТЗ-12, см. lib/api.ts). Клиент не знает и не
-// конструирует userId — только возит выданное сервером подписанное значение.
+// The session is anonymous: httpOnly av_session cookie plus a signed token in
+// localStorage for cross-site (TZ-12, see lib/api.ts). The client neither knows
+// nor constructs the userId — it only carries the signed value issued by the server.
 
 function normalizeLocation(value: unknown): AgentLocation {
   return AGENT_LOCATIONS.includes(value as AgentLocation) ? (value as AgentLocation) : 'district';
@@ -17,17 +17,17 @@ interface AgentStore {
   loading: boolean;
   error: string | null;
   fetchAgents: () => Promise<void>;
-  /** Итог создания: успех с id, либо провал с признаком «сеть» (сервер
-   *  недостижим/таймаут) vs «сервер» (валидация/ошибка ответа) — модалка
-   *  показывает разный человеческий текст. */
+  /** Creation outcome: success with an id, or failure flagged as "network"
+   *  (server unreachable/timeout) vs "server" (validation/response error) —
+   *  the modal shows different human-readable text for each. */
   createAgent: (dto: CreateAgentDto) => Promise<{ ok: true; id: string } | { ok: false; network: boolean }>;
   deleteAgent: (agentId: string) => Promise<void>;
   updateAgentStatus: (agentId: string, status: AgentStatus) => void;
-  /** ТЗ-16: вливает свежие location из поллинга, не трогая runtime-статусы. */
+  /** TZ-16: merges fresh locations from polling without touching runtime statuses. */
   applyLocations: (locations: Array<{ id: string; location: AgentLocation }>) => void;
-  /** Сохраняет ключ; возвращает вердикт health-check: true/false, null — проверить не удалось */
+  /** Saves the key; returns the health-check verdict: true/false, null — the check could not be performed */
   setApiKey: (agentId: string, apiKey: string) => Promise<boolean | null>;
-  /** Удаляет сохранённый ключ агента (ТЗ-04): агент снова требует ключ / уходит в demo. */
+  /** Deletes the agent's saved key (TZ-04): the agent requires a key again / falls back to demo. */
   deleteApiKey: (agentId: string) => Promise<void>;
 }
 
@@ -55,7 +55,7 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
         customBaseUrl: r.custom_base_url as string | undefined,
         createdAt: r.created_at as number,
         hasKey: Number(r.has_key ?? 0) > 0,
-        // ТЗ-16: где агент — правда сервера; незнакомое значение не роняет UI
+        // TZ-16: the agent's whereabouts are the server's truth; an unknown value must not break the UI
         location: normalizeLocation(r.location),
         // runtime defaults
         status: 'idle' as AgentStatus,
@@ -83,8 +83,8 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
       set({ error: null });
       return { ok: true, id: json.data.id as string };
     } catch (e) {
-      // Сеть: fetch не дошёл до сервера (TypeError) или сработал таймаут
-      // (AbortError). Ответ сервера с json.error — это НЕ сеть.
+      // Network: fetch never reached the server (TypeError) or the timeout fired
+      // (AbortError). A server response with json.error is NOT a network failure.
       const network = e instanceof TypeError
         || (e instanceof DOMException && e.name === 'AbortError');
       set({ error: String(e) });
@@ -110,7 +110,7 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
         if (loc && loc !== a.location) { changed = true; return { ...a, location: loc }; }
         return a;
       });
-      // без изменений — не трогаем ссылку, чтобы не гонять ресинк сцен впустую
+      // no changes — keep the same reference to avoid pointless scene resyncs
       return changed ? { agents } : {};
     });
   },

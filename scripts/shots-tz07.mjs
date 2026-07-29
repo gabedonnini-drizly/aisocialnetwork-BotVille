@@ -1,7 +1,7 @@
-// Скриншоты приёмки ТЗ-07 (i18n EN/RU): лендинг и HUD/чат в обоих языках.
-// Требует запущенных dev-серверов (client :5173, server :3001) и системный Chrome.
-// Запуск из корня репозитория:  node scripts/shots-tz07.mjs
-// Выход: docs/screenshots/tz07/{landing,app-chat}-{en,ru}.png
+// Acceptance screenshots for TZ-07 (i18n EN/RU): the landing page and HUD/chat in both languages.
+// Requires running dev servers (client :5173, server :3001) and the system Chrome.
+// Run from the repo root:  node scripts/shots-tz07.mjs
+// Output: docs/screenshots/tz07/{landing,app-chat}-{en,ru}.png
 
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
@@ -17,27 +17,27 @@ mkdirSync(OUT, { recursive: true });
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-// Клик по кнопке с точным текстом (CSS-modules хешируют классы — ищем по тексту)
+// Click a button by exact text (CSS modules hash the class names — so we search by text)
 async function clickText(page, selector, text) {
   const ok = await page.evaluate((sel, txt) => {
     const el = [...document.querySelectorAll(sel)].find(e => e.textContent.trim() === txt);
     if (el) { el.click(); return true; }
     return false;
   }, selector, text);
-  if (!ok) throw new Error(`clickText: не нашёл ${selector} с текстом "${text}"`);
+  if (!ok) throw new Error(`clickText: could not find ${selector} with text "${text}"`);
 }
 
 async function expectText(page, text, where) {
   const ok = await page.evaluate((txt) => document.body.innerText.includes(txt), text);
-  if (!ok) throw new Error(`ПРОВЕРКА: на ${where} нет текста "${text}"`);
-  console.log(`  ✓ ${where}: есть "${text}"`);
+  if (!ok) throw new Error(`CHECK: ${where} does not contain the text "${text}"`);
+  console.log(`  ✓ ${where}: has "${text}"`);
 }
 
 const browser = await puppeteer.launch({ executablePath: CHROME, headless: 'new' });
 const page = await browser.newPage();
 await page.setViewport({ width: 1280, height: 800 });
 
-// ── Автодетект: без localStorage язык берётся из navigator.language ──
+// ── Auto-detection: with no localStorage the language comes from navigator.language ──
 await page.goto(BASE + '/', { waitUntil: 'networkidle0' });
 await page.evaluate(() => localStorage.removeItem('av_locale'));
 await page.reload({ waitUntil: 'networkidle0' });
@@ -45,29 +45,30 @@ await sleep(500);
 const navLang = await page.evaluate(() => navigator.language);
 const autoRu = await page.evaluate(() => document.body.innerText.includes('Свой город ИИ-агентов'));
 const autoEn = await page.evaluate(() => document.body.innerText.includes('Your own city of AI agents'));
-console.log(`  автодетект: navigator.language=${navLang} → ${autoRu ? 'RU' : autoEn ? 'EN' : '???'}`);
-if (navLang.toLowerCase().startsWith('ru') ? !autoRu : !autoEn) throw new Error('автодетект локали не совпал с navigator.language');
+console.log(`  auto-detection: navigator.language=${navLang} → ${autoRu ? 'RU' : autoEn ? 'EN' : '???'}`);
+if (navLang.toLowerCase().startsWith('ru') ? !autoRu : !autoEn) throw new Error('locale auto-detection did not match navigator.language');
 
-// ── Лендинг EN (явный клик по тумблеру) ──
+// ── Landing EN (explicit click on the toggle) ──
 await clickText(page, 'button', 'EN');
 await sleep(300);
-await expectText(page, 'Your own city of AI agents', 'лендинге EN');
+await expectText(page, 'Your own city of AI agents', 'the EN landing page');
 console.log('  title:', await page.title(), '| lang:', await page.evaluate(() => document.documentElement.lang));
 await page.screenshot({ path: path.join(OUT, 'landing-en.png') });
 
-// ── Лендинг RU (клик по тумблеру) ──
+// ── Landing RU (click on the toggle) ──
 await clickText(page, 'button', 'RU');
 await sleep(300);
-await expectText(page, 'Свой город ИИ-агентов', 'лендинге RU');
+// NB: the literal below is the actual RU landing headline rendered by the client — do not translate.
+await expectText(page, 'Свой город ИИ-агентов', 'the RU landing page');
 console.log('  title:', await page.title(), '| lang:', await page.evaluate(() => document.documentElement.lang));
 await page.screenshot({ path: path.join(OUT, 'landing-ru.png') });
 
-// Явный выбор переживает перезагрузку
+// An explicit choice survives a reload
 await page.reload({ waitUntil: 'networkidle0' });
 await sleep(500);
-await expectText(page, 'Свой город ИИ-агентов', 'лендинге после reload (localStorage av_locale=ru)');
+await expectText(page, 'Свой город ИИ-агентов', 'the landing page after reload (localStorage av_locale=ru)');
 
-// ── Приложение: агент нужен для чата — создаём через API, если пусто ──
+// ── App: chat needs an agent — create one via the API if there are none ──
 await page.evaluate(() => localStorage.setItem('av_locale', 'en'));
 await page.goto(BASE + '/app', { waitUntil: 'networkidle0' });
 const agents = await page.evaluate(async () => {
@@ -75,7 +76,7 @@ const agents = await page.evaluate(async () => {
   return (await res.json()).data ?? [];
 });
 if (agents.length === 0) {
-  console.log('  агентов нет — создаю Alex (deepseek, без ключа → demo)');
+  console.log('  no agents — creating Alex (deepseek, no key → demo)');
   await page.evaluate(async () => {
     await fetch('/api/agents', {
       method: 'POST',
@@ -88,31 +89,32 @@ if (agents.length === 0) {
   });
   await page.reload({ waitUntil: 'networkidle0' });
 }
-await sleep(7000); // Phaser-прелоадер + первая сцена
+await sleep(7000); // Phaser preloader + the first scene
 
-// ── HUD/чат EN ──
-await expectText(page, 'Idle', 'HUD EN (статус)');
-// слот агента → профиль → чат
+// ── HUD/chat EN ──
+await expectText(page, 'Idle', 'the EN HUD (status)');
+// agent slot → profile → chat
 const agentName = await page.evaluate(() => {
   const slot = [...document.querySelectorAll('[title]')].find(e => e.title.includes('Right-click'));
   if (!slot) return null;
   slot.click();
   return slot.title.split('—')[0].trim();
 });
-if (!agentName) throw new Error('не нашёл слот агента в HUD');
+if (!agentName) throw new Error('could not find the agent slot in the HUD');
 await sleep(600);
-await expectText(page, 'No personality set.', 'профиле EN'); // label выше — uppercase через CSS
+await expectText(page, 'No personality set.', 'the EN profile'); // the label above is uppercased via CSS
 await clickText(page, 'button', '💬 Chat');
 await sleep(600);
-await expectText(page, `Start a conversation with ${agentName}`, 'чате EN');
+await expectText(page, `Start a conversation with ${agentName}`, 'the EN chat');
 await page.screenshot({ path: path.join(OUT, 'app-chat-en.png') });
 
-// ── HUD/чат RU (тумблер в HUD, мгновенный ререндер) ──
+// ── HUD/chat RU (toggle in the HUD, instant re-render) ──
 await clickText(page, 'button', 'RU');
 await sleep(400);
-await expectText(page, `Начни разговор с ${agentName}`, 'чате RU');
-await expectText(page, 'Свободен', 'HUD RU (статус)');
+// NB: the two literals below are the actual RU strings rendered by the client — do not translate.
+await expectText(page, `Начни разговор с ${agentName}`, 'the RU chat');
+await expectText(page, 'Свободен', 'the RU HUD (status)');
 await page.screenshot({ path: path.join(OUT, 'app-chat-ru.png') });
 
 await browser.close();
-console.log('Готово:', OUT);
+console.log('Done:', OUT);

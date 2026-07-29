@@ -25,7 +25,7 @@ export function CreateAgentModal({ onClose }: Props) {
   const [apiKey, setApiKey] = useState('');
   const [ollamaUrl, setOllamaUrl] = useState('http://localhost:11434');
   const [customUrl, setCustomUrl] = useState('');
-  // Сохранённый ключ есть → поле ввода свёрнуто; раскрывается для override (ТЗ-14)
+  // A saved key exists → the input field is collapsed; expands for an override (TZ-14)
   const [overrideKey, setOverrideKey] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
@@ -39,20 +39,20 @@ export function CreateAgentModal({ onClose }: Props) {
     fetchKeys();
   }, [fetchKeys]);
 
-  // Ошибка появляется над кнопками внизу длинной прокручиваемой модалки —
-  // на мобиле её могло вытолкнуть за экран. Подтягиваем к ней (на десктопе,
-  // где всё влезает, block:'nearest' — no-op).
+  // The error appears above the buttons at the bottom of a long scrollable modal —
+  // on mobile it could get pushed off-screen. Scroll it into view (on desktop,
+  // where everything fits, block:'nearest' is a no-op).
   useEffect(() => {
     if (error) errorRef.current?.scrollIntoView({ block: 'nearest' });
   }, [error]);
 
   const provider = LLM_PROVIDERS.find(p => p.id === providerType)!;
   const savedKey = keys.find(k => k.provider === providerType);
-  // Ключ уже есть у юзера — по умолчанию берём его, поле ввода не показываем
+  // The user already has a key — use it by default, don't show the input field
   const usingSavedKey = !!savedKey && !overrideKey;
 
   const handleCreate = async () => {
-    if (creating) return;                    // защита от дабл-тапа (оба пути)
+    if (creating) return;                    // double-tap guard (both paths)
     if (!name.trim()) return setError(t('create.errNameRequired'));
     if (!modelId.trim()) return setError(t('create.errModelRequired'));
     if (providerType === 'custom' && !customUrl.trim()) return setError(t('create.errUrlRequired'));
@@ -72,8 +72,8 @@ export function CreateAgentModal({ onClose }: Props) {
       setCreating(false);
       return;
     }
-    // Личный ключ агента задаём, только если юзер его действительно ввёл;
-    // иначе агент возьмёт сохранённый ключ юзера при первом же сообщении.
+    // Set the agent's personal key only if the user actually typed one;
+    // otherwise the agent picks up the user's saved key on its very first message.
     if (apiKey && providerType !== 'ollama') await saveKey(res.id, apiKey);
     onClose();
   };
@@ -121,11 +121,11 @@ export function CreateAgentModal({ onClose }: Props) {
           <select className={styles.select} value={providerType} onChange={e => {
             const p = e.target.value as LLMProviderType;
             setProviderType(p);
-            // У openrouter/custom вшитого списка нет — модель выбирается ниже
+            // openrouter/custom have no built-in list — the model is chosen below
             setModelId(LLM_PROVIDERS.find(x => x.id === p)!.models[0]?.id ?? '');
             setApiKey('');
             setOverrideKey(false);
-            // Адрес сохранён вместе с ключом — не заставляем вводить его снова
+            // The endpoint is saved together with the key — don't force re-entering it
             if (p === 'custom') setCustomUrl(keys.find(k => k.provider === 'custom')?.baseUrl ?? '');
           }}>
             {LLM_PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -153,7 +153,7 @@ export function CreateAgentModal({ onClose }: Props) {
             <input className={styles.input} value={ollamaUrl} onChange={e => setOllamaUrl(e.target.value)} />
           </label>
         ) : usingSavedKey ? (
-          /* ТЗ-14: ключ уже сохранён — вместо пустого поля показываем, что берём его */
+          /* TZ-14: a key is already saved — instead of an empty field, show that we're using it */
           <div className={styles.field}>
             <span className={styles.fieldLabel}>{t('create.apiKey')}</span>
             <div className={styles.savedKeyRow}>

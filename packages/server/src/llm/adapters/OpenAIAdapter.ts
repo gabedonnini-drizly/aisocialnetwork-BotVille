@@ -3,8 +3,8 @@ import { LLMError } from '../errors.js';
 
 export class OpenAIAdapter implements LLMAdapter {
   /**
-   * @param baseUrl базовый URL OpenAI-совместимого API
-   * @param extraHeaders дополнительные заголовки провайдера (атрибуция OpenRouter)
+   * @param baseUrl base URL of an OpenAI-compatible API
+   * @param extraHeaders extra provider headers (OpenRouter attribution)
    */
   constructor(
     private readonly baseUrl: string = 'https://api.openai.com/v1',

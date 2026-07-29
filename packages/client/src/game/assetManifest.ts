@@ -1,56 +1,56 @@
 /**
- * Манифест LimeZu-ассетов. ЕДИНСТВЕННЫЙ источник правды о раскладке
- * спрайтшитов: файлы, размеры кадров, ряды направлений, кадры анимаций.
- * Раскладка верифицирована скриптами scripts/inspect-assets.mjs и
- * scripts/png-grid.mjs (см. docs/ASSETS.md) — НЕ менять числа на глаз.
+ * Manifest of LimeZu assets. The SINGLE source of truth for spritesheet
+ * layout: files, frame sizes, direction rows, animation frames.
+ * The layout has been verified by scripts/inspect-assets.mjs and
+ * scripts/png-grid.mjs (see docs/ASSETS.md) — do NOT change numbers by eye.
  *
- * Пайплайн: scripts/sync-assets.mjs копирует нужные PNG из assets-src/
- * в public/assets/{sprites,tilesets}/limezu/ — пути ниже указаны
- * относительно public/.
+ * Pipeline: scripts/sync-assets.mjs copies the needed PNGs from assets-src/
+ * into public/assets/{sprites,tilesets}/limezu/ — the paths below are
+ * relative to public/.
  */
 
 export type Direction = 'right' | 'up' | 'left' | 'down';
 
-/** Порядок направлений в рядах LimeZu: right, up, left, down (по 6 кадров). */
+/** Order of directions in LimeZu rows: right, up, left, down (6 frames each). */
 export const DIRECTION_ORDER: Direction[] = ['right', 'up', 'left', 'down'];
 
 export interface AvatarVariantDef {
-  /** Значение agent.avatarVariant в БД. Не перенумеровывать! */
+  /** Value of agent.avatarVariant in the DB. Do not renumber! */
   id: number;
   kind: 'human' | 'animal';
   label: string;
   textureKey: string;
-  /** Путь под public/ */
+  /** Path under public/ */
   file: string;
   frameWidth: number;
   frameHeight: number;
-  /** Сколько колонок в листе (для пересчёта row -> кадр). */
+  /** How many columns the sheet has (to convert row -> frame). */
   sheetColumns: number;
-  /** Номер ряда кадров (в единицах frameHeight) для каждой анимации. */
+  /** Frame row number (in frameHeight units) for each animation. */
   rows: {
     idle: number;
     walk: number;
-    /** Только люди: ряд сидения (6 кадров вправо + 6 влево). */
+    /** Humans only: sitting row (6 frames facing right + 6 facing left). */
     sit?: number;
-    /** Только люди: ряд сна (6 кадров). */
+    /** Humans only: sleeping row (6 frames). */
     sleep?: number;
   };
   framesPerDirection: number;
-  /** Во сколько раз увеличивать спрайт в сценах (мир рисуется 1:1, 16px тайл). */
+  /** Scale factor for the sprite in scenes (the world is drawn 1:1, 16px tiles). */
   scale: number;
   /**
-   * Пустые пиксели между ногами и нижним краем кадра, по направлениям.
-   * У животных LimeZu боковые виды нарисованы выше низа кадра (корова 11px,
-   * свинья 7px) — без компенсации спрайт «висит» над тенью. Замерено
-   * по-кадрово по листам (ТЗ-08). Отсутствует = 0 (люди).
+   * Empty pixels between the feet and the bottom edge of the frame, per direction.
+   * LimeZu animals' side views are drawn above the bottom of the frame (cow 11px,
+   * pig 7px) — without compensation the sprite "hovers" above its shadow. Measured
+   * frame by frame on the sheets (TZ-08). Absent = 0 (humans).
    */
   footGaps?: Record<Direction, number>;
 }
 
 /**
- * Люди: листы Premade_Character_NN.png 896x656, кадр 16x32, 56 колонок.
- * Ряды (в единицах 32px): 0 превью, 1 idle (r/u/l/d x6), 2 walk (x6),
- * 3 sleep, 4 sit-1 (6 вправо + 6 влево), 5 sit-2, 6 phone, 7 book.
+ * Humans: Premade_Character_NN.png sheets, 896x656, 16x32 frame, 56 columns.
+ * Rows (in 32px units): 0 preview, 1 idle (r/u/l/d x6), 2 walk (x6),
+ * 3 sleep, 4 sit-1 (6 right + 6 left), 5 sit-2, 6 phone, 7 book.
  */
 const HUMAN_SHEET = {
   frameWidth: 16,
@@ -75,10 +75,10 @@ function human(id: number, n: number, label: string): AvatarVariantDef {
 }
 
 /**
- * Животные (Modern Farm, Animals_16x16): у каждого вида свой размер кадра
- * и своя раскладка рядов — у пса кадр 48x32 и между рядами анимаций идут
- * 16px полосы-подписи (IDLE/WALK/...), поэтому ряды задаются явно.
- * Направления r/u/l/d по 6 кадров, 24 колонки. Проверено по-кадрово (ТЗ-08).
+ * Animals (Modern Farm, Animals_16x16): each species has its own frame size
+ * and its own row layout — the dog's frame is 48x32 and its animation rows are
+ * separated by 16px caption strips (IDLE/WALK/...), so rows are given explicitly.
+ * Directions r/u/l/d, 6 frames each, 24 columns. Verified frame by frame (TZ-08).
  */
 function animal(
   id: number,
@@ -109,9 +109,9 @@ function animal(
 }
 
 /**
- * Варианты внешности агента. id хранится в agents.avatar_variant.
- * 0..11 — люди (12 разных premade), 12..15 — животные.
- * Старые агенты с variant 0..7 автоматически получают людей — маппинг совместим.
+ * Agent appearance variants. id is stored in agents.avatar_variant.
+ * 0..11 — humans (12 different premades), 12..15 — animals.
+ * Old agents with variant 0..7 automatically get humans — the mapping is compatible.
  */
 export const AVATAR_VARIANTS: AvatarVariantDef[] = [
   human(0, 1, 'Alex'),
@@ -134,7 +134,7 @@ export const AVATAR_VARIANTS: AvatarVariantDef[] = [
     frameWidth: 32, frameHeight: 32, rows: { idle: 1, walk: 2 },
     footGaps: { right: 7, up: 1, left: 7, down: 3 },
   }),
-  // лист пса: кадр 48x32, ряды с учётом полос-подписей (idle на y=64, walk на y=128)
+  // the dog's sheet: 48x32 frame, rows account for caption strips (idle at y=64, walk at y=128)
   animal(14, 'Dog', 'animal-dog', 'Dog_Labrador_Brown_16x16.png', {
     frameWidth: 48, frameHeight: 32, rows: { idle: 2, walk: 4 },
     footGaps: { right: 1, up: 2, left: 1, down: 2 },
@@ -151,7 +151,7 @@ export function getVariant(avatarVariant: number): AvatarVariantDef {
   ];
 }
 
-/** Номер первого кадра анимации: ряд + направление -> кадр в спрайтшите. */
+/** First frame number of an animation: row + direction -> frame in the spritesheet. */
 export function animStartFrame(
   v: AvatarVariantDef,
   anim: 'idle' | 'walk',
@@ -160,21 +160,21 @@ export function animStartFrame(
   return v.rows[anim] * v.sheetColumns + DIRECTION_ORDER.indexOf(dir) * v.framesPerDirection;
 }
 
-/** Кадры sit для людей: 6 кадров вправо (side=right) или влево. */
+/** Sit frames for humans: 6 frames facing right (side=right) or left. */
 export function sitFrames(v: AvatarVariantDef, side: 'right' | 'left'): number[] {
   if (v.rows.sit === undefined) return [];
   const start = v.rows.sit * v.sheetColumns + (side === 'left' ? v.framesPerDirection : 0);
   return Array.from({ length: v.framesPerDirection }, (_, i) => start + i);
 }
 
-/** Кадры sleep для людей (первые 6 кадров ряда, дальше в листе — кровати). */
+/** Sleep frames for humans (first 6 frames of the row; the rest of the sheet is beds). */
 export function sleepFrames(v: AvatarVariantDef): number[] {
   if (v.rows.sleep === undefined) return [];
   const start = v.rows.sleep * v.sheetColumns;
   return Array.from({ length: v.framesPerDirection }, (_, i) => start + i);
 }
 
-/** Единая схема ключей анимаций Phaser. */
+/** Unified scheme for Phaser animation keys. */
 export function animKey(
   v: AvatarVariantDef,
   anim: 'idle' | 'walk' | 'sit-right' | 'sit-left' | 'sleep',
@@ -184,12 +184,12 @@ export function animKey(
 }
 
 /**
- * Эмоции/статусы: UI_thinking_emotes_animation_16x16.png (160x160).
- * Как ДВЕ текстуры из одного файла:
- *  - emote-think: кадры 16x32 (10 колонок, 5 рядов) — ряд 0 это анимация
- *    «думает»: точки вырастают в пузырь (кадры 0..9);
- *  - emote-icons: кадры 16x16 (10 колонок, 10 рядов) — ряды 4..9 это пары
- *    кадров иконок (двухкадровая пульсация).
+ * Emotes/statuses: UI_thinking_emotes_animation_16x16.png (160x160).
+ * Loaded as TWO textures from one file:
+ *  - emote-think: 16x32 frames (10 columns, 5 rows) — row 0 is the
+ *    "thinking" animation: dots grow into a bubble (frames 0..9);
+ *  - emote-icons: 16x16 frames (10 columns, 10 rows) — rows 4..9 are pairs
+ *    of icon frames (two-frame pulsing).
  */
 export const EMOTES = {
   file: 'assets/sprites/limezu/UI_thinking_emotes_animation_16x16.png',
@@ -197,9 +197,9 @@ export const EMOTES = {
     textureKey: 'emote-think',
     frameWidth: 16,
     frameHeight: 32,
-    /** Появление пузыря (кадры 4-5 в листе — клевер, 6-9 — служебная подпись) */
+    /** Bubble appearing (frames 4-5 in the sheet are a clover, 6-9 — a caption strip) */
     appearFrames: [0, 1, 2, 3],
-    /** Зацикленное «думание»: лёгкая пульсация пустого пузыря */
+    /** Looped "thinking": a gentle pulse of the empty bubble */
     loopFrames: [2, 3],
     frameRate: 6,
   },
@@ -207,20 +207,20 @@ export const EMOTES = {
     textureKey: 'emote-icons',
     frameWidth: 16,
     frameHeight: 16,
-    /** Пары кадров по статусам агента (row*10+col). */
+    /** Frame pairs per agent status (row*10+col). */
     byStatus: {
-      work: [44, 45], // кирка
+      work: [44, 45], // pickaxe
       task_running: [40, 41], // "!"
-      task_done: [64, 65], // звёздочка
-      chat_npc: [66, 67], // нота
+      task_done: [64, 65], // star
+      chat_npc: [66, 67], // musical note
       rest: [56, 57], // Z-z-z
-      error: [50, 51], // красный "!"
+      error: [50, 51], // red "!"
     } as Record<string, [number, number]>,
     frameRate: 2,
   },
 } as const;
 
-/** Пиксельные UI-элементы (рамки, кнопки) — на будущее для React-оверлея. */
+/** Pixel-art UI elements (frames, buttons) — for a future React overlay. */
 export const UI_SHEET = {
   file: 'assets/sprites/limezu/UI_16x16.png',
   frameWidth: 16,
@@ -228,8 +228,8 @@ export const UI_SHEET = {
 } as const;
 
 /**
- * Анимированные объекты интерьеров (LimeZu animated). Ключ = имя объекта
- * в слое animated карт интерьеров. Кадры идут подряд с нулевого.
+ * Animated interior objects (LimeZu animated). Key = object name
+ * in the animated layer of interior maps. Frames run consecutively from zero.
  */
 export interface AnimatedObjectDef {
   file: string;

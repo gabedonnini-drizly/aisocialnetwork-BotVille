@@ -1076,22 +1076,22 @@ Expected: FAIL — `Cannot find module '.../AppearanceResolver.ts'`.
 
 ```ts
 /**
- * spriteSeed -> appearanceHash -> ключ текстуры.
+ * spriteSeed -> appearanceHash -> texture key.
  *
- * Чистый модуль (не импортирует Phaser) — тестируется под node --test.
- * Класс AppearanceResolver ниже добавляет ЕДИНСТВЕННУЮ нечистую часть:
- * вопрос к кэшу текстур Phaser «эта запечённая внешность уже загружена?».
+ * A pure module (does not import Phaser) — tested under node --test.
+ * The AppearanceResolver class below adds the SINGLE impure part:
+ * asking Phaser's texture cache "is this baked appearance already loaded?".
  *
- * I-13: агенту НИКОГДА не назначается животный облик. Правило связывает
- * именно этот — новый — путь. Существующие агенты BotVille (SQLite)
- * сохраняют свой avatar_variant, а текстуры животных остаются
- * загруженными, потому что миром пока владеет agentLife.ts (вне scope).
- * Запрещено ВЫВОДИТЬ животный облик, а не рисовать животных вообще.
+ * I-13: an agent is NEVER assigned an animal look. The rule binds precisely
+ * this — the new — path. Existing BotVille agents (SQLite) keep their
+ * avatar_variant, and the animal textures stay loaded, because the world is
+ * still owned by agentLife.ts (out of scope). What is forbidden is DERIVING an
+ * animal look, not drawing animals at all.
  */
 import { appearanceHash, appearanceRecord, hashString } from '@botville/shared/appearance/derive.mjs';
 import { AVATAR_VARIANTS } from '../assetManifest.js';
 
-/** Люди — id 0..11 в AVATAR_VARIANTS. Животные (12..15) исключены навсегда. */
+/** Humans are ids 0..11 in AVATAR_VARIANTS. Animals (12..15) are excluded for good. */
 export const HUMAN_VARIANT_IDS: number[] = AVATAR_VARIANTS
   .filter(v => v.kind === 'human')
   .map(v => v.id);
@@ -1108,17 +1108,17 @@ export function resolveAppearance(spriteSeed: string, gender: string): ResolvedA
 }
 
 /**
- * Запасной лист, когда bake отсутствует: детерминированный ЧЕЛОВЕЧЕСКИЙ
- * premade. Агент никогда не рисуется битой текстурой (спец §8.3).
+ * The fallback sheet when no bake exists: a deterministic HUMAN premade.
+ * An agent is never drawn with a broken texture (spec §8.3).
  */
 export function fallbackTextureKey(spriteSeed: string): string {
   const id = HUMAN_VARIANT_IDS[hashString(spriteSeed, 'sprite:fallback') % HUMAN_VARIANT_IDS.length];
   return AVATAR_VARIANTS[id].textureKey;
 }
 
-/** Обёртка над кэшом текстур сцены. Единственная нечистая часть модуля. */
+/** A wrapper over the scene's texture cache. The module's only impure part. */
 export class AppearanceResolver {
-  /** Явное поле: parameter property не переживает strip-only type stripping. */
+  /** An explicit field: a parameter property does not survive strip-only type stripping. */
   private readonly textures: { exists(key: string): boolean };
 
   constructor(textures: { exists(key: string): boolean }) {
@@ -1129,7 +1129,7 @@ export class AppearanceResolver {
     return this.textures.exists(`agent-${hash}`);
   }
 
-  /** Ключ текстуры для агента: запечённый лист или запасной человек. */
+  /** The texture key for an agent: a baked sheet or the fallback human. */
   textureFor(spriteSeed: string, gender: string): string {
     const r = resolveAppearance(spriteSeed, gender);
     return this.has(r.hash) ? r.textureKey : fallbackTextureKey(spriteSeed);
@@ -1142,9 +1142,9 @@ export class AppearanceResolver {
 Baked art lives on a mounted volume, so the manifest is fetched at runtime rather than bundled. In `PreloaderScene.preload()`, after the avatar spritesheets:
 
 ```ts
-    // Запечённые листы внешности (том, а не образ — см. спец §7.2).
-    // Манифест перечисляет, какие хеши уже собраны; отсутствие файла —
-    // не ошибка, AppearanceResolver подставит запасной лист.
+    // Baked appearance sheets (on the volume, not in the image — see spec §7.2).
+    // The manifest lists which hashes have been built; a missing file is not an
+    // error, AppearanceResolver substitutes the fallback sheet.
     this.load.json('baked-manifest', 'assets/baked/manifest.json');
 ```
 
@@ -1184,28 +1184,28 @@ In `AgentSprite.ts`, add the optional identity arguments and pick the texture th
     avatarVariant: number,
     pixelX: number,
     pixelY: number,
-    /** ТЗ-BotVille: идентичность для выводимой внешности. Нет — старый путь. */
+    /** TZ-BotVille: the identity for a derived appearance. Absent — the old path. */
     identity?: { spriteSeed: string; gender: string },
   ) {
     super(scene, pixelX, pixelY);
     this.agentId = agentId;
-    // Совместимость: любые старые числовые варианты (0..7 и дальше)
-    // детерминированно маппятся в текущий список через getVariant
+    // Compatibility: any old numeric variants (0..7 and beyond)
+    // map deterministically into the current list via getVariant
     this.variantDef = getVariant(avatarVariant);
     const vd = this.variantDef;
     const spriteH = vd.frameHeight * vd.scale;
     const spriteW = vd.frameWidth * vd.scale;
 
-    // Тень-эллипс под ногами (размер от ширины кадра)
+    // Shadow ellipse under the feet (sized from frame width)
     this.shadow = scene.add.ellipse(0, 0, Math.max(10, spriteW * 0.7), Math.max(4, spriteW * 0.22), 0x000000, 0.3);
     this.shadow.setOrigin(0.5, 0.5);
 
-    // Выводимая внешность (spec §6): запечённый лист или запасной человек.
+    // Derived appearance (spec §6): a baked sheet or the fallback human.
     const textureKey = identity
       ? new AppearanceResolver(scene.textures).textureFor(identity.spriteSeed, identity.gender)
       : vd.textureKey;
 
-    // Спрайт: origin по ногам
+    // Sprite: origin at the feet
     this.sprite = scene.add.sprite(0, 0, textureKey, 0);
 ```
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Точный кроп PNG: node scripts/crop.mjs <in> <out> <x> <y> <w> <h> [zoom]
+// Precise PNG crop: node scripts/crop.mjs <in> <out> <x> <y> <w> <h> [zoom]
 import { writeFileSync } from 'node:fs';
 import { decodePng, createCanvas, encodePng } from './png-lib.mjs';
 const [inF, outF, x, y, w, h, zoom = '1'] = process.argv.slice(2);

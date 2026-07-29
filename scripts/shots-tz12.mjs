@@ -1,26 +1,26 @@
-// Сдача ТЗ-12 (cross-site сессия): доказательство ДО/ПОСЛЕ + контроль десктопа.
+// TZ-12 delivery (cross-site session): BEFORE/AFTER proof + a desktop control check.
 //
-// Главный режим `cross` воспроизводит прод честно, а не на моках: клиент и
-// сервер разводятся по РАЗНЫМ сайтам (client.test / api.test через
-// --host-resolver-rules), а Chrome стартует с --test-third-party-cookie-phaseout,
-// то есть реально режет стороннюю куку — ровно корень №2 из ТЗ.
-//   ДО  — клиенту глушим токен-путь (блокируем /api/session и срезаем заголовок
-//          X-Session-Token): остаётся только кука, как было до фикса → HUD пуст.
-//   ПОСЛЕ — токен-путь включён → агент появляется в HUD.
+// The main `cross` mode reproduces prod honestly rather than with mocks: the client and
+// the server are split across DIFFERENT sites (client.test / api.test via
+// --host-resolver-rules), and Chrome starts with --test-third-party-cookie-phaseout,
+// i.e. it really blocks the third-party cookie — exactly root cause #2 from the TZ.
+//   BEFORE — the token path is disabled for the client (we block /api/session and strip the
+//            X-Session-Token header): only the cookie remains, as before the fix → the HUD is empty.
+//   AFTER  — the token path is enabled → the agent appears in the HUD.
 //
-// Режимы:
+// Modes:
 //   node scripts/shots-tz12.mjs cross    — cross-site: hud-before.png / hud-after.png
-//   node scripts/shots-tz12.mjs before   — десктоп 1280x800 бейзлайн (для diff)
-//   node scripts/shots-tz12.mjs after    — то же ПОСЛЕ правок
-//   node scripts/shots-tz12.mjs diff     — пиксельное сравнение (диффа быть не должно)
+//   node scripts/shots-tz12.mjs before   — desktop 1280x800 baseline (for the diff)
+//   node scripts/shots-tz12.mjs after    — the same AFTER the changes
+//   node scripts/shots-tz12.mjs diff     — pixel comparison (there must be no diff)
 //
-// Подготовка для `cross` (сервер и клиент поднимает человек/CI заранее):
-//   1) сервер:  DB_PATH=<временный> PORT=3999 NODE_ENV=production \
+// Setup for `cross` (a human/CI brings up the server and the client beforehand):
+//   1) server:  DB_PATH=<temporary> PORT=3999 NODE_ENV=production \
 //               COOKIE_SAMESITE=none CLIENT_ORIGIN=http://client.test:5178 \
 //               SESSION_SECRET=<32+> ENCRYPTION_SECRET=<32+> node dist/index.js
-//   2) клиент:  VITE_API_URL=http://api.test:3999 npx vite build && \
+//   2) client:  VITE_API_URL=http://api.test:3999 npx vite build && \
 //               npx vite preview --port 5178 --strictPort
-// Выход: docs/screenshots/tz12/
+// Output: docs/screenshots/tz12/
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -39,7 +39,7 @@ const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Conte
 mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-// ── diff: попиксельное сравнение бейзлайна и after (десктоп React-слой) ──
+// ── diff: pixel-by-pixel comparison of the baseline and after (desktop React layer) ──
 if (MODE === 'diff') {
   let bad = 0;
   for (const name of ['create']) {
@@ -55,13 +55,13 @@ if (MODE === 'diff') {
         }
       }
     }
-    console.log(`desk-${name}: ${diff === -1 ? 'РАЗНЫЙ РАЗМЕР' : diff + ' px diff'}`);
+    console.log(`desk-${name}: ${diff === -1 ? 'DIFFERENT SIZE' : diff + ' px diff'}`);
     if (diff !== 0) bad++;
   }
   process.exit(bad ? 1 : 0);
 }
 
-// ── общие шаги UI ──
+// ── shared UI steps ──
 async function openModalAndCreate(page, name) {
   await page.evaluate(() => {
     const s = [...document.querySelectorAll('[class*="emptySlot"]')];
@@ -76,12 +76,13 @@ async function openModalAndCreate(page, name) {
   }, name);
   await sleep(150);
   await page.evaluate(() => {
+    // NB: the Russian alternative matches the RU button label the client renders — do not translate.
     const btn = [...document.querySelectorAll('[class*="modal"] button')]
       .find(b => /Создать агента|Create Agent/.test(b.textContent));
     btn.click();
   });
-  // Модалка закрывается и на баге, и на успехе — ждём именно закрытия,
-  // а разницу ловим уже по содержимому HUD.
+  // The modal closes both on the bug and on success — so we wait for the close itself
+  // and catch the difference from the HUD contents afterwards.
   await page.waitForFunction(() => !document.querySelector('[class*="modal"]'), { timeout: 15000 });
   await sleep(1200);
 }
@@ -89,20 +90,20 @@ async function openModalAndCreate(page, name) {
 const slotNames = (page) => page.evaluate(() =>
   [...document.querySelectorAll('[class*="slot_"]')].map(e => e.textContent.trim()));
 
-// ── cross-site: главный сценарий ДО/ПОСЛЕ ──
+// ── cross-site: the main BEFORE/AFTER scenario ──
 if (MODE === 'cross') {
   const CLIENT = process.env.CLIENT_URL ?? 'http://client.test:5178';
   const browser = await puppeteer.launch({
     executablePath: CHROME, headless: 'new',
     args: [
       '--no-sandbox', '--use-gl=angle', '--use-angle=metal', '--ignore-gpu-blocklist',
-      // реальная блокировка сторонних кук — это и есть корень №2
+      // real third-party cookie blocking — this is root cause #2 itself
       '--test-third-party-cookie-phaseout',
       '--host-resolver-rules=MAP client.test 127.0.0.1, MAP api.test 127.0.0.1',
     ],
   });
 
-  // legacy=true — эмуляция клиента ДО фикса: токен-путь недоступен
+  // legacy=true — emulates the client BEFORE the fix: the token path is unavailable
   async function run(legacy, label, agentName) {
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
@@ -110,10 +111,10 @@ if (MODE === 'cross') {
       await page.setRequestInterception(true);
       page.on('request', (req) => {
         const url = req.url();
-        if (url.includes('/api/session')) return req.abort('failed'); // бутстрапа нет
+        if (url.includes('/api/session')) return req.abort('failed'); // no bootstrap
         if (url.includes('/api/')) {
           const h = { ...req.headers() };
-          delete h['x-session-token'];                                 // заголовка нет
+          delete h['x-session-token'];                                 // no header
           return req.continue({ headers: h });
         }
         req.continue();
@@ -126,27 +127,27 @@ if (MODE === 'cross') {
     await sleep(400);
     const names = await slotNames(page);
     await page.screenshot({ path: path.join(OUT, `hud-${label}.png`) });
-    console.log(`✓ hud-${label}.png — слоты: ${JSON.stringify(names)}`);
+    console.log(`✓ hud-${label}.png — slots: ${JSON.stringify(names)}`);
     await page.close();
     return names;
   }
 
-  // Имена короткие: поле имени обрезает длинные, и проверка по тексту слота
-  // должна сравниваться с тем, что реально отрисовано.
-  const NAME_BEFORE = 'Бага', NAME_AFTER = 'Токен';
+  // The names are short: the name field truncates long ones, and the slot-text check
+  // has to compare against what is actually rendered.
+  const NAME_BEFORE = 'Bug', NAME_AFTER = 'Token';
   const before = await run(true, 'before', NAME_BEFORE);
   const after = await run(false, 'after', NAME_AFTER);
   await browser.close();
 
   const has = (names, n) => names.some(s => s.includes(n));
-  const okBefore = !has(before, NAME_BEFORE); // баг воспроизведён: агента нет
-  const okAfter = has(after, NAME_AFTER);     // фикс работает: агент есть
-  console.log(`\nДО   — агент в HUD: ${has(before, NAME_BEFORE) ? 'ЕСТЬ' : 'НЕТ'} (ожидали НЕТ — баг)`);
-  console.log(`ПОСЛЕ — агент в HUD: ${has(after, NAME_AFTER) ? 'ЕСТЬ' : 'НЕТ'} (ожидали ЕСТЬ — фикс)`);
+  const okBefore = !has(before, NAME_BEFORE); // bug reproduced: the agent is absent
+  const okAfter = has(after, NAME_AFTER);     // fix works: the agent is present
+  console.log(`\nBEFORE — agent in HUD: ${has(before, NAME_BEFORE) ? 'YES' : 'NO'} (expected NO — the bug)`);
+  console.log(`AFTER  — agent in HUD: ${has(after, NAME_AFTER) ? 'YES' : 'NO'} (expected YES — the fix)`);
   process.exit(okBefore && okAfter ? 0 : 1);
 }
 
-// ── десктоп-контроль (before/after): та же модалка, что в ТЗ-11 ──
+// ── desktop control check (before/after): the same modal as in TZ-11 ──
 {
   const BASE = process.env.CLIENT_URL ?? 'http://localhost:5173';
   const browser = await puppeteer.launch({

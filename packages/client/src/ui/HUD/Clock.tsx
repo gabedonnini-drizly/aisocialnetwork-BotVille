@@ -2,7 +2,7 @@ import { useWorldStore } from '../../store/worldStore.js';
 import { useT } from '../../i18n/index.js';
 import styles from './HUD.module.css';
 
-/** Иконка времени суток: границы совпадают с фазами тонировки (config.ts). */
+/** Time-of-day icon: boundaries match the tint phases (config.ts). */
 function dayIcon(hour: number): string {
   if (hour >= 8 && hour < 17) return '☀️';
   if (hour >= 17 && hour < 20) return '🌇';
@@ -10,7 +10,7 @@ function dayIcon(hour: number): string {
   return '🌙';
 }
 
-/** Пиксельные часы в HUD: игровое время из worldStore (тикает GameBridge). */
+/** Pixel clock in the HUD: game time from worldStore (ticked by GameBridge). */
 export function Clock() {
   const t = useT();
   const timeOfDay = useWorldStore(s => s.timeOfDay);

@@ -1,19 +1,19 @@
-// Сдача ТЗ-14 (OpenRouter + ключи на уровне юзера): скриншоты + контроль десктопа.
+// TZ-14 delivery (OpenRouter + user-level keys): screenshots + a desktop control check.
 //
-// Режимы:
-//   node scripts/shots-tz14.mjs desk     — 1280x800: панель ключей, создание агента
-//                                          с сохранённым ключом, каталог OpenRouter, чат
-//   node scripts/shots-tz14.mjs mobile   — 375x667 (iPhone SE): то же самое
-//   node scripts/shots-tz14.mjs before   — бейзлайн НЕТРОНУТЫХ экранов (профиль, чат)
-//   node scripts/shots-tz14.mjs after    — они же после правок
-//   node scripts/shots-tz14.mjs diff     — попиксельное сравнение before/after (должно быть 0)
+// Modes:
+//   node scripts/shots-tz14.mjs desk     — 1280x800: the keys panel, creating an agent
+//                                          with a saved key, the OpenRouter catalog, chat
+//   node scripts/shots-tz14.mjs mobile   — 375x667 (iPhone SE): the same
+//   node scripts/shots-tz14.mjs before   — baseline of the UNTOUCHED screens (profile, chat)
+//   node scripts/shots-tz14.mjs after    — the same ones after the changes
+//   node scripts/shots-tz14.mjs diff     — pixel-by-pixel comparison of before/after (must be 0)
 //
-// Требует поднятыми:
-//   1) мок-провайдер:  node scripts/mock-openai-provider.mjs 4010
-//   2) сервер на временной БД (:3999, DEMO_ENABLED=false)
-//   3) клиент:         VITE_API_URL=http://localhost:3999 npx vite build &&
+// Requires the following to be up:
+//   1) mock provider:  node scripts/mock-openai-provider.mjs 4010
+//   2) the server on a temporary DB (:3999, DEMO_ENABLED=false)
+//   3) the client:     VITE_API_URL=http://localhost:3999 npx vite build &&
 //                      npx vite preview --port 5178 --strictPort
-// Выход: docs/screenshots/tz14/
+// Output: docs/screenshots/tz14/
 import puppeteer from 'puppeteer-core';
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -34,7 +34,7 @@ const MOCK_URL = process.env.MOCK_PROVIDER_URL ?? 'http://localhost:4010/v1';
 mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-// ── diff: попиксельное сравнение нетронутых экранов ──
+// ── diff: pixel-by-pixel comparison of the untouched screens ──
 if (MODE === 'diff') {
   let bad = 0;
   for (const name of ['profile', 'chat']) {
@@ -50,7 +50,7 @@ if (MODE === 'diff') {
         }
       }
     }
-    console.log(`desk-${name}: ${diff === -1 ? 'РАЗНЫЙ РАЗМЕР' : diff + ' px diff'}`);
+    console.log(`desk-${name}: ${diff === -1 ? 'DIFFERENT SIZE' : diff + ' px diff'}`);
     if (diff !== 0) bad++;
   }
   process.exit(bad ? 1 : 0);
@@ -77,20 +77,20 @@ const waitWorld = () => page.waitForFunction(
 await page.goto(BASE + '/app', { waitUntil: 'networkidle2' });
 await waitWorld();
 
-// Состояние сессии: сохранённый ключ юзера (один раз!) + два агента БЕЗ личных
-// ключей — ровно сценарий приёмки. Для режима контроля ключ не нужен.
+// Session state: a saved user key (once!) + two agents WITHOUT personal
+// keys — exactly the acceptance scenario. The control mode needs no key.
 await page.evaluate(async ({ mockUrl, control, apiBase }) => {
-  // Клиент и сервер — разные порты (как на проде разные сайты), поэтому сессия
-  // едет токеном из localStorage, а не кукой (ТЗ-12).
+  // The client and the server are on different ports (like different sites in prod), so the
+  // session travels as a token from localStorage rather than as a cookie (TZ-12).
   const token = localStorage.getItem('av_session_token');
   const api = (p, init = {}) => fetch(apiBase + p, {
     credentials: 'include',
     ...init,
     headers: { ...(init.headers ?? {}), 'X-Session-Token': token },
   });
-  // Контрольные кадры снимаются и старой сборкой клиента (до ТЗ-14), поэтому
-  // там агенты на claude: провайдера 'custom' старый клиент просто не знает и
-  // отрисовал бы пустое имя — это был бы ложный дифф, а не регрессия.
+  // The control frames are also taken with the old client build (pre-TZ-14), so
+  // there the agents use claude: the old client simply doesn't know the 'custom' provider
+  // and would render an empty name — that would be a false diff, not a regression.
   const cfg = control
     ? { providerType: 'claude', modelId: 'claude-sonnet-4-6' }
     : { providerType: 'custom', modelId: 'mock-model-1', customBaseUrl: mockUrl };
@@ -119,7 +119,7 @@ await page.evaluate(() => window.__setGameHour(12));
 await page.waitForSelector('[class*="slotAvatar"]', { timeout: 15_000 });
 await sleep(700);
 
-// Мир недетерминирован (агенты бродят) — на кадрах React-слоя канвас прячем
+// The world is non-deterministic (agents roam) — hide the canvas for the React-layer frames
 if (!MOBILE) await page.evaluate(() => { document.getElementById('game-container').style.display = 'none'; });
 
 const prefix = MOBILE ? 'mob' : 'desk';
@@ -129,7 +129,7 @@ const shot = async (name) => {
   await page.screenshot({ path: path.join(OUT, `${prefix}-${name}${suffix}.png`) });
   console.log(`✓ ${prefix}-${name}${suffix}.png`);
 };
-// Провайдер — первый <select> модалки (второй, если он есть, — список моделей)
+// The provider is the modal's first <select> (the second one, if present, is the model list)
 const selectProvider = async (value) => {
   const [provider] = await page.$$('select');
   await provider.select(value);
@@ -137,14 +137,14 @@ const selectProvider = async (value) => {
 const clickText = (re) => page.evaluate((src) => {
   const rx = new RegExp(src, 'i');
   const btn = [...document.querySelectorAll('button')].find(b => rx.test(b.textContent));
-  if (!btn) throw new Error('кнопка не найдена: ' + src);
+  if (!btn) throw new Error('button not found: ' + src);
   btn.click();
 }, re.source);
 
-// ── Контрольные кадры: экраны, которые ТЗ-14 менять не должен ──
-// Снимаем САМИ панели, а не весь экран: в HUD добавлена кнопка ключей, и он
-// (центрированный) сдвигается по определению — это новая функциональность,
-// а не регрессия. Контроль здесь про то, что профиль и чат не поехали.
+// ── Control frames: screens that TZ-14 must not change ──
+// We capture the panels THEMSELVES rather than the whole screen: a keys button was added to
+// the HUD, and being centered it shifts by definition — that is new functionality,
+// not a regression. The control here is about the profile and chat not drifting.
 if (CONTROL) {
   const shotEl = async (name, selector) => {
     await page.evaluate(() => window.__setGameHour(12));
@@ -167,11 +167,11 @@ if (CONTROL) {
   await shotEl('chat', '[class*="window"]');
 
   await browser.close();
-  console.log('готово:', OUT);
+  console.log('done:', OUT);
   process.exit(0);
 }
 
-// ── 1) Панель ключей из HUD ──
+// ── 1) The keys panel from the HUD ──
 await page.evaluate(() => {
   document.querySelector('[class*="keysBtn"]').click();
 });
@@ -183,13 +183,13 @@ await page.evaluate(() => {
 });
 await sleep(200);
 
-// ── 2) Создание агента: сохранённый ключ вместо пустого поля ──
+// ── 2) Creating an agent: the saved key instead of an empty field ──
 await page.evaluate(() => {
   document.querySelector('[class*="emptySlot"]').dispatchEvent(new MouseEvent('click', { bubbles: true }));
 });
 await page.waitForSelector('[class*="modal"]', { timeout: 5000 });
 await sleep(400);
-// провайдер → custom (для него ключ уже сохранён)
+// provider → custom (its key is already saved)
 await selectProvider('custom');
 await sleep(300);
 await page.evaluate(() => {
@@ -199,7 +199,7 @@ await page.evaluate(() => {
 await sleep(200);
 await shot('create-saved-key');
 
-// ── 3) Живой каталог OpenRouter: поиск + блок бесплатных ──
+// ── 3) The live OpenRouter catalog: search + the free-models block ──
 await selectProvider('openrouter');
 await page.waitForFunction(
   () => !!document.querySelector('[class*="groupLabel"], [class*="row"]'),
@@ -213,7 +213,7 @@ await page.evaluate(() => {
 await sleep(200);
 await shot('openrouter-free');
 
-// поиск по каталогу
+// catalog search
 await page.evaluate(() => {
   const input = document.querySelector('[class*="search"]');
   const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
@@ -223,10 +223,11 @@ await page.evaluate(() => {
 await sleep(400);
 await shot('openrouter-search');
 
+// NB: the "отмена" alternative matches the RU button label the client renders — do not translate.
 await clickText(/cancel|отмена/);
 await sleep(250);
 
-// ── 4) Оба агента отвечают на одном сохранённом ключе ──
+// ── 4) Both agents reply using the same saved key ──
 for (const idx of [0, 1]) {
   await page.evaluate((i) => {
     const slots = [...document.querySelectorAll('[class*="slotAvatar"]')];
@@ -238,14 +239,15 @@ for (const idx of [0, 1]) {
   await page.evaluate(() => {
     const ta = document.querySelector('textarea');
     const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
-    setter.call(ta, 'привет');
+    setter.call(ta, 'hello');
     ta.dispatchEvent(new Event('input', { bubbles: true }));
   });
   await sleep(150);
   await page.evaluate(() => document.querySelector('[class*="sendBtn"]').click());
-  // ждём готовый ответ (стрим мок-провайдера ~1 с)
+  // wait for the finished reply (the mock provider's stream takes ~1 s)
+  // NB: this must match the text streamed by scripts/mock-openai-provider.mjs.
   await page.waitForFunction(
-    () => /Ключ принят/.test(document.body.innerText),
+    () => /Key accepted/.test(document.body.innerText),
     { timeout: 20_000, polling: 250 },
   );
   await sleep(400);
@@ -262,9 +264,9 @@ for (const idx of [0, 1]) {
   }
 }
 
-// ── 5) Неверный ключ → человеческая ошибка, а не тишина ──
-// Личному ключу агента даём заведомо неверное значение: он приоритетнее
-// сохранённого, значит провайдер ответит 401 — проверяем текст в ленте.
+// ── 5) A wrong key → a human-readable error, not silence ──
+// We give the agent's personal key a deliberately wrong value: it takes priority over
+// the saved one, so the provider will answer 401 — we check the text in the feed.
 await page.evaluate(async (apiBase) => {
   const token = localStorage.getItem('av_session_token');
   const list = (await (await fetch(apiBase + '/api/agents', {
@@ -288,11 +290,12 @@ await page.waitForSelector('textarea', { timeout: 5000 });
 await page.evaluate(() => {
   const ta = document.querySelector('textarea');
   const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set;
-  setter.call(ta, 'привет');
+  setter.call(ta, 'hello');
   ta.dispatchEvent(new Event('input', { bubbles: true }));
 });
 await sleep(150);
 await page.evaluate(() => document.querySelector('[class*="sendBtn"]').click());
+// NB: the "не подошёл" alternative matches the RU error text the client renders — do not translate.
 await page.waitForFunction(
   () => /не подошёл|didn.t work/i.test(document.body.innerText),
   { timeout: 20_000, polling: 250 },
@@ -301,4 +304,4 @@ await sleep(300);
 await shot('bad-key-error');
 
 await browser.close();
-console.log('готово:', OUT);
+console.log('done:', OUT);

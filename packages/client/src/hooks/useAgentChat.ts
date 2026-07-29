@@ -2,12 +2,12 @@ import { useState, useCallback, useRef } from 'react';
 import { apiFetch } from '../lib/api.js';
 import type { TKey } from '../i18n/index.js';
 
-/** Сообщение в ленте чата; 'system' — служебные (ошибки), в историю LLM не попадают */
+/** Message in the chat feed; 'system' — service messages (errors), never sent to LLM history */
 export interface ChatFeedMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: number;
-  /** Ошибки храним ключом словаря — текст переводится при рендере (смена языка на лету) */
+  /** Errors are stored as a dictionary key — text is translated at render time (live language switch) */
   i18nKey?: TKey;
 }
 
@@ -16,21 +16,21 @@ interface UseChatReturn {
   isStreaming: boolean;
   sendMessage: (text: string) => Promise<void>;
   clearHistory: () => void;
-  /** Остаток demo-сообщений (из SSE); null — агент работает на своём ключе */
+  /** Remaining demo messages (from SSE); null — the agent runs on its own key */
   demoRemaining: number | null;
   demoLimitReached: boolean;
   dismissDemoLimit: () => void;
-  /** Стрим оборвался и авторетрай не помог — показать кнопку «Повторить» */
+  /** Stream broke and the auto-retry did not help — show the "Retry" button */
   canRetry: boolean;
   retryLast: () => void;
 }
 
 const RETRY_DELAY_MS = 2000;
 
-// Коды нормализованных ошибок сервера (llm/errors.ts) → ключи словаря error.*
+// Normalized server error codes (llm/errors.ts) → error.* dictionary keys
 const KNOWN_ERROR_CODES = ['invalid_key', 'rate_limited', 'no_credits', 'stream_error', 'server_down', 'no_model_access'] as const;
 
-// ТЗ-14: HTTP-400 от /api/chat — агент недонастроен, а не сбой связи
+// TZ-14: HTTP 400 from /api/chat — the agent is misconfigured, not a connectivity failure
 const SETUP_ERROR_KEYS: Record<string, TKey> = {
   NO_API_KEY: 'error.no_key_set',
   NO_BASE_URL: 'error.no_endpoint_set',
@@ -51,15 +51,15 @@ export function useAgentChat(agentId: string): UseChatReturn {
 
   const pushSystem = (content: string, i18nKey?: TKey) => {
     setMessages(prev => {
-      // убираем пустой assistant-плейсхолдер — ответа не будет
+      // remove the empty assistant placeholder — there will be no reply
       const last = prev[prev.length - 1];
       const base = last?.role === 'assistant' && !last.content ? prev.slice(0, -1) : prev;
       return [...base, { role: 'system' as const, content, i18nKey, timestamp: Date.now() }];
     });
   };
 
-  // Один заход стрима: 'ok' — получили терминальное событие (done/error/…),
-  // 'break' — обрыв соединения или стрим кончился без терминального события.
+  // One stream attempt: 'ok' — received a terminal event (done/error/…),
+  // 'break' — connection dropped or the stream ended without a terminal event.
   const attempt = useCallback(async (text: string): Promise<AttemptResult> => {
     abortRef.current?.abort();
     abortRef.current = new AbortController();
@@ -77,15 +77,15 @@ export function useAgentChat(agentId: string): UseChatReturn {
         signal: abortRef.current.signal,
       });
       if (!res.ok || !res.body) {
-        // 429 — понятный лимит, ретраить бессмысленно; 5xx/прокси-ошибка
-        // (сервер недоступен) — как обрыв соединения: авторетрай + «Повторить»
+        // 429 — a clear limit, retrying is pointless; 5xx/proxy error
+        // (server unavailable) — treated like a dropped connection: auto-retry + "Retry"
         if (res.status === 429) {
           pushSystem('', 'error.too_many_requests');
           setIsStreaming(false);
           return 'http_error';
         }
-        // ТЗ-14: настройка агента неполна (нет ключа / адреса) — ретрай ничего
-        // не изменит, поэтому сразу человеческий текст, а не «связь прервалась»
+        // TZ-14: the agent's setup is incomplete (no key / no endpoint) — a retry
+        // changes nothing, so show human-readable text right away, not "connection lost"
         if (res.status === 400) {
           const code = await res.json().then(j => j?.error?.code).catch(() => undefined);
           const key = SETUP_ERROR_KEYS[code as string];
@@ -137,8 +137,8 @@ export function useAgentChat(agentId: string): UseChatReturn {
               });
             }
             if (chunk.type === 'error') {
-              // Нормализованная ошибка провайдера — системкой в ленту.
-              // Текст берём по code из словаря; серверный message — фолбэк (ТЗ-07).
+              // Normalized provider error — goes into the feed as a system message.
+              // Text is looked up by code in the dictionary; the server message is a fallback (TZ-07).
               terminal = true;
               setIsStreaming(false);
               const code = typeof chunk.error === 'object' ? chunk.error?.code : undefined;
@@ -160,7 +160,7 @@ export function useAgentChat(agentId: string): UseChatReturn {
     }
   }, [agentId]);
 
-  // addUserMsg=false — повтор после обрыва, сообщение уже в ленте
+  // addUserMsg=false — retry after a drop, the message is already in the feed
   const run = useCallback(async (text: string, addUserMsg: boolean) => {
     lastTextRef.current = text;
     setCanRetry(false);
@@ -173,9 +173,9 @@ export function useAgentChat(agentId: string): UseChatReturn {
 
     let result = await attempt(text);
     if (result === 'break') {
-      // 1 автоматический ретрай через 2 секунды
+      // 1 automatic retry after 2 seconds
       await new Promise(r => setTimeout(r, RETRY_DELAY_MS));
-      // сбрасываем частично полученный ответ перед повтором
+      // reset the partially received reply before retrying
       setMessages(prev => {
         const copy = [...prev];
         const last = copy[copy.length - 1];
@@ -194,7 +194,7 @@ export function useAgentChat(agentId: string): UseChatReturn {
   const sendMessage = useCallback((text: string) => run(text, true), [run]);
   const retryLast = useCallback(() => {
     if (lastTextRef.current) {
-      // убираем системку про обрыв перед повтором
+      // remove the system message about the drop before retrying
       setMessages(prev => prev.filter((m, i) => !(i === prev.length - 1 && m.role === 'system')));
       void run(lastTextRef.current, false);
     }

@@ -23,7 +23,7 @@ export function AgentProfile() {
 
   const statusColors = STATUS_COLORS;
   const statusLabel = STATUS_KEYS[agent.status] ? t(STATUS_KEYS[agent.status]) : agent.status;
-  // ТЗ-16: где агент сейчас (ночью в дорме — «Спит»)
+  // TZ-16: where the agent is right now (at night in the dorm — "Sleeping")
   const locationLabel = isSleepTime(timeOfDay) && agent.location === 'dorm'
     ? t('loc.dormSleeping')
     : t(LOCATION_KEYS[agent.location] ?? 'loc.district');

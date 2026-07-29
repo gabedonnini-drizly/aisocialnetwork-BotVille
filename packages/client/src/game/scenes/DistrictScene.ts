@@ -18,20 +18,20 @@ import type { SyncedAgent } from '../../hooks/useGameSync.js';
 import type { AgentLocation } from '@botville/shared';
 
 /**
- * Ночная фаза агента в районе. С ТЗ-16 — ТОЛЬКО косметика животных (загон, Z,
- * пробуждение кликом): куда уходят люди ночью, решает сервер через location,
- * а их путь к двери дорма рисует механика leaving (см. syncAgents).
+ * An agent's night phase in the district. Since TZ-16 — ONLY animal cosmetics (the pen, Z icon,
+ * waking on click): where people go at night is decided by the server via location,
+ * and their walk to the dorm door is drawn by the leaving mechanic (see syncAgents).
  */
 interface NightState {
   mode: 'none' | 'toPen' | 'asleep';
-  /** Личный час пробуждения из [wakeStart, wakeEnd). */
+  /** Personal wake-up hour from [wakeStart, wakeEnd). */
   wakeHour?: number;
-  /** Разбужен кликом: не укладывать до этого часа (может быть >24). */
+  /** Woken by a click: don't put back to sleep until this hour (may be >24). */
   snoozeUntil?: number;
   spot?: { x: number; y: number; occupiedBy: string | null };
 }
 
-/** Косметика ухода в здание: агент дошагивает до двери и «входит» (ТЗ-16). */
+/** Cosmetic building exit: the agent walks up to the door and "enters" (TZ-16). */
 interface LeavingState {
   x: number;
   y: number;
@@ -55,13 +55,13 @@ export class DistrictScene extends Phaser.Scene {
   private buildingImages: Map<string, Phaser.GameObjects.Image> = new Map();
   private tintOverlay!: Phaser.GameObjects.Rectangle;
   private glowSprites: Phaser.GameObjects.Image[] = [];
-  /** Точки у дверей зданий (стоянка перед входом), ключ — targetScene. */
+  /** Points by building doors (waiting spot in front of the entrance), keyed by targetScene. */
   private doorPoints: Map<string, { x: number; y: number }> = new Map();
   private penSpots: { x: number; y: number; occupiedBy: string | null }[] = [];
   private nightStates: Map<string, NightState> = new Map();
-  /** Агенты, дошагивающие до двери здания перед исчезновением (ТЗ-16). */
+  /** Agents walking to a building door before disappearing (TZ-16). */
   private leaving: Map<string, LeavingState> = new Map();
-  /** Последний известный location каждого агента — для спавна у нужной двери. */
+  /** Last known location of each agent — used to spawn them at the right door. */
   private lastLoc: Map<string, AgentLocation> = new Map();
   private nightAcc = 0;
   private transitioning = false;
@@ -81,12 +81,12 @@ export class DistrictScene extends Phaser.Scene {
     map.createLayer('ground', tileset, 0, 0)!.setDepth(0);
     map.createLayer('roads', tileset, 0, 0)!.setDepth(1);
 
-    // --- объекты-декали под агентами (грядки, урожай)
+    // --- decal objects beneath agents (garden beds, crops)
     for (const o of map.getObjectLayer('props-below')?.objects ?? []) {
       this.add.image(o.x!, o.y!, o.name).setOrigin(0, 0).setDepth(2);
     }
 
-    // --- здания: интерактивные фасады с hover-подсветкой
+    // --- buildings: interactive facades with hover highlight
     for (const o of map.getObjectLayer('buildings')?.objects ?? []) {
       const p = propsOf(o);
       const img = this.add.image(o.x!, o.y!, o.name).setOrigin(0, 0);
@@ -102,13 +102,13 @@ export class DistrictScene extends Phaser.Scene {
       }
     }
 
-    // --- пропсы поверх (деревья, фонари, машины...) — Y-sort по нижней кромке
+    // --- props on top (trees, street lamps, cars...) — Y-sorted by bottom edge
     for (const o of map.getObjectLayer('props-above')?.objects ?? []) {
       const img = this.add.image(o.x!, o.y!, o.name).setOrigin(0, 0);
       img.setDepth(o.y! + (o.height ?? img.height));
     }
 
-    // --- двери: зоны клика (дублируют клик по фасаду)
+    // --- doors: click zones (duplicate clicking the facade)
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
       if (typeof p.targetScene !== 'string') continue;
@@ -123,39 +123,39 @@ export class DistrictScene extends Phaser.Scene {
       this.doorPoints.set(target, { x: o.x! + o.width! / 2, y: o.y! + o.height! + 6 });
     }
 
-    // --- точки ночёвки животных (загон фермы)
+    // --- animal sleeping spots (the farm pen)
     this.penSpots = (map.getObjectLayer('night')?.objects ?? [])
       .filter(o => o.name === 'animal_sleep')
       .map(o => ({ x: o.x!, y: o.y!, occupiedBy: null }));
 
-    // --- спавны
+    // --- spawns
     this.spawnPoints = (map.getObjectLayer('spawns')?.objects ?? []).map(o => ({ x: o.x!, y: o.y! }));
     if (!this.spawnPoints.length) this.spawnPoints = [{ x: DISTRICT.widthPx / 2, y: DISTRICT.heightPx / 2 }];
 
-    // --- коллизии -> сетка проходимости
+    // --- collisions -> walkability grid
     this.pathfinder = new Pathfinder(DISTRICT.widthTiles, DISTRICT.heightTiles);
     for (const o of map.getObjectLayer('collision')?.objects ?? []) {
       this.pathfinder.blockRect(o.x!, o.y!, o.width!, o.height!);
     }
 
-    // --- камера
+    // --- camera
     const cam = this.cameras.main;
     cam.setBounds(0, 0, DISTRICT.widthPx, DISTRICT.heightPx);
     cam.setZoom(CAMERA.initialZoom);
     cam.centerOn(DISTRICT.widthPx / 2 - 24, DISTRICT.heightPx / 2 - 8);
     cam.setBackgroundColor('#2e4a35');
 
-    attachCameraControls(this); // пан драгом/пальцем, pinch, wheel, +/- (ТЗ-09)
+    attachCameraControls(this); // drag/finger pan, pinch, wheel, +/- (TZ-09)
 
-    // --- тонировка дня/ночи: overlay на весь мир с запасом по краям
-    // (мировые координаты, а не scrollFactor 0 — корректно при любом зуме)
+    // --- day/night tinting: an overlay covering the whole world with margin at the edges
+    // (world coordinates, not scrollFactor 0 — correct at any zoom level)
     this.tintOverlay = this.add.rectangle(
       -DISTRICT.widthPx, -DISTRICT.heightPx,
       DISTRICT.widthPx * 3, DISTRICT.heightPx * 3,
       0x000000, 0,
     ).setOrigin(0, 0).setDepth(TINT_OVERLAY_DEPTH);
 
-    // --- ночные источники света: глоу-спрайты по слою glows карты
+    // --- night light sources: glow sprites from the map's glows layer
     ensureGlowTexture(this);
     for (const o of map.getObjectLayer('glows')?.objects ?? []) {
       const def = GLOW_KINDS[o.name as GlowKind];
@@ -170,7 +170,7 @@ export class DistrictScene extends Phaser.Scene {
       this.glowSprites.push(img);
     }
 
-    // клик по агенту в HUD — камера плавно наезжает на него
+    // clicking an agent in the HUD — the camera smoothly pans onto them
     const onFocusAgent = ({ agentId }: { agentId: string }) => {
       const sprite = this.agentSprites.get(agentId);
       if (!sprite || sprite.isHiddenInside) return;
@@ -196,7 +196,7 @@ export class DistrictScene extends Phaser.Scene {
     GameBridge.emit('scene:changed', { scene: 'DistrictScene' });
   }
 
-  /** Переход в интерьер с fade (клик по зданию/двери и agent:goto из HUD). */
+  /** Transition into an interior with fade (building/door click and agent:goto from the HUD). */
   transitionTo(targetScene: string) {
     if (this.transitioning) return;
     this.transitioning = true;
@@ -207,7 +207,7 @@ export class DistrictScene extends Phaser.Scene {
     });
   }
 
-  // ------- интерфейс для AgentSprite (хождение по карте)
+  // ------- interface for AgentSprite (walking around the map)
   randomWalkableNear(x: number, y: number): { x: number; y: number } {
     return this.pathfinder.randomWalkableNear(x, y, WANDER_RADIUS);
   }
@@ -220,7 +220,7 @@ export class DistrictScene extends Phaser.Scene {
     const dt = delta / 1000;
     this.agentSprites.forEach(a => a.update(dt));
 
-    // уход в здание (ТЗ-16): дошёл до двери (или застрял) — «входит» и исчезает
+    // building exit (TZ-16): reached the door (or got stuck) — "enters" and disappears
     for (const [id, lv] of this.leaving) {
       const sprite = this.agentSprites.get(id);
       if (!sprite) { this.leaving.delete(id); continue; }
@@ -246,9 +246,9 @@ export class DistrictScene extends Phaser.Scene {
     this.updateCars(dt, night);
   }
 
-  // ------------------------------------------------- амбиент: машины
+  // ------------------------------------------------- ambience: cars
 
-  /** Раз в 30-45 сек по дороге проезжает машина; ночью — с глоу-фарами. */
+  /** Every 30-45 sec a car drives down the road; at night — with glowing headlights. */
   private spawnCar() {
     const goingDown = Math.random() < 0.5;
     const tex = goingDown
@@ -257,7 +257,7 @@ export class DistrictScene extends Phaser.Scene {
     const img = this.add.image(0, 0, tex).setOrigin(0, 0);
     const w = img.width;
     const h = img.height;
-    // фары на переднем крае по ходу движения
+    // headlights on the leading edge in the direction of travel
     const glowAt: [number, number][] = goingDown
       ? [[w * 0.28, h + 2], [w * 0.72, h + 2]]
       : [[w + 4, h * 0.52], [w + 4, h * 0.74]];
@@ -291,7 +291,7 @@ export class DistrictScene extends Phaser.Scene {
       const c = this.cars[i];
       c.obj.x += c.vx * dt;
       c.obj.y += c.vy * dt;
-      c.obj.setDepth(c.obj.y + c.h); // Y-sort: под агентами южнее, над дорогой
+      c.obj.setDepth(c.obj.y + c.h); // Y-sort: below agents further south, above the road
       for (const g of c.glows) g.setAlpha(night * GLOW_KINDS.headlight.alpha);
       if (c.obj.x > DISTRICT.widthPx + 16 || c.obj.y > DISTRICT.heightPx + 16) {
         c.obj.destroy();
@@ -300,13 +300,13 @@ export class DistrictScene extends Phaser.Scene {
     }
   }
 
-  // ---------------------------------------------- ночной распорядок агентов
+  // ---------------------------------------------- agents' night routine
 
-  /** Агента нельзя укладывать: активная задача/работа или открытый чат с ним. */
+  /** The agent must not be put to bed: active task/work, or a chat with them is open. */
   private isBusy(sprite: AgentSprite): boolean {
     const s = sprite.currentStatus;
     if (s === 'task_running' || s === 'task_done' || s === 'work' || s === 'chat_npc') return true;
-    const ui = useUIStore.getState(); // только чтение UI-состояния (открыт ли чат)
+    const ui = useUIStore.getState(); // read-only peek at UI state (is a chat open)
     return ui.chatOpen && ui.selectedAgentId === sprite.agentId;
   }
 
@@ -321,14 +321,14 @@ export class DistrictScene extends Phaser.Scene {
     const sleepy = isSleepTime(hour);
 
     for (const [id, sprite] of this.agentSprites) {
-      // ТЗ-16: ночная косметика района — только животные. Люди ночью уходят
-      // в дорм по серверному location (leaving-механика доводит их до двери).
+      // TZ-16: the district's night cosmetics are animals only. People leave at night
+      // for the dorm per server location (the leaving mechanic walks them to the door).
       if (!sprite.isAnimal || this.leaving.has(id)) continue;
 
       let st = this.nightStates.get(id);
       if (!st) { st = { mode: 'none' }; this.nightStates.set(id, st); }
 
-      // разбужен кликом во сне в загоне — бодрствует до snoozeUntil
+      // woken by a click while asleep in the pen — stays awake until snoozeUntil
       if (st.mode === 'asleep' && !sprite.isAsleep) {
         this.releaseNightState(id, st);
         st.snoozeUntil = hour + snoozeHours;
@@ -340,7 +340,7 @@ export class DistrictScene extends Phaser.Scene {
           continue;
         }
         if (st.snoozeUntil !== undefined) {
-          // час считаем без разрыва в полночь, как в nightIntensity
+          // compute the hour without the midnight wraparound, same as nightIntensity
           const h = hour >= NIGHT_SCHEDULE.sleepStart ? hour : hour + 24;
           const until = st.snoozeUntil >= NIGHT_SCHEDULE.sleepStart ? st.snoozeUntil : st.snoozeUntil + 24;
           if (h < until) continue;
@@ -350,7 +350,7 @@ export class DistrictScene extends Phaser.Scene {
         switch (st.mode) {
           case 'none': {
             const spot = this.penSpots.find(s => !s.occupiedBy);
-            if (!spot) break; // мест в загоне нет — останется гулять
+            if (!spot) break; // no free spots in the pen — keeps wandering
             spot.occupiedBy = id;
             st.spot = spot;
             st.mode = 'toPen';
@@ -370,10 +370,10 @@ export class DistrictScene extends Phaser.Scene {
             break;
           }
           case 'asleep':
-            break; // спит до утра
+            break; // sleeps until morning
         }
       } else {
-        // утро/день
+        // morning/day
         st.snoozeUntil = undefined;
         switch (st.mode) {
           case 'toPen':
@@ -382,7 +382,7 @@ export class DistrictScene extends Phaser.Scene {
           case 'asleep': {
             if (hour >= (st.wakeHour ?? wakeStart)) {
               sprite.wakeUp();
-              this.releaseNightState(id, st); // животные дальше гуляют у фермы
+              this.releaseNightState(id, st); // animals go back to wandering near the farm
             }
             break;
           }
@@ -393,7 +393,7 @@ export class DistrictScene extends Phaser.Scene {
     }
   }
 
-  /** Убрать спрайт агента из района со всеми хвостами состояния. */
+  /** Remove an agent's sprite from the district along with all trailing state. */
   private removeSprite(id: string) {
     const st = this.nightStates.get(id);
     if (st) this.releaseNightState(id, st);
@@ -405,23 +405,23 @@ export class DistrictScene extends Phaser.Scene {
   }
 
   syncAgents(fullList: SyncedAgent[]) {
-    // ГЛАВНЫЙ ФИКС ТЗ-16: район рисует только тех, кто по серверу на улице
-    // или у фермы. Вход/выход игрока на местоположение агентов не влияет.
+    // THE KEY FIX of TZ-16: the district draws only those the server says are outside
+    // or at the farm. The player entering/leaving has no effect on agent locations.
     const present = fullList.filter(a => a.location === 'district' || a.location === 'farm');
     const incoming = new Set(present.map(a => a.id));
     const locOf = new Map(fullList.map(a => [a.id, a.location]));
 
     this.agentSprites.forEach((sprite, id) => {
       if (incoming.has(id)) {
-        // вернулся, не успев дойти до двери — уход отменяется
+        // came back before reaching the door — the departure is cancelled
         if (this.leaving.delete(id)) sprite.cancelGoal();
         return;
       }
       const newLoc = locOf.get(id);
-      if (!newLoc) { this.removeSprite(id); return; } // агент удалён совсем
-      if (this.leaving.has(id)) return; // уже дошагивает до двери
-      // косметика: ушёл в здание — дойти до его двери и «войти» (в т.ч. ночью
-      // в дорм — это и есть прежняя картинка отхода ко сну)
+      if (!newLoc) { this.removeSprite(id); return; } // agent deleted entirely
+      if (this.leaving.has(id)) return; // already walking to the door
+      // cosmetics: went into a building — walk to its door and "enter" (incl. at night
+      // to the dorm — that is exactly the old going-to-bed visual)
       const door = this.doorPoints.get(LOCATION_SCENES[newLoc]);
       if (door && !sprite.isAsleep && !sprite.isHiddenInside) {
         const st = this.nightStates.get(id);
@@ -429,13 +429,13 @@ export class DistrictScene extends Phaser.Scene {
         this.leaving.set(id, { x: door.x, y: door.y, deadline: this.time.now + LEAVE_WALK_TIMEOUT_MS });
         sprite.walkTo(door.x, door.y);
       } else {
-        this.removeSprite(id); // спит/скрыт или дверь не нашлась — без прохода
+        this.removeSprite(id); // asleep/hidden or no door found — no walk-out
       }
     });
 
     present.forEach((a) => {
       if (this.agentSprites.has(a.id)) return;
-      // пришёл из здания — появляется у его двери, иначе — спавн-точка
+      // came out of a building — appears at its door; otherwise at a spawn point
       const from = this.lastLoc.get(a.id);
       const door = from && LOCATION_SCENES[from] !== 'DistrictScene'
         ? this.doorPoints.get(LOCATION_SCENES[from])
@@ -447,11 +447,11 @@ export class DistrictScene extends Phaser.Scene {
       this.agentSprites.set(a.id, sprite);
     });
 
-    // запомнить «кто где» для следующего синка; подчистить удалённых
+    // remember "who is where" for the next sync; clean up deleted agents
     this.lastLoc.clear();
     fullList.forEach(a => this.lastLoc.set(a.id, a.location));
 
-    // сюда шли за конкретным агентом из HUD — навести камеру (ТЗ-16)
+    // we came here for a specific agent from the HUD — aim the camera (TZ-16)
     consumePendingFocus('DistrictScene', id => this.agentSprites.has(id));
   }
 }

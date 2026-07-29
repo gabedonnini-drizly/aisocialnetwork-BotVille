@@ -29,8 +29,8 @@ meetingRouter.post('/', async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
-  // Отключаем буферизацию ответа reverse-прокси хостинга (ТЗ-05), иначе SSE
-  // копится и приходит пачкой, а не токен-за-токеном.
+  // Disable response buffering in the hosting reverse proxy (TZ-05), otherwise
+  // SSE piles up and arrives in a batch instead of token-by-token.
   res.setHeader('X-Accel-Buffering', 'no');
   res.flushHeaders();
 
@@ -41,10 +41,10 @@ meetingRouter.post('/', async (req, res) => {
     const agentId = agent.id as string;
     const providerType = agent.provider_type as LLMProviderType;
 
-    // ТЗ-16: участник собрания «занят» — серверный тик его не двигает
+    // TZ-16: a meeting participant is "busy" — the server tick doesn't move it
     markAgentBusy(agentId);
 
-    // ТЗ-14: ключ агента → сохранённый ключ юзера → ошибка (demo в собрании нет)
+    // TZ-14: agent key → saved user key → error (no demo mode in meetings)
     const { source, apiKey, baseUrl } = resolveAgentKey(agent, userId);
     if (source === 'none') {
       send({ type: 'agent_error', agentId, error: 'No API key set' });

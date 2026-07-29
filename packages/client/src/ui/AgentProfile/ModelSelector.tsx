@@ -16,7 +16,7 @@ export function ModelSelector({ agent }: Props) {
   const [apiKey, setApiKeyInput] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  // Вердикт health-check ключа: true/false — от провайдера, null — проверка не удалась
+  // Key health-check verdict: true/false — from the provider, null — the check failed
   const [keyVerdict, setKeyVerdict] = useState<boolean | null | undefined>(undefined);
   const [selectedProvider, setSelectedProvider] = useState(agent.providerType);
   const [selectedModel, setSelectedModel] = useState(agent.modelId);
@@ -61,7 +61,7 @@ export function ModelSelector({ agent }: Props) {
       if (apiKey && selectedProvider !== 'ollama') {
         const verdict = await storeSetApiKey(agent.id, apiKey);
         setKeyVerdict(verdict);
-        if (verdict === false) return; // ключ сохранён, но не работает — оставляем редактор открытым
+        if (verdict === false) return; // the key was saved but doesn't work — keep the editor open
       }
       setSaved(true);
       setTimeout(() => { setSaved(false); setEditing(false); setApiKeyInput(''); setKeyVerdict(undefined); }, 1500);
@@ -88,7 +88,7 @@ export function ModelSelector({ agent }: Props) {
       <select className={styles.select} value={selectedProvider} onChange={e => {
         setSelectedProvider(e.target.value as Agent['providerType']);
         const prov = LLM_PROVIDERS.find(p => p.id === e.target.value);
-        // У openrouter/custom вшитого списка нет — модель выбирается ниже
+        // openrouter/custom have no built-in list — the model is chosen below
         if (prov) setSelectedModel(prov.models[0]?.id ?? '');
       }}>
         {LLM_PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -114,7 +114,7 @@ export function ModelSelector({ agent }: Props) {
       ) : (
         <>
           <div className={styles.fieldLabel}>{t('model.apiKey')}</div>
-          {/* ТЗ-14: без личного ключа агент возьмёт сохранённый ключ юзера */}
+          {/* TZ-14: without a personal key the agent uses the user's saved key */}
           {!agent.hasKey && savedUserKey && (
             <div className={styles.keySaved}>{t('model.usingSavedKey', { mask: savedUserKey.maskedKey })}</div>
           )}

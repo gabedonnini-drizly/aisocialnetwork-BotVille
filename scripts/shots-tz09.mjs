@@ -1,13 +1,13 @@
-// Сдача ТЗ-09: скриншоты дверей интерьеров (после фикса коврика) + запись
-// GIF управления камерой (пан драгом на десктопе, пан/пинч в мобильной
-// эмуляции с реальными CDP-тач-событиями — Phaser поднимает TouchManager).
+// TZ-09 delivery: screenshots of the interior doors (after the doormat fix) plus
+// recordings of camera control GIFs (drag-pan on desktop, pan/pinch in mobile
+// emulation with real CDP touch events — Phaser brings up the TouchManager).
 //
-// Требует запущенного dev-клиента (:5173) и системный Chrome; сервер не нужен
-// (агенты инжектируются в сцену через syncAgents, чисто визуально).
-// ffmpeg: npm i --no-save @ffmpeg-installer/ffmpeg (как для record-hero).
+// Requires a running dev client (:5173) and the system Chrome; the server is not needed
+// (agents are injected into the scene via syncAgents, purely visual).
+// ffmpeg: npm i --no-save @ffmpeg-installer/ffmpeg (same as for record-hero).
 //
-// Запуск из корня:  node scripts/shots-tz09.mjs
-// Выход: docs/screenshots/tz09/{office,cafe,dorm,library}-door-after.png
+// Run from the repo root:  node scripts/shots-tz09.mjs
+// Output: docs/screenshots/tz09/{office,cafe,dorm,library}-door-after.png
 //        docs/screenshots/tz09/camera-desktop-pan.gif
 //        docs/screenshots/tz09/camera-mobile-pan-pinch.gif
 
@@ -66,7 +66,7 @@ async function gif(prefix, name) {
   console.log('✓', name);
 }
 
-// ── 1. Двери 4 интерьеров (десктоп-вьюпорт, камера наезжает на проём) ──
+// ── 1. Doors of the 4 interiors (desktop viewport, camera zooms in on the doorway) ──
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
@@ -88,7 +88,7 @@ async function gif(prefix, name) {
       { timeout: 10_000, polling: 100 }, sceneKey,
     );
     await sleep(500); // fade-in
-    // крупный план дверного проёма: центр разрыва (160), низ комнаты
+    // close-up of the doorway: center of the gap (160), bottom of the room
     await page.evaluate((key) => {
       const cam = window.__game.scene.getScene(key).cameras.main;
       cam.setZoom(4);
@@ -101,7 +101,7 @@ async function gif(prefix, name) {
   await page.close();
 }
 
-// ── 2. Десктоп: пан левым драгом (мышь через CDP => реальные события) ──
+// ── 2. Desktop: pan with a left-button drag (mouse via CDP => real events) ──
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 960, height: 600, deviceScaleFactor: 1 });
@@ -111,7 +111,7 @@ async function gif(prefix, name) {
   const shot = () => page.screenshot({ path: path.join(TMP, `desk-${String(n++).padStart(4, '0')}.png`) });
 
   await shot();
-  // драг вправо-вниз, затем влево-вверх (мир едет за пальцем), с инерцией
+  // drag right-down, then left-up (the world follows the finger), with inertia
   for (const [fromX, fromY, dx, dy] of [[480, 300, 260, 160], [700, 420, -420, -260]]) {
     await page.mouse.move(fromX, fromY);
     await page.mouse.down();
@@ -121,13 +121,13 @@ async function gif(prefix, name) {
       await shot();
     }
     await page.mouse.up();
-    for (let i = 0; i < 8; i++) { await sleep(60); await shot(); } // инерция
+    for (let i = 0; i < 8; i++) { await sleep(60); await shot(); } // inertia
   }
   await page.close();
   await gif('desk', 'camera-desktop-pan.gif');
 }
 
-// ── 3. Мобила: однопальцевый пан + pinch-зум (CDP touch, iPhone-вьюпорт) ──
+// ── 3. Mobile: one-finger pan + pinch zoom (CDP touch, iPhone viewport) ──
 {
   const page = await browser.newPage();
   await page.setViewport({ width: 375, height: 812, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
@@ -142,7 +142,7 @@ async function gif(prefix, name) {
   const shot = () => page.screenshot({ path: path.join(TMP, `mob-${String(n++).padStart(4, '0')}.png`) });
 
   await shot();
-  // однопальцевый пан по диагонали туда-обратно
+  // one-finger diagonal pan, there and back
   for (const [fromX, fromY, dx, dy] of [[190, 500, -120, -220], [120, 260, 160, 300]]) {
     await dispatch('touchStart', [[fromX, fromY]]);
     const steps = 12;
@@ -151,9 +151,9 @@ async function gif(prefix, name) {
       await shot();
     }
     await dispatch('touchEnd', []);
-    for (let i = 0; i < 6; i++) { await sleep(60); await shot(); } // инерция
+    for (let i = 0; i < 6; i++) { await sleep(60); await shot(); } // inertia
   }
-  // pinch-out (зум +), потом pinch-in (зум − до кламп-границы)
+  // pinch-out (zoom +), then pinch-in (zoom − down to the clamp limit)
   for (const dir of [1, -1]) {
     const cx = 187, cy = 420;
     const start = dir > 0 ? 40 : 150;
@@ -174,4 +174,4 @@ async function gif(prefix, name) {
 
 await browser.close();
 rmSync(TMP, { recursive: true, force: true });
-console.log('готово:', OUT);
+console.log('done:', OUT);

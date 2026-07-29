@@ -10,9 +10,9 @@ let db: DatabaseSync;
 
 export function getDb(): DatabaseSync {
   if (!db) {
-    // На проде DB_PATH указывает на persistent-volume (напр. /data/botville.db).
-    // На пустом volume каталога может ещё не быть — создаём, иначе DatabaseSync
-    // упадёт с ENOENT (ТЗ-05, риск volume).
+    // In prod, DB_PATH points at a persistent volume (e.g. /data/botville.db).
+    // On an empty volume the directory may not exist yet — create it, otherwise
+    // DatabaseSync fails with ENOENT (TZ-05, volume risk).
     fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
     db = new DatabaseSync(DB_PATH);
     db.exec('PRAGMA journal_mode=WAL');
@@ -63,15 +63,15 @@ function runMigrations(db: DatabaseSync) {
       updated_at INTEGER NOT NULL
     );
 
-    -- ТЗ-14: ключи на уровне ЮЗЕРА (вводятся один раз, переиспользуются
-    -- новыми агентами). agent_keys остаётся — личный ключ агента имеет
-    -- приоритет, старые агенты не мигрируем.
+    -- TZ-14: USER-level keys (entered once, reused by new agents).
+    -- agent_keys stays — an agent's personal key takes priority, and old
+    -- agents are not migrated.
     CREATE TABLE IF NOT EXISTS user_keys (
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       provider TEXT NOT NULL,
       encrypted_key BLOB NOT NULL,
       iv BLOB NOT NULL,
-      -- только хвост ключа для узнавания в UI; расшифровка для этого не нужна
+      -- only the key tail, for recognition in the UI; no decryption needed for that
       masked_key TEXT NOT NULL,
       base_url TEXT,
       created_at INTEGER NOT NULL,
@@ -91,8 +91,8 @@ function runMigrations(db: DatabaseSync) {
     CREATE INDEX IF NOT EXISTS idx_chat_agent ON chat_history(agent_id, timestamp);
   `);
 
-  // ТЗ-02, часть 1: в старых БД email/password_hash были NOT NULL — анонимам
-  // они не нужны. SQLite не умеет снимать NOT NULL, поэтому пересборка таблицы.
+  // TZ-02, part 1: in older DBs email/password_hash were NOT NULL — anonymous
+  // users don't need them. SQLite can't drop NOT NULL, hence the table rebuild.
   const emailNotNull = db
     .prepare(`SELECT "notnull" AS nn FROM pragma_table_info('users') WHERE name = 'email'`)
     .get() as { nn: number } | undefined;
@@ -116,8 +116,8 @@ function runMigrations(db: DatabaseSync) {
     `);
   }
 
-  // ТЗ-02, часть 2: счётчик demo-сообщений в старых БД
-  // (после пересборки users, чтобы колонка не потерялась)
+  // TZ-02, part 2: demo message counter in older DBs
+  // (after the users rebuild, so the column doesn't get lost)
   const hasDemoCol = db
     .prepare(`SELECT COUNT(*) AS c FROM pragma_table_info('users') WHERE name = 'demo_messages_used'`)
     .get() as { c: number };
@@ -125,7 +125,7 @@ function runMigrations(db: DatabaseSync) {
     db.exec(`ALTER TABLE users ADD COLUMN demo_messages_used INTEGER NOT NULL DEFAULT 0`);
   }
 
-  // ТЗ-14: baseUrl провайдера 'custom' у агента (в старых БД колонки нет)
+  // TZ-14: an agent's baseUrl for the 'custom' provider (older DBs lack the column)
   const hasCustomUrl = db
     .prepare(`SELECT COUNT(*) AS c FROM pragma_table_info('agents') WHERE name = 'custom_base_url'`)
     .get() as { c: number };
@@ -133,7 +133,7 @@ function runMigrations(db: DatabaseSync) {
     db.exec(`ALTER TABLE agents ADD COLUMN custom_base_url TEXT`);
   }
 
-  // ТЗ-16: грубое местоположение агента (в старых БД колонки нет)
+  // TZ-16: an agent's coarse location (older DBs lack the column)
   const hasLocation = db
     .prepare(`SELECT COUNT(*) AS c FROM pragma_table_info('agents') WHERE name = 'location'`)
     .get() as { c: number };

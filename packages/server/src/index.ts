@@ -19,25 +19,26 @@ import { sessionMiddleware, signSession, SESSION_HEADER } from './auth/session.j
 import { rateLimitConfig, corsConfig, assertSecretsOrExit } from './config.js';
 import { errorHandler } from './api/errorHandler.js';
 
-// Boot-guard (ТЗ-04, чеклист 3): в production не стартуем с отсутствующими/
-// дефолтными секретами. Вызываем до инициализации БД и HTTP-сервера.
+// Boot guard (TZ-04, checklist item 3): in production, refuse to start with
+// missing/default secrets. Called before the DB and HTTP server initialize.
 assertSecretsOrExit();
 
 const PORT = Number(process.env.PORT ?? 3001);
 
 const app = express();
 
-// За reverse-proxy (Railway) req.ip должен браться из X-Forwarded-For
+// Behind a reverse proxy (Railway), req.ip must come from X-Forwarded-For
 if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
 
-// Security-заголовки (ТЗ-04, чеклист 8). CSP отключаем: приложение — Phaser/
-// WebGL с inline-стилями и blob/data-URL текстурами; строгий CSP ломает игру,
-// а безопасный минимум (X-Content-Type-Options, Referrer-Policy, X-Frame-Options
-// и т.п.) helmet ставит и без CSP. COEP тоже выключен — мешает hero-медиа/ассетам.
+// Security headers (TZ-04, checklist item 8). CSP is disabled: the app is
+// Phaser/WebGL with inline styles and blob/data-URL textures; a strict CSP
+// breaks the game, while the safe baseline (X-Content-Type-Options,
+// Referrer-Policy, X-Frame-Options, etc.) is set by helmet even without CSP.
+// COEP is off too — it interferes with hero media/assets.
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
-// CORS: только origin'ы из env-allowlist (прод + preview), с креденшелами.
-// Запрос без Origin (curl, health-чекеры, same-origin) пропускаем.
+// CORS: only origins from the env allowlist (prod + preview), with credentials.
+// Requests without an Origin (curl, health checkers, same-origin) pass through.
 const allowedOrigins = corsConfig.allowedOrigins;
 app.use(cors({
   origin(origin, cb) {
@@ -45,8 +46,8 @@ app.use(cors({
     cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
-  // Токен-сессия (ТЗ-12): без exposedHeaders браузер не отдаст этот заголовок
-  // JS'у на cross-site ответе, и клиент не сможет его сохранить.
+  // Token session (TZ-12): without exposedHeaders the browser won't expose this
+  // header to JS on a cross-site response, and the client couldn't store it.
   exposedHeaders: [SESSION_HEADER],
 }));
 app.use(express.json());
@@ -57,36 +58,38 @@ app.get('/health', (_req, res) => {
   res.json({ ok: true, version: '0.1.0', ts: Date.now() });
 });
 
-// Rate limiting: глобально — на IP, chat/meeting — на сессию
+// Rate limiting: global — per IP, chat/meeting — per session
 const limiterDefaults = { windowMs: 60_000, standardHeaders: true, legacyHeaders: false } as const;
 const perSessionKey = (req: express.Request) => req.userId;
 const globalLimiter = rateLimit({ ...limiterDefaults, limit: rateLimitConfig.globalPerMin });
 const chatLimiter = rateLimit({ ...limiterDefaults, limit: rateLimitConfig.chatPerMin, keyGenerator: perSessionKey });
 const meetingLimiter = rateLimit({ ...limiterDefaults, limit: rateLimitConfig.meetingPerMin, keyGenerator: perSessionKey });
 
-// ТЗ-18: read-only статистика владельца. Монтируется ДО sessionMiddleware —
-// иначе каждый вызов заводил бы новую строку в users и сам портил метрику
-// sessions. Свой лимитер на IP: перебор токена не должен быть дешёвым.
+// TZ-18: read-only stats for the owner. Mounted BEFORE sessionMiddleware —
+// otherwise every call would create a new row in users and itself corrupt the
+// sessions metric. Its own per-IP limiter: brute-forcing the token must not
+// be cheap.
 const statsLimiter = rateLimit({ ...limiterDefaults, limit: rateLimitConfig.statsPerMin });
 app.use('/api/admin', statsLimiter, adminStatsRouter);
 
-// Routes (все /api — за анонимной сессией)
+// Routes (all /api — behind an anonymous session)
 app.use('/api', globalLimiter, sessionMiddleware);
-// Бутстрап токен-сессии (ТЗ-12): клиент зовёт до остальных вызовов и кладёт
-// токен в localStorage. Тот же токен приходит и заголовком с любого /api-ответа.
+// Token-session bootstrap (TZ-12): the client calls this before any other
+// request and puts the token in localStorage. The same token also arrives as a
+// header on every /api response.
 app.get('/api/session', (req, res) => {
   res.json({ data: { token: signSession(req.userId) } });
 });
 app.use('/api/agents', agentsRouter);
-// ТЗ-14: ключи юзера (вводятся один раз) и живой каталог моделей OpenRouter
+// TZ-14: user keys (entered once) and the live OpenRouter model catalog
 app.use('/api/keys', keysRouter);
 app.use('/api/models', modelsRouter);
 app.use('/api/chat', chatLimiter, chatRouter);
 app.use('/api/meeting', meetingLimiter, meetingRouter);
 
-// ТЗ-16, только вне продакшена: перевести часы мира (приёмка ночного поведения).
-// Клиентский __setGameHour дёргает этот эндпоинт в dev, чтобы сервер и клиент
-// жили по одному часу.
+// TZ-16, non-production only: set the world clock (acceptance testing of night
+// behavior). The client-side __setGameHour hits this endpoint in dev so that the
+// server and client live on the same hour.
 if (process.env.NODE_ENV !== 'production') {
   app.post('/api/debug/game-hour', (req, res) => {
     const hour = Number((req.body as { hour?: unknown })?.hour);
@@ -98,8 +101,8 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Нормализованный обработчик ошибок (ТЗ-04, чеклист 7): клиент не получает
-// стек-трейсы, пути и сырые тела провайдера. Ставится последним.
+// Normalized error handler (TZ-04, checklist item 7): the client never receives
+// stack traces, file paths, or raw provider bodies. Mounted last.
 app.use(errorHandler);
 
 // HTTP server + WebSocket
@@ -110,11 +113,11 @@ createWSSServer(wss);
 // Initialize DB
 getDb();
 
-// ТЗ-16: серверный тик жизни агентов (расписание + статус, без LLM)
+// TZ-16: server-side agent life tick (schedule + status, no LLM involved)
 startAgentLife();
 
-// Слушаем на 0.0.0.0, а не localhost — иначе reverse-proxy хостинга (Railway)
-// не достучится до контейнера (ТЗ-05).
+// Listen on 0.0.0.0, not localhost — otherwise the hosting reverse proxy
+// (Railway) can't reach the container (TZ-05).
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`[BotVille Server] Running on 0.0.0.0:${PORT}`);
   console.log(`[BotVille Server] WebSocket on /ws`);

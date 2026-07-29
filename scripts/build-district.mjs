@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * Шаг 2 ТЗ-01: генерация карты района.
- * Собирает из LimeZu-ассетов:
- *  1) атлас земли  -> public/assets/tilesets/limezu/district_ground.png
- *  2) виллу (кроп из 7_Villas) -> public/assets/sprites/limezu/district/villa_building.png
- *  3) карту Tiled JSON -> public/assets/tilemaps/district.tmj
+ * Step 2 of TZ-01: district map generation.
+ * Builds from the LimeZu assets:
+ *  1) ground atlas  -> public/assets/tilesets/limezu/district_ground.png
+ *  2) villa (crop from 7_Villas) -> public/assets/sprites/limezu/district/villa_building.png
+ *  3) Tiled JSON map -> public/assets/tilemaps/district.tmj
  *
- * Все координаты исходных тайлов верифицированы скриптами разведки
- * (tile-strip.mjs + программная классификация) — см. docs/ASSETS.md.
- * Запускать после scripts/sync-assets.mjs.
+ * All source tile coordinates were verified by the reconnaissance scripts
+ * (tile-strip.mjs + programmatic classification) — see docs/ASSETS.md.
+ * Run after scripts/sync-assets.mjs.
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -19,13 +19,13 @@ const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
 const SRC = join(ROOT, 'assets-src');
 const PUB = join(ROOT, 'packages', 'client', 'public', 'assets');
 
-// ------------------------------------------------------------------ атлас
+// ------------------------------------------------------------------ atlas
 
 const CITY = decodePng(join(SRC, 'exteriors/themes/2_City_Terrains_16x16.png'));
 const TERR = decodePng(join(SRC, 'exteriors/themes/1_Terrains_and_Fences_16x16.png'));
 const FARMT = decodePng(join(SRC, 'farm/16x16/1_Terrains_16x16.png'));
 
-/** Тайлы атласа по порядку. gid = index + 1. Координаты — тайлы 16px в исходнике. */
+/** Atlas tiles in order. gid = index + 1. Coordinates are 16px tiles in the source. */
 const ATLAS_TILES = [
   ['grass', TERR, 1, 12],
   ['grassA', TERR, 3, 5],
@@ -63,11 +63,11 @@ const atlasPath = join(PUB, 'tilesets/limezu/district_ground.png');
 mkdirSync(dirname(atlasPath), { recursive: true });
 writeFileSync(atlasPath, encodePng(atlas));
 
-// ------------------------------------------------------- вилла (Dorm) кропом
+// ------------------------------------------------------- villa (Dorm) via crop
 
 const VILLAS = decodePng(join(SRC, 'exteriors/themes/7_Villas_16x16.png'));
 {
-  // Синяя вилла: регион до x=300, чтобы не зацепить красный домик справа
+  // Blue villa: region up to x=300 so we don't catch the red house on the right
   const rx = 152, ry = 216, rw = 148, rh = 232;
   let minX = rw, minY = rh, maxX = -1, maxY = -1;
   for (let y = 0; y < rh; y++) {
@@ -89,10 +89,10 @@ const VILLAS = decodePng(join(SRC, 'exteriors/themes/7_Villas_16x16.png'));
   console.log(`villa_building.png: ${w}x${h}`);
 }
 
-// -------------------------------------------- библиотека: вывеска «BOOKS»
+// -------------------------------------------- library: "BOOKS" sign
 
-// В паке нет книжной вывески — штампуем стилизованную плашку в стиле
-// MARKET (белая доска, тёмные буквы) на кромку стены здания.
+// The pack has no bookstore sign — we stamp a stylized plate in the
+// MARKET style (white board, dark letters) onto the edge of the building wall.
 {
   const FONT = {
     B: ['####.', '#...#', '#...#', '####.', '#...#', '#...#', '####.'],
@@ -122,24 +122,24 @@ const VILLAS = decodePng(join(SRC, 'exteriors/themes/7_Villas_16x16.png'));
   });
   const p = join(PUB, 'sprites/limezu/district/library_building.png');
   writeFileSync(p, encodePng(cv));
-  console.log(`library_building.png: вывеска "${TEXT}"`);
+  console.log(`library_building.png: sign "${TEXT}"`);
 }
 
-// ------------------------------------------------------------------- карта
+// ------------------------------------------------------------------- map
 
 const W = 48, H = 46, T = 16;
 
-// Дороги/тротуары в тайлах
-const VR = { x0: 22, x1: 24 };            // вертикальная дорога
-const HR = { y0: 21, y1: 23 };            // горизонтальная дорога
-const VSW = [[20, 21], [25, 26]];         // вертикальные тротуары (пары колонок)
-const HSW = [[19, 20], [24, 25]];         // горизонтальные тротуары (пары рядов)
+// Roads/sidewalks in tiles
+const VR = { x0: 22, x1: 24 };            // vertical road
+const HR = { y0: 21, y1: 23 };            // horizontal road
+const VSW = [[20, 21], [25, 26]];         // vertical sidewalks (column pairs)
+const HSW = [[19, 20], [24, 25]];         // horizontal sidewalks (row pairs)
 
-// Ферма
-const PEN = { x0: 36, y0: 2, x1: 47, y1: 18 }; // загон (по клеткам, включительно)
-const GATE = { x0: 40, x1: 42 };               // проём в нижнем заборе
+// Farm
+const PEN = { x0: 36, y0: 2, x1: 47, y1: 18 }; // pen (in cells, inclusive)
+const GATE = { x0: 40, x1: 42 };               // opening in the bottom fence
 
-// Детерминированный PRNG, чтобы карта была воспроизводимой
+// Deterministic PRNG so the map is reproducible
 let seed = 20260703;
 const rnd = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32;
 const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
@@ -149,47 +149,47 @@ const inHRoad = (y) => y >= HR.y0 && y <= HR.y1;
 const inVSw = (x) => VSW.some(([a, b]) => x >= a && x <= b);
 const inHSw = (y) => HSW.some(([a, b]) => y >= a && y <= b);
 
-// --- слой ground
+// --- ground layer
 const ground = new Array(W * H).fill(0);
 for (let y = 0; y < H; y++) {
   for (let x = 0; x < W; x++) {
     let g;
     if (inVRoad(x) || inHRoad(y)) {
-      g = 0; // под дорогой ничего не видно — оставим пусто, дорога в слое roads
+      g = 0; // nothing is visible under the road — leave empty, the road lives in the roads layer
     } else if (inVSw(x) || inHSw(y)) {
       g = pick([GID.sideA, GID.sideA, GID.sideB, GID.sideC, GID.sideD]);
     } else if (x >= PEN.x0 && x <= PEN.x1 && y >= PEN.y0 && y <= PEN.y1) {
       g = pick([GID.dirt, GID.dirt, GID.dirtA]);
     } else {
-      // вариантные тайлы травы из пака темнее базового — оставляем один базовый
+      // the pack's grass variant tiles are darker than the base one — keep just the base
       g = GID.grass;
     }
     ground[y * W + x] = g;
   }
 }
-// дорожки к дверям (вилла и библиотека)
+// paths to the doors (villa and library)
 const paveRect = (x0, y0, x1, y1) => {
   for (let y = y0; y <= y1; y++)
     for (let x = x0; x <= x1; x++)
       ground[y * W + x] = pick([GID.sideA, GID.sideA, GID.sideB, GID.sideC]);
 };
-paveRect(8, 41, 9, 42);   // от двери виллы вниз
-paveRect(10, 41, 19, 42); // и на восток к тротуару
-paveRect(32, 36, 33, 37); // от двери библиотеки вниз
-paveRect(27, 36, 31, 37); // и на запад к тротуару
+paveRect(8, 41, 9, 42);   // down from the villa door
+paveRect(10, 41, 19, 42); // and east to the sidewalk
+paveRect(32, 36, 33, 37); // down from the library door
+paveRect(27, 36, 31, 37); // and west to the sidewalk
 
-// --- слой roads
+// --- roads layer
 const roads = new Array(W * H).fill(0);
 const asphalt = () => pick([GID.asphA, GID.asphA, GID.asphB, GID.asphC, GID.asphD]);
 for (let y = 0; y < H; y++)
   for (let x = 0; x < W; x++)
     if (inVRoad(x) || inHRoad(y)) roads[y * W + x] = asphalt();
-// осевые пунктиры (кроме перекрёстка и зебр)
+// center-line dashes (except at the intersection and crosswalks)
 for (let x = 0; x < W; x += 2)
   if (!(x >= VR.x0 - 3 && x <= VR.x1 + 3)) roads[22 * W + x] = GID.dashH;
 for (let y = 0; y < H; y += 2)
   if (!(y >= HR.y0 - 3 && y <= HR.y1 + 3)) roads[y * W + 23] = GID.dashV;
-// зебры через вертикальную дорогу (горизонтальные полосы), на линиях тротуаров
+// crosswalks across the vertical road (horizontal stripes), on the sidewalk lines
 for (const [ya, yb] of HSW) {
   for (let i = 0; i < 3; i++) {
     const x = VR.x0 + i;
@@ -197,7 +197,7 @@ for (const [ya, yb] of HSW) {
     roads[yb * W + x] = i % 2 === 0 ? GID.zebHa2 : GID.zebHb2;
   }
 }
-// зебры через горизонтальную дорогу (вертикальные полосы)
+// crosswalks across the horizontal road (vertical stripes)
 for (const [xa, xb] of VSW) {
   for (let y = HR.y0; y <= HR.y1; y++) {
     const odd = (y - HR.y0) % 2 === 1;
@@ -206,7 +206,7 @@ for (const [xa, xb] of VSW) {
   }
 }
 
-// ---------------------------------------------------------------- объекты
+// ---------------------------------------------------------------- objects
 
 let objId = 1;
 const obj = (layerArr, name, x, y, w, h, props = {}, extra = {}) => {
@@ -236,32 +236,32 @@ const glows = [];
 const nightObjs = [];
 
 /**
- * Точка ночного света (слой glows): name = вид источника из GLOW_KINDS
- * клиента ('lamp' | 'window' | 'sign'). Координаты в px мира.
+ * Night light point (glows layer): name = source kind from the client's
+ * GLOW_KINDS ('lamp' | 'window' | 'sign'). Coordinates in world px.
  */
 const glow = (kind, x, y) => obj(glows, kind, x, y, 0, 0, {}, { point: true, type: kind });
 
-// текстура-ключ = имя объекта; сцена создаёт image по имени
+// texture key = object name; the scene creates the image by name
 const IMG = (arr, tex, tx, ty, w, h, props = {}) => obj(arr, tex, tx * T, ty * T, w, h, props);
 
-// --- здания (координаты в тайлах, размеры в px из PNG)
+// --- buildings (coordinates in tiles, sizes in px from the PNGs)
 IMG(buildings, 'office_building', 4, 0, 192, 304, { targetScene: 'OfficeScene', label: 'Office' });
 IMG(buildings, 'cafe_building', 29, 7, 112, 192, { targetScene: 'CafeScene', label: 'Café' });
 IMG(buildings, 'villa_building', 5, 27, 152, 224, { targetScene: 'DormScene', label: 'Dorm' });
 IMG(buildings, 'library_building', 30, 27, 128, 144, { targetScene: 'LibraryScene', label: 'Library' });
 IMG(buildings, 'barn', 37, 2, 128, 160, { label: 'Farm' });
 
-// --- двери (зоны клика, px)
+// --- doors (click zones, px)
 obj(doors, 'office_door', 144, 288, 48, 16, { targetScene: 'OfficeScene' });
 obj(doors, 'cafe_door', 496, 288, 48, 16, { targetScene: 'CafeScene' });
 obj(doors, 'villa_door', 120, 640, 48, 16, { targetScene: 'DormScene' });
 obj(doors, 'library_door', 512, 560, 48, 16, { targetScene: 'LibraryScene' });
 
-// --- спавны (px, точки на тротуарах)
+// --- spawns (px, points on the sidewalks)
 [[336, 316], [430, 316], [336, 410], [430, 410], [180, 318], [560, 410], [336, 200], [420, 520]]
   .forEach(([x, y], i) => obj(spawns, `spawn_${i}`, x, y, 0, 0, {}, { point: true }));
 
-// --- ферма: забор по периметру загона с воротами
+// --- farm: fence around the pen perimeter with a gate
 const fence = (part, tx, ty) => {
   IMG(propsAbove, `fence_${part}`, tx, ty, 16, 16);
   collisionRect(tx * T, ty * T + 6, 16, 10);
@@ -281,7 +281,7 @@ fence('top_right', PEN.x1, PEN.y0);
 fence('bottom_left', PEN.x0, PEN.y1);
 fence('bottom_right', PEN.x1, PEN.y1);
 
-// грядки в загоне (левый край, под сараем)
+// garden beds in the pen (left edge, below the barn)
 for (let i = 0; i < 3; i++) {
   const ty = 13 + i * 2;
   IMG(propsBelow, 'soil_left', 37, ty, 16, 32);
@@ -290,7 +290,7 @@ for (let i = 0; i < 3; i++) {
   for (let c = 0; c < 3; c++) IMG(propsBelow, i % 2 === 0 ? 'crop_cabbage' : 'crop_berry', 37 + c, ty, 16, 16);
 }
 
-// --- деревья (кроны рисуются поверх агентов за счёт Y-sort)
+// --- trees (canopies draw above agents thanks to Y-sort)
 const TREES = [
   ['tree_oak_big', 0, 1], ['tree_oak_big', 17, 12], ['tree_oak_med', 1, 13],
   ['tree_oak_big', 28, 0], ['tree_birch', 33, 3],
@@ -302,13 +302,13 @@ const TREE_SIZE = { tree_oak_big: [80, 96], tree_oak_med: [64, 80], tree_birch: 
 for (const [tex, tx, ty] of TREES) {
   const [w, h] = TREE_SIZE[tex];
   IMG(propsAbove, tex, tx, ty, w, h);
-  // коллизия — только ствол
+  // collision — trunk only
   collisionRect(tx * T + w / 2 - 12, ty * T + h - 20, 24, 16);
 }
 
-// --- фонари вдоль тротуаров (type=lamp — по нему клиент вешает ночной глоу)
+// --- street lamps along the sidewalks (type=lamp — the client attaches the night glow by it)
 const LAMPS = [[6, 18], [15, 18], [30, 18], [40, 18], [6, 26], [15, 26], [33, 26], [44, 26], [19, 5], [19, 32], [27, 12], [27, 38]];
-// голова фонаря в спрайте 32x64 (плафон свисает вправо от столба)
+// lamp head within the 32x64 sprite (the shade hangs to the right of the post)
 const LAMP_HEAD = { dx: 21, dy: 14 };
 for (const [tx, ty] of LAMPS) {
   obj(propsAbove, 'street_lamp', tx * T, ty * T, 32, 64, {}, { type: 'lamp' });
@@ -316,15 +316,15 @@ for (const [tx, ty] of LAMPS) {
   glow('lamp', tx * T + LAMP_HEAD.dx, ty * T + LAMP_HEAD.dy);
 }
 
-// --- ночные окна и вывески зданий (локальные px внутри PNG + офсет здания)
+// --- night windows and building signs (local px inside the PNG + building offset)
 const BUILDING_GLOWS = [
-  // офис LIME CORP: (64,0), 192x304
+  // LIME CORP office: (64,0), 192x304
   { at: [64, 0], sign: [[125, 146]], windows: [[30, 170], [90, 170], [30, 202], [90, 202], [30, 234], [90, 234], [30, 266], [90, 266], [150, 180], [150, 240]] },
-  // кафе MARKET: (464,112), 112x192
+  // MARKET cafe: (464,112), 112x192
   { at: [464, 112], sign: [[56, 130]], windows: [[25, 158], [87, 158]] },
-  // вилла (Dorm): (80,432), 152x224
+  // villa (Dorm): (80,432), 152x224
   { at: [80, 432], sign: [], windows: [[36, 108], [100, 108], [46, 166], [112, 166]] },
-  // библиотека BOOKS: (480,432), 128x144
+  // BOOKS library: (480,432), 128x144
   { at: [480, 432], sign: [[64, 91]], windows: [[20, 128], [64, 128], [108, 128]] },
 ];
 for (const { at: [bx, by], sign, windows } of BUILDING_GLOWS) {
@@ -332,7 +332,7 @@ for (const { at: [bx, by], sign, windows } of BUILDING_GLOWS) {
   for (const [x, y] of windows) glow('window', bx + x, by + y);
 }
 
-// --- скамейки, урны, гидрант, кусты
+// --- benches, trash cans, hydrant, bushes
 IMG(propsAbove, 'bench', 33, 19, 32, 32); collisionRect(33 * T, 19 * T + 8, 32, 20);
 IMG(propsAbove, 'bench', 12, 24, 32, 32); collisionRect(12 * T, 24 * T + 8, 32, 20);
 IMG(propsAbove, 'bench', 42, 33, 32, 32); collisionRect(42 * T, 33 * T + 8, 32, 20);
@@ -345,26 +345,26 @@ for (const [tx, ty] of BUSHES) {
   collisionRect(tx * T + 2, ty * T + 6, 12, 10);
 }
 
-// --- припаркованные машины (на краю дорог)
+// --- parked cars (at the road edges)
 IMG(propsAbove, 'car_right_1', 8, 22.6, 64, 48, {});
 collisionRect(8 * T, 23 * T, 64, 24);
-// красная — припаркована у северного бордюра (полукузовом на тротуаре)
+// the red one is parked at the north curb (half of its body on the sidewalk)
 IMG(propsAbove, 'car_left_1', 33, 19.1, 64, 48, {});
 collisionRect(33 * T, 20 * T, 64, 28);
 IMG(propsAbove, 'car_right_1', 42, 22.6, 64, 48, {});
 collisionRect(42 * T, 23 * T, 64, 24);
 
-// --- точки сна животных в загоне (свободная зона: правее грядок, ниже сарая)
+// --- animal sleep spots in the pen (free area: right of the beds, below the barn)
 [[656, 220], [700, 232], [672, 258], [726, 262]].forEach(([x, y]) =>
   obj(nightObjs, 'animal_sleep', x, y, 0, 0, {}, { point: true }));
 
-// --- коллизии зданий
-collisionRect(4 * T, 0, 192, 304);          // офис
-collisionRect(29 * T, 7 * T, 112, 192);     // кафе
-collisionRect(5 * T, 27 * T, 152, 224);     // вилла
-collisionRect(30 * T, 27 * T, 128, 144);    // библиотека
-collisionRect(37 * T, 2 * T, 128, 160);     // сарай
-// границы карты
+// --- building collisions
+collisionRect(4 * T, 0, 192, 304);          // office
+collisionRect(29 * T, 7 * T, 112, 192);     // cafe
+collisionRect(5 * T, 27 * T, 152, 224);     // villa
+collisionRect(30 * T, 27 * T, 128, 144);    // library
+collisionRect(37 * T, 2 * T, 128, 160);     // barn
+// map bounds
 collisionRect(-16, 0, 16, H * T);
 collisionRect(W * T, 0, 16, H * T);
 collisionRect(0, -16, W * T, 16);
@@ -422,4 +422,4 @@ const map = {
 const mapPath = join(PUB, 'tilemaps/district.tmj');
 mkdirSync(dirname(mapPath), { recursive: true });
 writeFileSync(mapPath, JSON.stringify(map));
-console.log(`district.tmj: ${W}x${H}, атлас ${ATLAS_TILES.length} тайлов, объектов: ${objId - 1}`);
+console.log(`district.tmj: ${W}x${H}, atlas of ${ATLAS_TILES.length} tiles, objects: ${objId - 1}`);

@@ -11,16 +11,17 @@ export type AgentStatus =
 
 export type LocationId = 'office' | 'cafe' | 'dorm' | 'street' | 'district';
 
-// ── ТЗ-16: грубое местоположение агента — правда на СЕРВЕРЕ ──────────────────
-// 'district' — на улице, 'farm' — у фермы/в загоне (рисуется в сцене района).
-// Точная координата внутри локации — косметика клиента.
+// ── TZ-16: an agent's coarse location — the truth lives on the SERVER ────────
+// 'district' — out on the street, 'farm' — at the farm/in the pen (drawn in the
+// district scene). The exact coordinate within a location is client cosmetics.
 export const AGENT_LOCATIONS = ['district', 'office', 'cafe', 'library', 'dorm', 'farm'] as const;
 export type AgentLocation = (typeof AGENT_LOCATIONS)[number];
 
 /**
- * Зеркало клиентского assetManifest (AVATAR_VARIANTS): всего 16 обликов,
- * 0..11 — люди, 12..15 — животные. Сервер решает «дорм или загон» по этому
- * признаку, не зная о спрайтах. Менять СИНХРОННО с assetManifest.ts.
+ * Mirror of the client-side assetManifest (AVATAR_VARIANTS): 16 appearances in
+ * total, 0..11 — humans, 12..15 — animals. The server decides "dorm or pen" by
+ * this flag without knowing anything about sprites. Change IN SYNC with
+ * assetManifest.ts.
  */
 export const AVATAR_VARIANT_COUNT = 16;
 export const ANIMAL_VARIANT_MIN = 12;
@@ -46,12 +47,12 @@ export interface AgentConfig {
   providerType: LLMProviderType;
   modelId: string;
   ollamaBaseUrl?: string;
-  /** ТЗ-14: базовый URL для провайдера 'custom' (OpenAI-совместимый endpoint). */
+  /** TZ-14: base URL for the 'custom' provider (an OpenAI-compatible endpoint). */
   customBaseUrl?: string;
   createdAt: number;
-  /** Задан ли у агента ЛИЧНЫЙ сохранённый API-ключ (сам ключ клиенту не отдаётся). */
+  /** Whether the agent has a PERSONAL saved API key (the key itself is never sent to the client). */
   hasKey?: boolean;
-  /** ТЗ-16: где агент находится. Владеет сервер, переживает перезагрузку. */
+  /** TZ-16: where the agent is. Owned by the server, survives a restart. */
   location: AgentLocation;
 }
 

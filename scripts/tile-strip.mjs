@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Инструмент разведки: вырезает список тайлов из спрайтшита в одну полосу
- * (с magenta-фоном и разделителями) для визуальной проверки координат.
+ * Reconnaissance tool: cuts a list of tiles out of a spritesheet into a single
+ * strip (with a magenta background and separators) for visual verification of coordinates.
  *
  * node scripts/tile-strip.mjs <sheet.png> <out.png> "tx,ty[,w,h];tx,ty;..."
- * Координаты в тайлах 16px; w,h — размер в тайлах (по умолчанию 1x1).
+ * Coordinates are in 16px tiles; w,h are the size in tiles (1x1 by default).
  */
 import { writeFileSync } from 'node:fs';
 import { decodePng, createCanvas, encodePng } from './png-lib.mjs';
@@ -29,5 +29,5 @@ for (const it of items) {
   cx += it.w * 16 + 2;
 }
 writeFileSync(out, encodePng(cv));
-console.log(`${out}: ${items.length} тайлов, ${cv.w}x${cv.h}`);
+console.log(`${out}: ${items.length} tiles, ${cv.w}x${cv.h}`);
 console.log(items.map((i, n) => `#${n}=(${i.tx},${i.ty},${i.w}x${i.h})`).join(' '));

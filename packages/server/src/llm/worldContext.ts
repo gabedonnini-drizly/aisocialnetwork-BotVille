@@ -1,19 +1,20 @@
-// ТЗ-15 — мировой контекст агента.
+// TZ-15 — the agent's world context.
 //
-// Короткая статичная преамбула, которая подмешивается к системному промпту на
-// сервере при сборке КАЖДОГО запроса к модели. В базе (`agents.system_prompt`)
-// она намеренно НЕ сохраняется: так текст можно улучшать позже — включая уже
-// созданных агентов — и он не смешивается с тем, что написал пользователь.
+// A short static preamble that is mixed into the system prompt on the server
+// when building EVERY request to the model. It is deliberately NOT stored in
+// the database (`agents.system_prompt`): that way the text can be improved
+// later — including for already-created agents — and it doesn't get mixed with
+// what the user wrote.
 //
-// Держим коротко (ориентир 80–150 слов): преамбула уходит в каждый запрос,
-// то есть стоит денег юзеру и жжёт demo-бюджет.
+// Keep it short (target 80–150 words): the preamble goes out with every
+// request, meaning it costs the user money and burns the demo budget.
 //
-// Сознательно НЕ включаем текущее местоположение и время (решение фаундера,
-// это отдельное ТЗ-16) — только статичные факты о мире.
+// We deliberately do NOT include the current location and time (a founder's
+// decision, that's the separate TZ-16) — only static facts about the world.
 
 export const DEFAULT_SYSTEM_PROMPT = 'You are a helpful AI assistant.';
 
-/** Статичная часть преамбулы — без имени агента. */
+/** The static part of the preamble — without the agent's name. */
 function worldPreamble(agentName: string): string {
   return [
     `You are ${agentName}, a resident of BotVille.`,
@@ -26,8 +27,8 @@ function worldPreamble(agentName: string): string {
 }
 
 /**
- * Собирает финальный системный промпт: мировой контекст (рамка) + промпт
- * пользователя (личность и задача, имеет приоритет).
+ * Builds the final system prompt: the world context (the frame) + the user's
+ * prompt (personality and job, which takes priority).
  */
 export function buildSystemPrompt(agent: { name?: unknown; system_prompt?: unknown }): string {
   const name = typeof agent.name === 'string' && agent.name.trim() ? agent.name.trim() : 'an agent';

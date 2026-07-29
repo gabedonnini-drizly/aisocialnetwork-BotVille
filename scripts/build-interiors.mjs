@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Шаг 4 ТЗ-01: генерация интерьеров (Office, Cafe, Dorm, Library).
- * Из LimeZu-ассетов собирает:
- *  1) атлас стен/полов -> public/assets/tilesets/limezu/interiors_ground.png
- *  2) кропы мебели из тематических листов -> public/assets/sprites/limezu/interior/
- *  3) 4 карты Tiled JSON -> public/assets/tilemaps/<scene>.tmj
+ * Step 4 of TZ-01: interior generation (Office, Cafe, Dorm, Library).
+ * Builds from the LimeZu assets:
+ *  1) wall/floor atlas -> public/assets/tilesets/limezu/interiors_ground.png
+ *  2) furniture crops from the themed sheets -> public/assets/sprites/limezu/interior/
+ *  3) 4 Tiled JSON maps -> public/assets/tilemaps/<scene>.tmj
  *
- * Координаты кропов верифицированы через scripts/crop.mjs / tile-strip.mjs.
- * Запускать после scripts/sync-assets.mjs.
+ * Crop coordinates were verified via scripts/crop.mjs / tile-strip.mjs.
+ * Run after scripts/sync-assets.mjs.
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -24,19 +24,19 @@ const LR = decodePng(join(SRC, 'interiors/themes/2_LivingRoom_16x16.png'));
 const CL = decodePng(join(SRC, 'interiors/themes/5_Classroom_and_library_16x16.png'));
 const KT = decodePng(join(SRC, 'interiors/themes/12_Kitchen_16x16.png'));
 
-// ------------------------------------------------------------------ атлас
-// Тайлы 16x16 из Room_Builder (координаты в тайлах, верифицированы полосами)
+// ------------------------------------------------------------------ atlas
+// 16x16 tiles from Room_Builder (coordinates in tiles, verified with strips)
 
 const ATLAS_TILES = [
-  ['border', RB, 1, 44],      // тёмная «пустота» вокруг комнаты
-  ['wallOfficeA', RB, 1, 21], ['wallOfficeB', RB, 1, 22],  // серо-зелёная стена
-  ['wallCafeA', RB, 1, 17], ['wallCafeB', RB, 1, 18],      // кремовая стена
-  ['wallDormA', RB, 1, 11], ['wallDormB', RB, 1, 12],      // обои с ромбами
-  ['wallLibA', RB, 1, 37], ['wallLibB', RB, 1, 38],        // деревянные панели
-  ['floorOffice', RB, 34, 11], // серо-голубая клетка (ковролин)
-  ['floorCafe', RB, 42, 11],   // бело-розовая шахматка
-  ['floorDorm', RB, 39, 24],   // тёплый паркет квадратами
-  ['floorLib', RB, 42, 19],    // ёлочка-паркет
+  ['border', RB, 1, 44],      // dark "void" around the room
+  ['wallOfficeA', RB, 1, 21], ['wallOfficeB', RB, 1, 22],  // grey-green wall
+  ['wallCafeA', RB, 1, 17], ['wallCafeB', RB, 1, 18],      // cream wall
+  ['wallDormA', RB, 1, 11], ['wallDormB', RB, 1, 12],      // wallpaper with diamonds
+  ['wallLibA', RB, 1, 37], ['wallLibB', RB, 1, 38],        // wooden panels
+  ['floorOffice', RB, 34, 11], // grey-blue checker (carpet)
+  ['floorCafe', RB, 42, 11],   // white-pink checkerboard
+  ['floorDorm', RB, 39, 24],   // warm parquet in squares
+  ['floorLib', RB, 42, 19],    // herringbone parquet
 ];
 const GID = Object.fromEntries(ATLAS_TILES.map(([n], i) => [n, i + 1]));
 const ATLAS_COLS = 8;
@@ -51,24 +51,25 @@ const ATLAS_COLS = 8;
   writeFileSync(p, encodePng(atlas));
 }
 
-// ------------------------------------------------------------ кропы мебели
+// ------------------------------------------------------------ furniture crops
 
 /**
- * [ключ, лист, x, y, w, h] — регион обрезается по непрозрачным пикселям.
- * Координаты перевыверены по ТЕКУЩИМ листам (ТЗ-08): старые регионы съехали
- * относительно раскладки паков — стулья захватывали угол соседнего стола,
- * кресла/доска/кафедра резались, «коврик» брался со скатерти. Проверка:
- * scratchpad-скрипты components/crop-zone (bbox связных компонент + зум).
+ * [key, sheet, x, y, w, h] — the region is trimmed to opaque pixels.
+ * Coordinates re-verified against the CURRENT sheets (TZ-08): the old regions
+ * had drifted relative to the pack layouts — chairs were grabbing the corner of
+ * the neighboring table, armchairs/board/lectern were getting clipped, the "rug"
+ * was taken from a tablecloth. Verification: the components/crop-zone scratchpad
+ * scripts (bbox of connected components + zoom).
  */
 const FURNITURE = [
-  // спальня: кровати (вертикальные, полосатые) и мелочь
+  // bedroom: beds (vertical, striped) and small items
   ['bed_green', BR, 128, 320, 32, 56],
   ['bed_blue', BR, 160, 320, 32, 56],
   ['bed_teal', BR, 192, 320, 32, 56],
   ['nightstand', BR, 224, 296, 16, 21],
   ['rug_pink', BR, 7, 349, 36, 34],
-  // тройки стол+стулья: в листе это «обеденные наборы», чистые стулья без
-  // приставного угла стола — второй (влево, x=34) и третий (вправо, x=81)
+  // table+chair triples: in the sheet these are "dining sets"; the clean chairs
+  // without the attached table corner are the second (facing left, x=34) and third (facing right, x=81)
   ['chair_blue_r', BR, 81, 192, 14, 32],
   ['chair_blue_l', BR, 34, 192, 14, 32],
   ['chair_red_r', BR, 81, 224, 14, 32],
@@ -76,24 +77,24 @@ const FURNITURE = [
   ['chair_yellow_r', BR, 81, 256, 14, 32],
   ['chair_yellow_l', BR, 34, 256, 14, 32],
   ['table_plain', BR, 48, 208, 32, 40],
-  // гостиная: кресла в профиль (широкое сиденье + колонна-спинка, до ножек;
-  // ниже в листе полоска пола и следующий ряд — не брать). Для dorm'а взята
-  // КОРИЧНЕВАЯ пара (ряд 582): серая на тёплом паркете читалась бетонной
-  // плитой (приёмка ТЗ-08 v2). _r смотрит вправо = спинка слева
+  // living room: armchairs in profile (wide seat + backrest column, down to the legs;
+  // below them in the sheet is a strip of floor and the next row — don't take those).
+  // For the dorm the BROWN pair was taken (row 582): the grey one on warm parquet
+  // read as a concrete slab (TZ-08 v2 acceptance). _r faces right = backrest on the left
   ['armchair_grey_r', LR, 145, 582, 22, 42],
   ['armchair_grey_l', LR, 121, 582, 22, 42],
   ['armchair_blue_r', LR, 145, 518, 22, 42],
   ['armchair_blue_l', LR, 121, 518, 22, 42],
   ['lamp_red', LR, 206, 150, 17, 36],
   ['plant_palm', LR, 214, 0, 28, 50],
-  // класс/библиотека: стеллажи, кафедра, глобус, доска
+  // classroom/library: shelving, lectern, globe, chalkboard
   ['bookshelf_a', CL, 0, 360, 48, 50],
   ['bookshelf_b', CL, 0, 424, 48, 50],
   ['bookshelf_narrow', CL, 195, 354, 13, 62],
   ['lectern', CL, 230, 282, 20, 34],
   ['globe', CL, 208, 16, 16, 24],
   ['chalkboard', CL, 160, 78, 28, 34],
-  // кухня: стойка, табурет, коврик у двери
+  // kitchen: counter, stool, doormat
   ['counter_wide', KT, 192, 268, 52, 22],
   ['stool', KT, 1, 177, 14, 15],
   ['doormat', KT, 105, 432, 30, 38],
@@ -112,7 +113,7 @@ for (const [key, img, rx, ry, rw, rh] of FURNITURE) {
       }
     }
   }
-  if (maxX < 0) { console.error(`ПУСТОЙ кроп: ${key}`); continue; }
+  if (maxX < 0) { console.error(`EMPTY crop: ${key}`); continue; }
   const w = maxX - minX + 1, h = maxY - minY + 1;
   const cv = createCanvas(w, h);
   cv.blit(img, rx + minX, ry + minY, w, h, 0, 0);
@@ -121,20 +122,20 @@ for (const [key, img, rx, ry, rw, rh] of FURNITURE) {
   writeFileSync(p, encodePng(cv));
   trimmed[key] = { w, h };
 }
-console.log('мебель:', Object.entries(trimmed).map(([k, s]) => `${k} ${s.w}x${s.h}`).join(', '));
+console.log('furniture:', Object.entries(trimmed).map(([k, s]) => `${k} ${s.w}x${s.h}`).join(', '));
 
-// Одиночные офисные PNG (кладёт sync-assets.mjs): размеры читаем из файлов,
-// иначе объект в карте получает фиктивные 16x16 и depth/коллизия врут.
+// Standalone office PNGs (placed by sync-assets.mjs): read the sizes from the files,
+// otherwise the map object gets a bogus 16x16 and depth/collision lie.
 for (const key of ['workstation_single', 'workstation_double', 'whiteboard', 'printer',
   'coffee_machine', 'plant_pot', 'plant_small']) {
   const img = decodePng(join(PUB, 'sprites/limezu/interior', `${key}.png`));
   trimmed[key] = { w: img.w, h: img.h };
 }
 
-// ------------------------------------------------------------------ карты
+// ------------------------------------------------------------------ maps
 
 const W = 20, H = 15, T = 16;
-const DOOR = { x0: 9, x1: 10 }; // проём в нижней стене
+const DOOR = { x0: 9, x1: 10 }; // opening in the bottom wall
 
 function buildRoom({ sceneKey, wallA, wallB, floor, furniture, seats, animated, spawn }) {
   let objId = 1;
@@ -149,7 +150,7 @@ function buildRoom({ sceneKey, wallA, wallB, floor, furniture, seats, animated, 
       ground[y * W + x] = g;
     }
   }
-  // дверной проём: пол вместо рамки
+  // doorway: floor instead of the border
   for (let x = DOOR.x0; x <= DOOR.x1; x++) ground[(H - 1) * W + x] = GID[floor];
 
   const layers = { furniture: [], seats: [], doors: [], collision: [], spawns: [], animated: [] };
@@ -165,34 +166,34 @@ function buildRoom({ sceneKey, wallA, wallB, floor, furniture, seats, animated, 
     });
   };
 
-  // мебель: [key, tx, ty, collide?]
+  // furniture: [key, tx, ty, collide?]
   for (const [key, tx, ty, collide = true] of furniture) {
     const size = trimmed[key] ?? { w: 16, h: 16 };
     obj('furniture', key, tx * T, ty * T, size.w, size.h);
     if (collide) obj('collision', 'c', tx * T + 1, ty * T + Math.max(0, size.h - 18), size.w - 2, Math.min(size.h, 18));
   }
-  // места: [tx, ty, side, kind]
+  // seats: [tx, ty, side, kind]
   seats.forEach(([tx, ty, side, kind = 'chair'], i) => {
     obj('seats', `seat_${i}`, tx * T, ty * T, 0, 0, { side, kind }, true);
   });
-  // анимированные объекты: [animKey, tx, ty]
+  // animated objects: [animKey, tx, ty]
   for (const [animKey, tx, ty] of animated) {
     obj('animated', animKey, tx * T, ty * T, 0, 0, {}, true);
   }
-  // дверь: коврик внутри комнаты + зона выхода, оба по центру разрыва в стене
-  // (раньше коврик прибивался к DOOR.x0*T-3 и стоял со сдвигом влево — ТЗ-09)
+  // door: doormat inside the room + exit zone, both centered on the gap in the wall
+  // (previously the doormat was pinned to DOOR.x0*T-3 and sat shifted left — TZ-09)
   const doorCenterX = ((DOOR.x0 + DOOR.x1 + 1) / 2) * T;
   const matY = (H - 1) * T - trimmed.doormat.h - 2;
   obj('furniture', 'doormat', Math.round(doorCenterX - trimmed.doormat.w / 2), matY,
     trimmed.doormat.w, trimmed.doormat.h, { doormat: true });
   obj('doors', 'exit', doorCenterX - 1.5 * T, matY - 4, 3 * T, trimmed.doormat.h + 8, { targetScene: 'DistrictScene' });
-  // стены/границы — коллизия
+  // walls/bounds — collision
   obj('collision', 'c', 0, 0, W * T, 2 * T);
   obj('collision', 'c', 0, (H - 1) * T, DOOR.x0 * T, T);
   obj('collision', 'c', (DOOR.x1 + 1) * T, (H - 1) * T, (W - DOOR.x1 - 1) * T, T);
   obj('collision', 'c', 0, 0, T, H * T);
   obj('collision', 'c', (W - 1) * T, 0, T, H * T);
-  // спавн у двери
+  // spawn near the door
   obj('spawns', 'spawn_0', spawn[0] * T, spawn[1] * T, 0, 0, {}, true);
 
   const map = {
@@ -222,10 +223,10 @@ function buildRoom({ sceneKey, wallA, wallB, floor, furniture, seats, animated, 
   const p = join(PUB, 'tilemaps', `${sceneKey}.tmj`);
   mkdirSync(dirname(p), { recursive: true });
   writeFileSync(p, JSON.stringify(map));
-  console.log(`${sceneKey}.tmj: мебель ${layers.furniture.length}, мест ${layers.seats.length}, аним ${layers.animated.length}`);
+  console.log(`${sceneKey}.tmj: furniture ${layers.furniture.length}, seats ${layers.seats.length}, animated ${layers.animated.length}`);
 }
 
-// ---------------------------------------------------------------- сцены
+// ---------------------------------------------------------------- scenes
 
 buildRoom({
   sceneKey: 'office',
@@ -274,9 +275,9 @@ buildRoom({
     ['table_plain', 13, 8.5],
     ['chair_red_r', 11.4, 8.8, false],
     ['chair_red_l', 16.2, 8.8, false],
-    // нижний стол левее проёма: коврик (x145-175) и вход полностью свободны;
-    // сдвиг ровно 3.5 тайла — при меньшем левый стул (+3.2 тайла от стола)
-    // ложится на коврик (замечание владельца после ТЗ-09)
+    // bottom table left of the doorway: the doormat (x145-175) and entrance stay fully clear;
+    // shift is exactly 3.5 tiles — with less, the left chair (+3.2 tiles from the table)
+    // lands on the doormat (owner's note after TZ-09)
     ['table_plain', 4.5, 11],
     ['chair_yellow_r', 2.9, 11.3, false],
     ['chair_yellow_l', 7.7, 11.3, false],
@@ -307,8 +308,8 @@ buildRoom({
     ['nightstand', 4.3, 2.4],
     ['nightstand', 14.3, 2.4],
     ['rug_pink', 8, 8.4, false],
-    // низ кресла (42px от ty) на линии сиденья — сидящий агент рисуется
-    // поверх сиденья, спинка возвышается над головой
+    // armchair bottom (42px from ty) on the seat line — a seated agent draws
+    // on top of the seat, the backrest rises above the head
     ['armchair_grey_r', 6, 7.25],
     ['armchair_grey_l', 12.2, 7.25],
     ['plant_palm', 1.2, 8],

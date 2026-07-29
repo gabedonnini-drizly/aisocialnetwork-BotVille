@@ -13,7 +13,7 @@ import {
 } from '../assetManifest.js';
 import type { AgentStatus } from '@botville/shared';
 
-/** Сцена, умеющая отвечать на вопросы проходимости (DistrictScene и интерьеры). */
+/** A scene that can answer walkability questions (DistrictScene and interiors). */
 interface WalkableHost {
   randomWalkableNear(x: number, y: number): { x: number; y: number };
   findPath(fromX: number, fromY: number, toX: number, toY: number): { x: number; y: number }[];
@@ -25,9 +25,9 @@ function isWalkableHost(scene: Phaser.Scene): scene is Phaser.Scene & WalkableHo
 }
 
 /**
- * Спрайт агента: LimeZu premade-персонаж или фермерское животное.
- * Контейнер стоит «на ногах»: (0,0) контейнера = точка опоры, по ней же
- * depth-sort и коллизии (footprint всегда 1 тайл независимо от размера кадра).
+ * Agent sprite: a LimeZu premade character or a farm animal.
+ * The container stands "on its feet": container (0,0) = the support point, which
+ * also drives depth-sorting and collisions (footprint is always 1 tile regardless of frame size).
  */
 export class AgentSprite extends Phaser.GameObjects.Container {
   private sprite: Phaser.GameObjects.Sprite;
@@ -38,17 +38,17 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   private stateMachine: AgentStateMachine;
   private path: { x: number; y: number }[] = [];
   private facing: Direction = 'down';
-  /** Компенсация пустых пикселей под ногами в кадре (footGaps манифеста). */
+  /** Compensation for empty pixels below the feet in the frame (manifest footGaps). */
   private targetFootY = 0;
   private sitting = false;
   private seatLock = false;
   private seatKind: 'chair' | 'stool' | 'bed' | null = null;
   private seatDepthBoost = 0;
-  /** Ночной сон под открытым небом (животные в загоне). */
+  /** Sleeping outdoors at night (animals in the pen). */
   private asleep = false;
-  /** Агент «внутри здания» (ночь в дорме): спрайт скрыт, логика на паузе. */
+  /** The agent is "inside a building" (night in the dorm): sprite hidden, logic paused. */
   private hiddenInside = false;
-  /** Идёт к цели (например, к месту) — машина состояний на паузе. */
+  /** Heading to a goal (e.g. a seat) — the state machine is paused. */
   private goalLock = false;
   public agentId: string;
   public currentStatus: AgentStatus = 'idle';
@@ -64,28 +64,28 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   ) {
     super(scene, pixelX, pixelY);
     this.agentId = agentId;
-    // Совместимость: любые старые числовые варианты (0..7 и дальше)
-    // детерминированно маппятся в текущий список через getVariant
+    // Compatibility: any old numeric variants (0..7 and beyond)
+    // map deterministically into the current list via getVariant
     this.variantDef = getVariant(avatarVariant);
     const vd = this.variantDef;
     const spriteH = vd.frameHeight * vd.scale;
     const spriteW = vd.frameWidth * vd.scale;
 
-    // Тень-эллипс под ногами (размер от ширины кадра)
+    // Shadow ellipse under the feet (sized from frame width)
     this.shadow = scene.add.ellipse(0, 0, Math.max(10, spriteW * 0.7), Math.max(4, spriteW * 0.22), 0x000000, 0.3);
     this.shadow.setOrigin(0.5, 0.5);
 
-    // Спрайт: origin по ногам
+    // Sprite: origin at the feet
     this.sprite = scene.add.sprite(0, 0, vd.textureKey, 0);
     this.sprite.setOrigin(0.5, 1);
     this.sprite.setScale(vd.scale);
     this.sprite.setInteractive({ useHandCursor: true });
 
-    // Имя — над головой, с учётом высоты спрайта. НЕ в контейнере:
-    // плашка рисуется поверх props-above (крон деревьев), даже когда
-    // сам спрайт скрыт кроной.
-    // Имя: тёплый кремовый текст с тонкой тёмной обводкой — читаемо поверх
-    // пёстрых тайлов и днём, и в ночном глоу (палитра ТЗ-06, ui/theme.css зеркало).
+    // Name — above the head, accounting for sprite height. NOT in the container:
+    // the label is drawn above props-above (tree crowns), even when
+    // the sprite itself is hidden by a crown.
+    // Name: warm cream text with a thin dark stroke — readable over
+    // busy tiles both by day and in the night glow (TZ-06 palette, mirror of ui/theme.css).
     this.nameLabel = scene.add.text(pixelX, pixelY - spriteH - 6, name, {
       fontSize: '7px',
       color: UI.textOnDark,
@@ -94,19 +94,19 @@ export class AgentSprite extends Phaser.GameObjects.Container {
       strokeThickness: 3,
     }).setOrigin(0.5, 1).setDepth(NAME_LABEL_DEPTH);
 
-    // Эмоция/статус: пузырь или иконка над головой (у коровы выше, чем у человека)
+    // Emote/status: a bubble or icon above the head (higher for a cow than a human)
     this.emote = scene.add.sprite(0, -spriteH - 16, EMOTES.think.textureKey, 0);
     this.emote.setOrigin(0.5, 1);
     this.emote.setVisible(false);
 
     this.add([this.shadow, this.sprite, this.emote]);
     scene.add.existing(this);
-    this.setDepth(pixelY); // Y-sort по ногам
+    this.setDepth(pixelY); // Y-sort by the feet
 
     this.playAnim('idle', 'down');
 
     onTap(this.sprite, () => {
-      // клик по спящему будит (чат при этом открывается как обычно)
+      // clicking a sleeper wakes them (the chat still opens as usual)
       if (this.asleep) this.wakeUp();
       GameBridge.emit('agent:clicked', { agentId });
     });
@@ -143,21 +143,21 @@ export class AgentSprite extends Phaser.GameObjects.Container {
 
   private onDispatchTask = ({ agentId: id }: { agentId: string }) => {
     if (id === this.agentId) {
-      this.wakeUp(); // задача поднимает даже спящего/ушедшего в дорм
+      this.wakeUp(); // a task rouses even a sleeper/someone gone to the dorm
       this.startTask();
     }
   };
 
   private playAnim(type: 'idle' | 'walk', dir: Direction) {
     this.sprite.play(animKey(this.variantDef, type, dir), true);
-    // ноги на землю: у боковых видов животных низ кадра не совпадает с ногами
+    // feet on the ground: in animals' side views the frame bottom doesn't match the feet
     this.targetFootY = (this.variantDef.footGaps?.[dir] ?? 0) * this.variantDef.scale;
   }
 
   /**
-   * Посадить агента (интерьеры): kind='chair'|'stool' — sit-анимация в
-   * профиль, kind='bed' — sleep. Животные ни того ни другого не умеют —
-   * играют idle в нужную сторону.
+   * Seat the agent (interiors): kind='chair'|'stool' — sit animation in
+   * profile view, kind='bed' — sleep. Animals can do neither —
+   * they play idle facing the right way.
    */
   sit(side: 'right' | 'left' = 'right', kind: 'chair' | 'stool' | 'bed' = 'chair') {
     this.sitting = true;
@@ -177,13 +177,13 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   /**
-   * Закрепить агента на месте (стул/кровать в интерьере): телепорт к точке,
-   * посадка и пауза машины состояний до снятия.
+   * Pin the agent to a seat (chair/bed in an interior): teleport to the point,
+   * sit down and pause the state machine until released.
    */
   takeSeat(x: number, y: number, side: 'right' | 'left', kind: 'chair' | 'stool' | 'bed') {
     this.seatLock = true;
     this.seatKind = kind;
-    // сидящий/лежащий агент рисуется поверх своей мебели (кровати/кресла)
+    // a sitting/lying agent is drawn above their furniture (bed/armchair)
     this.seatDepthBoost = kind === 'bed' ? 30 : 24;
     this.path = [];
     this.setPosition(x, y);
@@ -206,7 +206,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
 
   get isAnimal() { return this.variantDef.kind === 'animal'; }
 
-  /** Целенаправленно идти к точке (блуждание на паузе, пока не дойдёт). */
+  /** Deliberately walk to a point (wandering is paused until arrival). */
   walkTo(x: number, y: number) {
     if (this.sitting) this.standUp();
     const scene = this.scene;
@@ -214,15 +214,15 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.goalLock = this.path.length > 0;
   }
 
-  /** Сбросить целевой маршрут (например, при пробуждении или новой задаче). */
+  /** Drop the goal route (e.g. on waking up or a new task). */
   cancelGoal() {
     this.path = [];
     this.goalLock = false;
   }
 
-  // ------------------------------------------------------------- ночной сон
+  // ------------------------------------------------------------- night sleep
 
-  /** Сон под открытым небом (животные в загоне): idle-поза + Z-иконка. */
+  /** Sleeping under the open sky (animals in the pen): idle pose + Z icon. */
   sleepOutside() {
     this.asleep = true;
     this.cancelGoal();
@@ -230,7 +230,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.showIcon('rest');
   }
 
-  /** Скрыть агента «внутри здания» (ночёвка в дорме с улицы). */
+  /** Hide the agent "inside a building" (overnighting in the dorm, seen from the street). */
   hideInside() {
     this.hiddenInside = true;
     this.cancelGoal();
@@ -238,7 +238,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.nameLabel.setVisible(false);
   }
 
-  /** Проснуться/выйти наружу: снимает и сон, и «внутри здания». */
+  /** Wake up / come outside: clears both sleep and "inside a building". */
   wakeUp() {
     if (this.asleep) {
       this.asleep = false;
@@ -257,7 +257,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
 
   get isHiddenInside() { return this.hiddenInside; }
 
-  // ---------------------------------------------------------------- эмоции
+  // ---------------------------------------------------------------- emotes
 
   private showThinkBubble() {
     this.hideEmote();
@@ -278,7 +278,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.emote.setTexture(EMOTES.icons.textureKey, pair[0]);
     this.emote.setVisible(true);
     this.emote.play(`emote-icon-${status}`);
-    // лёгкий bob-tween
+    // a gentle bob tween
     const baseY = -this.variantDef.frameHeight * this.variantDef.scale - 16;
     this.emoteTween = this.scene.tweens.add({
       targets: this.emote,
@@ -310,12 +310,12 @@ export class AgentSprite extends Phaser.GameObjects.Container {
         if (!this.sitting) this.moveAlongPath(dt);
       }
     }
-    // плавно подводим спрайт к целевому foot-оффсету (без скачка при повороте)
+    // smoothly ease the sprite towards its target foot offset (no jump when turning)
     if (this.sprite.y !== this.targetFootY) {
       const d = this.targetFootY - this.sprite.y;
       this.sprite.y = Math.abs(d) < 0.5 ? this.targetFootY : this.sprite.y + d * Math.min(1, dt * 10);
     }
-    this.setDepth(this.y + this.seatDepthBoost); // Y-sort по точке опоры
+    this.setDepth(this.y + this.seatDepthBoost); // Y-sort by the support point
     this.nameLabel.setPosition(
       this.x,
       this.y - this.variantDef.frameHeight * this.variantDef.scale - 6,
@@ -352,7 +352,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
 
     switch (status) {
       case 'task_running':
-        // ждём LLM — анимированный пузырь «думает» из пака
+        // waiting on the LLM — the animated "thinking" bubble from the pack
         this.showThinkBubble();
         break;
       case 'work':
@@ -361,8 +361,8 @@ export class AgentSprite extends Phaser.GameObjects.Container {
         this.showIcon(status);
         break;
       case 'rest':
-        // без иконки: Z зарезервирован для ночного сна (sleepOutside),
-        // дневная передышка читается по самой sit-анимации
+        // no icon: Z is reserved for night sleep (sleepOutside);
+        // a daytime break reads from the sit animation itself
         this.hideEmote();
         break;
       default:
@@ -370,7 +370,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     }
 
     if (status === 'rest') {
-      // отдых: люди присаживаются (sit-ряд), животные — idle
+      // resting: humans sit down (sit row), animals — idle
       this.sit(Math.random() < 0.5 ? 'right' : 'left');
     } else if (this.sitting) {
       this.standUp();

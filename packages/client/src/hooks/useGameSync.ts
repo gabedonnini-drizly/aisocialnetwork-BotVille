@@ -7,7 +7,7 @@ import { fetchAgentLocations } from '../lib/api.js';
 import { LOCATION_POLL_MS } from '../game/config.js';
 import type { Agent, AgentLocation } from '@botville/shared';
 
-/** Что сцена знает об агенте; location решает, рисовать ли его здесь (ТЗ-16). */
+/** What a scene knows about an agent; location decides whether to draw it here (TZ-16). */
 export interface SyncedAgent {
   id: string;
   name: string;
@@ -15,7 +15,7 @@ export interface SyncedAgent {
   location: AgentLocation;
 }
 
-/** Сцены, в которые синкается список агентов (район и все интерьеры). */
+/** Scenes the agent list is synced into (the district and all interiors). */
 interface AgentSyncScene extends Phaser.Scene {
   syncAgents(list: SyncedAgent[]): void;
 }
@@ -39,9 +39,9 @@ export function useGameSync() {
     fetchAgents();
   }, [fetchAgents]);
 
-  // ТЗ-16: поллинг «кто где» + серверный игровой час. Сервер — правда о месте,
-  // клиент лишь дорисовывает; час подтягиваем, чтобы ночь клиента и сервера
-  // не спорили (см. GameTime.syncFrom).
+  // TZ-16: "who is where" polling + server game hour. The server is the source of
+  // truth for location, the client only renders; we pull the hour so the client's
+  // and server's night don't disagree (see GameTime.syncFrom).
   useEffect(() => {
     let stopped = false;
     const poll = async () => {
@@ -55,7 +55,7 @@ export function useGameSync() {
     return () => { stopped = true; clearInterval(interval); };
   }, []);
 
-  // Синк в активную сцену; ретраи, пока она не зарегистрируется
+  // Sync into the active scene; retries until it registers
   const syncToScene = useCallback((retries = 30) => {
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
     const scene = sceneRegistry.get(sceneKeyRef.current);
@@ -80,12 +80,12 @@ export function useGameSync() {
     };
   }, [agents, syncToScene]);
 
-  // Смена сцены — синк агентов в новую сцену
+  // Scene change — sync agents into the new scene
   useEffect(() => {
     const handler = ({ scene }: { scene: string }) => {
       setScene(scene);
       sceneKeyRef.current = scene;
-      // небольшая пауза, чтобы Phaser дорегистрировал новую сцену
+      // a short pause so Phaser finishes registering the new scene
       setTimeout(() => syncToScene(), 100);
     };
     GameBridge.on('scene:changed', handler);

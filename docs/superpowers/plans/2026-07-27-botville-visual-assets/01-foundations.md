@@ -26,7 +26,7 @@ Four decisions stand between an art pack and a pixel on screen. Three of them ha
 | Which sheets are worth copying at all | derived from the adapter | Plan 2, Task 19a |
 | Where it goes in a place | `venues/<id>/venue.json` | Plan 2, Task 13 |
 
-The middle row is what this plan adds. Before it, a rect in `sources/limezu.json` was the *answer* to a question nobody wrote down, chosen from a candidate set nobody enumerated, verifiable against nothing. `scripts/inspect-assets.mjs` says so in its own header: «Результаты фиксируются вручную» — recorded by hand.
+The middle row is what this plan adds. Before it, a rect in `sources/limezu.json` was the *answer* to a question nobody wrote down, chosen from a candidate set nobody enumerated, verifiable against nothing. `scripts/inspect-assets.mjs` says so in its own header: "The results are recorded by hand".
 
 Tasks 4a and 9a give that decision an inventory and a review artifact, and Tasks 5–7 record it on the adapter itself: every rect can carry a `note` saying why that sprite won — plus a **pin** (Task 9), so a pack update that shifts a sheet becomes a named build error instead of a silently different chair.
 
@@ -789,10 +789,10 @@ keys do not prefix-match, so the exact/subpath pair has to be spelled out. In
 ```ts
   resolve: {
     alias: [
-      // Точное совпадение -> бочка пакета.
+      // Exact match -> the package barrel.
       { find: /^@botville\/shared$/, replacement: path.resolve(__dirname, '../shared/src/index.ts') },
-      // Подпуть -> файл в src/. Строковый alias здесь ломается: rollup
-      // сопоставляет по префиксу и клеит путь ЧЕРЕЗ index.ts (ENOTDIR).
+      // Subpath -> a file in src/. A string alias breaks here: rollup
+      // matches by prefix and splices the path THROUGH index.ts (ENOTDIR).
       { find: /^@botville\/shared\//, replacement: path.resolve(__dirname, '../shared/src') + '/' },
     ],
   },
@@ -1821,7 +1821,7 @@ git commit -m "feat(adapter): migrate district prop sources into sources/limezu.
 
 ## Task 7: `sources/limezu.json` — interior furniture, characters, emotes, animated objects
 
-The last and largest third. 27 furniture rects come from `FURNITURE` in `build-interiors.mjs:63-100` — those coordinates were re-verified against the current sheets under ТЗ-08 and the Russian comments explain *why* each one is where it is. Preserve those comments as `"note"` fields; they are the record of what went wrong last time.
+The last and largest third. 27 furniture rects come from `FURNITURE` in `build-interiors.mjs:63-100` — those coordinates were re-verified against the current sheets under TZ-08 and the Russian comments explain *why* each one is where it is. Preserve those comments as `"note"` fields; they are the record of what went wrong last time.
 
 This task also moves the emote frame indices out of `assetManifest.ts:211-218` — the coupling I-1 names explicitly.
 
@@ -1943,7 +1943,7 @@ Furniture, transcribed from `build-interiors.mjs:63-100`. `trim: true` reproduce
     "table_plain":    { "file": "bedroom", "x": 48, "y": 208, "w": 32, "h": 40, "trim": true },
 
     "armchair_grey_r": { "file": "livingroom", "x": 145, "y": 582, "w": 22, "h": 42, "trim": true,
-      "note": "BROWN pair (row 582), not grey — the grey one read as a concrete slab on warm parquet (ТЗ-08 v2 acceptance). _r faces right = back on the left" },
+      "note": "BROWN pair (row 582), not grey — the grey one read as a concrete slab on warm parquet (TZ-08 v2 acceptance). _r faces right = back on the left" },
     "armchair_grey_l": { "file": "livingroom", "x": 121, "y": 582, "w": 22, "h": 42, "trim": true },
     "armchair_blue_r": { "file": "livingroom", "x": 145, "y": 518, "w": 22, "h": 42, "trim": true },
     "armchair_blue_l": { "file": "livingroom", "x": 121, "y": 518, "w": 22, "h": 42, "trim": true },
@@ -2004,7 +2004,7 @@ At the top level of `sources/limezu.json`, as a sibling of `rects`:
   },
 ```
 
-These are the `row*10+col` pairs from `assetManifest.ts:211-218`, verified frame-by-frame under ТЗ-08. Task 23 makes `assetManifest.ts` read them from here instead of hardcoding them.
+These are the `row*10+col` pairs from `assetManifest.ts:211-218`, verified frame-by-frame under TZ-08. Task 23 makes `assetManifest.ts` read them from here instead of hardcoding them.
 
 - [ ] **Step 6: Run tests**
 

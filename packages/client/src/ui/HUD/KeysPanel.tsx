@@ -6,14 +6,14 @@ import { useT } from '../../i18n/index.js';
 import type { TKey } from '../../i18n/index.js';
 import styles from './KeysPanel.module.css';
 
-// ТЗ-14: управление ключами юзера. Намеренно НЕ вкладка верхнего уровня —
-// маленькая панель из HUD: ключ вводится редко, а HUD должен остаться узким.
+// TZ-14: user key management. Intentionally NOT a top-level tab — a small panel
+// opened from the HUD: keys are entered rarely, and the HUD should stay narrow.
 
 interface Props { onClose: () => void; }
 
 const KEYABLE = LLM_PROVIDERS.filter(p => p.requiresApiKey);
 
-/** Коды ошибок валидации baseUrl с сервера → ключи словаря. */
+/** Server-side baseUrl validation error codes → dictionary keys. */
 const URL_ERROR_KEYS: Record<string, TKey> = {
   invalid_url: 'keysPanel.errUrlInvalid',
   insecure_scheme: 'keysPanel.errUrlInsecure',
@@ -31,7 +31,7 @@ export function KeysPanel({ onClose }: Props) {
   const [saving, setSaving] = useState(false);
   const [verdict, setVerdict] = useState<boolean | null | undefined>(undefined);
   const [error, setError] = useState<TKey | null>(null);
-  /** Итог последнего сохранения — виден после того, как редактор свернулся. */
+  /** Result of the last save — visible after the editor has collapsed. */
   const [flash, setFlash] = useState<TKey | null>(null);
 
   useEffect(() => { fetchKeys(); }, [fetchKeys]);
@@ -60,7 +60,7 @@ export function KeysPanel({ onClose }: Props) {
     }
     setVerdict(res.valid);
     setApiKey('');
-    // Ключ не подошёл — оставляем редактор открытым, чтобы исправить сразу
+    // The key didn't work — keep the editor open so it can be fixed right away
     if (res.valid !== false) {
       setFlash(res.valid === true ? 'keysPanel.savedOk' : 'model.keyUnknown');
       setEditing(null);

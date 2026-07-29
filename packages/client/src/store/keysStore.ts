@@ -2,21 +2,22 @@ import { create } from 'zustand';
 import type { LLMProviderType, UserKeyStatus } from '@botville/shared';
 import { fetchUserKeys, saveUserKey, deleteUserKey } from '../lib/api.js';
 
-// ТЗ-14: ключи живут на уровне юзера, а не агента — ввёл один раз, дальше все
-// новые агенты берут их сами. Клиент никогда не видит сам ключ: только маску.
+// TZ-14: keys live at the user level, not the agent level — enter them once and
+// every new agent picks them up automatically. The client never sees the key
+// itself: only the mask.
 
 interface KeysStore {
   keys: UserKeyStatus[];
   loaded: boolean;
   fetchKeys: () => Promise<void>;
-  /** @returns вердикт health-check (true/false/null) либо код ошибки сохранения */
+  /** @returns health-check verdict (true/false/null) or a save error code */
   saveKey: (
     provider: LLMProviderType,
     apiKey: string,
     baseUrl?: string,
   ) => Promise<{ ok: boolean; valid: boolean | null; errorCode?: string }>;
   removeKey: (provider: LLMProviderType) => Promise<void>;
-  /** Статус сохранённого ключа для провайдера (undefined — не настроен). */
+  /** Status of the saved key for a provider (undefined — not configured). */
   keyFor: (provider: LLMProviderType) => UserKeyStatus | undefined;
 }
 

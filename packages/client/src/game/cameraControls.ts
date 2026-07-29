@@ -2,23 +2,23 @@ import Phaser from 'phaser';
 import { CAMERA, CAMERA_DRAG } from './config.js';
 
 /**
- * Общее управление камерой (ТЗ-09), одно на все сцены:
- *  - пан обычным левым драгом / однопальцевым драгом (middle и Shift+драг
- *    работают как раньше — это тоже «драг»);
- *  - pinch двумя пальцами — зум с паном по середине жеста;
- *  - wheel-зум и клавиши +/-;
- *  - инерция пана после отпускания.
- * Клик и пан разводятся порогом CAMERA_DRAG.tapPx: клики по объектам вешать
- * через onTap (срабатывает на pointerup, если указатель не уехал), а не
- * через pointerdown.
+ * Shared camera controls (TZ-09), one implementation for all scenes:
+ *  - pan with a normal left drag / single-finger drag (middle button and Shift+drag
+ *    work as before — those are "drags" too);
+ *  - two-finger pinch — zoom with panning by the gesture midpoint;
+ *  - wheel zoom and the +/- keys;
+ *  - pan inertia after release.
+ * Click and pan are separated by the CAMERA_DRAG.tapPx threshold: attach object clicks
+ * via onTap (fires on pointerup if the pointer didn't travel), not
+ * via pointerdown.
  */
 
-// Pinch глобален (жест один на игру): guard, чтобы отпускание второго пальца
-// над агентом/зданием не считалось tap'ом.
+// Pinch is global (one gesture per game): a guard so that lifting the second finger
+// over an agent/building isn't counted as a tap.
 let pinchActive = false;
 let pinchEndedAt = 0;
 
-/** Клик/тап по интерактивному объекту с порогом сдвига (клик ≠ начало пана). */
+/** Click/tap on an interactive object with a movement threshold (a click ≠ the start of a pan). */
 export function onTap(
   obj: Phaser.GameObjects.GameObject,
   handler: (p: Phaser.Input.Pointer) => void,
@@ -30,13 +30,13 @@ export function onTap(
 }
 
 export interface CameraControlOptions {
-  /** Кламп зума; по умолчанию CAMERA.min/maxZoom. */
+  /** Zoom clamp; defaults to CAMERA.min/maxZoom. */
   minZoom?: number;
   maxZoom?: number;
   /**
-   * Мягкий кламп скролла по размеру мира: ось, где мир уже вьюпорта,
-   * держится по центру (для интерьеров). Без bounds кламп остаётся на
-   * cam.setBounds сцены (район).
+   * Soft scroll clamp based on world size: an axis where the world is narrower than
+   * the viewport is kept centered (for interiors). Without bounds the clamp stays on
+   * the scene's cam.setBounds (the district).
    */
   bounds?: { width: number; height: number };
 }
@@ -64,9 +64,9 @@ export function attachCameraControls(scene: Phaser.Scene, opts: CameraControlOpt
     clampScroll();
   };
 
-  // dx/dy — сдвиг указателя в px экрана
+  // dx/dy — pointer movement in screen px
   const applyPan = (dx: number, dy: number) => {
-    cam.panEffect.reset(); // ручной драг перебивает автопан agent:focus
+    cam.panEffect.reset(); // a manual drag overrides the agent:focus auto-pan
     cam.scrollX -= dx / cam.zoom;
     cam.scrollY -= dy / cam.zoom;
     clampScroll();
@@ -74,7 +74,7 @@ export function attachCameraControls(scene: Phaser.Scene, opts: CameraControlOpt
 
   let panning = false;
   let inertiaOn = false;
-  let vx = 0; // сглаженная скорость пана, px экрана/сек
+  let vx = 0; // smoothed pan speed, screen px/sec
   let vy = 0;
   let lastMoveAt = 0;
   let pinch: { dist: number; midX: number; midY: number } | null = null;
@@ -102,7 +102,7 @@ export function attachCameraControls(scene: Phaser.Scene, opts: CameraControlOpt
     const p1 = scene.input.manager.pointers[1];
     const p2 = scene.input.manager.pointers[2];
     if (p1?.isDown && p2?.isDown) {
-      // pinch: зум по изменению дистанции пальцев, пан — по сдвигу середины
+      // pinch: zoom by the change in finger distance, pan by the midpoint shift
       pinchActive = true;
       panning = false;
       const dist = Phaser.Math.Distance.Between(p1.x, p1.y, p2.x, p2.y);
@@ -135,7 +135,7 @@ export function attachCameraControls(scene: Phaser.Scene, opts: CameraControlOpt
     if (pinch && !(p1?.isDown && p2?.isDown)) endPinch();
     if (!panning) return;
     panning = false;
-    // отпустили в движении — камера докатывается по инерции
+    // released while moving — the camera coasts on inertia
     if (Date.now() - lastMoveAt < 100 && Math.hypot(vx, vy) > CAMERA_DRAG.inertiaMinSpeed) {
       inertiaOn = true;
     }

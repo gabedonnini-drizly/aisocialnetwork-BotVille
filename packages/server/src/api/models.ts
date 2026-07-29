@@ -4,11 +4,11 @@ import type { CatalogModel } from '@botville/shared';
 import { openRouterConfig } from '../config.js';
 import { openRouterHeaders } from '../llm/LLMRouter.js';
 
-// ТЗ-14: живой каталог моделей OpenRouter.
+// TZ-14: live OpenRouter model catalog.
 //
-// Список у OpenRouter ПУБЛИЧНЫЙ — ключ юзера сюда не передаётся и не нужен.
-// URL зашит намертво: эндпоинт не принимает пользовательских адресов и потому
-// не может стать открытым прокси наружу.
+// OpenRouter's list is PUBLIC — the user's key is neither passed here nor
+// needed. The URL is hardcoded: the endpoint accepts no user-supplied addresses
+// and therefore can't become an open proxy to the outside.
 
 export const modelsRouter = Router();
 
@@ -25,7 +25,7 @@ interface RawModel {
   pricing?: { prompt?: unknown; completion?: unknown };
 }
 
-/** Цена у OpenRouter — строка USD за 1 токен. Приводим к USD за 1M токенов. */
+/** OpenRouter prices are strings in USD per 1 token. Convert to USD per 1M tokens. */
 function perMillion(raw: unknown): number | null {
   const n = Number(raw);
   if (!Number.isFinite(n) || n < 0) return null;
@@ -43,7 +43,7 @@ function normalize(raw: RawModel): CatalogModel | null {
     contextWindow: Number(raw.context_length) || 0,
     promptPrice,
     completionPrice,
-    // `:free` — маркер самого OpenRouter; нулевая цена подтверждает
+    // `:free` is OpenRouter's own marker; a zero price confirms it
     isFree: id.endsWith(':free') || (promptPrice === 0 && completionPrice === 0),
   };
 }
@@ -59,29 +59,29 @@ async function fetchCatalog(): Promise<CatalogModel[]> {
     .map(normalize)
     .filter((m): m is CatalogModel => m !== null);
   if (!models.length) throw new Error('OpenRouter catalog empty');
-  // Бесплатные вперёд, дальше по имени — UI показывает их отдельным блоком,
-  // но и в общем списке они не должны тонуть.
+  // Free models first, then by name — the UI shows them as a separate block,
+  // but they shouldn't drown in the overall list either.
   models.sort((a, b) =>
     a.isFree === b.isFree ? a.name.localeCompare(b.name) : a.isFree ? -1 : 1,
   );
   return models;
 }
 
-// GET /api/models/openrouter — кэш в памяти, TTL по умолчанию 1 ч
+// GET /api/models/openrouter — in-memory cache, default TTL 1 h
 modelsRouter.get('/openrouter', async (_req, res) => {
   const fresh = cache && Date.now() - cache.fetchedAt < openRouterConfig.catalogTtlMs;
   if (fresh) return res.json({ data: { models: cache!.models, cachedAt: cache!.fetchedAt } });
 
   try {
-    // Параллельные запросы после протухания кэша не должны бить по OpenRouter
-    // пачкой — ждут один общий промис.
+    // Parallel requests after the cache expires must not hit OpenRouter in a
+    // burst — they wait on one shared promise.
     inflight ??= fetchCatalog().finally(() => { inflight = null; });
     const models = await inflight;
     cache = { models, fetchedAt: Date.now() };
     res.json({ data: { models, cachedAt: cache.fetchedAt } });
   } catch {
-    // Каталог недоступен — отдаём протухший, если он есть: выбрать модель
-    // важнее, чем показать свежий список.
+    // Catalog unavailable — serve the stale one if we have it: being able to
+    // pick a model matters more than showing a fresh list.
     if (cache) return res.json({ data: { models: cache.models, cachedAt: cache.fetchedAt, stale: true } });
     res.status(503).json({ error: { code: 'CATALOG_UNAVAILABLE', message: 'Model catalog unavailable' } });
   }

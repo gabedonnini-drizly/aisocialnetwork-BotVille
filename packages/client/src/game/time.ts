@@ -1,23 +1,23 @@
 import { TIME } from './config.js';
 
 /**
- * Игровые часы: непрерывное время суток 0-24 (float), считается от
- * реального времени (TIME.msPerGameHour), поэтому лерпы по нему плавные
- * на каждом кадре без отдельного тикера.
+ * Game clock: continuous time of day 0-24 (float), derived from
+ * real time (TIME.msPerGameHour), so lerps over it are smooth
+ * on every frame without a separate ticker.
  */
 class GameTimeImpl {
   private startReal = performance.now();
   private baseHour: number = TIME.startHour;
-  /** Часы переведены вручную (__setGameHour) — авто-синк с сервером выключен. */
+  /** The clock was set manually (__setGameHour) — auto-sync with the server is off. */
   private manual = false;
 
-  /** Текущий игровой час, 0 <= h < 24. */
+  /** Current game hour, 0 <= h < 24. */
   get hour(): number {
     const elapsed = (performance.now() - this.startReal) / TIME.msPerGameHour;
     return (this.baseHour + elapsed) % 24;
   }
 
-  /** Перевести часы (отладка, скриншоты приёмки). */
+  /** Set the clock (debugging, acceptance screenshots). */
   set(h: number) {
     this.manual = true;
     this.baseHour = ((h % 24) + 24) % 24;
@@ -25,10 +25,10 @@ class GameTimeImpl {
   }
 
   /**
-   * ТЗ-16: подстройка под серверный час (правда о времени — на сервере,
-   * иначе клиентские 10:00 после перезагрузки спорили бы с серверным тиком,
-   * который уже увёл агентов спать). Мелкий дрейф не трогаем, чтобы
-   * тонировка/глоу не дёргались.
+   * TZ-16: align with the server hour (the truth about time lives on the server,
+   * otherwise the client's 10:00 after a reload would contradict the server tick,
+   * which has already sent the agents to bed). Small drift is left alone so the
+   * tint/glow don't jitter.
    */
   syncFrom(serverHour: number) {
     if (this.manual) return;
@@ -42,9 +42,9 @@ class GameTimeImpl {
 
 export const GameTime = new GameTimeImpl();
 
-// Отладочный хук: __setGameHour(19.5) в devtools/скриптах приёмки.
-// В dev дополнительно переводит и СЕРВЕРНЫЕ часы (иначе серверный тик жизни
-// агентов продолжил бы жить по своему времени — ТЗ-16).
+// Debug hook: __setGameHour(19.5) in devtools/acceptance scripts.
+// In dev it also sets the SERVER clock (otherwise the server-side agent life tick
+// would keep running on its own time — TZ-16).
 declare global {
   interface Window { __setGameHour?: (h: number) => void }
 }
@@ -58,7 +58,7 @@ if (typeof window !== 'undefined') {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ hour: h }),
         }),
-      ).catch(() => { /* сервер без dev-эндпоинта — только клиентские часы */ });
+      ).catch(() => { /* server without the dev endpoint — client clock only */ });
     }
   };
 }

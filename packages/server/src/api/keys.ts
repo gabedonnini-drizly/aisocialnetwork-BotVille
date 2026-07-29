@@ -6,13 +6,13 @@ import { validateBaseUrl } from '../llm/baseUrl.js';
 import { LLM_PROVIDERS } from '@botville/shared';
 import type { LLMProviderType, SetUserKeyDto, UserKeyStatus } from '@botville/shared';
 
-// ТЗ-14: ключи на уровне ЮЗЕРА — вводятся один раз и переиспользуются всеми
-// новыми агентами. Наружу ключ не отдаётся никогда: только факт «настроен» и
-// маска-хвост. В логи ключ не пишется (здесь нет ни одного console.*).
+// TZ-14: USER-level keys — entered once and reused by all new agents. The key
+// itself is never returned: only the "configured" fact and a masked tail. Keys
+// are never written to logs (there isn't a single console.* here).
 
 export const keysRouter = Router();
 
-/** Провайдеры, для которых вообще имеет смысл хранить ключ. */
+/** Providers for which storing a key makes sense at all. */
 const KEYABLE = new Set<LLMProviderType>(
   LLM_PROVIDERS.filter(p => p.requiresApiKey).map(p => p.id),
 );
@@ -21,17 +21,17 @@ function isKeyable(value: string): value is LLMProviderType {
   return KEYABLE.has(value as LLMProviderType);
 }
 
-/** Хвост ключа для узнавания: `…f3a9`. Короткие ключи не раскрываем вовсе. */
+/** Key tail for recognition: `…f3a9`. Short keys are not revealed at all. */
 function maskKey(apiKey: string): string {
   return apiKey.length >= 8 ? `…${apiKey.slice(-4)}` : '…';
 }
 
-/** Нужен ли этому провайдеру пользовательский baseUrl (custom). */
+/** Whether this provider needs a user-supplied baseUrl (custom). */
 function needsBaseUrl(provider: LLMProviderType): boolean {
   return LLM_PROVIDERS.find(p => p.id === provider)?.userBaseUrl === true;
 }
 
-// GET /api/keys — какие провайдеры настроены (без ключей)
+// GET /api/keys — which providers are configured (no keys included)
 keysRouter.get('/', (req, res) => {
   const userId = req.userId;
   if (!userId) return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing user id' } });
@@ -47,7 +47,7 @@ keysRouter.get('/', (req, res) => {
   res.json({ data });
 });
 
-// PUT /api/keys/:provider — сохранить/обновить ключ юзера + health-check
+// PUT /api/keys/:provider — save/update the user's key + health check
 keysRouter.put('/:provider', async (req, res) => {
   const userId = req.userId;
   if (!userId) return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing user id' } });
@@ -87,8 +87,8 @@ keysRouter.put('/:provider', async (req, res) => {
       updated_at = excluded.updated_at
   `).run(userId, provider, encrypted, iv, maskKey(apiKey), storedBaseUrl, now, now);
 
-  // Как и в ключе агента: false — провайдер отверг, null — проверить не вышло.
-  // Сохранение сетевая ошибка не отменяет.
+  // Same as with an agent key: false — the provider rejected it, null — the
+  // check couldn't be performed. A network error does not cancel the save.
   const valid = await checkApiKey(provider, apiKey, storedBaseUrl ?? undefined);
   res.json({ data: { ok: true, valid, maskedKey: maskKey(apiKey), baseUrl: storedBaseUrl ?? undefined } });
 });
@@ -101,7 +101,7 @@ keysRouter.delete('/:provider', (req, res) => {
   res.json({ data: { ok: true } });
 });
 
-/** Внутренний хелпер: расшифрованный ключ юзера для провайдера (или null). */
+/** Internal helper: the user's decrypted key for a provider (or null). */
 export function getUserKey(
   userId: string,
   provider: LLMProviderType,

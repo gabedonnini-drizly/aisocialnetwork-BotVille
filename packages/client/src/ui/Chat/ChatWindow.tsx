@@ -17,9 +17,9 @@ export function ChatWindow() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  // Клавиатура iOS не сжимает layout viewport (dvh из CSS не срабатывает) —
-  // на мобиле подгоняем окно чата по visualViewport, чтобы поле ввода
-  // оставалось видимым. На десктопе инлайн-стили снимаются (ТЗ-10).
+  // The iOS keyboard doesn't shrink the layout viewport (CSS dvh doesn't kick in) —
+  // on mobile we fit the chat window to visualViewport so the input field
+  // stays visible. On desktop the inline styles are removed (TZ-10).
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
@@ -107,7 +107,7 @@ export function ChatWindow() {
         </button>
       </div>
 
-      {/* Демо закончилось — дружелюбный апселл */}
+      {/* Demo is over — a friendly upsell */}
       {demoLimitReached && (
         <div className={styles.demoModalOverlay}>
           <div className={styles.demoModal}>

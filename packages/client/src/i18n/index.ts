@@ -1,5 +1,5 @@
-// ТЗ-07: состояние языка EN/RU. Дефолт — en; ru — при русском браузере;
-// явный выбор пользователя переживает перезагрузку через localStorage (av_locale).
+// TZ-07: EN/RU language state. Default — en; ru — for Russian-language browsers;
+// an explicit user choice survives reload via localStorage (av_locale).
 
 import { useCallback } from 'react';
 import { create } from 'zustand';
@@ -18,7 +18,7 @@ function detectLocale(): Locale {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'en' || saved === 'ru') return saved;
-  } catch { /* localStorage недоступен (приватный режим) — не критично */ }
+  } catch { /* localStorage unavailable (private mode) — not critical */ }
   return navigator.language?.toLowerCase().startsWith('ru') ? 'ru' : 'en';
 }
 
@@ -27,7 +27,7 @@ function format(template: string, params?: TParams): string {
   return template.replace(/\{(\w+)\}/g, (m, k) => (k in params ? String(params[k]) : m));
 }
 
-// <html lang> и <title> следуют за локалью (статичный index.html — EN-фолбэк для краулеров)
+// <html lang> and <title> follow the locale (static index.html is the EN fallback for crawlers)
 function applyToDocument(locale: Locale) {
   document.documentElement.lang = locale;
   document.title = DICTS[locale]['meta.title'];
@@ -49,18 +49,18 @@ export const useLocaleStore = create<LocaleStore>((set) => ({
 
 applyToDocument(useLocaleStore.getState().locale);
 
-/** Хук перевода: const t = useT(); t('chat.retry'); t('chat.demoRemaining', { n: 5 }). */
+/** Translation hook: const t = useT(); t('chat.retry'); t('chat.demoRemaining', { n: 5 }). */
 export function useT(): TFunc {
   const locale = useLocaleStore((s) => s.locale);
   return useCallback<TFunc>((key, params) => format(DICTS[locale][key], params), [locale]);
 }
 
-/** Нереактивный перевод — для кода вне React (Phaser-сцены). */
+/** Non-reactive translation — for code outside React (Phaser scenes). */
 export function tr(key: TKey, params?: TParams): string {
   return format(DICTS[useLocaleStore.getState().locale][key], params);
 }
 
-/** Статус агента → ключ словаря (общее для HUD и профиля). */
+/** Agent status → dictionary key (shared by the HUD and the profile). */
 export const STATUS_KEYS: Record<string, TKey> = {
   idle: 'status.idle',
   wander: 'status.wander',
@@ -71,7 +71,7 @@ export const STATUS_KEYS: Record<string, TKey> = {
   chat_npc: 'status.chat_npc',
 };
 
-/** Местоположение агента → ключ словаря (ТЗ-16; ночной дорм — отдельный ключ). */
+/** Agent location → dictionary key (TZ-16; the nighttime dorm has its own key). */
 export const LOCATION_KEYS: Record<string, TKey> = {
   district: 'loc.district',
   office: 'loc.office',

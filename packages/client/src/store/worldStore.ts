@@ -2,11 +2,11 @@ import { create } from 'zustand';
 import { TIME } from '../game/config.js';
 
 /**
- * Состояние игрового мира для React-слоя. Источник времени — GameTime
- * в Phaser, сюда прилетает через GameBridge 'time:changed' (useGameEvents).
+ * Game world state for the React layer. The time source is GameTime in
+ * Phaser; it arrives here via GameBridge 'time:changed' (useGameEvents).
  */
 interface WorldStore {
-  /** Время суток 0-24 (float). */
+  /** Time of day 0-24 (float). */
   timeOfDay: number;
   setTimeOfDay: (hour: number) => void;
 }

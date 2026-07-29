@@ -2,22 +2,22 @@ import type { LLMProviderType } from '@botville/shared';
 import { getDecryptedKey } from '../api/agents.js';
 import { getUserKey } from '../api/keys.js';
 
-// ТЗ-14: единый порядок разрешения ключа для запроса агента.
+// TZ-14: the single key-resolution order for an agent's request.
 //
-//   1) личный ключ агента (старый сценарий — работает без миграции)
-//   2) сохранённый ключ юзера для провайдера агента
-//   3) demo (решает вызывающий — он же считает лимиты)
-//   4) человеческая ошибка
+//   1) the agent's personal key (the old flow — works without migration)
+//   2) the saved user key for the agent's provider
+//   3) demo (decided by the caller — it also counts the limits)
+//   4) a human-readable error
 //
-// Здесь — шаги 1–2; demo и ошибка остаются на стороне роутов, чтобы не тянуть
-// сюда лимиты и SSE.
+// Steps 1–2 live here; demo and the error stay on the route side, so that
+// limits and SSE aren't dragged in here.
 
 export type KeySource = 'agent' | 'user' | 'none';
 
 export interface ResolvedKey {
   source: KeySource;
   apiKey?: string;
-  /** Базовый URL: ollama/custom — от агента, иначе от сохранённого ключа юзера. */
+  /** Base URL: for ollama/custom it comes from the agent, otherwise from the saved user key. */
   baseUrl?: string;
 }
 
@@ -25,7 +25,7 @@ export function resolveAgentKey(agent: Record<string, unknown>, userId: string):
   const provider = agent.provider_type as LLMProviderType;
 
   if (provider === 'ollama') {
-    // Ключ не нужен вовсе — адрес берём у агента.
+    // No key is needed at all — the address comes from the agent.
     return {
       source: 'agent',
       baseUrl: (agent.ollama_base_url as string) ?? 'http://localhost:11434',
@@ -39,8 +39,8 @@ export function resolveAgentKey(agent: Record<string, unknown>, userId: string):
 
   const saved = getUserKey(userId, provider);
   if (saved) {
-    // Для custom адрес агента приоритетнее: юзер мог задать его конкретно
-    // этому агенту, а ключ переиспользовать общий.
+    // For custom, the agent's address wins: the user may have set it for this
+    // specific agent while reusing a shared key.
     return { source: 'user', apiKey: saved.apiKey, baseUrl: agentBaseUrl ?? saved.baseUrl };
   }
 

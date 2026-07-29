@@ -1,8 +1,8 @@
 import { TILE_SIZE } from './config.js';
 
 /**
- * Простой A* по тайловой сетке (4 направления). Карта маленькая (48x46),
- * синхронный поиск занимает доли миллисекунды.
+ * A simple A* over the tile grid (4 directions). The map is small (48x46),
+ * so a synchronous search takes a fraction of a millisecond.
  */
 export class Pathfinder {
   private walkable: boolean[];
@@ -15,7 +15,7 @@ export class Pathfinder {
     this.walkable[ty * this.width + tx] = false;
   }
 
-  /** Заблокировать все тайлы, пересекающиеся с px-прямоугольником. */
+  /** Block every tile that intersects the given px rectangle. */
   blockRect(x: number, y: number, w: number, h: number) {
     const x0 = Math.floor(x / TILE_SIZE), y0 = Math.floor(y / TILE_SIZE);
     const x1 = Math.ceil((x + w) / TILE_SIZE) - 1, y1 = Math.ceil((y + h) / TILE_SIZE) - 1;
@@ -32,7 +32,7 @@ export class Pathfinder {
     return this.isWalkable(Math.floor(x / TILE_SIZE), Math.floor(y / TILE_SIZE));
   }
 
-  /** Случайная проходимая точка (px) в радиусе от заданной. */
+  /** A random walkable point (px) within a radius of the given one. */
   randomWalkableNear(px: number, py: number, radius: number): { x: number; y: number } {
     for (let i = 0; i < 24; i++) {
       const x = px + (Math.random() - 0.5) * 2 * radius;
@@ -43,8 +43,8 @@ export class Pathfinder {
   }
 
   /**
-   * Путь между px-точками; возвращает px-точки центров тайлов (без старта).
-   * Если путь не найден — пустой массив.
+   * Path between px points; returns px points at tile centers (excluding the start).
+   * If no path is found — an empty array.
    */
   findPath(fromX: number, fromY: number, toX: number, toY: number): { x: number; y: number }[] {
     const sx = Math.floor(fromX / TILE_SIZE), sy = Math.floor(fromY / TILE_SIZE);
@@ -55,7 +55,7 @@ export class Pathfinder {
       [ex, ey] = near;
     }
     if (!this.isWalkable(sx, sy)) {
-      // агент застрял в коллизии — разрешаем выйти в ближайший свободный тайл
+      // the agent is stuck inside a collision — let them step out to the nearest free tile
       const near = this.nearestWalkable(sx, sy);
       if (!near) return [];
       const [nx, ny] = near;
@@ -90,7 +90,7 @@ export class Pathfinder {
           });
           n = came[n];
         }
-        // финальная точка — точное px-назначение
+        // the final point is the exact px destination
         if (path.length) path[path.length - 1] = { x: ex * TILE_SIZE + TILE_SIZE / 2, y: ey * TILE_SIZE + TILE_SIZE / 2 };
         return path;
       }

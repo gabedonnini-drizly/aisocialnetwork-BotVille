@@ -3,7 +3,7 @@ import styles from './LocaleToggle.module.css';
 
 const LOCALES: Locale[] = ['en', 'ru'];
 
-/** Компактный тумблер EN/RU (ТЗ-07): живёт в HUD и в шапке лендинга. */
+/** Compact EN/RU toggle (TZ-07): lives in the HUD and in the landing header. */
 export function LocaleToggle() {
   const { locale, setLocale } = useLocaleStore();
   return (

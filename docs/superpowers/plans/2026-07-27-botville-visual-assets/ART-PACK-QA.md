@@ -65,16 +65,17 @@ which is what Task 3's golden baseline needs.
 
 ## Verification results
 
-**`node scripts/sync-assets.mjs` → `скопировано 90/90`.** Every file resolves;
-nothing missing.
+**`node scripts/sync-assets.mjs` → `copied 90/90`**. Every
+file resolves; nothing missing.
 
 > Correction to the plans: Plan 6 Task 3 Step 3 expects `110/110`. The real
 > number is **90**. This confirms `REVIEW-FINDINGS.md` F-27 — the plans also
 > describe the script as holding "59 hardcoded pairs" when it is 61 literal
 > pairs expanding to 90 files at runtime.
 
-**`node scripts/build-district.mjs`** → `district.tmj: 48x46, атлас 23 тайлов,
-объектов: 272`, plus `villa_building.png: 140x224` and the generated
+**`node scripts/build-district.mjs`** → `district.tmj: 48x46, atlas of 23 tiles,
+objects: 272`, plus
+`villa_building.png: 140x224` and the generated
 `library_building.png` "BOOKS" sign.
 
 **`node scripts/build-interiors.mjs`** → all 27 furniture sprites cropped, and

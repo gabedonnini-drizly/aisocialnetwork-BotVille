@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GameBridge } from './GameBridge.js';
 import { GameTime } from './time.js';
-import './navigation.js'; // ТЗ-16: agent:goto — переход к агенту из HUD
+import './navigation.js'; // TZ-16: agent:goto — jump to an agent from the HUD
 import { PreloaderScene } from './scenes/PreloaderScene.js';
 import { DistrictScene } from './scenes/DistrictScene.js';
 import { OfficeScene } from './scenes/OfficeScene.js';
@@ -20,7 +20,7 @@ export function initGame(): Phaser.Game {
     backgroundColor: '#1a1915',
     pixelArt: true,
     roundPixels: true,
-    // мышь + 2 touch-указателя: pinch-зум (cameraControls, ТЗ-09)
+    // mouse + 2 touch pointers: pinch zoom (cameraControls, TZ-09)
     input: { activePointers: 3 },
     scale: {
       mode: Phaser.Scale.RESIZE,
@@ -29,7 +29,7 @@ export function initGame(): Phaser.Game {
     scene: [PreloaderScene, DistrictScene, OfficeScene, CafeScene, DormScene, LibraryScene],
   });
 
-  // Игровые часы -> React (HUD): раз в реальную секунду (= игровая минута)
+  // Game clock -> React (HUD): once per real second (= one game minute)
   let clockAcc = 0;
   game.events.on(Phaser.Core.Events.STEP, (_t: number, dms: number) => {
     clockAcc += dms;
@@ -39,7 +39,7 @@ export function initGame(): Phaser.Game {
     }
   });
 
-  // Для отладки в devtools
+  // For debugging in devtools
   (window as unknown as { __game?: Phaser.Game }).__game = game;
 
   return game;

@@ -4,8 +4,8 @@ import type { AgentLocation, CatalogModel, LLMProviderType, UserKeyStatus } from
 // In prod, VITE_API_URL wins if set at build time; otherwise fall back to the
 // known Railway server URL (public, not a secret). Fallback added 2026-07-16:
 // env-injection through vercel build proved unreliable on this setup.
-// NB: `||` (не `??`) — vercel pull отдаёт Sensitive-переменные как пустую
-// строку, и она не должна затирать fallback.
+// NB: `||` (not `??`) — vercel pull returns Sensitive variables as an empty
+// string, and it must not clobber the fallback.
 const PROD_API_FALLBACK = 'https://botvilleserver-production.up.railway.app';
 const envUrl = import.meta.env.VITE_API_URL;
 export const API_BASE =
@@ -15,15 +15,15 @@ export function apiUrl(path: string): string {
   return `${API_BASE}${path}`;
 }
 
-// ── Токен-сессия (ТЗ-12) ──────────────────────────────────────────────────────
-// Клиент и сервер — разные сайты (vercel.app / railway.app), поэтому cookie
-// av_session cross-site до сервера не доезжает: Safari (ITP) режет сторонние
-// куки по умолчанию. Симптом был — POST /api/agents создаёт агента в одной
-// сессии, следующий GET уходит уже в новой и возвращает пусто: модалка
-// закрывалась без ошибки, а HUD оставался пустым.
+// ── Session token (TZ-12) ─────────────────────────────────────────────────────
+// The client and server are different sites (vercel.app / railway.app), so the
+// cross-site av_session cookie never reaches the server: Safari (ITP) blocks
+// third-party cookies by default. The symptom was: POST /api/agents creates an
+// agent in one session, the next GET goes out in a new one and returns nothing —
+// the modal closed without an error while the HUD stayed empty.
 //
-// Лечение — тот же подписанный `<uuid>.<hmac>`, что и в куке, но в заголовке.
-// Кука не тронута: где браузер её пускает, работают оба пути.
+// The fix: the same signed `<uuid>.<hmac>` as in the cookie, but in a header.
+// The cookie is untouched: where the browser allows it, both paths work.
 const TOKEN_KEY = 'av_session_token';
 const SESSION_HEADER = 'X-Session-Token';
 
@@ -31,7 +31,7 @@ function readToken(): string | null {
   try {
     return localStorage.getItem(TOKEN_KEY);
   } catch {
-    return null; // приватный режим / отключённое хранилище — просто без токена
+    return null; // private mode / storage disabled — just proceed without a token
   }
 }
 
@@ -39,11 +39,11 @@ function writeToken(token: string) {
   try {
     localStorage.setItem(TOKEN_KEY, token);
   } catch {
-    /* хранилище недоступно — остаётся cookie-путь */
+    /* storage unavailable — the cookie path remains */
   }
 }
 
-/** URL для WebSocket с токеном в query: браузерный WS не шлёт заголовки. */
+/** WebSocket URL with the token in the query: browser WS cannot send headers. */
 export function wsUrl(path = '/ws'): string {
   const base = API_BASE || window.location.origin;
   const url = new URL(path, base);
@@ -53,9 +53,9 @@ export function wsUrl(path = '/ws'): string {
   return url.toString();
 }
 
-// Единый бутстрап на все параллельные вызовы: на первом рендере apiFetch
-// дёргают сразу несколько мест (список агентов + demo-статус). Без общего
-// промиса каждый завёл бы свою сессию, и одна из них потерялась бы.
+// A single bootstrap shared by all parallel calls: on first render apiFetch is
+// hit by several places at once (agent list + demo status). Without a shared
+// promise each would start its own session and one of them would be lost.
 let bootstrap: Promise<void> | null = null;
 
 function ensureSession(): Promise<void> {
@@ -67,22 +67,22 @@ function ensureSession(): Promise<void> {
       if (typeof token === 'string' && token) writeToken(token);
     })
     .catch(() => {
-      // Сервер недостижим — не блокируем вызов: он упадёт сам и покажет
-      // человеческую ошибку (таймаут ТЗ-11). Бутстрап повторится позже.
+      // Server unreachable — don't block the call: it will fail on its own and
+      // show a human-readable error (TZ-11 timeout). Bootstrap retries later.
       bootstrap = null;
     });
   return bootstrap;
 }
 
 /**
- * fetch к API: сессия едет и cookie (credentials:'include'), и токеном в
- * заголовке — что из двух долетит, тем сервер и воспользуется.
+ * fetch to the API: the session travels both as a cookie (credentials:'include')
+ * and as a token in a header — whichever of the two gets through, the server uses.
  *
- * opts.timeoutMs (опц.): если сервер недостижим/заблокирован провайдером,
- * голый fetch висит до OS-таймаута сокета (минуты). Таймаут через
- * AbortController превращает «чёрную дыру» в детерминированный отказ,
- * который вызывающий покажет человеку. По умолчанию поведение не меняется —
- * таймаут включают только те вызовы, где важен быстрый фидбек (создание агента).
+ * opts.timeoutMs (optional): if the server is unreachable/blocked by the ISP, a
+ * bare fetch hangs until the OS socket timeout (minutes). A timeout via
+ * AbortController turns the "black hole" into a deterministic failure that the
+ * caller can show to the user. Default behavior is unchanged — the timeout is
+ * enabled only by calls where fast feedback matters (agent creation).
  */
 export async function apiFetch(
   path: string,
@@ -104,8 +104,8 @@ export async function apiFetch(
       headers,
       ...(ctrl ? { signal: ctrl.signal } : {}),
     });
-    // Сервер отдаёт актуальный токен на каждом /api-ответе — подхватываем,
-    // если своего ещё нет или сессия сменилась.
+    // The server returns the current token on every /api response — pick it up
+    // if we don't have one yet or the session has changed.
     const fresh = res.headers.get(SESSION_HEADER);
     if (fresh && fresh !== token) writeToken(fresh);
     return res;
@@ -114,14 +114,14 @@ export async function apiFetch(
   }
 }
 
-// ── Местоположения агентов (ТЗ-16) ───────────────────────────────────────────
+// ── Agent locations (TZ-16) ──────────────────────────────────────────────────
 
 export interface AgentLocationsSnapshot {
   gameHour: number;
   locations: Array<{ id: string; location: AgentLocation }>;
 }
 
-/** Лёгкий поллинг «кто где» + серверный игровой час; null — сеть/сервер недоступны. */
+/** Lightweight "who is where" polling + server game hour; null — network/server unavailable. */
 export async function fetchAgentLocations(): Promise<AgentLocationsSnapshot | null> {
   try {
     const res = await apiFetch('/api/agents/locations', {}, { timeoutMs: 10_000 });
@@ -133,9 +133,9 @@ export async function fetchAgentLocations(): Promise<AgentLocationsSnapshot | nu
   }
 }
 
-// ── Живой каталог моделей OpenRouter (ТЗ-14) ─────────────────────────────────
-// Каталог публичный и одинаковый для всех — сервер его кэширует, клиент держит
-// в памяти вкладки, чтобы не дёргать API на каждое открытие модалки.
+// ── Live OpenRouter model catalog (TZ-14) ────────────────────────────────────
+// The catalog is public and the same for everyone — the server caches it, the
+// client keeps it in tab memory to avoid hitting the API every time the modal opens.
 let catalogCache: Promise<CatalogModel[]> | null = null;
 
 export function fetchOpenRouterModels(): Promise<CatalogModel[]> {
@@ -143,14 +143,15 @@ export function fetchOpenRouterModels(): Promise<CatalogModel[]> {
     .then(res => res.json())
     .then(json => (json?.data?.models ?? []) as CatalogModel[])
     .catch(() => {
-      catalogCache = null; // дать следующему открытию шанс
+      catalogCache = null; // give the next open a chance
       return [] as CatalogModel[];
     });
   return catalogCache;
 }
 
-// ── Ключи юзера (ТЗ-14) ───────────────────────────────────────────────────────
-// Сервер отдаёт только факт «настроен» + маску-хвост, сам ключ не возвращается.
+// ── User keys (TZ-14) ─────────────────────────────────────────────────────────
+// The server returns only the "configured" flag + a masked tail; the key itself
+// is never returned.
 
 export async function fetchUserKeys(): Promise<UserKeyStatus[]> {
   try {
@@ -162,7 +163,7 @@ export async function fetchUserKeys(): Promise<UserKeyStatus[]> {
   }
 }
 
-/** @returns вердикт health-check: true/false, null — проверить не удалось */
+/** @returns health-check verdict: true/false, null — the check could not be performed */
 export async function saveUserKey(
   provider: LLMProviderType,
   apiKey: string,
@@ -186,7 +187,7 @@ export async function deleteUserKey(provider: LLMProviderType): Promise<void> {
   await apiFetch(`/api/keys/${provider}`, { method: 'DELETE' });
 }
 
-/** Состояние demo-режима для текущей сессии (бейдж, кнопка «Позже — начать с демо»). */
+/** Demo-mode state for the current session (badge, the "Later — start with demo" button). */
 export async function fetchDemoStatus(): Promise<{ demoEnabled: boolean; demoRemaining?: number }> {
   try {
     const res = await apiFetch('/api/chat/demo-status');

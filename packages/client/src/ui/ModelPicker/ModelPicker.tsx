@@ -5,11 +5,11 @@ import { fetchOpenRouterModels } from '../../lib/api.js';
 import { useT } from '../../i18n/index.js';
 import styles from './ModelPicker.module.css';
 
-// ТЗ-14: выбор модели для трёх разных случаев одним компонентом:
-//  • обычный провайдер — короткий статический список (<select>);
-//  • OpenRouter — живой каталог с сотнями моделей: поиск + отдельный блок
-//    бесплатных (:free), потому что именно они снимают барьер входа;
-//  • custom — каталога нет, просто поле ввода имени модели.
+// TZ-14: model selection for three different cases in one component:
+//  • a regular provider — short static list (<select>);
+//  • OpenRouter — a live catalog with hundreds of models: search + a separate
+//    block of free (:free) ones, because those are what remove the entry barrier;
+//  • custom — no catalog, just an input field for the model name.
 
 interface Props {
   provider: LLMProviderType;
@@ -20,7 +20,7 @@ interface Props {
 const FREE_BLOCK_LIMIT = 6;
 const LIST_LIMIT = 60;
 
-/** Цена $/1M токенов в компактном виде: `$0.15` / `$0.9` / `<$0.01`. */
+/** Price in $/1M tokens, compact form: `$0.15` / `$0.9` / `<$0.01`. */
 function formatPrice(usdPerMillion: number): string {
   if (usdPerMillion === 0) return '$0';
   if (usdPerMillion < 0.01) return '<$0.01';
@@ -55,8 +55,8 @@ export function ModelPicker({ provider, value, onChange }: Props) {
     return catalog.filter(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q));
   }, [catalog, q]);
 
-  // Бесплатные вынесены наверх отдельным блоком — только пока не ищут,
-  // иначе результаты поиска дублировались бы.
+  // Free models get their own block at the top — only while not searching,
+  // otherwise search results would be duplicated.
   const freeTop = useMemo(
     () => (q ? [] : matched.filter(m => m.isFree).slice(0, FREE_BLOCK_LIMIT)),
     [matched, q],
@@ -67,7 +67,7 @@ export function ModelPicker({ provider, value, onChange }: Props) {
     [matched, freeTopIds],
   );
 
-  // ── custom: каталога нет, модель вводится руками ──
+  // ── custom: no catalog, the model is typed in by hand ──
   if (provider === 'custom') {
     return (
       <input
@@ -82,7 +82,7 @@ export function ModelPicker({ provider, value, onChange }: Props) {
     );
   }
 
-  // ── обычный провайдер: короткий вшитый список ──
+  // ── regular provider: short built-in list ──
   if (!dynamic) {
     return (
       <select className={styles.select} value={value} onChange={e => onChange(e.target.value)}>
@@ -91,7 +91,7 @@ export function ModelPicker({ provider, value, onChange }: Props) {
     );
   }
 
-  // ── OpenRouter: живой каталог ──
+  // ── OpenRouter: live catalog ──
   const row = (m: CatalogModel) => (
     <button
       key={m.id}
@@ -130,7 +130,7 @@ export function ModelPicker({ provider, value, onChange }: Props) {
       {catalog === null && <div className={styles.note}>{t('model.catalogLoading')}</div>}
 
       {catalog !== null && catalog.length === 0 && (
-        // Каталог не доехал — не запираем юзера: имя модели можно ввести руками.
+        // The catalog never arrived — don't lock the user out: the model name can be typed in by hand.
         <>
           <div className={styles.note}>{t('model.catalogFailed')}</div>
           <input

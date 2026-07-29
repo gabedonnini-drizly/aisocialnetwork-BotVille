@@ -23,9 +23,9 @@ export interface ChatRequest {
 export interface ChatChunk {
   type: 'delta' | 'done' | 'error' | 'demo_info' | 'demo_limit_reached';
   content?: string;
-  /** Нормализованная ошибка провайдера: { code, message } с готовым текстом (RU) */
+  /** Normalized provider error: { code, message } with ready-to-show text */
   error?: ApiError;
-  /** Остаток demo-сообщений; присутствует в ответах demo-режима */
+  /** Remaining demo messages; present in demo-mode responses */
   demoRemaining?: number;
 }
 

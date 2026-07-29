@@ -124,7 +124,8 @@ validates the highest-risk cluster.
 All five LimeZu packs are bought, extracted to `assets-src/` and verified. Full
 detail in `ART-PACK-QA.md`; the results you need to carry:
 
-**The legacy pipeline runs end to end.** `sync-assets.mjs` → `скопировано 90/90`;
+**The legacy pipeline runs end to end.** `sync-assets.mjs` → `copied 90/90`
+(copied 90/90);
 `build-district.mjs` and `build-interiors.mjs` produce **121 PNGs and 5
 tilemaps**. BotVille renders.
 

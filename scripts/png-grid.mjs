@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Анализатор раскладки спрайтшитов: декодирует PNG (без зависимостей)
- * и печатает карту занятости сетки NxN — в каких ячейках есть непрозрачные
- * пиксели. Используется для точной фиксации кадров в assetManifest.ts.
+ * Spritesheet layout analyzer: decodes a PNG (dependency-free)
+ * and prints an occupancy map of an NxN grid — which cells contain opaque
+ * pixels. Used to pin down frames precisely in assetManifest.ts.
  *
- * Запуск: node scripts/png-grid.mjs <file.png> [cellW] [cellH]
+ * Run: node scripts/png-grid.mjs <file.png> [cellW] [cellH]
  */
 import { readFileSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
@@ -61,7 +61,7 @@ export function decodePng(file) {
     }
     rp += stride;
   }
-  // alpha-проверка на пиксель
+  // per-pixel alpha lookup
   const alphaAt = (x, y) => {
     const i = y * stride + x * channels;
     if (colorType === 6) return out[i + 3];
@@ -78,7 +78,7 @@ export function decodePng(file) {
 export function gridReport(file, cellW, cellH) {
   const { w, h, alphaAt } = decodePng(file);
   const cols = Math.ceil(w / cellW), rows = Math.ceil(h / cellH);
-  console.log(`${file}\n  ${w}x${h}, сетка ${cellW}x${cellH} -> ${cols} cols x ${rows} rows`);
+  console.log(`${file}\n  ${w}x${h}, grid ${cellW}x${cellH} -> ${cols} cols x ${rows} rows`);
   for (let r = 0; r < rows; r++) {
     let line = '';
     let count = 0;
