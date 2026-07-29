@@ -10,7 +10,8 @@
       "types": "./src/index.ts",
       "node": "./dist/index.js",
       "default": "./src/index.ts"
-    }
+    },
+    "./*.mjs": "./src/*.mjs"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json"
