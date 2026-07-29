@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { getLandingCopy } from './landingCopy.js';
 import { useT } from '../../i18n/index.js';
-import { LocaleToggle } from '../LocaleToggle.js';
 import styles from './Landing.module.css';
 
 // Paths to the hero media. Part 2 will put a render of the night district here;
@@ -48,10 +47,6 @@ export function Landing() {
             </video>
           )}
           <div className={styles.heroOverlay} />
-        </div>
-
-        <div className={styles.langCorner}>
-          <LocaleToggle />
         </div>
 
         <div className={styles.heroContent}>

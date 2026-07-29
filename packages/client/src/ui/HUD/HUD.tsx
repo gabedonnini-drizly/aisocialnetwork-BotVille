@@ -9,7 +9,6 @@ import { isSleepTime } from '../../game/dayNight.js';
 import { FREE_SLOT_LIMIT, type AgentLocation } from '@botville/shared';
 import { STATUS_COLORS } from '../../game/palette.js';
 import { useT, STATUS_KEYS, LOCATION_KEYS } from '../../i18n/index.js';
-import { LocaleToggle } from '../LocaleToggle.js';
 import styles from './HUD.module.css';
 
 export function HUD() {
@@ -105,10 +104,6 @@ export function HUD() {
         <button className={styles.keysBtn} onClick={() => setShowKeys(true)} title={t('hud.keysHint')}>
           🔑
         </button>
-
-        <div className={styles.divider} />
-
-        <LocaleToggle />
       </div>
 
       {/* Right-click context menu */}

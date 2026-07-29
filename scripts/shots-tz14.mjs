@@ -223,8 +223,7 @@ await page.evaluate(() => {
 await sleep(400);
 await shot('openrouter-search');
 
-// NB: the "отмена" alternative matches the RU button label the client renders — do not translate.
-await clickText(/cancel|отмена/);
+await clickText(/cancel/);
 await sleep(250);
 
 // ── 4) Both agents reply using the same saved key ──
@@ -295,9 +294,9 @@ await page.evaluate(() => {
 });
 await sleep(150);
 await page.evaluate(() => document.querySelector('[class*="sendBtn"]').click());
-// NB: the "не подошёл" alternative matches the RU error text the client renders — do not translate.
+// NB: the "." wildcard matches the typographic apostrophe in "didn’t" (en.ts model.keyBad).
 await page.waitForFunction(
-  () => /не подошёл|didn.t work/i.test(document.body.innerText),
+  () => /didn.t work/i.test(document.body.innerText),
   { timeout: 20_000, polling: 250 },
 );
 await sleep(300);

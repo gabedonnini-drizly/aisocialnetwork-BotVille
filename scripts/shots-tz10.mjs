@@ -131,8 +131,7 @@ if (MOBILE) {
   await shot('create');
 }
 await page.evaluate(() => {
-  // NB: the "отмена" alternative matches the RU label the client renders — do not translate.
-  const btn = [...document.querySelectorAll('button')].find(b => /cancel|отмена/i.test(b.textContent));
+  const btn = [...document.querySelectorAll('button')].find(b => /cancel/i.test(b.textContent));
   btn.click();
 });
 await sleep(200);

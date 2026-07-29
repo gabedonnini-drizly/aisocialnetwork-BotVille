@@ -15,7 +15,7 @@
 .textarea { resize: vertical; }
 .input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--accent-coral); }
 .hint { font-size: 10px; color: var(--text-on-dark-muted); }
-/* ТЗ-14: «использую сохранённый ключ» вместо пустого поля ввода */
+/* TZ-14: "using the saved key" instead of an empty input field */
 .savedKeyRow {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   background: var(--ink-900); border: 1px solid var(--ink-line);
@@ -39,15 +39,15 @@
 .demoSkipBtn:hover:not(:disabled) { background: var(--ink-700); }
 .demoSkipBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ── Мобильный fit (ТЗ-10): десктоп не трогаем, только <=480px ── */
+/* ── Mobile fit (TZ-10): leave desktop alone, only <=480px ── */
 @media (max-width: 480px) {
   .modal {
     max-width: calc(100vw - 16px);
-    /* dvh: с клавиатурой модалка сжимается, скролл внутренний (overflow-y
-       уже стоит) — кнопка Create всегда достижима */
+    /* dvh: with the keyboard up the modal shrinks and scrolls internally (overflow-y
+       is already set) — the Create button always stays reachable */
     max-height: calc(100dvh - 16px);
   }
-  /* ТЗ-14: ссылки-переключатели ключа — мишень >=44px, визуал не растёт */
+  /* TZ-14: the key toggle links — >=44px target, the visual doesn't grow */
   .linkBtn { position: relative; }
   .linkBtn::after { content: ''; position: absolute; inset: -14px -8px; }
   .savedKeyRow { row-gap: 2px; }

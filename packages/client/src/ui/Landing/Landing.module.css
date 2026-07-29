@@ -1,4 +1,4 @@
-/* Лендинг занимает весь экран и скроллится сам (body у игры — overflow:hidden). */
+/* The landing fills the screen and scrolls on its own (the game's body is overflow:hidden). */
 .page {
   position: fixed;
   inset: 0;
@@ -39,22 +39,14 @@
   object-fit: cover;
   image-rendering: pixelated;
 }
-/* Затемнение + виньетка, чтобы текст читался поверх района (тёплый графитовый скрим,
-   НЕ трогает сам ночной глоу мира на видео/картинке под ним). */
+/* Dimming + vignette so the text stays readable over the district (a warm graphite
+   scrim that does NOT touch the world's own night glow in the video/image beneath). */
 .heroOverlay {
   position: absolute;
   inset: 0;
   background:
     linear-gradient(180deg, rgba(10,9,7,0.55) 0%, rgba(10,9,7,0.15) 35%, rgba(10,9,7,0.78) 100%),
     radial-gradient(120% 90% at 50% 40%, rgba(10,9,7,0) 40%, rgba(10,9,7,0.62) 100%);
-}
-
-/* Тумблер EN/RU в шапке лендинга (ТЗ-07) */
-.langCorner {
-  position: absolute;
-  top: 18px;
-  right: 20px;
-  z-index: 2;
 }
 
 .heroContent {
@@ -140,7 +132,7 @@
 }
 @keyframes bounce { 0%,100%{ transform: translate(-50%, 0); } 50%{ transform: translate(-50%, 8px); } }
 
-/* ── Буллеты ──────────────────────────────────────────────────────────────── */
+/* ── Bullets ──────────────────────────────────────────────────────────────── */
 .bullets {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -160,7 +152,7 @@
 .bulletTitle { font-size: 17px; font-weight: 700; color: var(--text-on-dark); margin-bottom: 8px; }
 .bulletText { font-size: 14px; line-height: 1.55; color: var(--text-on-dark-muted); }
 
-/* ── Футер ────────────────────────────────────────────────────────────────── */
+/* ── Footer ───────────────────────────────────────────────────────────────── */
 .footer {
   display: flex;
   flex-direction: column;
@@ -183,7 +175,7 @@
 .ctaSmall:hover { background: var(--accent-coral-hover); }
 .footerNote { font-size: 12px; color: var(--text-on-dark-muted); }
 
-/* ── Мобильные (≤560px) ───────────────────────────────────────────────────── */
+/* ── Mobile (≤560px) ──────────────────────────────────────────────────────── */
 @media (max-width: 560px) {
   .bullets {
     grid-template-columns: 1fr;
@@ -195,7 +187,7 @@
   .cta { width: 100%; justify-content: center; }
 }
 
-/* «Как хранятся ключи» — модалка (ТЗ-04, часть 3) */
+/* "How keys are stored" modal (TZ-04, part 3) */
 .modalOverlay {
   position: fixed;
   inset: 0;

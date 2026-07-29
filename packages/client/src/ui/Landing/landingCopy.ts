@@ -1,5 +1,5 @@
-// Structure of the landing copy. The texts themselves live in the i18n dictionaries (TZ-07):
-// edit packages/client/src/i18n/en.ts and ru.ts — the layout will adapt.
+// Structure of the landing copy. The texts themselves live in the dictionary:
+// edit packages/client/src/i18n/en.ts — the layout will adapt.
 
 import type { TFunc } from '../../i18n/index.js';
 

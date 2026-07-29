@@ -76,9 +76,8 @@ async function openModalAndCreate(page, name) {
   }, name);
   await sleep(150);
   await page.evaluate(() => {
-    // NB: the Russian alternative matches the RU button label the client renders — do not translate.
     const btn = [...document.querySelectorAll('[class*="modal"] button')]
-      .find(b => /Создать агента|Create Agent/.test(b.textContent));
+      .find(b => /Create Agent/.test(b.textContent));
     btn.click();
   });
   // The modal closes both on the bug and on success — so we wait for the close itself

@@ -101,7 +101,7 @@ assets-src/ ──sync-assets.mjs──> raw copies (~110 explicit files)
 
 | File | Lines | Notes |
 |---|---|---|
-| `packages/client/src/game/assetManifest.ts` | 248 | **Data-driven, no magic numbers in scenes.** `AVATAR_VARIANTS`:116, `EMOTES`:194, `byStatus`:210, `ANIMATED_OBJECTS`:242. Comments are in Russian. |
+| `packages/client/src/game/assetManifest.ts` | 248 | **Data-driven, no magic numbers in scenes.** `AVATAR_VARIANTS`:116, `EMOTES`:194, `byStatus`:210, `ANIMATED_OBJECTS`:242. Comments are in English. |
 | `packages/client/src/game/config.ts` | 179 | `DISTRICT`:29, `CAMERA`:40 (zoom 1.8 / 0.6–4 / step 1.3), `WANDER_RADIUS`:59, `TIME`:65 (`msPerGameHour: 60_000`), `DAY_TINT_KEYS`:75, `NIGHT_SCHEDULE`:114, `INTERIORS`:143, `INTERIOR_IMAGES`:156, `DISTRICT_IMAGES`:169 |
 | `packages/client/src/game/scenes/PreloaderScene.ts` | 131 | Iterates the manifest. No literals. |
 | `packages/client/src/game/scenes/DistrictScene.ts` | 457 | Outdoor scene |
@@ -229,9 +229,9 @@ C2) · I-12 no art in a publicly pushed image · I-13 no animal appearances.
   the fixed ladder `[0.5, 1, 2, 3, 4]`.
 - **Crowding:** 6 venues × 150 agents ≈ 25 per 20×15 room with 4–9 seats. Capacity
   + deterministic slotting is in scope; overflow UX is deferred.
-- **Comments and some identifiers in `packages/client/` are Russian.** They are
-  accurate and load-bearing (verified crop coordinates, frame layouts). Read them;
-  don't discard them.
+- **Comments in `packages/client/` are English.** They are accurate and
+  load-bearing (verified crop coordinates, frame layouts). Read them; preserve
+  them and their intent; don't discard them.
 - **The `.tmj` and `.json` tilemap pairs differ** — `library` has only `.tmj`.
   Confirm which the loader uses (`PreloaderScene:40,58` loads `.tmj`) before
   touching either.

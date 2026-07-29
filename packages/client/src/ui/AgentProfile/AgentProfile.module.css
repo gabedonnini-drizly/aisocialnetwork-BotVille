@@ -49,7 +49,7 @@
 }
 .btnSecondary:hover { color: var(--text-on-dark); border-color: var(--text-on-dark-muted); }
 
-/* ── Мобильный fit (ТЗ-10): десктоп не трогаем, только <=480px ── */
+/* ── Mobile fit (TZ-10): leave desktop alone, only <=480px ── */
 @media (max-width: 480px) {
   .card {
     width: min(340px, calc(100vw - 16px));

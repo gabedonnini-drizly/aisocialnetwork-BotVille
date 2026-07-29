@@ -1,5 +1,5 @@
-/* ТЗ-14: выбор модели (статический список / живой каталог OpenRouter / ручной ввод).
-   Палитра и типографика — общие токены theme.css, без своих hex. */
+/* TZ-14: model selection (static list / live OpenRouter catalog / manual entry).
+   Palette and typography come from the shared theme.css tokens, no local hex values. */
 
 .picker { display: flex; flex-direction: column; gap: 6px; }
 
@@ -15,7 +15,7 @@
 .list {
   max-height: 200px; overflow-y: auto; border: 1px solid var(--ink-line);
   border-radius: var(--radius-sm); background: var(--ink-900);
-  /* инерционный скролл списка внутри уже скроллящейся модалки */
+  /* inertial scrolling for the list inside an already-scrolling modal */
   -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
 }
 .groupLabel {
@@ -43,9 +43,9 @@
 .price { font-size: 10px; color: var(--accent-wheat); white-space: nowrap; }
 .ctx { font-size: 9px; color: var(--text-on-dark-muted); white-space: nowrap; }
 
-/* ── Мобильный fit (ТЗ-10) ── */
+/* ── Mobile fit (TZ-10) ── */
 @media (max-width: 480px) {
-  /* короче список: под ним ещё поля ключа и кнопки, до них надо доскроллить */
+  /* shorter list: the key fields and buttons sit below it and have to stay reachable by scrolling */
   .list { max-height: 168px; }
   .rowId { display: none; }
 }

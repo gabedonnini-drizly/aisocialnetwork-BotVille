@@ -1,4 +1,4 @@
-/* ТЗ-14: компактная панель ключей из HUD (не вкладка — HUD должен остаться узким). */
+/* TZ-14: compact keys panel opened from the HUD (not a tab — the HUD has to stay narrow). */
 
 .overlay {
   position: fixed; inset: 0; background: var(--overlay-scrim);
@@ -60,10 +60,10 @@
   font-size: 10px; color: var(--text-on-dark-muted); line-height: 1.5;
 }
 
-/* ── Мобильный fit (ТЗ-10) ── */
+/* ── Mobile fit (TZ-10) ── */
 @media (max-width: 480px) {
   .panel { width: 100%; max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); padding: 14px; }
-  /* кнопки уходят под инфо-строку — иначе имя провайдера сжимается в многоточие */
+  /* buttons wrap below the info row — otherwise the provider name collapses into an ellipsis */
   .itemRow { flex-wrap: wrap; }
   .itemActions { width: 100%; }
   .editBtn, .deleteBtn { flex: 1; min-height: 44px; }

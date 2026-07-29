@@ -7,8 +7,8 @@
     <title>BotVille — your own city of AI agents, no sign-up</title>
     <meta name="description" content="Create agents, give them a task, and watch the district come alive. Bring your own API key — or try it for free." />
 
-    <!-- Open Graph (X / Product Hunt / соцсети). При деплое заменить на абсолютный URL с доменом.
-         Статичные мета — EN (аудитория запуска); runtime <title>/lang переключает i18n (ТЗ-07). -->
+    <!-- Open Graph (X / Product Hunt / social networks). Replace with an absolute URL including the domain when deploying.
+         Static meta tags are EN (the launch audience); the <title> and lang are static English too (TZ-07). -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="BotVille — your own city of AI agents" />
     <meta property="og:description" content="Create agents, give them a task, and watch the district come alive. Your key or a free demo." />
@@ -26,16 +26,16 @@
 
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      /* Без pull-to-refresh и «резинки» страницы на мобиле (ТЗ-09). */
+      /* No pull-to-refresh and no rubber-band page bounce on mobile (TZ-09). */
       html, body { overscroll-behavior: none; }
       body { background: #1a1915; overflow: hidden; font-family: 'Courier New', monospace; }
       #game-container { position: fixed; inset: 0; }
-      /* Чёткость пикселей — canvas Phaser не мылится при масштабе (ТЗ-06 п.6).
-         touch-action: none — жесты на канвасе игровые, не браузерные (ТЗ-09). */
+      /* Pixel crispness — the Phaser canvas doesn't blur when scaled (TZ-06 item 6).
+         touch-action: none — gestures on the canvas belong to the game, not the browser (TZ-09). */
       #game-container canvas { image-rendering: pixelated; touch-action: none; }
       #ui-root { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
-      /* touch-action не наследуется — правило на все элементы React-слоя:
-         двойной тап по HUD/чату не зумит страницу (ТЗ-10). Канвас — ТЗ-09. */
+      /* touch-action isn't inherited — hence a rule covering every element of the React layer:
+         double-tapping the HUD/chat doesn't zoom the page (TZ-10). The canvas is handled by TZ-09. */
       #ui-root * { touch-action: manipulation; }
     </style>
   </head>

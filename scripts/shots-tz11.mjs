@@ -152,8 +152,7 @@ const shot = async (page, name) => { await page.screenshot({ path: path.join(OUT
   const state = { postMode: 'fail' };
   await boot(page, state);
   await openModal(page, 'Testy');
-  // NB: the Russian alternatives below match the RU button labels the client renders — do not translate.
-  await tapButton(page, 'Создать агента|Create Agent|Создаю|Creating', '');
+  await tapButton(page, 'Create Agent|Creating', '');
   await sleep(800);
   await shot(page, 'error-submit');
   await page.close();
@@ -166,7 +165,7 @@ const shot = async (page, name) => { await page.screenshot({ path: path.join(OUT
   const state = { postMode: 'fail' };
   await boot(page, state);
   await openModal(page, 'Testy');
-  await tapButton(page, 'Позже|Skip for now', 'i');
+  await tapButton(page, 'Skip for now', 'i');
   await sleep(800);
   await shot(page, 'error-demo');
   await page.close();
@@ -179,7 +178,7 @@ const shot = async (page, name) => { await page.screenshot({ path: path.join(OUT
   const state = { postMode: 'ok', newName: 'Barsik' };
   await boot(page, state);
   await openModal(page, 'Barsik');
-  await tapButton(page, 'Создать агента|Create Agent|Создаю|Creating', '');
+  await tapButton(page, 'Create Agent|Creating', '');
   await page.waitForFunction(() => !document.querySelector('[class*="modal"]'), { timeout: 5000 });
   await page.evaluate(() => window.__setGameHour(12));
   await sleep(600);
@@ -194,7 +193,7 @@ const shot = async (page, name) => { await page.screenshot({ path: path.join(OUT
   const state = { postMode: 'ok', newName: 'Murzik' };
   await boot(page, state);
   await openModal(page, 'Murzik');
-  await tapButton(page, 'Позже|Skip for now', 'i');
+  await tapButton(page, 'Skip for now', 'i');
   await page.waitForFunction(() => !document.querySelector('[class*="modal"]'), { timeout: 5000 });
   await page.evaluate(() => window.__setGameHour(12));
   await sleep(600);

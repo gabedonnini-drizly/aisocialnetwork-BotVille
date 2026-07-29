@@ -1,6 +1,6 @@
-// TZ-07: the English dictionary is the SINGLE source of user-facing text (default language).
-// Flat `section.name` keys; substitutions — {placeholder}, see format() in index.ts.
-// Edit texts here (and mirror them in ru.ts) — the layout will adapt.
+// The English dictionary is the SINGLE source of user-facing text; the app is
+// English-only. Flat `section.name` keys; substitutions — {placeholder}, see
+// format() in index.ts. Edit texts here — the layout will adapt.
 
 export const en = {
   'meta.title': 'BotVille — your own city of AI agents, no sign-up',

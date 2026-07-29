@@ -1,63 +1,31 @@
-// TZ-07: EN/RU language state. Default — en; ru — for Russian-language browsers;
-// an explicit user choice survives reload via localStorage (av_locale).
+// UI copy lives in en.ts and is looked up through t()/tr(). The app is
+// English-only: there is no locale state, no persistence, and no switching.
 
-import { useCallback } from 'react';
-import { create } from 'zustand';
 import { en } from './en.js';
-import { ru } from './ru.js';
 
-export type Locale = 'en' | 'ru';
 export type TKey = keyof typeof en;
 export type TParams = Record<string, string | number>;
 export type TFunc = (key: TKey, params?: TParams) => string;
-
-const DICTS: Record<Locale, Record<TKey, string>> = { en, ru };
-const STORAGE_KEY = 'av_locale';
-
-function detectLocale(): Locale {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved === 'en' || saved === 'ru') return saved;
-  } catch { /* localStorage unavailable (private mode) — not critical */ }
-  return navigator.language?.toLowerCase().startsWith('ru') ? 'ru' : 'en';
-}
 
 function format(template: string, params?: TParams): string {
   if (!params) return template;
   return template.replace(/\{(\w+)\}/g, (m, k) => (k in params ? String(params[k]) : m));
 }
 
-// <html lang> and <title> follow the locale (static index.html is the EN fallback for crawlers)
-function applyToDocument(locale: Locale) {
-  document.documentElement.lang = locale;
-  document.title = DICTS[locale]['meta.title'];
-}
+const translate: TFunc = (key, params) => format(en[key], params);
 
-interface LocaleStore {
-  locale: Locale;
-  setLocale: (locale: Locale) => void;
-}
-
-export const useLocaleStore = create<LocaleStore>((set) => ({
-  locale: detectLocale(),
-  setLocale: (locale) => {
-    try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
-    applyToDocument(locale);
-    set({ locale });
-  },
-}));
-
-applyToDocument(useLocaleStore.getState().locale);
+// Keeps <title> in sync with the dictionary; static index.html carries the same
+// text for crawlers, and this stops the two from drifting apart.
+document.title = en['meta.title'];
 
 /** Translation hook: const t = useT(); t('chat.retry'); t('chat.demoRemaining', { n: 5 }). */
 export function useT(): TFunc {
-  const locale = useLocaleStore((s) => s.locale);
-  return useCallback<TFunc>((key, params) => format(DICTS[locale][key], params), [locale]);
+  return translate;
 }
 
 /** Non-reactive translation — for code outside React (Phaser scenes). */
 export function tr(key: TKey, params?: TParams): string {
-  return format(DICTS[useLocaleStore.getState().locale][key], params);
+  return translate(key, params);
 }
 
 /** Agent status → dictionary key (shared by the HUD and the profile). */

@@ -835,7 +835,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 - Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.test.ts` (add the `fetchVenueNotes` describe block)
 - Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/ui/VenueNotes/VenueNotesPanel.tsx`
 - Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/ui/VenueNotes/VenueNotesPanel.module.css`
-- Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/i18n/en.ts` and `.../ru.ts` (two keys each)
+- Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/i18n/en.ts` (two keys)
 - Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/App.tsx` (mount, integrated mode only)
 
 **Interfaces:**
@@ -1021,15 +1021,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   'venueNotes.empty': 'No notes yet.',
   ```
 
-  In `/Users/home/aisocialnetwork-BotVille/packages/client/src/i18n/ru.ts`, before the closing `};` add:
-
-  ```ts
-  // Addendum II.6: venue notes (integrated mode only)
-  'venueNotes.title': '📝 Заметки здесь',
-  'venueNotes.empty': 'Заметок пока нет.',
-  ```
-
-  (Both dictionaries must gain both keys — `TKey` is derived from `en` and `ru` must satisfy `Record<TKey, string>`, so `typecheck` enforces this.)
+  `en.ts` is the only dictionary — `TKey` is derived from it, so both keys must land there for `useT()` to resolve them under `typecheck`.
 
 - [ ] Mount it in `/Users/home/aisocialnetwork-BotVille/packages/client/src/App.tsx`. Add the imports:
 

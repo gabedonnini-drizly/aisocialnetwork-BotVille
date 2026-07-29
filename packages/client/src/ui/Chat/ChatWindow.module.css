@@ -33,9 +33,9 @@
   font-size: 13px; line-height: 1.5; white-space: pre-wrap;
   box-shadow: var(--shadow-sm);
 }
-/* Реплика пользователя — коралловый акцент. */
+/* User message — coral accent. */
 .user .bubble { background: var(--accent-coral); color: var(--paper-100); border: 1px solid var(--accent-coral); }
-/* Реплика агента — бумажный баббл, тёмный текст (высокая читаемость). */
+/* Agent message — paper bubble, dark text (high readability). */
 .assistant .bubble { background: var(--paper-200); color: var(--text-on-light); border: 1px solid var(--paper-line); }
 .cursor { animation: blink 0.8s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
@@ -55,7 +55,7 @@
 .sendBtn:hover:not(:disabled) { background: var(--accent-coral-hover); border-color: var(--accent-coral-hover); }
 .sendBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* Системные сообщения (ошибки) и повтор */
+/* System messages (errors) and retry */
 .systemMsg {
   align-self: center; text-align: center;
   font-size: 11px; color: var(--text-on-dark); background: var(--accent-bordeaux);
@@ -69,7 +69,7 @@
 }
 .retryBtn:hover { background: var(--ink-800); border-color: var(--accent-coral); }
 
-/* Demo-режим */
+/* Demo mode */
 .demoBadge {
   font-size: 10px; color: var(--ink-900); background: var(--accent-wheat);
   border: 1px solid var(--accent-wheat); border-radius: 10px; padding: 2px 8px;
@@ -100,13 +100,13 @@
 }
 .demoModalSecondary:hover { color: var(--text-on-dark); border-color: var(--text-on-dark-muted); }
 
-/* ── Мобильный fit (ТЗ-10): десктоп не трогаем, только <=480px ── */
+/* ── Mobile fit (TZ-10): leave desktop alone, only <=480px ── */
 @media (max-width: 480px) {
   .window {
     right: 8px; bottom: 8px;
     width: min(360px, calc(100vw - 16px));
-    /* dvh: окно сжимается вместе с вьюпортом (клавиатура Android, тулбары);
-       на iOS клавиатуру дополнительно отрабатывает visualViewport-хук в tsx */
+    /* dvh: the window shrinks along with the viewport (Android keyboard, toolbars);
+       on iOS the keyboard is additionally handled by the visualViewport hook in the tsx */
     height: min(520px, calc(100dvh - 16px));
   }
 }

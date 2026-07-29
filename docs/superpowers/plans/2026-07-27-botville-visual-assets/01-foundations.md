@@ -41,7 +41,7 @@ Every task's requirements implicitly include this section.
 - **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
-- **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
+- **Comments in `packages/client/` are English and load-bearing** — they record verified crop coordinates and frame layouts. Read them; preserve them and their intent; never delete or "clean up" an explanatory comment.
 - **`SCHEMA_VERSION = 1`**, exported from `@botville/shared`, and included in every `appearanceHash`.
 - **Path segment rename: `limezu/` → `pack/`** throughout `public/assets/`. No directory, key or string in committed code may name a vendor.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
@@ -1534,7 +1534,7 @@ The first third of the largest mechanical task in this build (spec R-5). Transcr
 
 A rect is `{ file, x, y, w, h, trim }` — everything but `file` optional; no `x/y/w/h` means "the whole file" (spec §5.2) — plus two optional curation fields:
 
-- `note` — free text: why this sprite, what it beat, what went wrong last time. Tasks 5–7 carry the Russian build-script comments forward here; a reviewed crop change later adds its reason the same way.
+- `note` — free text: why this sprite, what it beat, what went wrong last time. Tasks 5–7 carry the build-script comments forward here; a reviewed crop change later adds its reason the same way.
 - `pin` — the sha256 of the post-trim crop's pixels, absent (or `null`) until the pack is on disk. Filled and verified by `npm run pin` (Task 9); a crop whose pixels no longer match its pin fails `validate:contract` by name (Task 10).
 
 `loadAdapter()` (Task 8) picks the keys it resolves with and ignores the rest, so both fields ride on the adapter with zero loader changes — one committed file per pack, and the reason travels with the rect it explains.
@@ -1821,7 +1821,7 @@ git commit -m "feat(adapter): migrate district prop sources into sources/limezu.
 
 ## Task 7: `sources/limezu.json` — interior furniture, characters, emotes, animated objects
 
-The last and largest third. 27 furniture rects come from `FURNITURE` in `build-interiors.mjs:63-100` — those coordinates were re-verified against the current sheets under TZ-08 and the Russian comments explain *why* each one is where it is. Preserve those comments as `"note"` fields; they are the record of what went wrong last time.
+The last and largest third. 27 furniture rects come from `FURNITURE` in `build-interiors.mjs:63-100` — those coordinates were re-verified against the current sheets under TZ-08 and the accompanying comments explain *why* each one is where it is. Preserve those comments as `"note"` fields; they are the record of what went wrong last time.
 
 This task also moves the emote frame indices out of `assetManifest.ts:211-218` — the coupling I-1 names explicitly.
 
@@ -1924,7 +1924,7 @@ Expected: FAIL — `missing` lists every interior prop name.
 
 - [ ] **Step 4: Extend `rects`**
 
-Furniture, transcribed from `build-interiors.mjs:63-100`. `trim: true` reproduces the alpha-bbox trim that loop performs. The `note` fields carry the Russian comments' meaning forward — they record hard-won corrections, not decoration.
+Furniture, transcribed from `build-interiors.mjs:63-100`. `trim: true` reproduces the alpha-bbox trim that loop performs. The `note` fields carry those comments' meaning forward — they record hard-won corrections, not decoration.
 
 ```json
     "bed_green":  { "file": "bedroom", "x": 128, "y": 320, "w": 32, "h": 56, "trim": true },
