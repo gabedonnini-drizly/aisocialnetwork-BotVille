@@ -40,6 +40,15 @@ are still open.
 
 ## Phase 0 — environment prep (mechanical, ~15 min)
 
+- [ ] **Rebase the execution worktree onto current `main` first.** Commit
+  `31ba644` translated all Russian comments/log strings to English across
+  code, scripts and the plan docs — in lockstep. The worktree branch
+  (`worktree-agent-a7145ab20862a3868`) is based on the pre-translation
+  initial commit, so the plans' quoted English anchors (e.g.
+  `sync-assets: copied 90/90`) will NOT match its Russian files until it is
+  rebased: `git rebase main` in the worktree (expect at most comment-level
+  conflicts in the files Tasks 1–2 touched), then re-run `npm test` —
+  13 pass / 2 skips is the green baseline.
 - [ ] Install Node 24 (`nvm install 24 && nvm use 24`) — required before
   Plan 6; everything earlier runs on 22.
 - [ ] Decide the main checkout's dirty `package-lock.json` (modified,
@@ -101,9 +110,9 @@ dimension) scoped to:
 Deliverable: an explicit verdict on **"is BotVille a sound platform to build
 on?"** with findings ranked by whether they (a) block the plans, (b) should be
 folded into a plan task, (c) are fix-later. Anything in category (a) goes to
-the owner before execution starts. Russian comments in `packages/client` are
-load-bearing (verified crop coordinates) — a reviewer flagging them as noise
-is wrong.
+the owner before execution starts. The explanatory comments in
+`packages/client` are English and load-bearing (verified crop coordinates) — a
+reviewer flagging them as noise is wrong.
 
 ## Phase 3 — owner decisions (batch, one AskUserQuestion)
 
