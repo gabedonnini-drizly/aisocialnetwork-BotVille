@@ -34,7 +34,7 @@ output is a review.
 ### 1. Correctness against the repo
 
 - Do the cited anchors exist? (`config.ts:40`, `assetManifest.ts:211-218`,
-  `Schedule.js:47`, `build-district.mjs:29-53`, the `png-lib.mjs` API surface,
+  `Schedule.js:10/:49`, `build-district.mjs:29-53`, the `png-lib.mjs` API surface,
   `AVATAR_VARIANTS` shape, `railway.toml`'s build command, `vercel.json`.)
 - Does the code in the plans actually run? Trace imports, signatures and return
   shapes across tasks. A function called `assignSlots` in one task and

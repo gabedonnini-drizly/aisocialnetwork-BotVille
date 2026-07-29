@@ -8,9 +8,9 @@
 
 **Architecture:** One migration adds `users_schedules.venue`. `venueVocabulary.js` loads BotVille’s published `venues.json` and validates against it — it never enumerates a venue itself. `scheduleCoverage.js` normalises generated schedules to tile `[0,24)` exactly per `day_type` and assigns each block a venue at **write** time, chosen by the agent’s seed from the pool an activity makes plausible. A lock file lets the platform prove its copy is intact without needing BotVille on disk.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser 3.88, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose.
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
-**Depends on:** Plan 2 — the published `venues.json` and `venues.lock.json`. **This is the only plan that touches `aisocialnetwork-api`.**
+**Depends on:** Plan 2 — the published `venues.json` and `venues.lock.json` — and Plan 1's `test/helpers/siblingRepo.mjs` for locating `$API`. **This is the only plan that touches `aisocialnetwork-api`** — every api-side change, including the one-line `pickFrom` export (Task 32 Step 0), lives here.
 
 **Exit criterion:** SC-1 holds for every agent and both day types against the live DB; every stored venue is in the published vocabulary; no venue holds more than half the roster during waking hours; both repos’ vocabulary checks pass.
 
@@ -38,7 +38,7 @@ echo "BotVille: $BOTVILLE"; echo "api:      $API"
 
 Every task's requirements implicitly include this section.
 
-- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM everywhere (`"type": "module"`).
+- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
 - **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
@@ -47,9 +47,10 @@ Every task's requirements implicitly include this section.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`.
-- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — Task 18 asserts it.
-- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api): `$BOTVILLE_API_REPO` → `$BOTVILLE_REPO` → sibling of the repo root → explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
+- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
+- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
@@ -69,7 +70,7 @@ Every task's requirements implicitly include this section.
 
 **This and Task 32/33 are the only work in `aisocialnetwork-api`.** Verified anchors: head is `036_drop_users_birthday_default.js`; `users_schedules` has no `venue` column; `day_type` is constrained to `weekday|weekend`.
 
-**Files (all in the api repo — `$API`, located per Task 26 Step 5):**
+**Files (all in the api repo — `$API`, located per «Before you start» above):**
 - Create: `src/db/migrations/037_add_schedule_venue.js`
 - Create: `src/utils/venueVocabulary.js`
 - Create: `config/venues.json`, `config/venues.lock.json` — copies of BotVille's published artifact and its lock
@@ -282,15 +283,16 @@ Two mechanisms, both pure functions of the agent's seed:
 
 `venueAffinity(spriteSeed)` gives each agent a stable workplace and hangout, so the variation reads as a routine rather than as noise: the same agent goes back to the same library tomorrow. The tests below assert the outcome directly — no venue holds more than half the roster during waking hours, and every published venue is used at some point in the week.
 
-**Files (all in the api repo — `$API`, located per Task 26 Step 5):**
+**Files (all in the api repo — `$API`, located per «Before you start» above):**
 - Create: `src/utils/scheduleCoverage.js`
+- Modify: `src/utils/agentSeed.js:199-206` — export `pickFrom` (Step 0)
 - Modify: `src/workers/populateUserProfiles.js:212-254,268-281,296-331`
-- Modify: `src/models/Schedule.js:47`
+- Modify: `src/models/Schedule.js:49`
 - Create: `tests/scheduleCoverage.test.js`
 - Create: `src/scripts/populateSchedulesDeterministic.js`
 
 **Interfaces:**
-- Consumes: `venueVocabulary` (Task 31), `hashString`/`pickFrom` from `agentSeed.js` (Task 26 Step 5).
+- Consumes: `venueVocabulary` (Task 31), `hashString`/`pickFrom` from `agentSeed.js`. **`pickFrom` must already be exported** — Step 0 below does it; nothing outside this plan touches the api.
 - Produces `src/utils/scheduleCoverage.js`:
   - `normalizeCoverage(blocks) → blocks` — sorted, clipped, gap-filled, midnight-split, tiling `[0,24)` exactly
   - `assertTotalCoverage(blocks) → void` — throws with the offending hour
@@ -298,6 +300,36 @@ Two mechanisms, both pure functions of the agent's seed:
   - `deriveVenue(spriteSeed, dayType, startHour, activity) → string | null` — picks within that pool, by seed
   - `venueAffinity(spriteSeed) → { workplace, hangout }` — an agent's two standing places, stable forever
   - `deterministicDay(spriteSeed, dayType) → blocks` — the art-free path that actually inhabits the city
+
+- [ ] **Step 0: Export `pickFrom` from `agentSeed.js`**
+
+`scheduleCoverage.js` below opens with `const { hashString, pickFrom } = require('./agentSeed')`. `pickFrom` is module-private today — defined at `agentSeed.js:178`, absent from `module.exports` at lines 199-206 — so without this one-line export every `deriveVenue` / `venueAffinity` call throws `TypeError: pickFrom is not a function`. In `$API/src/utils/agentSeed.js`, add it:
+
+```js
+module.exports = {
+  hashString,
+  pickFrom,
+  CITY_POOL,
+  pickCity,
+  TRAIT_NAMES,
+  deriveDefaultTraits,
+  deriveDescriptionSeeds,
+};
+```
+
+Verify before moving on:
+
+```bash
+node -e "console.log(typeof require('$API/src/utils/agentSeed').pickFrom)"
+```
+
+Expected: `function`, not `undefined`.
+
+```bash
+cd "$API"
+git add src/utils/agentSeed.js
+git commit -m "chore(seed): export pickFrom for seed-derived venue assignment"
+```
 
 - [ ] **Step 1: Write the failing test**
 
@@ -786,7 +818,7 @@ Update the one caller at line 346: `await saveSchedule(user.id, schedule, user.u
 
 - [ ] **Step 6: Add `ORDER BY start` to `getCurrentSlot`**
 
-`src/models/Schedule.js`, line 47. With total non-overlapping coverage there is exactly one matching slot per hour, so this is not load-bearing — it makes the guarantee explicit rather than incidental (spec §9.2):
+`src/models/Schedule.js` — the query inside `getCurrentSlot` (the function opens at line 10; the bare `LIMIT 1` is at line 49). With total non-overlapping coverage there is exactly one matching slot per hour, so this is not load-bearing — it makes the guarantee explicit rather than incidental (spec §9.2):
 
 ```js
         AND users_schedules.end_hour > day_type_calc.current_hour

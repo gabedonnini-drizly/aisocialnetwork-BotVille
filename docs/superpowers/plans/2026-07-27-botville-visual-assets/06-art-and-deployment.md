@@ -6,9 +6,9 @@
 
 **Goal:** Land the real pixels, prove the new pipeline reproduces the old one, and make the bake part of the deployments BotVille actually has.
 
-**Architecture:** Task 3 is the one owner-gated task in the whole build: it needs four purchased packs and produces the golden baseline plus the answers to U-1 and U-2. Task 20 is a tiered gate — byte-exact pixels, byte-exact tile layers, semantic object comparison, and coverage (not equality) for derived collision — with every intentional difference declared as data. Task 35 wires the world bake into `vercel.json` and `deploy:client` and adds Docker for local parity. Task 39 re-renders the hero artifacts.
+**Architecture:** Task 3 is the one owner-gated task in the whole build: it needs four purchased packs and produces the golden baseline plus the answers to U-1 and U-2. Task 20 is a two-tier gate — byte-exact pixels and byte-exact tile layers; object placement is asserted against the descriptors by Plan 2's tests, and collision gets a one-time human diff. Task 35 wires the world bake into `vercel.json` and `deploy:client` and adds Docker for local parity. Task 39 re-renders the hero artifacts.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser 3.88, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose.
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Depends on:** Plans 1–5. Task 3 additionally needs the licensed packs on disk; Tasks 20 and 39 need Task 3.
 
@@ -20,7 +20,7 @@
 
 Every task's requirements implicitly include this section.
 
-- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM everywhere (`"type": "module"`).
+- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
 - **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
@@ -29,9 +29,10 @@ Every task's requirements implicitly include this section.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`.
-- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — Task 18 asserts it.
-- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api): `$BOTVILLE_API_REPO` → `$BOTVILLE_REPO` → sibling of the repo root → explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
+- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
+- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
@@ -42,6 +43,7 @@ Every task's requirements implicitly include this section.
 ## Tasks in this plan
 
 - **Task 3** — Acquire the packs, capture the golden baseline, resolve U-1 and U-2
+- **Task 3b** — Delete the QA symlink compatibility layer (must follow Task 3)
 - **Task 20** — The golden gate
 - **Task 35** — Deployment — bake in the real pipelines, Docker for parity
 - **Task 39** — Hero re-render
@@ -59,7 +61,7 @@ Every task's requirements implicitly include this section.
 - Create: `scripts/capture-golden-baseline.mjs`
 - Create: `test/golden/baseline.json`, `test/golden/tmj/*.tmj`
 - Create: `sources/limezu.sheets.json` (pack inventory, committed)
-- Modify: `sources/limezu.decisions.json` — fill in every `pin`, and any crop the review changes
+- Modify: `sources/limezu.json` — fill in every `pin`, and any crop the review changes
 - Create: `docs/ASSETS.md`
 - Modify: `README.md:82-99`
 
@@ -69,8 +71,8 @@ Every task's requirements implicitly include this section.
   - `scripts/capture-golden-baseline.mjs` — `npm run golden:capture`, idempotent, prints a summary and refuses to write a partial baseline.
   - `test/golden/baseline.json` — `{ generatedAt, node, pack, images: { "<path under public/assets>": "<sha256>" } }`. Task 20 reads it.
   - `test/golden/tmj/<venue>.tmj` — the legacy maps, captured in the same run so Task 20 never has to reconstruct them from git history.
-  - `docs/ASSETS.md` — records the U-1 answer, which Task 27's `capabilities.characterLayers` flag encodes.
-  - a **fully pinned** `sources/limezu.decisions.json`: every crop verified against real pixels, so a future pack update fails `validate:contract` by name instead of silently changing the art.
+  - `docs/ASSETS.md` — records the U-1 answer. U-1 was already answered first-hand against the purchased packs (art-pack QA, 2026-07-29: separable layers exist, `capabilities.characterLayers` is `true` from Plan 1 Task 5); Step 7 re-verifies it on this machine's unpacked copy and writes the record.
+  - a **fully pinned** `sources/limezu.json`: every crop verified against real pixels, so a future pack update fails `validate:contract` by name instead of silently changing the art.
 
 - [ ] **Step 1: Buy and unpack the four 16×16 packs**
 
@@ -189,9 +191,9 @@ npm run golden:capture
 npm run dev
 ```
 
-Expected: `sync-assets: скопировано 110/110` with no `ОТСУТСТВУЮТ` block; `district.tmj: 48x46, атлас 23 тайлов, объектов: N`; four interior lines; then `golden baseline: <n> images (<m> generated), 5 tilemaps`. The client at http://localhost:5173 renders the district with buildings, trees, lamps and agents — no missing-texture placeholders.
+Expected: `sync-assets: скопировано 90/90` with no `ОТСУТСТВУЮТ` block — the script's 61 hardcoded `[source, destination]` pair literals expand to **90 files at runtime** (39 `FILES` + 22 `PROPS` + 8 looped fence parts + 9 office singles + 12 premade character sheets); `district.tmj: 48x46, атлас 23 тайлов, объектов: 272`; four interior lines; then `golden baseline: 121 images (<m> generated), 5 tilemaps`. The client at http://localhost:5173 renders the district with buildings, trees, lamps and agents — no missing-texture placeholders.
 
-If `sync-assets.mjs` reports missing files, its path does not match your unpack layout. Fix the path in `scripts/sync-assets.mjs` (that is what the explicit list is for) and record the correction in `docs/ASSETS.md`.
+If `sync-assets.mjs` reports missing files, its path does not match your unpack layout. Where to fix it depends on where you are in the sequence: **before Task 19a**, the paths live in `scripts/sync-assets.mjs`'s explicit list; **after Task 19a**, the list is derived from the contract and the paths live in the `files` block of `sources/limezu.json`. Record the correction in `docs/ASSETS.md` either way.
 
 - [ ] **Step 4: Index the packs**
 
@@ -213,16 +215,16 @@ sprites are affected.
 
 - [ ] **Step 5: Pin every crop, and find out what the packs changed under us**
 
-The ninety rects in `sources/limezu.decisions.json` were transcribed from build
+The 116 rects in `sources/limezu.json` (64 explicit crops, 52 whole-file) were transcribed from build
 scripts written months ago. Whether they still point at the sprites they were
 chosen for has never been checkable. Now it is:
 
 ```bash
-npm run adapt:pin limezu assets-src
+npm run pin limezu assets-src
 ```
 
-Expected on a first run: `pinned 90 crop(s); 0 still unpinned`. Every decision
-now carries a hash of the pixels it resolves to, and `npm run validate:contract`
+Expected on a first run: `pinned 116 new crop(s); 116 total, all match`. Every
+rect now carries a hash of the pixels it resolves to, and `npm run validate:contract`
 will fail by name if a future pack update moves any of them.
 
 If it exits non-zero with `crop(s) no longer match their pin`, the pack has
@@ -252,37 +254,36 @@ Go through both sheets once and look for four things:
    found by accident. Now it is findable on purpose.
 4. **Anything hovering `[UNPINNED]`** after Step 5. There should be none.
 
-For each sprite you change, edit its entry in `sources/limezu.decisions.json`:
-new `chosen` rect, a `why` saying what was wrong with the old one, the old rect
-moved into `alternatives`, and `reviewedBy` / `reviewedAt` filled in. Then:
+For each sprite you change, edit its entry in `sources/limezu.json`: the new
+rect, a `note` saying what was wrong with the old one (and what it beat), and
+the stale `pin` cleared. Then:
 
 ```bash
-npm run adapt limezu && npm run adapt:pin limezu assets-src && npm run contact limezu assets-src
+npm run pin limezu assets-src && npm run contact limezu assets-src
 ```
 
 **A changed crop invalidates the baseline captured in Step 3.** That is correct
 and expected — you have deliberately improved the art, so the "reproduce the
-legacy output exactly" claim no longer holds for that sprite. Record each one in
-`docs/ASSETS.md` and add an entry to `expectedDifferences` in
-`test/golden/baseline.json` (Task 20 Step 2) naming the sprite and the reason.
-An undeclared difference is a bug; a declared one is a decision.
+legacy output exactly" claim no longer holds for that sprite. After the review,
+re-record the baseline (`UPDATE_GOLDEN=1 npm run test:bake`, Task 20) and read
+the diff — it names exactly the images your crop changes moved, and nothing
+else may appear in it. Record each one in `docs/ASSETS.md`. An unexplained
+line in that diff is a bug; an explained one is a decision.
 
-If you change nothing, that is a real result too: it means ninety transcribed
+If you change nothing, that is a real result too: it means 116 transcribed
 crops survived first contact with a proper review, and the record now says so.
 
-- [ ] **Step 7: Resolve U-1 — separable character layers**
+- [ ] **Step 7: Re-verify U-1 — separable character layers**
 
-Inspect a premade character sheet and whatever the pack calls its character generator:
+U-1 is already answered (art-pack QA, 2026-07-29): the Character Generator ships separable 16×32 layer directories — Bodies (9), Eyes (7), Hairstyles (200), Outfits (132), Accessories (84) — so **Task 27 composes** and `characterLayers` is `true` from Plan 1 Task 5. This step re-verifies that on the copy you just unpacked, so the record in `docs/ASSETS.md` names this machine's evidence:
 
 ```bash
-node scripts/inspect-assets.mjs assets-src/interiors/characters-premade/Premade_Character_01.png
-node scripts/png-grid.mjs assets-src/interiors/characters-premade/Premade_Character_01.png 16 32
-ls assets-src/interiors | grep -i -E 'generator|parts|layer|custom'
+node scripts/inspect-assets.mjs "assets-src/interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_01.png"
+node scripts/png-grid.mjs "assets-src/interiors/2_Characters/Character_Generator/Bodies/16x16/Body_01.png" 16 32
+ls "assets-src/interiors/2_Characters/Character_Generator"
 ```
 
-Answer exactly one of:
-- **Layers available** — the pack ships separable 16×32 part sheets (bodies, hairstyles, clothes) that can be stacked. Task 27 composes.
-- **No layers** — only premade full-character sheets. Task 27 palette-remaps. Variety drops to `bases × palettes`; nothing breaks (spec §7.3).
+Expected: the five layer directories listed above, and the layer sheets at 927×656 (whole-frame cropping is Plan 4 Task 27's job). If your unpacked edition differs — layers missing, different sizes — stop and reconcile before Task 27: the fallback (`characterLayers: false`, palette-remap of a premade base; variety drops to `bases × palettes`, nothing breaks — spec §7.3) still exists, but flipping to it is a decision to record, not a silent fix.
 
 - [ ] **Step 8: Resolve U-2 — the licence text**
 
@@ -319,10 +320,56 @@ the gate can be scoped around it, but only deliberately.
 
 ```bash
 git add scripts/capture-golden-baseline.mjs package.json test/golden/baseline.json test/golden/tmj/ \
-        sources/limezu.sheets.json sources/limezu.decisions.json sources/limezu.json \
+        sources/limezu.sheets.json sources/limezu.json \
         docs/ASSETS.md README.md scripts/sync-assets.mjs
 git commit -m "chore(assets): index and pin the packs, capture the golden baseline, resolve U-1/U-2"
 ```
+
+---
+
+## Task 3b: Delete the QA symlink compatibility layer
+
+During the 2026-07-29 art-pack QA, nine symlinks were planted in `assets-src/` so the legacy scripts' short paths kept resolving against the real pack layout:
+
+```
+exteriors/themes          exteriors/animated        office/room-builder
+office/singles            interiors/ui              interiors/characters-premade
+interiors/Room_Builder_16x16.png                    interiors/themes
+interiors/animated
+```
+
+They are a compatibility shim, not a fix. The durable fix is already in place: the `files` blocks in `sources/limezu.json` (Plan 1 Tasks 5–7) name the **real** pack paths, so nothing in the new pipeline needs the links. What *does* need them is the past — `scripts/sync-assets.mjs`'s legacy list and the frozen `build-district.mjs` / `build-interiors.mjs`, which Task 3 just ran to capture the golden baseline.
+
+**Ordering is the whole task: Task 3 precedes Task 3b.** The baseline must be captured through the legacy paths *before* the links die. From this task onward, the legacy scripts (and any pre-Task-19a `sync-assets.mjs`) are broken by design — if you ever need to re-capture the baseline from scratch, recreate the links, capture, and delete them again.
+
+**Files:**
+- Delete: the nine symlinks under `assets-src/` (gitignored — this changes only the local tree)
+
+- [ ] **Step 1: Confirm the baseline exists**
+
+```bash
+test -s test/golden/baseline.json && ls test/golden/tmj/ | wc -l
+```
+
+Expected: a non-empty `baseline.json` and 5 tilemaps. If not, do Task 3 first — deleting the links before capture strands the golden gate.
+
+- [ ] **Step 2: Delete the links**
+
+```bash
+find assets-src -maxdepth 2 -type l -print -delete
+find assets-src -type l
+```
+
+Expected: nine paths printed by the first command, nothing by the second.
+
+- [ ] **Step 3: Prove the new pipeline never needed them**
+
+```bash
+npm run validate:contract -- limezu assets-src
+npm test
+```
+
+Expected: `contract validation OK` with pixels checked, tests PASS. Every `files` entry resolves through its real path.
 
 ---
 
@@ -341,14 +388,14 @@ The obvious gate — hash every output, compare to a recorded hash — is wrong 
 | Collision **derived** from footprints instead of hand-authored | Task 15 | **No, and deliberately so** |
 | A doormat added at every interior doorway | Task 15 | **No** — one extra object per interior |
 
-A gate that fails on all four teaches people to ignore it. A gate loosened until it passes proves nothing. So this one is **tiered**, and every expected difference is **declared as data** rather than absorbed into a weaker assertion:
+A gate that fails on all four teaches people to ignore it. A gate loosened until it passes proves nothing. So this one is **tiered**, and it gates exactly the two things that have no legitimate reason to differ:
 
 1. **Pixels — byte-exact.** Ground atlases and prop PNGs are pure crops of the same source rectangles. There is no legitimate reason for a single byte to differ. `sha256`, no tolerance.
-2. **Tile layers — byte-exact.** The `data` arrays for `ground` and `roads` are what `cityGrid` and the interior painter emit. A PRNG-order mistake in Task 16 shows up here as thousands of differing tiles.
-3. **Object layers — semantic, order-insensitive.** Compare by `(name, x, y, width, height, type, properties)` with `id` dropped, as multisets. Tiled object ids are allocation order, not meaning, and asserting on them makes the gate brittle for no benefit.
-4. **Collision — coverage, not equality.** Derived collision is *supposed* to differ. What must hold is that it does not open a hole: every legacy collision rectangle is still covered, and the derived total area has not ballooned. That is the actual invariant; rectangle-by-rectangle equality never was.
+2. **Tile layers — byte-exact.** The `data` arrays for `ground` and `roads` are what `cityGrid` and the interior painter emit. A PRNG-order mistake in Task 16 shows up here as thousands of differing tiles — and nothing else executable checks it: Plan 2's `districtGround` tests are structural, and a mis-ported variant order would pass every one of them while being visually near-invisible.
 
-The declared-difference list is the important part. `EXPECTED_DIFFERENCES` is a committed constant naming each intentional change with the task that made it. Anything not on that list is a failure. Adding to it is a code review, not a test tweak.
+Object layers and collision are deliberately **not** gated against the legacy maps. All three of the table's non-identical changes land in those layers, so a legacy comparison would spend its machinery explaining its own exceptions — and the invariants it would guard already have better homes. Object placement is asserted against the descriptors by Plan 2's `venueBaker` tests, and the descriptors were verified against the legacy maps tuple by tuple when they were written (Task 13). Collision is derived and structurally tested (Task 15: walls, borders, the doorway gap, colliding furniture) — those tests pin walkability *going forward*, which is the durable claim. The one comparison the migration itself deserves is a single human look at the collision diff, and Step 3 says exactly how to take it.
+
+The only declared mapping the gate carries is `renames` — the `limezu/` → `pack/` path rename, same bytes under a new path. A crop the Task 3 review deliberately improved is handled by **re-recording the baseline** and reviewing the diff (Task 3 Step 6), not by declaring an exception the gate would then have to interpret.
 
 ### Re-recording
 
@@ -356,127 +403,31 @@ The declared-difference list is the important part. `EXPECTED_DIFFERENCES` is a 
 
 **Files:**
 - Create: `test/bake/golden.test.mjs`
-- Create: `test/helpers/tmjDiff.mjs`
-- Modify: `test/golden/baseline.json` — add the `renames` and `expectedDifferences` blocks
+- Modify: `test/golden/baseline.json` — add the `renames` block
 
 **Interfaces:**
-- Consumes: `test/golden/baseline.json` and `test/golden/tmj/` (Task 3), `worldBake()` (Task 18), the frozen scripts (Task 19).
-- Produces:
-  - `test/helpers/tmjDiff.mjs`: `normalizeObjects(layer) → object[]`, `diffObjectLayers(a, b) → {onlyInLegacy, onlyInBaked}`, `coversAll(legacyRects, bakedRects) → {uncovered: rect[], areaRatio: number}`
-  - a suite that **skips with a reason** when `assets-src/` is absent and writes `test/golden/report.json` on failure.
+- Consumes: `test/golden/baseline.json` and `test/golden/tmj/` (Task 3), `worldBake()` (Task 18), `loadContract()` (Task 4), the frozen scripts (Task 19).
+- Produces: a suite that **skips with a reason** when `assets-src/` is absent and writes `test/golden/report.json` on failure.
 
-- [ ] **Step 1: Write the diff helper**
+- [ ] **Step 1: Declare the renames**
 
-`test/helpers/tmjDiff.mjs`:
-
-```js
-/**
- * Comparing Tiled object layers without asserting on things that carry no
- * meaning.
- *
- * Tiled `id` is allocation order. Two maps that describe the same world can
- * number their objects differently and be equally correct, so id is dropped
- * before comparison and layers are compared as MULTISETS, not sequences.
- */
-
-/** A stable, id-free, order-independent key for one Tiled object. */
-export function objectKey(o) {
-  const props = (o.properties ?? [])
-    .map(p => `${p.name}=${JSON.stringify(p.value)}`)
-    .sort()
-    .join(',');
-  return JSON.stringify([
-    o.name ?? '', o.type ?? '',
-    Math.round(o.x ?? 0), Math.round(o.y ?? 0),
-    Math.round(o.width ?? 0), Math.round(o.height ?? 0),
-    o.point === true, props,
-  ]);
-}
-
-export function normalizeObjects(layer) {
-  return (layer?.objects ?? []).map(objectKey).sort();
-}
-
-/** Multiset difference in both directions. Empty both ways means identical. */
-export function diffObjectLayers(legacy, baked) {
-  const count = keys => keys.reduce((m, k) => m.set(k, (m.get(k) ?? 0) + 1), new Map());
-  const a = count(normalizeObjects(legacy));
-  const b = count(normalizeObjects(baked));
-  const onlyInLegacy = [], onlyInBaked = [];
-  for (const [k, n] of a) for (let i = 0; i < n - (b.get(k) ?? 0); i++) onlyInLegacy.push(JSON.parse(k));
-  for (const [k, n] of b) for (let i = 0; i < n - (a.get(k) ?? 0); i++) onlyInBaked.push(JSON.parse(k));
-  return { onlyInLegacy, onlyInBaked };
-}
-
-const rect = o => ({ x: o.x ?? 0, y: o.y ?? 0, w: o.width ?? 0, h: o.height ?? 0 });
-const area = r => Math.max(0, r.w) * Math.max(0, r.h);
-
-/**
- * Does the baked collision still block everything the legacy collision blocked?
- *
- * Sampled on a 4px lattice rather than solved exactly: at 16px tiles a 4px
- * probe cannot miss a blocking rectangle that mattered, and an exact
- * rectangle-union is a lot of machinery for a test. Deterministic — no
- * randomness, so a failure is reproducible.
- */
-export function coversAll(legacyObjects, bakedObjects, step = 4) {
-  const legacy = legacyObjects.map(rect);
-  const baked = bakedObjects.map(rect);
-  const inside = (r, x, y) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
-
-  const uncovered = [];
-  for (const r of legacy) {
-    for (let y = r.y + step / 2; y < r.y + r.h; y += step) {
-      for (let x = r.x + step / 2; x < r.x + r.w; x += step) {
-        if (!baked.some(b => inside(b, x, y))) { uncovered.push({ ...r, at: [x, y] }); break; }
-      }
-      if (uncovered.at(-1)?.x === r.x && uncovered.at(-1)?.y === r.y) break;
-    }
-  }
-
-  const sum = rs => rs.reduce((n, r) => n + area(r), 0);
-  return { uncovered, areaRatio: sum(legacy) ? sum(baked) / sum(legacy) : 1 };
-}
-```
-
-- [ ] **Step 2: Declare the expected differences**
-
-Add to `test/golden/baseline.json`, as siblings of `images`:
+Add to `test/golden/baseline.json`, as a sibling of `images`:
 
 ```json
   "renames": {
     "tilesets/limezu/": "tilesets/pack/",
     "sprites/limezu/district/": "sprites/pack/district/",
     "sprites/limezu/interior/": "sprites/pack/interior/"
-  },
-  "expectedDifferences": [
-    {
-      "id": "door-property-rename",
-      "task": 15,
-      "layers": ["doors", "buildings"],
-      "why": "targetScene -> targetVenue: doors point at venues, not Phaser scene classes",
-      "rule": "property-renamed:targetScene:targetVenue"
-    },
-    {
-      "id": "derived-collision",
-      "task": 15,
-      "layers": ["collision"],
-      "why": "collision is derived from furniture footprints, so a moved prop cannot leave a stale box",
-      "rule": "coverage-only"
-    },
-    {
-      "id": "generated-doormat",
-      "task": 15,
-      "layers": ["furniture"],
-      "why": "the doormat is placed by the baker at the doorway rather than authored per venue",
-      "rule": "extra-objects-named:doormat"
-    }
-  ]
+  }
 ```
 
-Anything the gate finds that no entry explains is a failure. Adding an entry is a reviewed decision with a stated reason and the task that caused it — which is the whole point of writing them down instead of relaxing an assertion.
+A rename is a mapping, not an exception: the same bytes under a new path.
+Content differences get no declaration mechanism at all — a crop the Task 3
+review deliberately changed is handled by re-recording the baseline and
+reviewing the diff (Task 3 Step 6), so the gate never learns to interpret an
+excuse.
 
-- [ ] **Step 3: Write the gate**
+- [ ] **Step 2: Write the gate**
 
 `test/bake/golden.test.mjs`:
 
@@ -484,11 +435,12 @@ Anything the gate finds that no entry explains is a failure. Adding an entry is 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { worldBake } from '../../scripts/world-bake.mjs';
-import { diffObjectLayers, coversAll } from '../helpers/tmjDiff.mjs';
+import { loadContract } from '../../scripts/lib/assetContract.mjs';
 import { skipUnless } from '../helpers/skip.mjs';
 
 const HAVE_ART = existsSync('assets-src');
@@ -498,7 +450,23 @@ const UPDATE = process.env.UPDATE_GOLDEN === '1';
 const golden = JSON.parse(readFileSync('test/golden/baseline.json', 'utf8'));
 const sha = p => createHash('sha256').update(readFileSync(p)).digest('hex');
 const rename = p => Object.entries(golden.renames).reduce((s, [from, to]) => s.replace(from, to), p);
-const isGenerated = p => /^(tilesets\/limezu\/|sprites\/limezu\/)/.test(p);
+
+// "Generated" is decided by NAME, derived from the contract — never by path
+// prefix. The baseline also hashes the raw sync-assets copies that live under
+// the same directories, and those are bake INPUTS, not outputs.
+const contract = loadContract();
+const generatedNames = new Set([
+  ...Object.keys(contract.groundAtlases).map(id => `tilesets/limezu/${id}.png`),
+  ...Object.entries(contract.props).flatMap(([group, defs]) =>
+    Object.keys(defs).map(n => `sprites/limezu/${group}/${n}.png`)),
+]);
+const isGenerated = p => generatedNames.has(p);
+
+const readTmj = p => JSON.parse(readFileSync(p, 'utf8'));
+
+/** The venues the legacy pipeline knew about — read, not listed. */
+const legacyVenueIds = () =>
+  readdirSync('test/golden/tmj').filter(f => f.endsWith('.tmj')).map(f => f.replace('.tmj', '')).sort();
 
 let baked = null;
 function bakeOnce() {
@@ -511,9 +479,9 @@ function bakeOnce() {
   return baked;
 }
 
-const report = { images: [], layers: [], collision: [] };
+const report = { images: [] };
 function writeReport() {
-  if (report.images.length || report.layers.length || report.collision.length) {
+  if (report.images.length) {
     writeFileSync('test/golden/report.json', JSON.stringify(report, null, 2) + '\n');
   }
 }
@@ -532,10 +500,12 @@ test('every generated image is byte-identical to the legacy pipeline', GATE, () 
     if (got !== want) report.images.push({ path: rel, status: 'drift', want, got });
   }
 
+  // The report is written BEFORE any assertion, so a failure always leaves
+  // the full picture on disk, not just the first bad comparison.
+  writeReport();
   assert.ok(compared > 0, 'compared no images — the rename map or the baseline is wrong');
   assert.equal(compared, Object.keys(golden.images).filter(isGenerated).length,
-    'some baseline images were not produced by the bake');
-  writeReport();
+    'some baseline images were not produced by the bake — see test/golden/report.json');
   assert.deepEqual(report.images, [],
     'pixels drifted — a rect in sources/limezu.json is wrong. See test/golden/report.json');
 });
@@ -556,54 +526,6 @@ test('every tile layer reproduces exactly', GATE, () => {
   }
 });
 
-// ── Tier 3: object layers differ only where we said they would ───────────
-test('object layers differ only in declared ways', GATE, () => {
-  const out = bakeOnce();
-  const declared = new Map(golden.expectedDifferences.flatMap(d => d.layers.map(l => [l, d])));
-
-  for (const id of legacyVenueIds()) {
-    const now = readTmj(join(out, 'tilemaps', `${id}.tmj`));
-    const was = readTmj(`test/golden/tmj/${id}.tmj`);
-
-    for (const l of now.layers.filter(l => l.type === 'objectgroup')) {
-      const w = was.layers.find(x => x.name === l.name);
-      const rule = declared.get(l.name)?.rule;
-      if (rule === 'coverage-only') continue;                    // handled by the next test
-
-      const { onlyInLegacy, onlyInBaked } = diffObjectLayers(w, l);
-      const explained = explain(rule, onlyInLegacy, onlyInBaked);
-      if (explained.onlyInLegacy.length || explained.onlyInBaked.length) {
-        report.layers.push({ venue: id, layer: l.name, rule: rule ?? null, ...explained });
-      }
-    }
-  }
-  writeReport();
-  assert.deepEqual(report.layers, [],
-    'undeclared object-layer differences. Either it is a bug, or add an entry to expectedDifferences with a reason. See test/golden/report.json');
-});
-
-// ── Tier 4: derived collision may differ, but must not open a hole ───────
-test('derived collision covers everything the legacy collision blocked', GATE, () => {
-  const out = bakeOnce();
-  for (const id of legacyVenueIds()) {
-    const now = readTmj(join(out, 'tilemaps', `${id}.tmj`));
-    const was = readTmj(`test/golden/tmj/${id}.tmj`);
-    const legacy = was.layers.find(l => l.name === 'collision')?.objects ?? [];
-    const derived = now.layers.find(l => l.name === 'collision')?.objects ?? [];
-
-    const { uncovered, areaRatio } = coversAll(legacy, derived);
-    if (uncovered.length) report.collision.push({ venue: id, uncovered: uncovered.slice(0, 20) });
-
-    // A derived box that swallows the room would "cover everything" and make
-    // the venue unwalkable. Bound the total area as well as the coverage.
-    assert.ok(areaRatio <= 1.6,
-      `${id}: derived collision is ${areaRatio.toFixed(2)}x the legacy area — footprints are too generous`);
-  }
-  writeReport();
-  assert.deepEqual(report.collision, [],
-    'derived collision leaves a gap where the legacy map blocked movement. See test/golden/report.json');
-});
-
 // ── Re-recording, deliberately ───────────────────────────────────────────
 test('UPDATE_GOLDEN re-records the baseline', skipUnless(HAVE_ART && UPDATE, 'set UPDATE_GOLDEN=1 to re-record'), () => {
   console.warn('\n!! Re-recording the golden baseline. Review the diff before committing:');
@@ -612,54 +534,15 @@ test('UPDATE_GOLDEN re-records the baseline', skipUnless(HAVE_ART && UPDATE, 'se
 });
 ```
 
-with these two small helpers at the top of the file:
-
-```js
-import { execFileSync } from 'node:child_process';
-import { readdirSync } from 'node:fs';
-
-const readTmj = p => JSON.parse(readFileSync(p, 'utf8'));
-
-/** The venues the legacy pipeline knew about — read, not listed. */
-const legacyVenueIds = () =>
-  readdirSync('test/golden/tmj').filter(f => f.endsWith('.tmj')).map(f => f.replace('.tmj', '')).sort();
-
-/**
- * Remove the differences an expectedDifferences rule says are legitimate.
- * Anything left is a real difference.
- */
-function explain(rule, onlyInLegacy, onlyInBaked) {
-  if (!rule) return { onlyInLegacy, onlyInBaked };
-
-  const [kind, ...args] = rule.split(':');
-  if (kind === 'extra-objects-named') {
-    const [name] = args;
-    return { onlyInLegacy, onlyInBaked: onlyInBaked.filter(o => o[0] !== name) };
-  }
-  if (kind === 'property-renamed') {
-    // [name, type, x, y, w, h, point, props] — props is index 7
-    const [from, to] = args;
-    const swap = o => [...o.slice(0, 7), o[7].split(',').map(p => p.replace(`${from}=`, `${to}=`)).sort().join(',')];
-    const l = onlyInLegacy.map(swap).map(o => JSON.stringify(o));
-    const b = onlyInBaked.map(o => JSON.stringify(o));
-    return {
-      onlyInLegacy: l.filter(k => !b.includes(k)).map(JSON.parse),
-      onlyInBaked: b.filter(k => !l.includes(k)).map(JSON.parse),
-    };
-  }
-  return { onlyInLegacy, onlyInBaked };
-}
-```
-
-- [ ] **Step 4: Run it without art, then with**
+- [ ] **Step 3: Run it without art, then with**
 
 Run: `npm run test:bake`
 
-Expected **without art**: four skips, and `test/helpers/skip.mjs` prints
+Expected **without art**: two skips, and `test/helpers/skip.mjs` prints
 `! 1 suite(s) skipped: assets-src/ absent — run Task 3 to capture the baseline`
 at the end of the run. A skip you can see is a skip you can act on.
 
-Expected **with art**: all four tiers PASS.
+Expected **with art**: both tiers PASS.
 
 If Tier 1 fails with `drift`, read `test/golden/report.json` — it names the
 image, and the fix is that name's rect in `sources/limezu.json`. Compare
@@ -673,14 +556,37 @@ If Tier 2 fails, the PRNG consumption order in `cityGrid` (Task 16) differs
 from the original. The tile data diff will show it starting from the first
 differing index.
 
-If Tier 3 fails, decide honestly: a bug, or a change worth declaring. If it is
-a change, add an `expectedDifferences` entry naming the task and the reason.
-
-- [ ] **Step 5: Commit**
+Then, with both tiers green, take the **one-time collision look** — the only
+legacy comparison the object data gets, and deliberately a human one. Derived
+collision is *supposed* to differ from the hand-authored boxes; what must hold
+is that it blocks the same walls and furniture and leaves the same doorway
+open. Plan 2's structural tests (Task 15) pin that invariant going forward;
+this look checks once that the *migration* dropped nothing the old boxes
+covered. Bake to the real output directory and dump both sides:
 
 ```bash
-git add test/bake/golden.test.mjs test/helpers/tmjDiff.mjs test/golden/baseline.json
-git commit -m "test(bake): tiered golden gate — exact pixels, exact tiles, semantic objects, collision coverage"
+npm run bake:world -- limezu assets-src
+node -e '
+const fs = require("node:fs");
+const boxes = p => (JSON.parse(fs.readFileSync(p, "utf8")).layers
+  .find(l => l.name === "collision")?.objects ?? [])
+  .map(o => [o.x, o.y, o.width, o.height].join(",")).sort().join("  ");
+for (const f of fs.readdirSync("test/golden/tmj")) {
+  const id = f.replace(".tmj", "");
+  console.log(`${id}\n  legacy: ${boxes(`test/golden/tmj/${f}`)}\n  baked:  ${boxes(`packages/client/public/assets/tilemaps/${f}`)}`);
+}'
+```
+
+Eyeball each venue once — every wall and every colliding piece of furniture
+still blocked, the doorway gap still open, no derived box swallowing the room —
+and record the outcome in `docs/ASSETS.md`, one line per venue. No committed
+tooling: a comparison that runs once does not earn a helper.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add test/bake/golden.test.mjs test/golden/baseline.json
+git commit -m "test(bake): golden gate — exact pixels, exact tiles against the frozen legacy pipeline"
 ```
 
 ---
@@ -771,9 +677,13 @@ test('a Vercel Git build cannot contain licensed art (I-12)', () => {
 
 test('deploy:client bakes with the real pack before uploading prebuilt output', () => {
   const cmd = pkg.scripts['deploy:client'];
-  assert.match(cmd, /bake:world/);
-  assert.match(cmd, /limezu/, 'the owner-run deploy is the one that carries real art');
+  // Every stage must name the real pack. A bare sync-assets.mjs would copy
+  // the FIXTURE character sheets next to real tiles, silently.
+  assert.match(cmd, /sync-assets\.mjs limezu assets-src/);
+  assert.match(cmd, /bake:world -- limezu assets-src/);
+  assert.match(cmd, /bake:agents -- --pack limezu --src assets-src/);
   assert.match(cmd, /--prebuilt/, 'prebuilt is what makes the local bake reach production');
+  assert.equal(/\.\.\./.test(cmd), false, 'a literal "..." means a plan placeholder leaked into package.json');
 });
 
 test('the Railway server build is untouched by the art pipeline', () => {
@@ -856,8 +766,10 @@ The bake must precede the build because Vite copies `public/` during `vite build
 Root `package.json`:
 
 ```json
-    "deploy:client": "node scripts/sync-assets.mjs && npm run bake:world -- limezu assets-src && npm run bake:agents -- --pack limezu --src assets-src && vercel pull --yes --environment=production && vercel build --prod && vercel deploy --prebuilt --prod",
+    "deploy:client": "node scripts/sync-assets.mjs limezu assets-src && npm run bake:world -- limezu assets-src && npm run bake:agents -- --pack limezu --src assets-src && vercel pull --yes --environment=production && vercel build --prod && vercel deploy --prebuilt --prod",
 ```
+
+This is the one full definition of the key — Plan 2 Task 19a Step 5 only added the `limezu assets-src` arguments to the `sync-assets.mjs` invocation and deferred the rest to here. Every stage names the real pack explicitly: `sync-assets.mjs` with no arguments would copy the *fixture* character sheets next to real tiles, silently.
 
 `--prebuilt` uploads locally-built output, so this is the path where real pixels reach production — deliberately, from a machine that holds the licence. It fails loudly without `assets-src/` because `sync-assets.mjs` already does.
 

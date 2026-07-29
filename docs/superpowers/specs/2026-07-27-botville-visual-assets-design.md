@@ -207,6 +207,7 @@ things and their shape, never files or coordinates.
   },
   "characters": {
     "frameWidth": 16, "frameHeight": 32,
+    "parts": ["body", "eyes", "hair", "outfit", "accessory"],
     "anims": {
       "idle":  { "framesPerDirection": 6, "directions": 4 },
       "walk":  { "framesPerDirection": 6, "directions": 4 },
@@ -225,7 +226,7 @@ things and their shape, never files or coordinates.
 
 Note the emote contract names *statuses*, not frame indices. Frame indices are
 pack-specific and belong in the adapter — today they are hardcoded in
-`assetManifest.ts:210` (`byStatus`), which is exactly the coupling I-1 forbids.
+`assetManifest.ts:211-218` (`byStatus`), which is exactly the coupling I-1 forbids.
 
 `maxSize` is an upper bound for layout sanity, not an assertion. True object sizes
 are read from baked bitmaps (§5.3), which is what lets a replacement pack use
@@ -239,10 +240,10 @@ code.
 ```jsonc
 {
   "pack": "limezu",
-  "capabilities": { "characterLayers": false },
+  "capabilities": { "characterLayers": true },
   "rects": {
     "office_building": { "file": "exteriors/.../ME_Singles_Office_1.png" },
-    "bookshelf_a":     { "file": "interiors/themes/5_Classroom.png", "x": 112, "y": 48, "w": 32, "h": 48 }
+    "bookshelf_a":     { "file": "interiors/1_Interiors/16x16/Theme_Sorter/5_Classroom_and_library_16x16.png", "x": 112, "y": 48, "w": 32, "h": 48 }
   }
 }
 ```
@@ -298,17 +299,23 @@ function appearanceRecord(spriteSeed: string, gender: string): AppearanceRecord 
   return {
     build:     normalizeGender(gender),        // see below — not hashed
     skinTone:  pick(SKIN_TONES,    spriteSeed, 'sprite:skin'),
+    eyes:      pick(EYE_VARIANTS,  spriteSeed, 'sprite:eyes'),
     hairStyle: pick(HAIR_STYLES,   spriteSeed, 'sprite:hairStyle'),
     hairColor: pick(HAIR_COLORS,   spriteSeed, 'sprite:hairColor'),
-    top:       pick(TOP_COLORS,    spriteSeed, 'sprite:top'),
-    bottom:    pick(BOTTOM_COLORS, spriteSeed, 'sprite:bottom'),
+    outfit:    pick(OUTFIT_COLORS, spriteSeed, 'sprite:outfit'),
     accessory: pick(ACCESSORIES,   spriteSeed, 'sprite:accessory'),
   };
 }
 ```
 
-Space: `3 × 6 × 12 × 10 × 8 × 8 × 5 ≈ 690,000` — against 16 today, for towns of
-50–150.
+`eyes` is a **sheet-selection axis**, not a colour: the pack ships one full
+sheet per eye colour (`Eyes_01.png` … `Eyes_07.png`), each sheet *is* its
+colour, and no hex palette exists for it. `outfit` replaces the earlier
+separate top/bottom garment axes — the pack's outfit layers are whole
+garments.
+
+Space: `3 × 6 × 7 × 12 × 10 × 8 × 5 ≈ 605,000` — against 16 today, for towns
+of 50–150.
 
 **Gender is free text and must be normalised.** `008_add_gender.js` declares
 `gender VARCHAR(50)` with no `CHECK`, made non-null by 009 — so the column holds
@@ -406,10 +413,12 @@ Artifacts grow with the realized appearance space; images stay fixed-size.
 - `false` — palette-remap a premade base. Colour variation only; silhouette comes
   from the base sheet, so effective variety drops to `bases × palettes`.
 
-Whether LimeZu's character generator provides separable 16×32 parts is
-**unverified** — the packs are not on this machine. The build must determine this
-empirically in its first task and record the answer. The design works either way;
-only the achieved variety differs. See §12 R-1.
+LimeZu's character generator **does** provide separable 16×32 parts —
+**verified 2026-07-29** against the purchased packs (Bodies 9, Eyes 7,
+Hairstyles 200, Outfits 132, Accessories 84 layer sheets), so `true` is the
+shipping configuration. The build re-verifies this empirically (Plan 6 Task 3
+Step 7) and records the answer. The design still works either way; only the
+achieved variety differs. See §12 R-1.
 
 ---
 

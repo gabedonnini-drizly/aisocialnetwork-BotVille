@@ -6,13 +6,13 @@
 
 **Goal:** Turn the art source into data — a pack-agnostic contract for what must exist, a curated record of which pixels are it and why, and a CI gate that fails the build rather than rendering a missing texture.
 
-**Architecture:** Four artifacts and six modules. `contract/assets.contract.json` names things and their geometry and never mentions a file. `sources/<pack>.decisions.json` records which sprite was chosen for each name, why, over what, and a hash of the chosen pixels — and `sources/<pack>.json` is **generated** from it, so a rect cannot enter the build without a reason attached. `scripts/index-pack.mjs` inventories a pack so choosing starts from a candidate list; `scripts/contact-sheet.mjs` renders every choice on its floor tile, at 2×, and under the night tint, so ninety judgements can be reviewed in one pass. `scripts/gen-fixture-pack.mjs` generates a synthetic pack with real pixels and known geometry so all of it is testable with zero licensed art.
+**Architecture:** Three artifacts and six modules. `contract/assets.contract.json` names things and their geometry and never mentions a file. `sources/<pack>.json` records which pixels each name resolves to, and every rect can carry a `note` — why this sprite, what it beat — and a `pin`, the sha256 of the chosen crop's pixels, so a pack update that shifts a sheet is a named build error, not a silently different chair. `scripts/index-pack.mjs` inventories a pack so choosing starts from a candidate list; `scripts/contact-sheet.mjs` renders every choice on its floor tile, at 2×, and under the night tint, so all 116 named judgements (64 explicit crops + 52 whole-file grabs) can be reviewed in one pass. `scripts/gen-fixture-pack.mjs` generates a synthetic pack with real pixels and known geometry so all of it is testable with zero licensed art.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser 3.88, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose.
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Depends on:** Nothing. This is the first plan.
 
-**Exit criterion:** `npm run validate:contract` is green for both the fixture pack and (name-resolution only) the licensed pack. `npm test` passes on a fresh clone with no art present. Regenerating the adapter from the decision record reproduces it byte for byte. **Zero behaviour change** — nothing in `packages/` has been touched yet.
+**Exit criterion:** `npm run validate:contract` is green for both the fixture pack and (name-resolution only) the licensed pack. `npm test` passes on a fresh clone with no art present. The fixture pack is fully pinned — `npm run fixture` fills every `pin` from the generated pixels, and the committed manifest is byte-stable across runs. **Zero behaviour change** — nothing in `packages/` has been touched yet.
 
 
 ## Where curation happens
@@ -22,13 +22,13 @@ Four decisions stand between an art pack and a pixel on screen. Three of them ha
 | Decision | Home | Task |
 |---|---|---|
 | What must exist — the world needs a `bookshelf_a` | `contract/assets.contract.json` | 4 |
-| **Which sprite is it, and why that one** | `sources/<pack>.decisions.json` → generated adapter | **4a, 8a, 9a** |
+| **Which sprite is it, and why that one** | `note` + `pin` fields on `sources/<pack>.json` | **4a, 5–7, 9a** |
 | Which sheets are worth copying at all | derived from the adapter | Plan 2, Task 19a |
 | Where it goes in a place | `venues/<id>/venue.json` | Plan 2, Task 13 |
 
 The middle row is what this plan adds. Before it, a rect in `sources/limezu.json` was the *answer* to a question nobody wrote down, chosen from a candidate set nobody enumerated, verifiable against nothing. `scripts/inspect-assets.mjs` says so in its own header: «Результаты фиксируются вручную» — recorded by hand.
 
-Tasks 4a, 8a and 9a give that decision an inventory, a record and a review artifact — plus a **pin**, so a pack update that shifts a sheet becomes a named build error instead of a silently different chair.
+Tasks 4a and 9a give that decision an inventory and a review artifact, and Tasks 5–7 record it on the adapter itself: every rect can carry a `note` saying why that sprite won — plus a **pin** (Task 9), so a pack update that shifts a sheet becomes a named build error instead of a silently different chair.
 
 **What is deliberately not automated:** whether a sprite reads as a bookshelf at 16px, or whether the brown chair sits better on parquet than the grey one. No scorer is built and none is planned. The aim is to make taste cheap to apply and impossible to lose, not to replace it.
 
@@ -38,7 +38,7 @@ Tasks 4a, 8a and 9a give that decision an inventory, a record and a review artif
 
 Every task's requirements implicitly include this section.
 
-- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM everywhere (`"type": "module"`).
+- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
 - **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
@@ -47,9 +47,10 @@ Every task's requirements implicitly include this section.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`.
-- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — Task 18 asserts it.
-- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api): `$BOTVILLE_API_REPO` → `$BOTVILLE_REPO` → sibling of the repo root → explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
+- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
+- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
@@ -71,15 +72,15 @@ suffixes are the curation tasks, inserted where they belong in the sequence.
 - **Task 6** — `sources/limezu.json` — district props
 - **Task 7** — `sources/limezu.json` — interior furniture, characters, emotes, animated objects
 - **Task 8** — `SourceAdapter` and the synthetic fixture pack
-- **Task 8a** — The decision record — why this sprite, and what it beat
-- **Task 9** — `SpriteReader`
+- **Task 9** — `SpriteReader` and crop pins
 - **Task 9a** — The contact sheet — the thing you actually look at
 - **Task 10** — `ContractValidator` and the CI gate
 
-Tasks 5–7 still author rects directly; Task 8a migrates them into the decision
-record and makes `sources/<pack>.json` generated from that point on. Doing it
-in that order keeps the transcription (the risky part, spec R-5) separate from
-the restructuring, so a mistake in one is not hidden by the other.
+Tasks 5–7 author the rects directly on the adapter, carrying the old build
+scripts' hard-won corrections forward as `note` fields. The transcription (the
+risky part, spec R-5) stays a pure move of numbers that already exist; Task 9's
+pinner then verifies each crop against real pixels and records the hash beside
+it.
 
 ---
 
@@ -87,7 +88,7 @@ the restructuring, so a mistake in one is not hidden by the other.
 
 Nothing else in this plan can be verified without a runner. There is no test framework in the repo today and this plan adds none — Node's built-in runner handles both `.mjs` and `.ts` (type-stripping, verified working on the installed Node 22.22 and required Node 24).
 
-**The one non-obvious part.** TypeScript source in this repo imports siblings with a `.js` extension (`import { X } from './foo.js'` where the file is `foo.ts`) — correct under `moduleResolution: "bundler"`, and what Vite and `tsc` both expect. **Node's type stripping does not rewrite that extension**, so a bare `node --test` cannot load any runtime `.ts` module that imports a sibling. Tasks 21, 30, 34 and 37 all test such modules. A 20-line resolve hook fixes it once, here.
+**The one non-obvious part.** TypeScript source in this repo imports siblings with a `.js` extension (`import { X } from './foo.js'` where the file is `foo.ts`) — correct under `moduleResolution: "bundler"`, and what Vite and `tsc` both expect. **Node's type stripping does not rewrite that extension**, so a bare `node --test` cannot load any runtime `.ts` module that imports a sibling. Tasks 21, 30, 34 and 37 all test such modules. A 20-line resolve hook fixes it once, here. The stripping is also strip-*only* — it never generates code — which is why the Global Constraints ban non-erasable TypeScript (parameter properties, `enum`, `namespace`) in anything node-tested.
 
 **The resolve hook is a test-only crutch, and that is a constraint, not a convenience.** Because it only exists inside `node --test`, any module that must *also* load under bare `node` (the bake CLIs) or under Vite (the client bundle) may not depend on it. That is the rule in Global Constraints: **`.mjs` never imports `.ts`.** Step 7 below adds the regression test that enforces it, so the rule fails loudly the first time someone breaks it rather than at `npm run bake:agents` three plans later.
 
@@ -113,7 +114,7 @@ Nothing else in this plan can be verified without a runner. There is no test fra
 - Produces:
   - `npm test` — builds `@botville/shared`, generates the fixture pack, runs every `test/**/*.test.mjs` and `test/**/*.test.ts` *except* `test/bake/**`, with `.js` → `.ts` resolution enabled.
   - `npm run test:bake` — the slow suite under `test/bake/`.
-  - `npm run test:all` — both.
+  - `npm run test:all` — both, then the shell-level clean-tree check.
   - `test/helpers/siblingRepo.mjs`: `resolveSiblingRepo(name) → string | null` and `skipUnlessSibling(name) → { skip: false } | { skip: string }`.
   - `test/helpers/skip.mjs`: `skipUnless(condition, reason) → { skip: false | string }`, recording every skip reason for the end-of-run summary.
 
@@ -298,6 +299,7 @@ import { existsSync } from 'node:fs';
  */
 const NO_HOOK_MODULES = [
   'packages/shared/src/schemaVersion.mjs',
+  'packages/shared/src/hash.mjs',
   'packages/shared/src/appearance/derive.mjs',
   'scripts/png-lib.mjs',
 ];
@@ -321,19 +323,20 @@ In root `package.json`, inside `"scripts"`, after `"typecheck": "turbo typecheck
     "pretest": "npm run build --workspace=packages/shared && npm run fixture --if-present",
     "test": "node --import ./test/ts-resolve.mjs --test --test-concurrency=4 --test-reporter=spec \"test/*.test.mjs\" \"test/*.test.ts\"",
     "test:bake": "npm run pretest && node --import ./test/ts-resolve.mjs --test --test-concurrency=2 \"test/bake/**/*.test.mjs\" \"test/bake/**/*.test.ts\"",
-    "test:all": "npm test && npm run test:bake",
+    "test:all": "npm test && npm run test:bake && node -e \"const d=require('child_process').execSync('git status --porcelain',{encoding:'utf8'}).split('\\n').filter(l=>l&&!l.startsWith('??'));if(d.length){console.error('tests modified tracked files:\\n'+d.join('\\n'));process.exit(1)}\"",
 ```
 
-Three things worth knowing:
+Four things worth knowing:
 
 - The shared build runs first because `packages/shared/package.json`'s `"node"` export condition points at `dist/index.js` — a stale `dist` would silently hide new types from every test.
 - `--if-present` lets `pretest` be written now and become real in Task 8. Until then it is a no-op, so `npm test` works at every commit in between.
 - The `test` glob is `test/*.test.*`, deliberately **not** `test/**/*.test.*`: slow suites live under `test/bake/` and are excluded by construction rather than by an ignore list somebody forgets to update.
+- `test:all` ends with a clean-tree check: it fails if any *tracked* file changed during the run. This shell-level check is the authoritative one — it runs after every worker has exited, so `--test-concurrency` cannot reorder it. The in-suite guard (Task 18's `test/bake/zz-clean-tree.test.mjs`) is a best-effort early warning, not the gate.
 
 - [ ] **Step 7: Run to verify it passes**
 
 Run: `npm test`
-Expected: PASS — 4 harness tests plus the no-hook tests that apply (`png-lib.mjs` runs; the two shared modules skip until Tasks 2 and 26 create them, with the reason printed).
+Expected: PASS — 4 harness tests plus the no-hook tests that apply (`png-lib.mjs` runs; the three shared modules skip until Tasks 2 and 26 create them, with the reason printed).
 
 - [ ] **Step 8: Commit**
 
@@ -344,28 +347,36 @@ git commit -m "test: node:test harness, fast/slow split, sibling-repo resolution
 
 ---
 
-## Task 2: Shared asset types and SCHEMA_VERSION
+## Task 2: Shared asset types, SCHEMA_VERSION and the cross-repo hash
 
-The types both packages and both bake stages agree on. Types only — no logic, no I/O — so a schema change is a compile error rather than a runtime surprise (spec §4.3).
+The types both packages and both bake stages agree on. Types only — no logic, no I/O — so a schema change is a compile error rather than a runtime surprise (spec §4.3). Plus the two `.mjs` primitives everything downstream hashes with, and the resolver plumbing that makes them importable by subpath.
 
 **`SCHEMA_VERSION` lives in a `.mjs` file, and that is load-bearing.** It is hashed into every `appearanceHash` (I-7), so `packages/shared/src/appearance/derive.mjs` (Task 26) must read it. `derive.mjs` is loaded by bare `node` in the bake CLIs and by Vite in the client bundle, and **neither rewrites `.js` → `.ts`** — so `derive.mjs` cannot import it from a `.ts` file. Putting the constant in `schemaVersion.mjs` and having `Assets.ts` re-export it gives one definition, reachable from both worlds, with no resolve hook involved. Task 1 Step 5's no-hook test is what keeps it that way.
 
+**`hashString` lives here for the same reason, one plan earlier than you would expect.** It is the FNV-1a the api already uses (`agentSeed.js:30`), and three unrelated consumers need it: `appearance/derive.mjs` (Plan 4 Task 26), `venueSlots.ts` (Plan 3 Task 37) and the api's `scheduleCoverage.js` (Plan 5). Defining it in Plan 4 makes Plan 3 depend on Plan 4 while Plan 4 depends on Plan 3 — a cycle no execution order satisfies. It is eight lines with no dependencies, so it belongs at the bottom of the stack.
+
 **Files:**
 - Create: `packages/shared/src/schemaVersion.mjs`
+- Create: `packages/shared/src/hash.mjs`
 - Create: `packages/shared/src/types/Assets.ts`
 - Modify: `packages/shared/src/index.ts:5` (append an export)
-- Modify: `test/harness-no-hook.test.mjs` — the module is now real
+- Modify: `packages/shared/package.json` — `exports` gains the `./*.mjs` subpath pattern (Step 5b)
+- Modify: `packages/shared/tsconfig.json` and `packages/client/tsconfig.json` — `allowJs` (Step 5)
+- Modify: `packages/client/vite.config.ts` — regex alias pair (Step 5b)
+- Modify: `test/harness-no-hook.test.mjs` — the modules are now real
 - Test: `test/shared-types.test.ts`
 
 **Interfaces:**
-- Consumes: nothing.
+- Consumes: `test/helpers/siblingRepo.mjs` (Task 1) — the cross-repo hash test.
 - Produces `packages/shared/src/schemaVersion.mjs`:
   - `const SCHEMA_VERSION = 1` — the single definition, importable from `.mjs`
+- Produces `packages/shared/src/hash.mjs`:
+  - `hashString(str, salt = '') → number` — FNV-1a, unsigned 32-bit. Bit-identical to `aisocialnetwork-api/src/utils/agentSeed.js:30`; that is a contract, not a coincidence.
 - Produces, all exported from `@botville/shared`:
   - `const SCHEMA_VERSION: 1` (re-exported)
   - `interface AgentPresence { id: string; displayName: string; spriteSeed: string; venueId: string | null }`
   - `type PresenceState = { kind: 'somewhere'; venueId: string } | { kind: 'absent' } | { kind: 'unknown' }`
-  - `interface AppearanceRecord { build: Build; skinTone: string; hairStyle: string; hairColor: string; top: string; bottom: string; accessory: string }`
+  - `interface AppearanceRecord { build: Build; skinTone: string; eyes: string; hairStyle: string; hairColor: string; outfit: string; accessory: string }`
   - `type Build = 'masc' | 'fem' | 'neutral'`
   - `interface VenueDescriptor { id; label; indoor; sizeTiles; groundAtlas; capacity; ground?; generator?; furniture; seats; spawns; animated; doors; glows }`
   - `interface PublishedVenue { id: string; label: string; indoor: boolean; capacity: number }`
@@ -377,8 +388,15 @@ The types both packages and both bake stages agree on. Types only — no logic, 
 ```ts
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 import { SCHEMA_VERSION } from '../packages/shared/src/types/Assets.ts';
 import type { AgentPresence, PresenceState, VenueDescriptor } from '../packages/shared/src/types/Assets.ts';
+import { hashString } from '../packages/shared/src/hash.mjs';
+import { resolveSiblingRepo, skipUnlessSibling } from './helpers/siblingRepo.mjs';
+
+/** The platform repo's directory name. Located, never hardcoded — see helpers/siblingRepo.mjs. */
+const API_REPO = process.env.BOTVILLE_API_REPO_NAME ?? 'aisocialnetwork-api';
 
 test('SCHEMA_VERSION is 1', () => {
   assert.equal(SCHEMA_VERSION, 1);
@@ -393,6 +411,22 @@ test('SCHEMA_VERSION has exactly one definition, and it is reachable from .mjs',
   assert.equal(/^\s*export\s+const\s+SCHEMA_VERSION\s*=/m.test(src), false,
     'Assets.ts declares a second SCHEMA_VERSION — derive.mjs cannot import it');
 });
+
+test('hashString is an unsigned 32-bit FNV-1a', () => {
+  assert.equal(hashString('', ''), hashString('', ''));
+  assert.ok(hashString('x', 'y') >= 0 && hashString('x', 'y') <= 0xffffffff);
+  assert.notEqual(hashString('x', 'a'), hashString('x', 'b'), 'salt must change the hash');
+});
+
+test('hashString matches agentSeed.js bit for bit (cross-repo contract)',
+  skipUnlessSibling(API_REPO), async () => {
+    const apiRoot = resolveSiblingRepo(API_REPO)!;
+    const require = createRequire(join(apiRoot, 'package.json'));
+    const apiHash = require(join(apiRoot, 'src/utils/agentSeed.js')).hashString;
+    for (const seed of ['aisha_khan', 'the_skeptic', 'Unit01', '', 'ünïcødé'])
+      for (const salt of ['', 'city', 'sprite:skin', 'slot:offset'])
+        assert.equal(hashString(seed, salt), apiHash(seed, salt), `${seed}/${salt}`);
+  });
 
 test('AgentPresence has exactly the four boundary fields', () => {
   const p: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a', venueId: null };
@@ -446,6 +480,38 @@ Expected: FAIL — `Cannot find module '.../packages/shared/src/types/Assets.ts'
 export const SCHEMA_VERSION = 1;
 ```
 
+- [ ] **Step 3b: Write the cross-repo hash**
+
+`packages/shared/src/hash.mjs`:
+
+```js
+/**
+ * Deterministic 32-bit string hash (FNV-1a variant). Not cryptographic —
+ * it only needs to spread inputs evenly across buckets.
+ *
+ * CROSS-REPO CONTRACT: byte-for-byte the same function as
+ * aisocialnetwork-api/src/utils/agentSeed.js:30. The api derives an agent's
+ * city, traits and description seeds from it; BotVille derives that same
+ * agent's appearance (Plan 4 Task 26) and its in-venue slot (Plan 3 Task 37).
+ * If the two implementations drift, the sprite and the profile stop
+ * describing the same person, silently. The test in shared-types.test.ts
+ * pins it — and its skip is loud, never silent.
+ *
+ * WHY .mjs AND NOT .ts: same reason as schemaVersion.mjs — bare `node` (the
+ * bake CLIs) and Vite (the client bundle) both load it, and neither rewrites
+ * a `.js` specifier onto a `.ts` file.
+ */
+export function hashString(str, salt = '') {
+  const input = `${salt}:${str}`;
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0; // unsigned 32-bit integer
+}
+```
+
 - [ ] **Step 4: Write the types**
 
 `packages/shared/src/types/Assets.ts`:
@@ -491,10 +557,12 @@ export type Build = 'masc' | 'fem' | 'neutral';
 export interface AppearanceRecord {
   build: Build;
   skinTone: string;
+  /** Sheet-selection axis: '01'..'07' — each Eyes_NN.png sheet IS the colour. */
+  eyes: string;
   hairStyle: string;
   hairColor: string;
-  top: string;
-  bottom: string;
+  /** One whole-garment axis; replaces the earlier separate top/bottom pair. */
+  outfit: string;
   accessory: string;
 }
 
@@ -568,10 +636,12 @@ export * from './types/Assets.js';
 ```
 
 `tsc` must be told to follow the `.mjs` re-export, or the build fails with
-*"Could not find a declaration file for module '../schemaVersion.mjs'"*.
-`tsconfig.base.json` has no `allowJs`, so add it to
-`packages/shared/tsconfig.json` — this package only, since it is the only one
-with a `.mjs` source and widening the whole repo buys nothing:
+*"Could not find a declaration file for module '../schemaVersion.mjs'"* (TS7016).
+`tsconfig.base.json` has no `allowJs`, so add it to **two** package configs —
+not to the base, because the server never has a `.mjs` in its program and
+widening the whole repo buys nothing.
+
+**`packages/shared/tsconfig.json`** — it owns the `.mjs` sources:
 
 ```json
 {
@@ -587,10 +657,42 @@ with a `.mjs` source and widening the whole repo buys nothing:
 }
 ```
 
-`include: ["src/**/*"]` already picks the `.mjs` file up. With `allowJs` on and
+`include: ["src/**/*"]` already picks the `.mjs` files up. With `allowJs` on and
 `declaration` inherited from the base config, `tsc` emits
 `dist/schemaVersion.mjs` alongside `dist/types/Assets.js`, and the relative
 import resolves in `dist` exactly as it does in `src`.
+
+**`packages/client/tsconfig.json`** — the client ends up with a `.mjs` in its
+program too, and this is the non-obvious half. Its `paths` map
+`@botville/shared/*` → `../shared/src/*` and its `include` covers
+`../shared/src/**/*`, so once Plan 3 Task 37 (`venueSlots.ts`) imports
+`@botville/shared/hash.mjs` and Plan 4 Task 30 (`AppearanceResolver.ts`)
+imports `@botville/shared/appearance/derive.mjs` from client `.ts` files,
+`npx tsc --noEmit` fails with *"Could not find a declaration file for module
+'@botville/shared/appearance/derive.mjs'"*. Setting it here, beside the seam it
+belongs to, is what stops that surfacing two plans later as an
+unrelated-looking typecheck break:
+
+```json
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "allowJs": true,
+    "paths": {
+      "@botville/shared": ["../shared/src/index.ts"],
+      "@botville/shared/*": ["../shared/src/*"]
+    }
+  },
+  "include": ["src/**/*", "../shared/src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+`checkJs` stays off: the `.mjs` modules are typed by their JSDoc and their
+tests, not by `tsc`.
 
 Verify rather than assume — this is the one build step where the `.mjs`
 decision could bite:
@@ -602,16 +704,72 @@ node -e "import('./packages/shared/dist/index.js').then(m => console.log('dist S
 
 Expected: `dist SCHEMA_VERSION = 1`.
 
+- [ ] **Step 5b: Open the `.mjs` seam for subpath imports**
+
+`schemaVersion.mjs` and `hash.mjs` are imported by path, not through the
+barrel — a `.ts` barrel is exactly what a `.mjs` consumer cannot go through.
+Two independent resolvers have to agree, and neither does today:
+
+**Node** (bare `node`, the bake CLIs, and `node --test`) reads `exports`. The
+map currently has only `"."`, so every subpath is `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+In `packages/shared/package.json`:
+
+```json
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "node": "./dist/index.js",
+      "default": "./src/index.ts"
+    },
+    "./*.mjs": "./src/*.mjs"
+  },
+```
+
+One pattern covers `schemaVersion.mjs`, `hash.mjs` and `appearance/derive.mjs`
+(Plan 4) — `*` in an exports pattern matches `/`. It deliberately does **not**
+expose `.ts` files: the barrel stays the only TypeScript entry point.
+
+**Vite** reads `resolve.alias`. `@rollup/plugin-alias` prefix-matches *string*
+keys, so a single `'@botville/shared'` string alias rewrites
+`@botville/shared/appearance/derive.mjs` into
+`…/shared/src/index.ts/appearance/derive.mjs` and dies with `ENOTDIR`. Regex
+keys do not prefix-match, so the exact/subpath pair has to be spelled out. In
+`packages/client/vite.config.ts`, replace the object alias with an array:
+
+```ts
+  resolve: {
+    alias: [
+      // Точное совпадение -> бочка пакета.
+      { find: /^@botville\/shared$/, replacement: path.resolve(__dirname, '../shared/src/index.ts') },
+      // Подпуть -> файл в src/. Строковый alias здесь ломается: rollup
+      // сопоставляет по префиксу и клеит путь ЧЕРЕЗ index.ts (ENOTDIR).
+      { find: /^@botville\/shared\//, replacement: path.resolve(__dirname, '../shared/src') + '/' },
+    ],
+  },
+```
+
+The trailing `'/'` is load-bearing: `path.resolve` strips it, and without it
+the replacement concatenates into `…/srcappearance/derive.mjs`.
+
+Verify both resolvers now, not two plans later:
+
+```bash
+node -e "import('@botville/shared/schemaVersion.mjs').then(m => console.log('node subpath SCHEMA_VERSION =', m.SCHEMA_VERSION))"
+npm run build --workspace=packages/client
+```
+
+Expected: `node subpath SCHEMA_VERSION = 1`, and a clean client build.
+
 - [ ] **Step 6: Run tests and typecheck**
 
 Run: `npm test && npm run typecheck`
-Expected: PASS — 5 new tests pass, including `SCHEMA_VERSION has exactly one definition`; the `schemaVersion.mjs` entry in `test/harness-no-hook.test.mjs` now runs instead of skipping; typecheck clean.
+Expected: PASS — 7 new tests pass, including `SCHEMA_VERSION has exactly one definition` and the two `hashString` tests (the cross-repo one skips with a printed reason if the api repo is absent); the `schemaVersion.mjs` and `hash.mjs` entries in `test/harness-no-hook.test.mjs` now run instead of skipping; typecheck clean. `npx turbo typecheck --force` must report 3 successful projects, matching the baseline this task starts from — a cached pass here proves nothing, because the config changed.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/shared/src/schemaVersion.mjs packages/shared/src/types/Assets.ts packages/shared/src/index.ts packages/shared/tsconfig.json test/shared-types.test.ts
-git commit -m "feat(shared): asset, venue and presence types; SCHEMA_VERSION in .mjs so derive.mjs can reach it"
+git add packages/shared/src/schemaVersion.mjs packages/shared/src/hash.mjs packages/shared/src/types/Assets.ts packages/shared/src/index.ts packages/shared/package.json packages/shared/tsconfig.json packages/client/tsconfig.json packages/client/vite.config.ts test/shared-types.test.ts
+git commit -m "feat(shared): asset, venue and presence types; SCHEMA_VERSION and hashString in .mjs, importable from every loader"
 ```
 
 ---
@@ -923,7 +1081,7 @@ Expected: `legacy names snapshot: 23+13 tiles, 32+36 props -> test/golden/legacy
     "frameWidth": 16,
     "frameHeight": 32,
     "directionOrder": ["right", "up", "left", "down"],
-    "parts": ["body", "hair", "top", "bottom", "accessory"],
+    "parts": ["body", "eyes", "hair", "outfit", "accessory"],
     "anims": {
       "idle":  { "framesPerDirection": 6, "directions": 4 },
       "walk":  { "framesPerDirection": 6, "directions": 4 },
@@ -950,7 +1108,7 @@ Expected: `legacy names snapshot: 23+13 tiles, 32+36 props -> test/golden/legacy
 }
 ```
 
-Note what is **absent**: no file paths, no `x/y/w/h`, no `byStatus` frame indices. Frame indices are pack-specific and live in the adapter (Task 7) — moving them out of `assetManifest.ts:210` is exactly what I-1 requires. `maxSize` is an upper bound for layout sanity, not an assertion; true sizes come from baked bitmaps (spec §5.1).
+Note what is **absent**: no file paths, no `x/y/w/h`, no `byStatus` frame indices. Frame indices are pack-specific and live in the adapter (Task 7) — moving them out of `assetManifest.ts:211-218` is exactly what I-1 requires. `maxSize` is an upper bound for layout sanity, not an assertion; true sizes come from baked bitmaps (spec §5.1).
 
 - [ ] **Step 5: Write the loader**
 
@@ -1111,10 +1269,6 @@ test('the crop hash is stable and content-addressed', () => {
   assert.notEqual(a.sha256, other.sha256);
 });
 
-test('indexing is deterministic — two runs produce identical manifests', () => {
-  assert.equal(JSON.stringify(run().sheets), JSON.stringify(run().sheets));
-});
-
 test('the index reports candidates as well as sheets', () => {
   const { cells } = run();
   const total = Object.values(cells).reduce((n, list) => n + list.length, 0);
@@ -1209,8 +1363,8 @@ export function cellSignature(img, x, y, w, h) {
     .map(([key]) => hex(key));
 
   // Hash the TRIMMED pixels: the same sprite at a different offset in a
-  // re-laid-out sheet still hashes the same, which is what makes the pin in
-  // Task 8a survive a cosmetic pack reshuffle.
+  // re-laid-out sheet still hashes the same, which is what makes the adapter's
+  // `pin` field survive a cosmetic pack reshuffle.
   const hash = createHash('sha256');
   const row = Buffer.alloc((maxX - minX + 1) * 4);
   for (let yy = minY; yy <= maxY; yy++) {
@@ -1302,7 +1456,7 @@ sources/*.index.json
 - [ ] **Step 5: Index the fixture pack and run the tests**
 
 Run: `npm run pack:index && npm run test:bake -- --test-name-pattern="pack"`
-Expected: `pack index: <n> sheets, <m> candidate cells -> sources/fixture.{sheets,index}.json`, then 8 tests PASS.
+Expected: `pack index: <n> sheets, <m> candidate cells -> sources/fixture.{sheets,index}.json`, then 7 tests PASS.
 
 - [ ] **Step 6: Commit**
 
@@ -1327,6 +1481,13 @@ The first third of the largest mechanical task in this build (spec R-5). Transcr
 **Interfaces:**
 - Consumes: `loadContract().groundAtlases` (Task 4).
 - Produces: `sources/limezu.json` with `{ pack, capabilities, files, rects }`. `files` is a short alias map so rects stay readable. Tasks 6 and 7 append to the same `rects` object.
+
+A rect is `{ file, x, y, w, h, trim }` — everything but `file` optional; no `x/y/w/h` means "the whole file" (spec §5.2) — plus two optional curation fields:
+
+- `note` — free text: why this sprite, what it beat, what went wrong last time. Tasks 5–7 carry the Russian build-script comments forward here; a reviewed crop change later adds its reason the same way.
+- `pin` — the sha256 of the post-trim crop's pixels, absent (or `null`) until the pack is on disk. Filled and verified by `npm run pin` (Task 9); a crop whose pixels no longer match its pin fails `validate:contract` by name (Task 10).
+
+`loadAdapter()` (Task 8) picks the keys it resolves with and ignores the rest, so both fields ride on the adapter with zero loader changes — one committed file per pack, and the reason travels with the rect it explains.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1386,17 +1547,17 @@ Expected: FAIL — `ENOENT: no such file or directory, open 'sources/limezu.json
 ```json
 {
   "pack": "limezu",
-  "capabilities": { "characterLayers": false },
+  "capabilities": { "characterLayers": true },
   "files": {
-    "city_terrains": "exteriors/themes/2_City_Terrains_16x16.png",
-    "terrains": "exteriors/themes/1_Terrains_and_Fences_16x16.png",
+    "city_terrains": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/2_City_Terrains_16x16.png",
+    "terrains": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/1_Terrains_and_Fences_16x16.png",
     "farm_terrains": "farm/16x16/1_Terrains_16x16.png",
-    "villas": "exteriors/themes/7_Villas_16x16.png",
-    "room_builder": "interiors/Room_Builder_16x16.png",
-    "bedroom": "interiors/themes/4_Bedroom_16x16.png",
-    "livingroom": "interiors/themes/2_LivingRoom_16x16.png",
-    "classroom": "interiors/themes/5_Classroom_and_library_16x16.png",
-    "kitchen": "interiors/themes/12_Kitchen_16x16.png"
+    "villas": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_16x16.png",
+    "room_builder": "interiors/1_Interiors/16x16/Room_Builder_16x16.png",
+    "bedroom": "interiors/1_Interiors/16x16/Theme_Sorter/4_Bedroom_16x16.png",
+    "livingroom": "interiors/1_Interiors/16x16/Theme_Sorter/2_LivingRoom_16x16.png",
+    "classroom": "interiors/1_Interiors/16x16/Theme_Sorter/5_Classroom_and_library_16x16.png",
+    "kitchen": "interiors/1_Interiors/16x16/Theme_Sorter/12_Kitchen_16x16.png"
   },
   "rects": {
     "grass":  { "file": "terrains", "x": 16,  "y": 192, "w": 16, "h": 16 },
@@ -1440,7 +1601,9 @@ Expected: FAIL — `ENOENT: no such file or directory, open 'sources/limezu.json
 }
 ```
 
-`capabilities.characterLayers` is set to `false` here as the safe default. **Task 3 Step 7 answers U-1; if the pack does ship separable layers, flip this to `true` then** — Task 27 branches on it.
+`capabilities.characterLayers` is `true`: U-1 was answered first-hand against the purchased packs (art-pack QA, 2026-07-29) — the Character Generator ships separable Bodies/Eyes/Hairstyles/Outfits/Accessories layer sheets, so the layered path ships. The palette-remap branch in Task 27 survives as the documented fallback for a pack without layers.
+
+The `files` paths are the **real pack paths** — no symlink compatibility layer stands between the adapter and `assets-src/`. (The legacy QA symlinks are deleted in Plan 6 Task 3b, after the golden baseline is captured.)
 
 - [ ] **Step 4: Run tests**
 
@@ -1519,40 +1682,40 @@ Expected: FAIL — `missing` lists every district prop name.
 
 - [ ] **Step 3: Extend the adapter**
 
-Add these aliases to `sources/limezu.json` `"files"` (paths transcribed from `sync-assets.mjs:79-109`):
+Add these aliases to `sources/limezu.json` `"files"` (the file *choices* are transcribed from `sync-assets.mjs:79-109`; the paths are the **real pack paths** verified on disk 2026-07-29, not the legacy symlink shortcuts that script uses):
 
 ```json
-    "office_single":     "exteriors/themes/16_Office_Singles_16x16/ME_Singles_Office_16x16_Example_1.png",
-    "market_single":     "exteriors/themes/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_1.png",
-    "hardware_single":   "exteriors/themes/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Hardware_Store.png",
+    "office_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/16_Office_Singles_16x16/ME_Singles_Office_16x16_Example_1.png",
+    "market_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_1.png",
+    "hardware_single":   "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Hardware_Store.png",
     "barn_single":       "farm/16x16/Single_Files_16x16/Props_and_Buildings_16x16/Barn_Small_16x16.png",
     "tree_oak_big_s":    "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Big_16x16.png",
     "tree_oak_med_s":    "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Medium_16x16.png",
     "tree_birch_s":      "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Birch_Green_Medium_16x16.png",
-    "lamp_single":       "exteriors/themes/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Street_Lamp_1.png",
-    "bench_single":      "exteriors/themes/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Bench_1.png",
-    "trash_single":      "exteriors/themes/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Black_Closed_Trash_Can.png",
-    "hydrant_single":    "exteriors/themes/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Hydrant_1.png",
-    "car_r1_single":     "exteriors/themes/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_1.png",
-    "car_l1_single":     "exteriors/themes/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Left_5.png",
-    "car_r2_single":     "exteriors/themes/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_12.png",
-    "car_d1_single":     "exteriors/themes/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_1.png",
-    "car_d2_single":     "exteriors/themes/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_12.png",
-    "bush1_single":      "exteriors/themes/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_1.png",
-    "bush2_single":      "exteriors/themes/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_4.png",
+    "lamp_single":       "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Street_Lamp_1.png",
+    "bench_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Bench_1.png",
+    "trash_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Black_Closed_Trash_Can.png",
+    "hydrant_single":    "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Hydrant_1.png",
+    "car_r1_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_1.png",
+    "car_l1_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Left_5.png",
+    "car_r2_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_12.png",
+    "car_d1_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_1.png",
+    "car_d2_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_12.png",
+    "bush1_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_1.png",
+    "bush2_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_4.png",
     "crop_cabbage_s":    "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Cabbage_Ripe_16x16.png",
     "crop_berry_s":      "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Berry_Ripe_16x16.png",
     "soil_left_s":       "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Left_16x16.png",
     "soil_mid_s":        "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Middle_16x16.png",
     "soil_right_s":      "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Right_16x16.png",
-    "fence_tl": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Left_16x16.png",
-    "fence_tm": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Middle_16x16.png",
-    "fence_tr": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Right_16x16.png",
-    "fence_ml": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Middle_Left_16x16.png",
-    "fence_mr": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Middle_Right_16x16.png",
-    "fence_bl": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Left_16x16.png",
-    "fence_bm": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Middle_16x16.png",
-    "fence_br": "exteriors/themes/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Right_16x16.png"
+    "fence_tl": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Left_16x16.png",
+    "fence_tm": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Middle_16x16.png",
+    "fence_tr": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Right_16x16.png",
+    "fence_ml": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Middle_Left_16x16.png",
+    "fence_mr": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Middle_Right_16x16.png",
+    "fence_bl": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Left_16x16.png",
+    "fence_bm": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Middle_16x16.png",
+    "fence_br": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Right_16x16.png"
 ```
 
 Add these to `"rects"`. A rect with no `x/y/w/h` means "the whole file" (spec §5.2).
@@ -1610,7 +1773,7 @@ git commit -m "feat(adapter): migrate district prop sources into sources/limezu.
 
 The last and largest third. 27 furniture rects come from `FURNITURE` in `build-interiors.mjs:63-100` — those coordinates were re-verified against the current sheets under ТЗ-08 and the Russian comments explain *why* each one is where it is. Preserve those comments as `"note"` fields; they are the record of what went wrong last time.
 
-This task also moves the emote frame indices out of `assetManifest.ts:210` — the coupling I-1 names explicitly.
+This task also moves the emote frame indices out of `assetManifest.ts:211-218` — the coupling I-1 names explicitly.
 
 **Files:**
 - Modify: `sources/limezu.json`
@@ -1686,23 +1849,27 @@ Expected: FAIL — `missing` lists every interior prop name.
 - [ ] **Step 3: Extend `files`**
 
 ```json
-    "office_singles_99":  "office/singles/Modern_Office_Singles_99.png",
-    "office_singles_100": "office/singles/Modern_Office_Singles_100.png",
-    "office_singles_103": "office/singles/Modern_Office_Singles_103.png",
-    "office_singles_104": "office/singles/Modern_Office_Singles_104.png",
-    "office_singles_116": "office/singles/Modern_Office_Singles_116.png",
-    "office_singles_156": "office/singles/Modern_Office_Singles_156.png",
-    "office_singles_225": "office/singles/Modern_Office_Singles_225.png",
-    "office_singles_227": "office/singles/Modern_Office_Singles_227.png",
-    "office_singles_323": "office/singles/Modern_Office_Singles_323.png",
-    "anim_coffee":       "interiors/animated/animated_coffee.png",
-    "anim_cake_fridge":  "interiors/animated/animated_canteen_big_fridge_cake_16x16.png",
-    "anim_tv":           "interiors/animated/animated_TV_reportage.png",
-    "anim_office_screen":"interiors/animated/animated_control_room_facebook_scrolling.png",
-    "anim_cuckoo":       "interiors/animated/animated_cuckoo_clock.png",
-    "ui":                "interiors/ui/UI_16x16.png",
-    "ui_emotes":         "interiors/ui/UI_thinking_emotes_animation_16x16.png",
-    "char_base":         "interiors/characters-premade/Premade_Character_01.png"
+    "office_singles_99":  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_99.png",
+    "office_singles_100": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_100.png",
+    "office_singles_103": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_103.png",
+    "office_singles_104": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_104.png",
+    "office_singles_116": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_116.png",
+    "office_singles_156": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_156.png",
+    "office_singles_225": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_225.png",
+    "office_singles_227": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_227.png",
+    "office_singles_323": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_323.png",
+    "anim_coffee":       "interiors/3_Animated_objects/16x16/spritesheets/animated_coffee.png",
+    "anim_cake_fridge":  "interiors/3_Animated_objects/16x16/spritesheets/animated_canteen_big_fridge_cake_16x16.png",
+    "anim_tv":           "interiors/3_Animated_objects/16x16/spritesheets/animated_TV_reportage.png",
+    "anim_office_screen":"interiors/3_Animated_objects/16x16/spritesheets/animated_control_room_facebook_scrolling.png",
+    "anim_cuckoo":       "interiors/3_Animated_objects/16x16/spritesheets/animated_cuckoo_clock.png",
+    "ui":                "interiors/4_User_Interface_Elements/UI_16x16.png",
+    "ui_emotes":         "interiors/4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png",
+    "char_body_sheet":      "interiors/2_Characters/Character_Generator/Bodies/16x16/Body_01.png",
+    "char_eyes_sheet":      "interiors/2_Characters/Character_Generator/Eyes/16x16/Eyes_01.png",
+    "char_hair_sheet":      "interiors/2_Characters/Character_Generator/Hairstyles/16x16/Hairstyle_01_01.png",
+    "char_outfit_sheet":    "interiors/2_Characters/Character_Generator/Outfits/16x16/Outfit_01_01.png",
+    "char_accessory_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_01_Ladybug_01.png"
 ```
 
 - [ ] **Step 4: Extend `rects`**
@@ -1763,14 +1930,14 @@ Furniture, transcribed from `build-interiors.mjs:63-100`. `trim: true` reproduce
     "emote_sheet": { "file": "ui_emotes" },
     "ui_sheet":    { "file": "ui" },
 
-    "char_body":      { "file": "char_base" },
-    "char_hair":      { "file": "char_base" },
-    "char_top":       { "file": "char_base" },
-    "char_bottom":    { "file": "char_base" },
-    "char_accessory": { "file": "char_base" }
+    "char_body":      { "file": "char_body_sheet" },
+    "char_eyes":      { "file": "char_eyes_sheet" },
+    "char_hair":      { "file": "char_hair_sheet" },
+    "char_outfit":    { "file": "char_outfit_sheet" },
+    "char_accessory": { "file": "char_accessory_sheet" }
 ```
 
-The five `char_*` slots all point at the same premade sheet while `capabilities.characterLayers` is `false` — under palette-remap there is one base, not five layers. If Task 3 Step 7 found real layer sheets, repoint each slot at its own file and flip the capability.
+The five `char_*` slots each point at their own real Character Generator layer directory — U-1 is answered: the pack ships separable layers (Bodies 9, Eyes 7, Hairstyles 200, Outfits 132, Accessories 84 sheets; art-pack QA 2026-07-29), and `capabilities.characterLayers` is `true` from Task 5. Each alias names the **index-0 file** of its directory; the composer (Plan 4 Task 27) resolves the concrete variant sheet by replacing the index in the file name. One pack caveat is load-bearing: the layer sheets are **927×656** — 927 is *not* a whole number of 16px frames, so the composer crops to whole frames (Plan 4 Task 27) and the validator asserts the shared canvas (Task 10 block 4b).
 
 - [ ] **Step 5: Add `emoteFrames`**
 
@@ -1996,13 +2163,16 @@ for (const atlas of Object.values(c.groundAtlases)) {
   }
 }
 
-// One whole-file PNG per prop, sized to its contract maxSize.
+// One whole-file PNG per prop, sized to its contract maxSize. The `note` is
+// honest rather than decorative — it flows to the contact sheet's tooltip
+// (Task 9a), which must render notes and has to have one to render.
 for (const group of Object.values(c.props)) {
   for (const [name, def] of Object.entries(group)) {
     const [w, h] = def.maxSize;
     const alias = `p_${name}`;
     files[alias] = `props/${name}.png`;
-    rects[name] = { file: alias, trim: true };
+    rects[name] = { file: alias, trim: true,
+      note: 'generated fixture sprite — geometry is derived from the contract, not chosen' };
     write(`props/${name}.png`, block(name, w, h));
   }
 }
@@ -2032,7 +2202,9 @@ rects.ui_sheet = { file: 'ui' };
 write('ui/ui.png', block('ui', 160, 160));
 
 // Character parts: separable 16x32 layers, 56 columns x 8 rows — the
-// layout AVATAR_VARIANTS documents for the real premade sheets.
+// *subset* AVATAR_VARIANTS uses (rows 0-7). The real premade sheets are
+// 896x656 (20.5 rows of 32px); the fixture generates only the rows the
+// runtime reads.
 for (const part of c.characters.parts) {
   const alias = `c_${part}`;
   files[alias] = `characters/${part}.png`;
@@ -2092,370 +2264,19 @@ git add scripts/lib/sourceAdapter.mjs scripts/gen-fixture-pack.mjs sources/fixtu
 git commit -m "feat(adapter): SourceAdapter plus a synthetic fixture pack for art-free testing"
 ```
 
-## Task 8a: The decision record — why this sprite, and what it beat
-
-Tasks 5–7 wrote `sources/limezu.json` by transcribing rects out of the old build scripts. Those rects encode roughly ninety judgements — *this* 22×42 rectangle is the armchair, and the brown one not the grey one because grey read as a concrete slab on warm parquet — and the transcription preserves the answers while losing everything else: what else was considered, on what criteria, by whom, when.
-
-That loss is what makes G-B ("a second pack is a second file") true on paper and false in practice. Writing the second file means re-making ninety judgements with no record of how the first ninety were made.
-
-**So the adapter stops being hand-authored.** `sources/<pack>.decisions.json` becomes the artifact a human edits, and `sources/<pack>.json` is generated from it. A decision carries the chosen rect, why, what it was chosen over, where it came from, and a **pin** — the `sha256` of the chosen crop's pixels, so the choice can be re-verified against the pack later.
-
-The migration is honest about provenance rather than pretending: the ninety transcribed rects get `provenance: "transcribed:<script>"`, their surviving Russian comments as `why`, and `alternatives: []` — because nobody recorded any. New decisions get full records.
-
-**The pin is the load-bearing part.** `armchair_grey_r` is "(145,582) 22×42 in `2_LivingRoom_16x16.png`". If LimeZu ships an update that inserts a row, that rect silently becomes a different chair, deterministically, with no error anywhere. A pin turns that into a named build failure at `validate:contract` (Task 10).
-
-**Files:**
-- Create: `sources/limezu.decisions.json`, `sources/fixture.decisions.json`
-- Create: `scripts/adapt.mjs`
-- Create: `scripts/lib/decisions.mjs`
-- Modify: `package.json` — `adapt` and `adapt:pin` scripts
-- Modify: `sources/limezu.json` — becomes generated (header comment, still committed)
-- Modify: `scripts/gen-fixture-pack.mjs` — emit decisions, not rects
-- Test: `test/decisions.test.mjs`
-
-**Interfaces:**
-- Consumes: `loadContract()` (Task 4), the Task 5–7 rects, `readSprite()` (Task 9) for pinning.
-- Produces `scripts/lib/decisions.mjs`:
-  - `loadDecisions(pack) → { pack, capabilities, files, decisions, emoteFrames }`
-  - `toAdapter(decisions) → adapterJson` — the exact shape `loadAdapter()` already reads
-  - `unpinned(decisions) → string[]`
-- Produces `scripts/adapt.mjs`: `npm run adapt [pack]` regenerates `sources/<pack>.json`; `npm run adapt:pin [pack] [srcRoot]` fills in missing pins from real pixels.
-
-- [ ] **Step 1: Write the failing test**
-
-`test/decisions.test.mjs`:
-
-```js
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import { loadContract } from '../scripts/lib/assetContract.mjs';
-import { loadDecisions, toAdapter, unpinned } from '../scripts/lib/decisions.mjs';
-
-const c = loadContract();
-
-test('every contract name has a decision, in every pack', () => {
-  for (const pack of ['limezu', 'fixture']) {
-    const { decisions } = loadDecisions(pack);
-    const missing = c.allNames().filter(n => !decisions[n]);
-    assert.deepEqual(missing, [], pack);
-  }
-});
-
-test('every decision says where it came from', () => {
-  // Either a human wrote down why, or it carries the provenance of the code
-  // it was transcribed out of. Silence is not allowed: an unexplained rect is
-  // exactly what this task exists to stop reproducing.
-  const { decisions } = loadDecisions('limezu');
-  const mute = Object.entries(decisions)
-    .filter(([, d]) => !d.why && !d.provenance)
-    .map(([n]) => n);
-  assert.deepEqual(mute, [], 'decisions with neither a reason nor a provenance');
-});
-
-test('the generated adapter is byte-identical to the committed one', () => {
-  for (const pack of ['limezu', 'fixture']) {
-    const generated = JSON.stringify(toAdapter(loadDecisions(pack)), null, 2) + '\n';
-    const committed = readFileSync(`sources/${pack}.json`, 'utf8');
-    assert.equal(generated, committed,
-      `sources/${pack}.json is stale — run npm run adapt ${pack}`);
-  }
-});
-
-test('sources/<pack>.json is marked generated so nobody hand-edits it', () => {
-  for (const pack of ['limezu', 'fixture']) {
-    const j = JSON.parse(readFileSync(`sources/${pack}.json`, 'utf8'));
-    assert.match(j._generated, /decisions\.json/, pack);
-  }
-});
-
-test('the notes Tasks 5-7 preserved survived as reasons', () => {
-  const { decisions } = loadDecisions('limezu');
-  assert.match(decisions.armchair_grey_r.why, /BROWN pair/,
-    'the ТЗ-08 acceptance note is the only record of why this crop won');
-  assert.match(decisions.armchair_grey_r.provenance, /build-interiors/);
-});
-
-test('a transcribed decision is honest about having no alternatives recorded', () => {
-  const { decisions } = loadDecisions('limezu');
-  for (const [name, d] of Object.entries(decisions)) {
-    if (!d.provenance?.startsWith('transcribed:')) continue;
-    assert.deepEqual(d.alternatives, [], `${name} claims alternatives it cannot have`);
-  }
-});
-
-test('the fixture pack is fully pinned — its pixels are generated, so there is no excuse', () => {
-  assert.deepEqual(unpinned(loadDecisions('fixture')), []);
-});
-
-test('unpinned() names what still needs the real pack', () => {
-  // limezu pins are filled by Plan 6 Task 3, when the art lands. Until then
-  // this list is expected to be non-empty and MUST be visible, not silent.
-  const names = unpinned(loadDecisions('limezu'));
-  assert.ok(Array.isArray(names));
-});
-```
-
-- [ ] **Step 2: Run to verify it fails**
-
-Run: `npm test -- --test-name-pattern="every contract name has a decision"`
-Expected: FAIL — `Cannot find module '.../scripts/lib/decisions.mjs'`.
-
-- [ ] **Step 3: Write the decision loader**
-
-`scripts/lib/decisions.mjs`:
-
-```js
-/**
- * The curation record: which sprite was chosen for each contract name, why,
- * over what, and whether the pixels are still the ones that were chosen.
- *
- * This is the file a human edits. sources/<pack>.json is GENERATED from it —
- * the adapter is an output, not an input, so a rect can no longer appear in
- * the build without a reason attached to it.
- *
- * A decision:
- *   {
- *     "chosen":      { "file": "livingroom", "x": 145, "y": 582, "w": 22, "h": 42, "trim": true },
- *     "why":         "BROWN pair (row 582), not grey — the grey one read as a
- *                     concrete slab on warm parquet (ТЗ-08 v2 acceptance)",
- *     "alternatives":[{ "x": 121, "y": 518, "why": "blue pair — too cold beside the rug" }],
- *     "provenance":  "transcribed:build-interiors.mjs",
- *     "reviewedBy":  "owner",
- *     "reviewedAt":  "2026-07-27",
- *     "pin":         "<sha256 of the chosen crop, or null until the pack is on disk>"
- *   }
- */
-import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { readSprite } from './spriteReader.mjs';
-
-const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..', '..');
-
-export function loadDecisions(pack) {
-  const raw = JSON.parse(readFileSync(join(ROOT, 'sources', `${pack}.decisions.json`), 'utf8'));
-  if (raw.pack !== pack) throw new Error(`sources/${pack}.decisions.json declares pack "${raw.pack}"`);
-  return raw;
-}
-
-/**
- * Project the decision record onto the shape loadAdapter() already reads.
- * Deliberately lossy: the runtime bake has no business seeing why a crop won,
- * only which crop it is.
- */
-export function toAdapter({ pack, capabilities, files, emoteFrames, decisions }) {
-  const rects = {};
-  for (const name of Object.keys(decisions).sort()) {
-    const { chosen } = decisions[name];
-    const r = {};
-    for (const k of ['file', 'x', 'y', 'w', 'h', 'trim', 'generated']) {
-      if (chosen[k] !== undefined) r[k] = chosen[k];
-    }
-    rects[name] = r;
-  }
-  return {
-    _generated: `from sources/${pack}.decisions.json by scripts/adapt.mjs — do not edit`,
-    pack,
-    capabilities,
-    emoteFrames,
-    files,
-    rects,
-  };
-}
-
-/** Names whose chosen crop has never been verified against real pixels. */
-export function unpinned({ decisions }) {
-  return Object.keys(decisions).filter(n => !decisions[n].pin).sort();
-}
-
-/**
- * The pin: a hash of the CHOSEN PIXELS, not of the coordinates.
- *
- * Hashing the post-trim crop rather than the rect is the point. A pack that
- * re-lays out a sheet moves the coordinates and keeps the sprite — the rect
- * check would scream and the sprite would be fine. A pack that redraws the
- * sprite keeps the coordinates and changes the art — the rect check would say
- * nothing and the art would be wrong. Only the pixels distinguish the two.
- *
- * Lives here rather than in adapt.mjs so contractValidator can import it
- * without pulling in a CLI.
- */
-export function pinFor(adapter, name) {
-  const s = readSprite(adapter, name);
-  return createHash('sha256').update(Buffer.from(s.canvas.data)).digest('hex');
-}
-```
-
-- [ ] **Step 4: Migrate the transcribed rects into decisions**
-
-A one-time conversion, run once and then deleted — the decision file is the source from here on. Write it as a throwaway under the scratch directory rather than committing it:
-
-```bash
-node -e '
-const { readFileSync, writeFileSync } = require("node:fs");
-const src = JSON.parse(readFileSync("sources/limezu.json", "utf8"));
-const decisions = {};
-for (const [name, r] of Object.entries(src.rects)) {
-  const { note, ...chosen } = r;
-  decisions[name] = {
-    chosen,
-    why: note ?? null,
-    alternatives: [],
-    // Honest: these rects were chosen months ago under ТЗ-08 and transcribed
-    // here. Claiming a fresh review would be a lie in a file whose whole
-    // purpose is to be trustworthy.
-    provenance: name in { grass: 1 } ? "transcribed:build-district.mjs" : "transcribed:build-interiors.mjs",
-    reviewedBy: null,
-    reviewedAt: null,
-    pin: null,
-  };
-}
-writeFileSync("sources/limezu.decisions.json", JSON.stringify({
-  pack: "limezu",
-  capabilities: src.capabilities,
-  emoteFrames: src.emoteFrames,
-  files: src.files,
-  decisions,
-}, null, 2) + "\n");
-console.log("decisions:", Object.keys(decisions).length);
-'
-```
-
-Then fix the provenance properly — the ground tiles and district props came from `build-district.mjs`, the interior furniture from `build-interiors.mjs`, and the office singles and animated objects from `sync-assets.mjs`'s explicit list. Set each decision's `provenance` to the file its coordinates actually came from; the reconciliation snapshot from Task 4 tells you which names belong to which.
-
-Finally, carry the two surviving reasons across as `why` — `armchair_grey_r`'s ТЗ-08 note and `chair_blue_r`'s dining-set note — and add the third from Task 13's cafe descriptor if it belongs to a rect rather than a placement.
-
-- [ ] **Step 5: Write the generator and the pinner**
-
-`scripts/adapt.mjs`:
-
-```js
-#!/usr/bin/env node
-/**
- * Generates sources/<pack>.json from sources/<pack>.decisions.json.
- *
- *   node scripts/adapt.mjs [pack]                    regenerate the adapter
- *   node scripts/adapt.mjs --pin [pack] [srcRoot]    fill in missing pins
- *
- * Pinning needs the real pixels, so it runs when the pack is on disk (Plan 6
- * Task 3). Everything else runs anywhere.
- */
-import { writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { loadDecisions, toAdapter, unpinned, pinFor } from './lib/decisions.mjs';
-import { loadAdapter } from './lib/sourceAdapter.mjs';
-
-const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
-
-const args = process.argv.slice(2);
-const doPin = args.includes('--pin');
-const rest = args.filter(a => a !== '--pin');
-const pack = rest[0] ?? 'fixture';
-const srcRoot = rest[1] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');
-
-const record = loadDecisions(pack);
-
-if (doPin) {
-  const adapter = loadAdapter(`sources/${pack}.json`, srcRoot);
-  let filled = 0, changed = [];
-  for (const name of Object.keys(record.decisions)) {
-    const pin = pinFor(adapter, name);
-    const was = record.decisions[name].pin;
-    if (!was) { record.decisions[name].pin = pin; filled++; }
-    else if (was !== pin) changed.push(name);
-  }
-  if (changed.length) {
-    console.error(`error: ${changed.length} crop(s) no longer match their pin:`);
-    for (const n of changed) console.error(`  ${n}`);
-    console.error('\nThe pack changed under a chosen crop. Re-review those sprites (npm run contact),');
-    console.error('then clear the stale pins deliberately and re-run --pin.');
-    process.exit(1);
-  }
-  writeFileSync(join(ROOT, 'sources', `${pack}.decisions.json`),
-    JSON.stringify(record, null, 2) + '\n');
-  console.log(`pinned ${filled} crop(s); ${unpinned(record).length} still unpinned`);
-}
-
-writeFileSync(join(ROOT, 'sources', `${pack}.json`),
-  JSON.stringify(toAdapter(record), null, 2) + '\n');
-
-const open = unpinned(record);
-console.log(`adapter: ${Object.keys(record.decisions).length} names -> sources/${pack}.json` +
-  (open.length ? `  (${open.length} unpinned)` : '  (fully pinned)'));
-```
-
-Root `package.json`, in `"scripts"`:
-
-```json
-    "adapt": "node scripts/adapt.mjs",
-    "adapt:pin": "node scripts/adapt.mjs --pin",
-```
-
-- [ ] **Step 6: Make the fixture pack emit decisions too**
-
-In `scripts/gen-fixture-pack.mjs`, replace the final `writeFileSync` of `sources/fixture.json` with a write of `sources/fixture.decisions.json` in the same shape as limezu's, then generate the adapter from it. The fixture's pixels are derived, so every decision can be pinned immediately and its `why` is the same one sentence:
-
-```js
-const decisions = Object.fromEntries(Object.keys(rects).sort().map(name => [name, {
-  chosen: rects[name],
-  why: 'generated fixture sprite — geometry is derived from the contract, not chosen',
-  alternatives: [],
-  provenance: 'generated:scripts/gen-fixture-pack.mjs',
-  reviewedBy: null,
-  reviewedAt: null,
-  pin: null,          // filled by `npm run adapt:pin` immediately below
-}]));
-
-writeFileSync(join(ROOT, 'sources', 'fixture.decisions.json'), JSON.stringify({
-  pack: 'fixture',
-  capabilities: { characterLayers: true },
-  emoteFrames: Object.fromEntries(
-    c.emotes.icons.statuses.map((s, i) => [s, [40 + i * 2, 41 + i * 2]])),
-  files,
-  decisions,
-}, null, 2) + '\n');
-```
-
-and extend `pretest` so the generated pack is always adapted and pinned:
-
-```json
-    "fixture": "node scripts/gen-fixture-pack.mjs && node scripts/adapt.mjs fixture && node scripts/adapt.mjs --pin fixture test/fixtures/pack-src",
-```
-
-- [ ] **Step 7: Regenerate, test, and confirm nothing moved**
-
-Run:
-
-```bash
-npm run fixture
-npm run adapt limezu
-git diff --stat sources/limezu.json
-npm test
-```
-
-Expected: **`sources/limezu.json` is unchanged.** The whole migration is a refactor of *where the rects live*, not of what they are — if regenerating the adapter from the decision record alters a single byte, a decision was transcribed wrong. Then the tests pass, with `unpinned()` listing every limezu name (expected: the pack is not on this machine).
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add sources/limezu.decisions.json sources/fixture.decisions.json sources/limezu.json sources/fixture.json scripts/adapt.mjs scripts/lib/decisions.mjs scripts/gen-fixture-pack.mjs package.json test/decisions.test.mjs
-git commit -m "feat(curation): generate the adapter from a decision record with reasons, provenance and crop pins"
-```
-
 ---
 
-
----
-
-## Task 9: `SpriteReader`
+## Task 9: `SpriteReader` and crop pins
 
 Crop a rect out of a pack PNG, trim transparent margins, report true bounds. This is the alpha-bbox loop that currently appears twice — `build-district.mjs:73-85` and `build-interiors.mjs:103-123` — extracted once.
 
+This is also where the **pin** gets its teeth. `armchair_grey_r` is "(145,582) 22×42 in `2_LivingRoom_16x16.png`" — if LimeZu ships an update that inserts a row, that rect silently becomes a different chair, deterministically, with no error anywhere. `pinFor()` hashes the crop's actual pixels, and `scripts/pin.mjs` fills the `pin` field on every rect in `sources/<pack>.json` and **fails when a pinned crop's pixels have changed**, so Task 10's validator can turn that silence into a named build failure.
+
 **Files:**
 - Create: `scripts/lib/spriteReader.mjs`
+- Create: `scripts/pin.mjs`
+- Modify: `package.json` — `pin` script; extend `fixture` with the pin pass
+- Modify: `sources/fixture.json` — gains a `pin` per rect (via `npm run fixture`)
 - Test: `test/sprite-reader.test.mjs`
 
 **Interfaces:**
@@ -2463,6 +2284,8 @@ Crop a rect out of a pack PNG, trim transparent margins, report true bounds. Thi
 - Produces `scripts/lib/spriteReader.mjs`:
   - `readSprite(adapter, name) → { name, w, h, canvas }` — `canvas` is a `png-lib` canvas; `w`/`h` are the true post-trim bounds.
   - `asSource(canvas) → { w, h, px }` — adapts a mutable canvas back into the read-only shape `blit` expects.
+  - `pinFor(adapter, name) → string` — sha256 of the post-trim crop's pixels.
+- Produces `scripts/pin.mjs`: `npm run pin [pack] [srcRoot]` — fills missing pins from real pixels, exits `1` if any pinned crop no longer matches. A CLI writing an authored file, which the Global Constraints permit — only *library* functions may not write the tree. The pinner never gates and the validator (Task 10) never writes: one job per tool.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -2471,8 +2294,9 @@ Crop a rect out of a pack PNG, trim transparent margins, report true bounds. Thi
 ```js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { loadAdapter } from '../scripts/lib/sourceAdapter.mjs';
-import { readSprite, asSource } from '../scripts/lib/spriteReader.mjs';
+import { readSprite, asSource, pinFor } from '../scripts/lib/spriteReader.mjs';
 import { createCanvas } from '../scripts/png-lib.mjs';
 
 const a = () => loadAdapter('sources/fixture.json', 'test/fixtures/pack-src');
@@ -2515,6 +2339,20 @@ test('asSource round-trips a canvas into a readable source', () => {
   cv.set(1, 0, [1, 2, 3, 255]);
   assert.deepEqual(asSource(cv).px(1, 0), [1, 2, 3, 255]);
 });
+
+test('pinFor is a pure function of the pixels — same crop, same pin; different crop, different pin', () => {
+  assert.equal(pinFor(a(), 'counter_wide'), pinFor(a(), 'counter_wide'));
+  assert.notEqual(pinFor(a(), 'counter_wide'), pinFor(a(), 'stool'));
+});
+
+test('npm run fixture leaves the fixture pack fully pinned', () => {
+  // The fixture's pixels are generated, so there is no excuse for an
+  // unpinned crop — and the pins are deterministic, so the committed
+  // manifest stays byte-stable across runs (the clean-tree guard holds).
+  const src = JSON.parse(readFileSync('sources/fixture.json', 'utf8'));
+  const unpinned = Object.entries(src.rects).filter(([, r]) => !r.pin).map(([n]) => n);
+  assert.deepEqual(unpinned, []);
+});
 ```
 
 - [ ] **Step 2: Run to verify it fails**
@@ -2532,6 +2370,7 @@ Expected: FAIL — `Cannot find module '.../scripts/lib/spriteReader.mjs'`.
  * This is the alpha-bbox loop that used to be duplicated in
  * build-district.mjs:73-85 and build-interiors.mjs:103-123.
  */
+import { createHash } from 'node:crypto';
 import { decodePng, createCanvas } from '../png-lib.mjs';
 
 const cache = new Map();
@@ -2588,27 +2427,100 @@ export function readSprite(adapter, name) {
   cv.blit(img, rx + ox, ry + oy, w, h, 0, 0);
   return { name, w, h, canvas: cv };
 }
+
+/**
+ * The pin: a hash of the CHOSEN PIXELS, not of the coordinates.
+ *
+ * Hashing the post-trim crop rather than the rect is the point. A pack that
+ * re-lays out a sheet moves the coordinates and keeps the sprite — the rect
+ * check would scream and the sprite would be fine. A pack that redraws the
+ * sprite keeps the coordinates and changes the art — the rect check would say
+ * nothing and the art would be wrong. Only the pixels distinguish the two.
+ */
+export function pinFor(adapter, name) {
+  const s = readSprite(adapter, name);
+  return createHash('sha256').update(Buffer.from(s.canvas.data)).digest('hex');
+}
 ```
 
 Note the alpha threshold is `> 8`, matching both original loops exactly. Changing it would shift every trimmed sprite by a pixel and break Task 20.
 
-- [ ] **Step 4: Run tests**
+- [ ] **Step 4: Write the pinner and wire the scripts**
 
-Run: `npm test`
-Expected: PASS — 6 new tests.
+`scripts/pin.mjs`:
 
-- [ ] **Step 5: Commit**
+```js
+#!/usr/bin/env node
+/**
+ * Fills and verifies the `pin` on every rect in sources/<pack>.json.
+ *
+ *   node scripts/pin.mjs [pack] [srcRoot]
+ *
+ * Needs the pack's pixels on disk (for limezu that is Plan 6 Task 3).
+ * A missing pin is filled; a pin that no longer matches is an ERROR —
+ * the pack changed under a chosen crop, and that must be a decision,
+ * never a silent update.
+ */
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { loadAdapter } from './lib/sourceAdapter.mjs';
+import { pinFor } from './lib/spriteReader.mjs';
+
+const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
+const pack = process.argv[2] ?? 'fixture';
+const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');
+
+const path = join(ROOT, 'sources', `${pack}.json`);
+const raw = JSON.parse(readFileSync(path, 'utf8'));
+const adapter = loadAdapter(`sources/${pack}.json`, srcRoot);
+
+let filled = 0;
+const changed = [];
+for (const [name, r] of Object.entries(raw.rects)) {
+  const pin = pinFor(adapter, name);
+  if (!r.pin) { r.pin = pin; filled++; }
+  else if (r.pin !== pin) changed.push(name);
+}
+
+if (changed.length) {
+  console.error(`error: ${changed.length} crop(s) no longer match their pin:`);
+  for (const n of changed) console.error(`  ${n}`);
+  console.error('\nThe pack changed under a chosen crop. Re-review those sprites (npm run contact),');
+  console.error('then clear the stale pins deliberately and re-run.');
+  process.exit(1);
+}
+
+writeFileSync(path, JSON.stringify(raw, null, 2) + '\n');
+console.log(`pinned ${filled} new crop(s); ${Object.keys(raw.rects).length} total, all match`);
+```
+
+Root `package.json`, in `"scripts"` — add `pin`, and extend `fixture` so the generated pack is always pinned:
+
+```json
+    "pin": "node scripts/pin.mjs",
+    "fixture": "node scripts/gen-fixture-pack.mjs && node scripts/pin.mjs fixture test/fixtures/pack-src",
+```
+
+The fixture's pins are deterministic hashes of generated pixels, so re-running `npm run fixture` rewrites `sources/fixture.json` to the same bytes — the clean-tree guard (Task 18) still holds.
+
+- [ ] **Step 5: Run tests**
+
+Run: `npm run fixture && npm test`
+Expected: `pinned <n> new crop(s); <n> total, all match` on the first run, then PASS — 8 new tests.
+
+- [ ] **Step 6: Commit**
 
 ```bash
-git add scripts/lib/spriteReader.mjs test/sprite-reader.test.mjs
-git commit -m "feat(bake): SpriteReader — single alpha-bbox crop and trim"
+git add scripts/lib/spriteReader.mjs scripts/pin.mjs package.json sources/fixture.json test/sprite-reader.test.mjs
+git commit -m "feat(bake): SpriteReader — single alpha-bbox crop and trim — plus crop pins on the adapter"
 ```
 
 ## Task 9a: The contact sheet — the thing you actually look at
 
 Everything so far makes curation *recordable*. This makes it *reviewable*.
 
-A rect is unjudgeable as text. `{ "file": "livingroom", "x": 145, "y": 582, "w": 22, "h": 42 }` tells you nothing about whether the chair reads as a chair at 16px, whether it fights the floor it sits on, or whether it disappears under the night tint. Every judgement in `sources/limezu.decisions.json` was originally made by cropping one sprite at a time with `scripts/crop.mjs` and squinting — which is why re-reviewing ninety of them is unthinkable and therefore never happens.
+A rect is unjudgeable as text. `{ "file": "livingroom", "x": 145, "y": 582, "w": 22, "h": 42 }` tells you nothing about whether the chair reads as a chair at 16px, whether it fights the floor it sits on, or whether it disappears under the night tint. Every judgement in `sources/limezu.json` was originally made by cropping one sprite at a time with `scripts/crop.mjs` and squinting — which is why re-reviewing 116 of them is unthinkable and therefore never happens.
 
 The contact sheet makes it a two-minute job: **one page per prop group, every chosen sprite at 1× and 2×, on the floor tile it will actually sit on, beside a night-tinted copy, labelled.**
 
@@ -2621,7 +2533,7 @@ The contact sheet makes it a two-minute job: **one page per prop group, every ch
 - Test: `test/bake/contact-sheet.test.mjs`
 
 **Interfaces:**
-- Consumes: `loadContract()`, `loadAdapter()`, `readSprite()`, `asSource()`, `loadDecisions()`.
+- Consumes: `loadContract()`, `loadAdapter()`, `readSprite()`, `asSource()`, and the `note`/`pin` fields read straight from `sources/<pack>.json`.
 - Produces `scripts/contact-sheet.mjs`:
   - `contactSheet(contract, adapter, group, { floorTile, columns }) → { canvas, cells }`
   - `nightTint(canvas) → canvas` — the same `#0a0a2e` at alpha 0.45 the palette test uses
@@ -2701,7 +2613,7 @@ test('the html labels every cell and cites the reason the sprite was chosen', ()
   writeContactSheets(c, a(), out);
   const html = readFileSync(join(out, 'interior.html'), 'utf8');
   for (const name of Object.keys(c.props.interior)) assert.ok(html.includes(name), name);
-  assert.match(html, /generated fixture sprite/, 'the decision reason should be visible on hover');
+  assert.match(html, /generated fixture sprite/, 'the note should be visible on hover');
 });
 ```
 
@@ -2718,7 +2630,7 @@ Expected: FAIL — `Cannot find module '.../scripts/contact-sheet.mjs'`.
 #!/usr/bin/env node
 /**
  * Renders every chosen sprite in a group onto one page, so a human can judge
- * ninety curation decisions in one pass instead of ninety.
+ * 116 curation decisions in one pass instead of 116.
  *
  * Each cell shows the sprite THREE ways, because those are the three ways it
  * fails:
@@ -2731,13 +2643,12 @@ Expected: FAIL — `Cannot find module '.../scripts/contact-sheet.mjs'`.
  *
  *   node scripts/contact-sheet.mjs [pack] [srcRoot]
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createCanvas, encodePng } from './png-lib.mjs';
 import { loadContract } from './lib/assetContract.mjs';
 import { loadAdapter } from './lib/sourceAdapter.mjs';
-import { loadDecisions } from './lib/decisions.mjs';
 import { readSprite, asSource } from './lib/spriteReader.mjs';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
@@ -2770,7 +2681,7 @@ function tileFloor(canvas, floor, x0, y0, w, h) {
 }
 
 /**
- * @returns {{canvas: object, cells: Array<{name,x,y,w,h,why,pin}>}}
+ * @returns {{canvas: object, cells: Array<{name,x,y,w,h}>}}
  */
 export function contactSheet(contract, adapter, group, { floorTile, columns = 8 }) {
   const names = Object.keys(contract.props[group]).sort();
@@ -2809,11 +2720,11 @@ export function contactSheet(contract, adapter, group, { floorTile, columns = 8 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, ch =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
 
-function html(group, sheet, decisions) {
+function html(group, sheet, rects) {
   const cells = sheet.cells.map(c => {
-    const d = decisions[c.name] ?? {};
+    const r = rects[c.name] ?? {};
     return `    <a class="cell" style="left:${c.x}px;top:${c.y}px;width:${c.w}px;height:${c.h}px"
-       title="${esc(d.why ?? d.provenance ?? 'no reason recorded')}${d.pin ? '' : '  [UNPINNED]'}"
+       title="${esc(r.note ?? 'no reason recorded')}${r.pin ? '' : '  [UNPINNED]'}"
        ><span>${esc(c.name)}</span></a>`;
   }).join('\n');
 
@@ -2839,7 +2750,10 @@ ${cells}
 }
 
 export function writeContactSheets(contract, adapter, outDir, pack = adapter.pack) {
-  const { decisions } = loadDecisions(pack);
+  // Notes and pins live on the adapter's rects; the Adapter API deliberately
+  // does not expose them (the bake has no business seeing why a crop won), so
+  // the review artifact reads the authored file directly.
+  const { rects } = JSON.parse(readFileSync(join(ROOT, 'sources', `${pack}.json`), 'utf8'));
   // The floor each group is actually seen against.
   const FLOOR = { district: 'grass', interior: 'floorCafe' };
   mkdirSync(outDir, { recursive: true });
@@ -2848,7 +2762,7 @@ export function writeContactSheets(contract, adapter, outDir, pack = adapter.pac
   for (const group of Object.keys(contract.props)) {
     const sheet = contactSheet(contract, adapter, group, { floorTile: FLOOR[group] ?? 'grass', columns: 8 });
     writeFileSync(join(outDir, `${group}.png`), encodePng(sheet.canvas));
-    writeFileSync(join(outDir, `${group}.html`), html(group, sheet, decisions));
+    writeFileSync(join(outDir, `${group}.html`), html(group, sheet, rects));
     written.push(group);
   }
   return written;
@@ -2882,7 +2796,7 @@ contact/
 - [ ] **Step 5: Generate and look at it**
 
 Run: `npm run contact && open contact/interior.html`
-Expected: a page of coloured blocks — the fixture pack, so the *content* is meaningless and the *layout* is the point. Confirm each sprite appears three times, the night column is visibly darker but not black, hovering shows the reason, and every cell reads `[UNPINNED]` only where it should.
+Expected: a page of coloured blocks — the fixture pack, so the *content* is meaningless and the *layout* is the point. Confirm each sprite appears three times, the night column is visibly darker but not black, hovering shows the note, and no cell reads `[UNPINNED]` — `npm run fixture` pins every crop as it generates.
 
 This is the artifact Plan 6 Task 3 uses against real art. Getting it right on the fixture pack now is what makes that review cheap later.
 
@@ -2914,11 +2828,11 @@ I-2: an unresolved name fails the **build**, never renders as a missing texture 
 - Test: `test/contract-validator.test.mjs`
 
 **Interfaces:**
-- Consumes: `loadContract()`, `loadAdapter()`, `readSprite()`.
+- Consumes: `loadContract()`, `loadAdapter()`, `readSprite()` / `pinFor()` (Task 9).
 - Produces `scripts/lib/contractValidator.mjs`:
   - `validate(contract, adapter, { checkPixels = true, venues = [], pins = null }) → { errors: string[], warnings: string[] }`
   - `checkPixels: false` runs name resolution only — usable with no art on disk.
-  - `pins` is `{ name → sha256 }` from the decision record (Task 8a). A **mismatch is an error**; a **missing pin is a warning**, because the licensed pack is legitimately absent on most machines.
+  - `pins` is `{ name → sha256 }` from the adapter's `pin` fields (Task 5's schema, filled by `npm run pin`). A **mismatch is an error**; a **missing pin is a warning**, because the licensed pack is legitimately absent on most machines.
 - Produces `scripts/validate-contract.mjs`: CLI, exits `1` on any error, printing each one.
 
 - [ ] **Step 1: Write the failing test**
@@ -2928,9 +2842,13 @@ I-2: an unresolved name fails the **build**, never renders as a missing texture 
 ```js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { loadContract } from '../scripts/lib/assetContract.mjs';
 import { loadAdapter } from '../scripts/lib/sourceAdapter.mjs';
 import { validate } from '../scripts/lib/contractValidator.mjs';
+import { createCanvas, encodePng } from '../scripts/png-lib.mjs';
 
 const c = loadContract();
 const fixture = () => loadAdapter('sources/fixture.json', 'test/fixtures/pack-src');
@@ -2965,6 +2883,27 @@ test('a venue prop absent from the contract is an error', () => {
   assert.ok(errors.some(e => /not_a_prop/.test(e)), errors.join('\n'));
 });
 
+test('layered char sheets must share one whole-frame canvas (4b)', () => {
+  // The fixture is layered; its five char_* sheets are identical in size, so
+  // it passes (covered by 'the fixture pack validates clean'). A pack whose
+  // hair layer is a different size must fail — stacking would silently
+  // misalign frames. Build a two-layer throwaway pack with mismatched sheets.
+  const dir = mkdtempSync(join(tmpdir(), 'layers-'));
+  writeFileSync(join(dir, 'a.png'), encodePng(createCanvas(16 * 4, 32 * 2)));
+  writeFileSync(join(dir, 'b.png'), encodePng(createCanvas(16 * 4 - 1, 32 * 2)));
+  const src = {
+    pack: 'mismatch',
+    capabilities: { characterLayers: true },
+    emoteFrames: {},
+    files: { a: 'a.png', b: 'b.png' },
+    rects: Object.fromEntries(c.characters.parts.map((p, i) =>
+      [`char_${p}`, { file: i === 0 ? 'a' : 'b' }])),
+  };
+  writeFileSync(join(dir, 'mismatch.json'), JSON.stringify(src));
+  const { errors } = validate(c, loadAdapter(join(dir, 'mismatch.json'), dir), { checkPixels: true });
+  assert.ok(errors.some(e => /char_/.test(e) && /one canvas/.test(e)), errors.join('\n'));
+});
+
 test('a crop whose pixels no longer match its pin is an error', () => {
   // The failure this exists for: a pack ships an update, a sheet gains a row,
   // and a chosen rect silently becomes a different sprite. Coordinates still
@@ -2982,10 +2921,9 @@ test('an unpinned crop is a warning, not an error — the pack may not be here y
   assert.ok(warnings.some(w => /unpinned/.test(w)));
 });
 
-test('the fixture pack validates clean against its own real pins', async () => {
-  const { loadDecisions } = await import('../scripts/lib/decisions.mjs');
-  const { decisions } = loadDecisions('fixture');
-  const pins = Object.fromEntries(Object.entries(decisions).map(([n, d]) => [n, d.pin]));
+test('the fixture pack validates clean against its own real pins', () => {
+  const src = JSON.parse(readFileSync('sources/fixture.json', 'utf8'));
+  const pins = Object.fromEntries(Object.entries(src.rects).map(([n, r]) => [n, r.pin ?? null]));
   const { errors } = validate(c, fixture(), { checkPixels: true, pins });
   assert.deepEqual(errors, [], 'the fixture pins should always match — its pixels are generated');
 });
@@ -3007,8 +2945,7 @@ Expected: FAIL — `Cannot find module '.../scripts/lib/contractValidator.mjs'`.
  * geometry matches the real bitmaps. An unresolved name fails the
  * BUILD — never a missing texture at runtime.
  */
-import { readSprite } from './spriteReader.mjs';
-import { pinFor } from './decisions.mjs';
+import { readSprite, pinFor } from './spriteReader.mjs';
 
 export function validate(contract, adapter, { checkPixels = true, venues = [], pins = null } = {}) {
   const errors = [];
@@ -3075,7 +3012,34 @@ export function validate(contract, adapter, { checkPixels = true, venues = [], p
     if (s.h < def.frameHeight) errors.push(`animated ${name} sheet is ${s.h}px tall, needs ${def.frameHeight}px`);
   }
 
-  // 5. Every crop still contains the pixels that were chosen (Task 8a).
+  // 4b. Layered characters share one canvas, in whole frames.
+  //
+  // The real Character Generator sheets are 927x656 — 927 is NOT a whole
+  // number of 16px frames, so the composer crops to whole frames (Plan 4
+  // Task 27). What it cannot survive is the LAYERS disagreeing with each
+  // other: stacking assumes every char_* sheet has the same dimensions and
+  // at least one whole frame each way. Assert that here, per pack.
+  if (adapter.capabilities.characterLayers === true) {
+    const { frameWidth: cfw, frameHeight: cfh, parts } = contract.characters;
+    let first = null;
+    for (const part of parts) {
+      const name = `char_${part}`;
+      if (!adapter.has(name)) continue;
+      let s;
+      try { s = readSprite(adapter, name); } catch (e) { errors.push(`char layer ${name}: ${e.message}`); continue; }
+      if (Math.floor(s.w / cfw) < 1 || Math.floor(s.h / cfh) < 1) {
+        errors.push(`char layer ${name} is ${s.w}x${s.h} — smaller than one ${cfw}x${cfh} frame`);
+      }
+      if (!first) { first = { name, w: s.w, h: s.h }; continue; }
+      if (s.w !== first.w || s.h !== first.h) {
+        errors.push(`char layer ${name} is ${s.w}x${s.h} but ${first.name} is ${first.w}x${first.h} — `
+          + `layered composition requires all char_* sheets on one canvas`);
+      }
+    }
+  }
+
+  // 5. Every crop still contains the pixels that were chosen (the `pin`
+  //    field, Task 9).
   //
   // Coordinates resolving is not the same as the sprite being right. A pack
   // update that inserts a row leaves every rect valid and every crop
@@ -3116,7 +3080,6 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContract } from './lib/assetContract.mjs';
 import { loadAdapter } from './lib/sourceAdapter.mjs';
-import { loadDecisions } from './lib/decisions.mjs';
 import { validate } from './lib/contractValidator.mjs';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
@@ -3131,10 +3094,12 @@ const venues = existsSync(venuesDir)
 const checkPixels = existsSync(join(ROOT, srcRoot));
 if (!checkPixels) console.warn(`! ${srcRoot} not present — running name resolution only`);
 
-// Pins come from the decision record (Task 8a). Only meaningful with pixels
-// on disk: without them there is nothing to hash.
+// Pins live on the adapter's rects (the `pin` field, Task 9). Only meaningful
+// with pixels on disk: without them there is nothing to hash.
 const pins = checkPixels
-  ? Object.fromEntries(Object.entries(loadDecisions(pack).decisions).map(([n, d]) => [n, d.pin]))
+  ? Object.fromEntries(Object.entries(
+      JSON.parse(readFileSync(join(ROOT, 'sources', `${pack}.json`), 'utf8')).rects,
+    ).map(([n, r]) => [n, r.pin ?? null]))
   : null;
 
 const { errors, warnings } = validate(loadContract(), loadAdapter(`sources/${pack}.json`, srcRoot), { checkPixels, venues, pins });
@@ -3159,7 +3124,7 @@ Root `package.json`, in `"scripts"`:
 - [ ] **Step 6: Run tests and the gate**
 
 Run: `npm test && npm run validate:contract && npm run validate:contract -- limezu assets-src`
-Expected: 5 new tests PASS; `contract validation OK: pack "fixture", 0 venue(s), pixels checked`; then for limezu, `! assets-src not present — running name resolution only` followed by `contract validation OK`.
+Expected: 9 new tests PASS (count the `test(` calls in Step 1 — including the layered one-canvas check 4b); `contract validation OK: pack "fixture", 0 venue(s), pixels checked`; then for limezu, `! assets-src not present — running name resolution only` followed by `contract validation OK`.
 
 - [ ] **Step 7: Commit**
 

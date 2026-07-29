@@ -8,9 +8,9 @@
 
 **Architecture:** `packages/shared/src/appearance/derive.mjs` is one pure implementation shared by the bake scripts and the client — plain `.mjs` so both bare `node` and Vite can load it. `AppearanceComposer` turns a record into a character sheet and a 32×32 portrait, choosing layered composition or palette remap from the pack’s declared capabilities. `AgentBaker.bake()` is idempotent, atomic and content-addressed; batch and event both call it, which is why they cannot drift. `AppearanceResolver` maps seed → hash → texture key with a human-only fallback.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser 3.88, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose.
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
-**Depends on:** Plan 1 (contract, adapter, `SpriteReader`) and Plan 3 (`PreloaderScene`, `AgentSprite`). Plan 2 is not strictly required but is assumed present.
+**Depends on:** Plan 1 (contract, adapter, `SpriteReader`) and Plan 3 (`PreloaderScene`, `AgentSprite`). Plan 2 is not strictly required but is assumed present. Plan 3 does not depend back on this plan: `hashString` lives in Plan 1 Task 2 (`packages/shared/src/hash.mjs`), and this plan only re-exports it.
 
 **Exit criterion:** An 85-agent roster bakes to distinct sprites; `bake()` twice is one write; every palette stays separable in daylight, under the night tint and under simulated deuteranopia; `derive.mjs` loads under bare `node`.
 
@@ -24,13 +24,7 @@ So: **`derive.mjs` must not import a `.ts` module, directly or transitively.** I
 
 Task 26 adds the guard: a test that spawns bare `node` — no `--import` — and imports the module. Keep it passing.
 
-Task 26 also needs the api repo for its cross-repo hash test. Set `$API` the way Plan 5 does:
-
-```bash
-export API=$(node -e 'import("./test/helpers/siblingRepo.mjs").then(m => console.log(m.resolveSiblingRepo(process.env.BOTVILLE_API_REPO_NAME ?? "aisocialnetwork-api") ?? ""))')
-```
-
-If it comes back empty the test **skips with a printed reason** rather than failing — but a skip there means cross-repo determinism is unverified, so resolve it before shipping.
+This plan never needs the api repo. The cross-repo `hashString` contract is pinned where the function is defined — Plan 1 Task 2, `packages/shared/src/hash.mjs` — and the api-side `pickFrom` export happens in Plan 5 Task 32, the plan that consumes it.
 
 ---
 
@@ -38,7 +32,7 @@ If it comes back empty the test **skips with a printed reason** rather than fail
 
 Every task's requirements implicitly include this section.
 
-- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM everywhere (`"type": "module"`).
+- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
 - **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
@@ -47,9 +41,10 @@ Every task's requirements implicitly include this section.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`.
-- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — Task 18 asserts it.
-- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api): `$BOTVILLE_API_REPO` → `$BOTVILLE_REPO` → sibling of the repo root → explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
+- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
+- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
@@ -72,24 +67,23 @@ Every task's requirements implicitly include this section.
 
 A pure function of identity — no DB, no clock, no `Math.random()` (I-5). It mirrors `aisocialnetwork-api/src/utils/agentSeed.js`, which already derives city, traits and description seeds from the username with the same FNV-1a `hashString(seed, salt)`.
 
-**Cross-repo determinism is a contract.** The BotVille copy of `hashString` must produce bit-identical output to the api copy, or the sprite and the profile stop agreeing. A test pins it.
+**Cross-repo determinism is a contract, and it is pinned where the function is defined.** `hashString` lives in `packages/shared/src/hash.mjs` (Plan 1 Task 2), where a test asserts it bit-identical to the api copy. This task only re-exports it — never redefines it.
 
-`pickFrom` is currently module-private in `agentSeed.js` (line 178, absent from `module.exports` at 199-206). Export it.
+The record's axes follow the real Character Generator layers (body, eyes, hair, outfit, accessory — art-pack QA 2026-07-29): `eyes` is a sheet-selection axis (each `Eyes_NN.png` sheet is its own colour), and the old separate top/bottom garment axes collapse into one `outfit` axis. That drops the appearance space from ~690k to **604,800 (≈605k)** — still far above the 10⁴ floor (G-D). No manual cache migration is needed for the record-shape change: the appearance hash embeds `SCHEMA_VERSION` (I-7), so bumping it invalidates every cached bake automatically.
 
 **Files:**
 - Create: `packages/shared/src/appearance/derive.mjs`
-- Modify: `packages/shared/package.json` — add an exports subpath
-- Modify: `<api repo>/src/utils/agentSeed.js:199-206` — export `pickFrom`
+- Consumes: `packages/shared/src/hash.mjs` (Plan 1 Task 2)
 - Modify: `test/harness-no-hook.test.mjs` — add `derive.mjs` to `NO_HOOK_MODULES`
 - Test: `test/appearance-derive.test.mjs`
 
 **Interfaces:**
-- Consumes: `AppearanceRecord`, `Build`, `SCHEMA_VERSION` (Task 2).
+- Consumes: `AppearanceRecord`, `Build`, `SCHEMA_VERSION`, `hashString` (Plan 1 Task 2).
 - Produces `packages/shared/src/appearance/derive.mjs`:
-  - `hashString(str, salt = '') → number` (FNV-1a, unsigned 32-bit)
+  - `hashString` — re-exported from `../hash.mjs` (Plan 1 Task 2), not redefined
   - `pickFrom(list, seed, salt) → T`
   - `normalizeGender(raw) → Build`
-  - `SKIN_TONES, HAIR_STYLES, HAIR_COLORS, TOP_COLORS, BOTTOM_COLORS, ACCESSORIES` — the palettes
+  - `SKIN_TONES, EYE_VARIANTS, HAIR_STYLES, HAIR_COLORS, OUTFIT_COLORS, ACCESSORIES` — the colour palettes plus the eyes sheet-variant list
   - `appearanceRecord(spriteSeed, gender) → AppearanceRecord`
   - `appearanceHash(record) → string` (8 lowercase hex chars)
   - `appearanceSpaceSize() → number`
@@ -101,45 +95,23 @@ A pure function of identity — no DB, no clock, no `Math.random()` (I-5). It mi
 ```js
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
-import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
 import {
-  hashString, normalizeGender, appearanceRecord, appearanceHash,
-  appearanceSpaceSize, SKIN_TONES, HAIR_STYLES, HAIR_COLORS,
-  TOP_COLORS, BOTTOM_COLORS, ACCESSORIES,
+  normalizeGender, appearanceRecord, appearanceHash,
+  appearanceSpaceSize, SKIN_TONES, EYE_VARIANTS, HAIR_STYLES, HAIR_COLORS,
+  OUTFIT_COLORS, ACCESSORIES,
 } from '../packages/shared/src/appearance/derive.mjs';
-import { resolveSiblingRepo, skipUnlessSibling } from './helpers/siblingRepo.mjs';
 
-const require = createRequire(import.meta.url);
-/** The platform repo's directory name. Located, never hardcoded — see helpers/siblingRepo.mjs. */
-const API_REPO = process.env.BOTVILLE_API_REPO_NAME ?? 'aisocialnetwork-api';
-
-test('hashString matches agentSeed.js bit for bit (cross-repo contract)',
-  skipUnlessSibling(API_REPO), async () => {
-    const { createRequire } = await import('node:module');
-    const apiRoot = resolveSiblingRepo(API_REPO);
-    const require = createRequire(join(apiRoot, 'package.json'));
-    const apiHash = require(join(apiRoot, 'src/utils/agentSeed.js')).hashString;
-
-    for (const seed of ['aisha_khan', 'the_skeptic', 'Unit01', '', 'ünïcødé'])
-      for (const salt of ['', 'city', 'sprite:skin', 'appearance'])
-        assert.equal(hashString(seed, salt), apiHash(seed, salt), `${seed}/${salt}`);
-  });
+// The hashString unit and cross-repo contract tests live in
+// test/shared-types.test.ts (Plan 1 Task 2), beside hash.mjs itself.
 
 test('derive.mjs loads under bare node — the bake CLIs depend on it', () => {
-  const { execFileSync } = require('node:child_process');
   // No --import ./test/ts-resolve.mjs. If this module ever reaches a .ts file
   // it throws here instead of at `npm run bake:agents` two tasks from now.
   const out = execFileSync(process.execPath,
     ['-e', "import('./packages/shared/src/appearance/derive.mjs').then(m => console.log(typeof m.appearanceHash))"],
     { encoding: 'utf8' });
   assert.match(out, /function/);
-});
-
-test('hashString is an unsigned 32-bit FNV-1a', () => {
-  assert.equal(hashString('', ''), hashString('', ''));
-  assert.ok(hashString('x', 'y') >= 0 && hashString('x', 'y') <= 0xffffffff);
-  assert.notEqual(hashString('x', 'a'), hashString('x', 'b'), 'salt must change the hash');
 });
 
 test('normalizeGender maps the live DB values', () => {
@@ -164,22 +136,22 @@ test('every axis is seed-derived — no dimension is gated on gender', () => {
   const m = appearanceRecord('aisha_khan', 'male');
   const f = appearanceRecord('aisha_khan', 'female');
   assert.notEqual(m.build, f.build);
-  for (const k of ['skinTone', 'hairStyle', 'hairColor', 'top', 'bottom', 'accessory'])
+  for (const k of ['skinTone', 'eyes', 'hairStyle', 'hairColor', 'outfit', 'accessory'])
     assert.equal(m[k], f[k], `${k} must not depend on build`);
 });
 
 test('every derived value comes from its declared palette', () => {
   const r = appearanceRecord('the_skeptic', 'male');
   assert.ok(SKIN_TONES.includes(r.skinTone));
+  assert.ok(EYE_VARIANTS.includes(r.eyes));
   assert.ok(HAIR_STYLES.includes(r.hairStyle));
   assert.ok(HAIR_COLORS.includes(r.hairColor));
-  assert.ok(TOP_COLORS.includes(r.top));
-  assert.ok(BOTTOM_COLORS.includes(r.bottom));
+  assert.ok(OUTFIT_COLORS.includes(r.outfit));
   assert.ok(ACCESSORIES.includes(r.accessory));
 });
 
 test('the space is at least 10^4 as G-D requires', () => {
-  assert.equal(appearanceSpaceSize(), 3 * 6 * 12 * 10 * 8 * 8 * 5);
+  assert.equal(appearanceSpaceSize(), 3 * 6 * 7 * 12 * 10 * 8 * 5);
   assert.ok(appearanceSpaceSize() >= 1e4);
 });
 
@@ -220,7 +192,7 @@ test('no record can name an animal (I-13)', () => {
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `npm test -- --test-name-pattern="hashString is an unsigned"`
+Run: `npm test -- --test-name-pattern="derivation is pure and deterministic"`
 Expected: FAIL — `Cannot find module '.../packages/shared/src/appearance/derive.mjs'`.
 
 - [ ] **Step 3: Write the derivation**
@@ -234,9 +206,10 @@ Expected: FAIL — `Cannot find module '.../packages/shared/src/appearance/deriv
  * which already derives city, traits and description seeds from the username
  * with the same FNV-1a hashString(seed, salt).
  *
- * CROSS-REPO CONTRACT: hashString below must stay bit-identical to the api
- * copy. If they diverge, an agent's sprite and profile stop agreeing.
- * test/appearance-derive.test.mjs pins it.
+ * CROSS-REPO CONTRACT: hashString is DEFINED in ../hash.mjs (Plan 1 Task 2)
+ * and only re-exported here. That file must stay bit-identical to the api
+ * copy — if they diverge, an agent's sprite and profile stop agreeing.
+ * test/shared-types.test.ts pins it.
  *
  * Plain .mjs on purpose — imported unchanged by scripts/*.mjs under Node and
  * by the client through Vite. Two copies would be two sources of truth.
@@ -250,16 +223,12 @@ Expected: FAIL — `Cannot find module '.../packages/shared/src/appearance/deriv
  */
 import { SCHEMA_VERSION } from '../schemaVersion.mjs';
 
-/** Deterministic 32-bit FNV-1a. Not cryptographic — it spreads inputs evenly. */
-export function hashString(str, salt = '') {
-  const input = `${salt}:${str}`;
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < input.length; i++) {
-    hash ^= input.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return hash >>> 0;
-}
+// hashString lives in ../hash.mjs (Plan 1 Task 2): venueSlots.ts (Plan 3
+// Task 37) needs it a whole plan before this file exists, and the api's
+// scheduleCoverage.js needs the api's identical copy. Re-exported here so
+// every consumer of the appearance seam still finds it on one module.
+import { hashString } from '../hash.mjs';
+export { hashString };
 
 export function pickFrom(list, seed, salt) {
   return list[hashString(seed, salt) % list.length];
@@ -284,15 +253,18 @@ export const HAIR_COLORS = [
   '#f2f2f2', '#8c8c8c', '#a33b2a', '#d2691e', '#3f5fa8',
 ];
 
-export const TOP_COLORS = [
+export const OUTFIT_COLORS = [
   '#c0392b', '#2980b9', '#27ae60', '#f1c40f',
   '#8e44ad', '#e67e22', '#ecf0f1', '#34495e',
 ];
 
-export const BOTTOM_COLORS = [
-  '#2c3e50', '#7f8c8d', '#34495e', '#5d4037',
-  '#1b3a5c', '#4a4a4a', '#6d4c41', '#22313f',
-];
+/**
+ * Eyes are a SHEET-SELECTION axis, not a colour: the pack ships one full
+ * sheet per eye colour (Eyes_01.png .. Eyes_07.png) and each sheet IS the
+ * colour. No hex palette exists for eyes, and the palette-separation test
+ * (Task 38) deliberately excludes them.
+ */
+export const EYE_VARIANTS = ['01', '02', '03', '04', '05', '06', '07'];
 
 /** Accessories must alter SILHOUETTE, not only hue (spec §10.2). */
 export const ACCESSORIES = ['none', 'cap', 'beanie', 'backpack', 'satchel'];
@@ -315,22 +287,22 @@ export function normalizeGender(raw) {
 /**
  * @param {string} spriteSeed stable, unique — the username
  * @param {unknown} gender free text from users.gender
- * @returns {{build:string, skinTone:string, hairStyle:string, hairColor:string, top:string, bottom:string, accessory:string}}
+ * @returns {{build:string, skinTone:string, eyes:string, hairStyle:string, hairColor:string, outfit:string, accessory:string}}
  */
 export function appearanceRecord(spriteSeed, gender) {
   return {
     build:     normalizeGender(gender),                          // not hashed
     skinTone:  pickFrom(SKIN_TONES,     spriteSeed, 'sprite:skin'),
+    eyes:      pickFrom(EYE_VARIANTS,   spriteSeed, 'sprite:eyes'),
     hairStyle: pickFrom(HAIR_STYLES,    spriteSeed, 'sprite:hairStyle'),
     hairColor: pickFrom(HAIR_COLORS,    spriteSeed, 'sprite:hairColor'),
-    top:       pickFrom(TOP_COLORS,     spriteSeed, 'sprite:top'),
-    bottom:    pickFrom(BOTTOM_COLORS,  spriteSeed, 'sprite:bottom'),
+    outfit:    pickFrom(OUTFIT_COLORS,  spriteSeed, 'sprite:outfit'),
     accessory: pickFrom(ACCESSORIES,    spriteSeed, 'sprite:accessory'),
   };
 }
 
 /** Key order is fixed so JSON.stringify is stable across engines. */
-const KEYS = ['build', 'skinTone', 'hairStyle', 'hairColor', 'top', 'bottom', 'accessory'];
+const KEYS = ['build', 'skinTone', 'eyes', 'hairStyle', 'hairColor', 'outfit', 'accessory'];
 const canonical = record => JSON.stringify(KEYS.map(k => record[k]));
 
 /**
@@ -346,83 +318,64 @@ export function appearanceHash(record) {
 }
 
 export function appearanceSpaceSize() {
-  return BUILDS.length * SKIN_TONES.length * HAIR_STYLES.length * HAIR_COLORS.length
-    * TOP_COLORS.length * BOTTOM_COLORS.length * ACCESSORIES.length;
+  return BUILDS.length * SKIN_TONES.length * EYE_VARIANTS.length * HAIR_STYLES.length
+    * HAIR_COLORS.length * OUTFIT_COLORS.length * ACCESSORIES.length;
 }
 ```
 
-- [ ] **Step 4: Add the exports subpath**
+- [ ] **Step 4: Confirm the subpath resolves in all three loaders**
 
-In `packages/shared/package.json`, extend `"exports"`:
-
-```json
-  "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "node": "./dist/index.js",
-      "default": "./src/index.ts"
-    },
-    "./appearance/derive.mjs": "./src/appearance/derive.mjs"
-  },
-```
-
-- [ ] **Step 5: Export `pickFrom` from the api repo**
-
-Locate the repo the same way the tests do — never by typing a path:
+Plan 1 Task 2 Step 5b already opened the seam — the `./*.mjs` exports pattern
+and the regex Vite alias are in place. This step only checks that the new file
+lands inside it, because a silent failure here surfaces as three unrelated bugs
+in Tasks 29, 30 and 34:
 
 ```bash
-API=$(node -e 'import("./test/helpers/siblingRepo.mjs").then(m => console.log(m.resolveSiblingRepo(process.env.BOTVILLE_API_REPO_NAME ?? "aisocialnetwork-api") ?? ""))')
-test -n "$API" || { echo "api repo not found — set BOTVILLE_API_REPO or check it out beside this one"; exit 1; }
-echo "$API"
+node -e "import('@botville/shared/appearance/derive.mjs').then(m => console.log('node:', typeof m.appearanceHash))"
+npm run build --workspace=packages/client
+npx tsc --noEmit -p packages/client/tsconfig.json
 ```
 
-In `$API/src/utils/agentSeed.js`, add `pickFrom` to `module.exports` (lines 199-206):
+Expected: `node: function`, a clean build, and a clean typecheck. If the first
+line says `ERR_PACKAGE_PATH_NOT_EXPORTED`, Plan 1 Task 2 Step 5b was skipped —
+fix it there, not here.
 
-```js
-module.exports = {
-  hashString,
-  pickFrom,
-  CITY_POOL,
-  pickCity,
-  TRAIT_NAMES,
-  deriveDefaultTraits,
-  deriveDescriptionSeeds,
-};
-```
-
-- [ ] **Step 6: Run tests**
+- [ ] **Step 5: Run tests**
 
 Run: `npm test`
-Expected: PASS — 14 new tests.
+Expected: PASS — 12 new tests.
 
-Two of them carry the weight:
+One of them carries the weight:
 
 - **`derive.mjs loads under bare node`** — the guard that this module has not
   reacquired a `.ts` dependency. It is the difference between `npm run
   bake:agents` working and failing with `ERR_MODULE_NOT_FOUND` in Task 29.
-- **`hashString matches agentSeed.js bit for bit`** — if the api repo is not
-  found this **skips with a printed reason**, not silently. A silent skip on
-  the one test guarding cross-repo determinism is how the sprite and the
-  profile quietly stop agreeing.
+
+The `hashString` unit and cross-repo contract tests are **not** here — they
+live in `test/shared-types.test.ts` (Plan 1 Task 2), beside the definition.
 
 Also add `packages/shared/src/appearance/derive.mjs` to `NO_HOOK_MODULES` in
 `test/harness-no-hook.test.mjs` — it stops skipping now that it exists.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add packages/shared/src/appearance/derive.mjs packages/shared/package.json test/appearance-derive.test.mjs test/harness-no-hook.test.mjs
-git commit -m "feat(appearance): pure identity-derived appearance record with a cross-repo hash contract"
-
-git -C "$API" add src/utils/agentSeed.js
-git -C "$API" commit -m "chore(seed): export pickFrom for cross-repo appearance derivation"
+git add packages/shared/src/appearance/derive.mjs test/appearance-derive.test.mjs test/harness-no-hook.test.mjs
+git commit -m "feat(appearance): pure identity-derived appearance record on the shared cross-repo hash"
 ```
 
 ---
 
 ## Task 27: `AppearanceComposer`
 
-**Needs the packs to bake real sheets; develops and tests against the fixture pack.** Composes an `AppearanceRecord` into a character sheet and a 32×32 portrait. Strategy is chosen by `capabilities.characterLayers` (spec §7.3) — the design works either way, only the achieved variety differs.
+**Needs the packs to bake real sheets; develops and tests against the fixture pack.** Composes an `AppearanceRecord` into a character sheet and a 32×32 portrait. Strategy is chosen by `capabilities.characterLayers` (spec §7.3) — the design works either way, only the achieved variety differs. For the real pack the flag is `true` (art-pack QA, 2026-07-29).
+
+Two real-pack facts shape this task:
+
+- **The body sheets are 927 px wide** — *not* a whole number of 16 px frames. The composer must size its canvas to whole frames (`floor(w / frameWidth) * frameWidth`, same for height), never to the raw sheet size, or every downstream frame-geometry assertion fails on the real pack.
+- **Variant axes are sibling files, not rows.** The adapter aliases one index-0 file per layer (`Eyes_01.png`, `Hairstyle_01_01.png`, `Outfit_01_01.png`, ...); the pack ships 7 eye sheets, 200 hairstyle sheets and 132 outfit sheets as siblings. The composer resolves the concrete sheet for a record by replacing the index in the aliased file's name with the record's variant (`eyes: '04'` → `Eyes_04.png`; the record's `hairStyle`/`hairColor` select the hairstyle sheet the same way). One mechanism for all variant layers — do not invent a separate one per layer.
+
+**Recommended Step 0 (real pack only, not blocking):** sit/sleep row coverage for the hair and accessory layers is still unverified — before trusting composed sit/sleep frames, alpha-sample those rows in a handful of hair/accessory sheets and record the answer in `docs/ASSETS.md`.
 
 **Files:**
 - Create: `scripts/lib/appearanceComposer.mjs`
@@ -447,7 +400,10 @@ import { loadContract } from '../scripts/lib/assetContract.mjs';
 import { loadAdapter } from '../scripts/lib/sourceAdapter.mjs';
 import { appearanceRecord } from '../packages/shared/src/appearance/derive.mjs';
 import { composeSheet, composePortrait, remapPalette, hexToRgba } from '../scripts/lib/appearanceComposer.mjs';
-import { createCanvas } from '../scripts/png-lib.mjs';
+import { createCanvas, encodePng } from '../scripts/png-lib.mjs';
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const c = loadContract();
 const a = loadAdapter('sources/fixture.json', 'test/fixtures/pack-src');
@@ -498,6 +454,26 @@ test('remapPalette never touches transparent pixels', () => {
   const out = remapPalette(cv, [[0, 0, 0, 0]], [[255, 0, 0, 255]]);
   assert.equal(out.data[3], 0);
 });
+
+test('a 927px-wide body sheet composes to whole frames (the real-pack crop)', () => {
+  // The real Bodies/Eyes/Hairstyles/Outfits/Accessories sheets are 927x656 —
+  // NOT a whole number of 16px frames (927 = 57*16 + 15). The composer must
+  // crop its canvas to whole frames, never size it to the raw sheet.
+  const dir = mkdtempSync(join(tmpdir(), 'body927-'));
+  writeFileSync(join(dir, 'wide.png'), encodePng(createCanvas(927, 656)));
+  const src = {
+    pack: 'wide-fixture',
+    capabilities: { characterLayers: true },
+    files: { wide: 'wide.png' },
+    rects: Object.fromEntries(c.characters.parts.map(p => [`char_${p}`, { file: 'wide' }])),
+  };
+  writeFileSync(join(dir, 'wide.json'), JSON.stringify(src));
+  const wide = loadAdapter(join(dir, 'wide.json'), dir);
+  const cv = composeSheet(c, wide, rec('aisha_khan'));
+  const fw = c.characters.frameWidth, fh = c.characters.frameHeight;
+  assert.equal(cv.w, Math.floor(927 / fw) * fw);
+  assert.equal(cv.h, Math.floor(656 / fh) * fh);
+});
 ```
 
 - [ ] **Step 2: Run to verify it fails**
@@ -520,8 +496,9 @@ Expected: FAIL — `Cannot find module '.../scripts/lib/appearanceComposer.mjs'`
  *       Colour variation only; silhouette comes from the base sheet, so
  *       effective variety is bases x palettes. Nothing breaks; variety drops.
  *
- * Whether the LimeZu packs ship separable 16x32 parts is answered by Task 3
- * Step 4 and recorded in docs/ASSETS.md.
+ * The LimeZu packs DO ship separable 16x32 layers (Bodies/Eyes/Hairstyles/
+ * Outfits/Accessories — verified 2026-07-29, recorded in docs/ASSETS.md), so
+ * the layered path is the shipping path; remap survives as the fallback.
  */
 import { createCanvas } from '../png-lib.mjs';
 import { readSprite, asSource } from './spriteReader.mjs';
@@ -564,26 +541,43 @@ function tintLayer(src, [r, g, b]) {
 
 /**
  * Which record field colours which part. `build` selects the body sheet
- * variant rather than a colour, and `hairStyle` selects a hair row.
+ * variant rather than a colour. `eyes` is a SHEET-SELECTION axis, never a
+ * tint: each Eyes_NN.png sheet is its own colour, so eyes map to null here.
+ * `hairStyle`/`hairColor` likewise select a hairstyle sheet (see the variant
+ * note in the task header); the tint entry for hair covers the fixture pack,
+ * whose single hair layer is tintable.
  */
-const PART_COLOR = { body: 'skinTone', hair: 'hairColor', top: 'top', bottom: 'bottom', accessory: null };
+const PART_COLOR = { body: 'skinTone', eyes: null, hair: 'hairColor', outfit: 'outfit', accessory: null };
 
 export function composeSheet(contract, adapter, record) {
   const layered = adapter.capabilities.characterLayers === true;
   const parts = contract.characters.parts;
 
   const base = readSprite(adapter, `char_${parts[0]}`);
-  const out = createCanvas(base.w, base.h);
+  // The real body sheets are 927px wide — NOT a whole number of 16px frames.
+  // Size the canvas to whole frames so every consumer sees frame-aligned art.
+  const fw = contract.characters.frameWidth;
+  const fh = contract.characters.frameHeight;
+  const sheetW = Math.floor(base.w / fw) * fw;
+  const sheetH = Math.floor(base.h / fh) * fh;
+  const out = createCanvas(sheetW, sheetH);
 
   if (!layered) {
-    // Palette-remap path: one base sheet, recoloured.
+    // Palette-remap path: one base sheet, recoloured. With a single `outfit`
+    // axis the two garment ramps (#ecf0f1 top, #2c3e50 bottom) both map onto
+    // record.outfit — deliberately degenerate: the fallback trades garment
+    // variety for zero extra machinery. Document, don't "fix".
     const from = [hexToRgba('#ffdbac'), hexToRgba('#1a1a1a'), hexToRgba('#ecf0f1'), hexToRgba('#2c3e50')];
-    const to = [hexToRgba(record.skinTone), hexToRgba(record.hairColor), hexToRgba(record.top), hexToRgba(record.bottom)];
-    out.blit(asSource(base.canvas), 0, 0, base.w, base.h, 0, 0);
+    const to = [hexToRgba(record.skinTone), hexToRgba(record.hairColor), hexToRgba(record.outfit), hexToRgba(record.outfit)];
+    out.blit(asSource(base.canvas), 0, 0, sheetW, sheetH, 0, 0);
     return remapPalette(out, from, to);
   }
 
-  // Layered path: stack body -> hair -> top -> bottom -> accessory.
+  // Layered path: stack body -> eyes -> hair -> outfit -> accessory.
+  // Variant layers (eyes, and hair/outfit on the real pack) resolve their
+  // concrete sibling sheet by index replacement in the aliased file's name —
+  // see the task header. The fixture pack has one sheet per layer, so there
+  // the alias is the sheet; the resolution helper is a no-op for it.
   for (const part of parts) {
     if (part === 'accessory' && record.accessory === 'none') continue;
     const layer = readSprite(adapter, `char_${part}`);
@@ -629,7 +623,7 @@ export function composePortrait(contract, adapter, record) {
 - [ ] **Step 4: Run tests**
 
 Run: `npm test`
-Expected: PASS — 8 new tests, exercising the **layered** path because `sources/fixture.json` declares `characterLayers: true`. To exercise the remap path: `node -e "..."` with a hand-edited copy, or flip the fixture capability temporarily.
+Expected: PASS — 9 new tests, exercising the **layered** path because `sources/fixture.json` declares `characterLayers: true`. To exercise the remap path: `node -e "..."` with a hand-edited copy, or flip the fixture capability temporarily.
 
 - [ ] **Step 5: Commit**
 
@@ -1124,7 +1118,12 @@ export function fallbackTextureKey(spriteSeed: string): string {
 
 /** Обёртка над кэшом текстур сцены. Единственная нечистая часть модуля. */
 export class AppearanceResolver {
-  constructor(private textures: { exists(key: string): boolean }) {}
+  /** Явное поле: parameter property не переживает strip-only type stripping. */
+  private readonly textures: { exists(key: string): boolean };
+
+  constructor(textures: { exists(key: string): boolean }) {
+    this.textures = textures;
+  }
 
   has(hash: string): boolean {
     return this.textures.exists(`agent-${hash}`);
@@ -1175,7 +1174,7 @@ In `scripts/agent-bake.mjs`, after the batch completes, write the manifest:
 
 - [ ] **Step 5: Use the resolver in `AgentSprite`**
 
-In `AgentSprite.ts`, add the optional identity arguments and pick the texture through the resolver. Replace lines 58-79's texture selection:
+In `AgentSprite.ts`, add the optional identity arguments and pick the texture through the resolver. Replace lines **57-79** (the constructor signature down to and including the `this.sprite = ...` line — note the constructor opens at **57**, and the range must keep the `spriteH`/`spriteW` locals and the shadow ellipse, which later lines consume):
 
 ```ts
   constructor(
@@ -1194,20 +1193,25 @@ In `AgentSprite.ts`, add the optional identity arguments and pick the texture th
     // детерминированно маппятся в текущий список через getVariant
     this.variantDef = getVariant(avatarVariant);
     const vd = this.variantDef;
+    const spriteH = vd.frameHeight * vd.scale;
+    const spriteW = vd.frameWidth * vd.scale;
+
+    // Тень-эллипс под ногами (размер от ширины кадра)
+    this.shadow = scene.add.ellipse(0, 0, Math.max(10, spriteW * 0.7), Math.max(4, spriteW * 0.22), 0x000000, 0.3);
+    this.shadow.setOrigin(0.5, 0.5);
 
     // Выводимая внешность (spec §6): запечённый лист или запасной человек.
     const textureKey = identity
       ? new AppearanceResolver(scene.textures).textureFor(identity.spriteSeed, identity.gender)
       : vd.textureKey;
-```
 
-and change line 79 to use `textureKey`:
-
-```ts
+    // Спрайт: origin по ногам
     this.sprite = scene.add.sprite(0, 0, textureKey, 0);
 ```
 
 Add the import: `import { AppearanceResolver } from './AppearanceResolver.js';`
+
+**Known geometry caveat (do not "fix" here):** `spriteH` and `spriteW` are derived from `vd` — the *fallback* variant — not from the resolved `textureKey`. When `identity` is supplied and the resolver returns a baked sheet with a different frame size, the shadow and the name-label offset are computed against the wrong geometry. This snippet deliberately preserves current behaviour verbatim; making geometry follow the resolved texture is a later task.
 
 - [ ] **Step 6: Run tests, typecheck, build**
 
@@ -1243,7 +1247,7 @@ Colour is an identity signal here (spec §10.2), so the palettes must stay disti
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  SKIN_TONES, HAIR_COLORS, TOP_COLORS, BOTTOM_COLORS,
+  SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS,
 } from '../packages/shared/src/appearance/derive.mjs';
 
 const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
@@ -1271,7 +1275,10 @@ const deuter = ([r, g, b]) => [
   Math.round(0.300 * g + 0.700 * b),
 ];
 
-const PALETTES = { SKIN_TONES, HAIR_COLORS, TOP_COLORS, BOTTOM_COLORS };
+// Eyes are deliberately absent: EYE_VARIANTS is a sheet-selection axis
+// (each Eyes_NN.png sheet is its own colour) — there is no hex palette to
+// separate, so the separation tests do not include eyes.
+const PALETTES = { SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS };
 
 function worstPair(list, transform) {
   let worst = Infinity, pair = null;
@@ -1312,7 +1319,7 @@ test('palettes are not evenly spaced in hue — separation is perceptual', () =>
     const h = mx === r ? (g - b) / d % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
     return ((h * 60) + 360) % 360;
   };
-  const hues = TOP_COLORS.map(c => hue(rgb(c))).sort((a, b) => a - b);
+  const hues = OUTFIT_COLORS.map(c => hue(rgb(c))).sort((a, b) => a - b);
   const gaps = hues.slice(1).map((h, i) => h - hues[i]);
   const spread = Math.max(...gaps) - Math.min(...gaps);
   assert.ok(spread > 20, 'hues look mechanically even-spaced rather than perceptually chosen');
@@ -1326,9 +1333,9 @@ Expected: either PASS, or a failure naming the offending pair and its ΔE.
 
 - [ ] **Step 3: Fix any failing pair**
 
-If a test fails, adjust that one colour in `derive.mjs` and re-run. Do **not** loosen the threshold — the threshold is the requirement. Palette lengths must stay `6/12/10/8/8/5`, because Task 26 asserts `appearanceSpaceSize() === 3*6*12*10*8*8*5`.
+If a test fails, adjust that one colour in `derive.mjs` and re-run. Do **not** loosen the threshold — the threshold is the requirement. Palette lengths must stay `6/10/8` (skin/hair/outfit) plus `12` hair styles, `7` eye variants and `5` accessories, because Task 26 asserts `appearanceSpaceSize() === 3*6*7*12*10*8*5`.
 
-Likely candidates from the Task 26 values, in order: `HAIR_COLORS` `#8c8c8c` vs `#f2f2f2` under the night tint, and `BOTTOM_COLORS` `#2c3e50` vs `#34495e` vs `#22313f` — three near-identical dark blue-greys. If the last fails, spread them: `#22313f` → `#1a5276`.
+Likely candidate from the Task 26 values: `HAIR_COLORS` `#8c8c8c` vs `#f2f2f2` under the night tint. (The old worst offenders — the three near-identical dark blue-grey `BOTTOM_COLORS` — are gone with the top/bottom → outfit merge.)
 
 - [ ] **Step 4: Re-run everything**
 

@@ -9,7 +9,7 @@
 
 **Architecture:** Five stages. A pack-specific **source adapter** (`sources/<pack>.json`) maps semantic names to pixel rects. A pack-agnostic **asset contract** (`contract/assets.contract.json`) declares what must exist. A **world bake** turns venue descriptors + adapter + contract into ground atlases, prop PNGs, `.tmj` maps and a published `venues.json`. An **agent bake** composes character sheets content-addressed on `appearanceHash`. At runtime Phaser scenes read a registry, never a hand-written list. Build tooling is dependency-free ESM `.mjs` reusing the existing `scripts/png-lib.mjs`; runtime is TypeScript.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser 3.88, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose.
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Spec:** `docs/superpowers/specs/2026-07-27-botville-visual-assets-design.md` (commit `d695881`). Approved — do not re-brainstorm.
 
@@ -17,7 +17,7 @@
 
 | | Plan | Tasks | Needs art? |
 |---|---|---|---|
-| 1 | [Foundations](01-foundations.md) — contract, curation record, fixture pack, CI gate | 1, 2, 4–10 (+4a, 8a, 9a) | no |
+| 1 | [Foundations](01-foundations.md) — contract, curation record, fixture pack, CI gate | 1, 2, 4–10 (+4a, 9a) | no |
 | 2 | [The world bake](02-world-bake.md) — venues become data | 11–19 (+19a), 25 | no |
 | 3 | [The runtime registry](03-runtime-registry.md) — scenes read the registry | 21–24, 34, 36, 37 | no |
 | 4 | [Appearance](04-appearance.md) — identity-derived, content-addressed sprites | 26–30, 38 | no |
@@ -38,11 +38,11 @@ Run before planning, per resume-prompt §10. **The filesystem and the live DB wi
 |---|---|
 | **U-3** `users_schedules` = 0 rows | ✅ **CONFIRMED.** Live Postgres `ai_social_network`: `users_schedules` 0, `users_occupations` 0, `users_interests` 0, `users_hobbies` 0, `users` = **85**. §9.1's "no backfill problem" holds. |
 | **U-3b** migration head | ✅ `036_drop_users_birthday_default.js` (migrations.id 40). New migration is **037**. |
-| **U-4** `getCurrentSlot` is `LIMIT 1`, no `ORDER BY` | ✅ **CONFIRMED** — `aisocialnetwork-api/src/models/Schedule.js:47`. Returns `null` on gaps. |
+| **U-4** `getCurrentSlot` is `LIMIT 1`, no `ORDER BY` | ✅ **CONFIRMED** — `aisocialnetwork-api/src/models/Schedule.js` (the function opens at `:10`; the bare `LIMIT 1` is at `:49`). Returns `null` on gaps. |
 | `users_schedules` constraints | ✅ `start` 0–23, `end_hour` 1–24, `CHECK (start < end_hour)`, **`day_type CHECK IN ('weekday','weekend')`** — exactly two day types. 22→24 and 00→07 are both legal. No `venue` column exists. |
 | `users.gender` in practice | 85 rows: `male` 47, `female` 38. Column is unbounded `VARCHAR(50)` — still normalise, never branch on raw values. |
 | `users.avatar` | 85/85 are hotlinked `fakepersongenerator.com` URLs. 0 nulls. |
-| **U-1** separable character layers | ❌ **UNRESOLVED — art packs are not on this machine.** Gated on Task 3. |
+| **U-1** separable character layers | ✅ **RESOLVED 2026-07-29** (art-pack QA, after the packs landed): the Character Generator ships separable 16×32 layer directories — Bodies 9, Eyes 7, Hairstyles 200, Outfits 132, Accessories 84. `capabilities.characterLayers` is **`true`** from Plan 1 Task 5; Plan 6 Task 3 Step 7 re-verifies on the unpacked copy. |
 | **U-2** licence text | ❌ **UNRESOLVED.** Gated on Task 3. |
 | `assets-src/` | ❌ Absent, as the spec says. `packages/client/public/assets/` holds only `tilemaps/`. |
 
@@ -61,16 +61,16 @@ So the art is not a blocker on anything except its own plan. Plans 1–5 ship a 
 
 ### Where art selection and curation happen
 
-Four decisions stand between an art pack and a pixel on screen. The second one had no home until Plan 1's `a`-suffixed tasks:
+Four decisions stand between an art pack and a pixel on screen. The second one had no home until Plan 1's curation tasks:
 
 | Decision | Home | Where |
 |---|---|---|
 | What must exist — the world needs a `bookshelf_a` | `contract/assets.contract.json` | Plan 1, Task 4 |
-| **Which sprite is it, and why that one** | `sources/<pack>.decisions.json` → generated adapter | **Plan 1, Tasks 4a / 8a / 9a** |
+| **Which sprite is it, and why that one** | `note` + `pin` fields on `sources/<pack>.json` | **Plan 1, Tasks 4a / 5–7 / 9a** |
 | Which sheets are worth copying at all | derived from the contract + adapter | Plan 2, Task 19a |
 | Where it goes in a place | `venues/<id>/venue.json` | Plan 2, Tasks 13–14 |
 
-Before this, a rect in `sources/limezu.json` was the *answer* to a question nobody wrote down, chosen from a candidate set nobody enumerated, verifiable against nothing — `scripts/inspect-assets.mjs` says as much in its own header: «Результаты фиксируются вручную», recorded by hand. The three tasks give that decision an **inventory** (4a), a **record with reasons, alternatives and provenance** (8a), and a **review artifact** (9a) — plus a **pin**, a hash of the chosen pixels, so a pack update that shifts a sheet becomes a named `validate:contract` failure instead of a silently different chair.
+Before this, a rect in `sources/limezu.json` was the *answer* to a question nobody wrote down, chosen from a candidate set nobody enumerated, verifiable against nothing — `scripts/inspect-assets.mjs` says as much in its own header: «Результаты фиксируются вручную», recorded by hand. The curation tasks give that decision an **inventory** (4a), a **record on the adapter itself** — every rect in `sources/<pack>.json` can carry a `note` saying why that sprite won, written as the rects are authored (Tasks 5–7) — and a **review artifact** (9a), plus a **pin**, a hash of the chosen pixels (Task 9), so a pack update that shifts a sheet becomes a named `validate:contract` failure instead of a silently different chair.
 
 Plan 6 Task 3 is where it is used on real art: index, pin, review the contact sheets, then capture the baseline.
 
@@ -80,7 +80,8 @@ Plan 6 Task 3 is where it is used on real art: index, pin, review the contact sh
 
 Tasks cite each other by number, and those numbers stay stable across the split — Task 27 in Plan 4 still refers to "Task 3 Step 7" in Plan 6. Two places matter in practice:
 
-- **Task 5 sets `capabilities.characterLayers: false`** as the safe default. Task 3 Step 7 answers the question and Plan 6 flips the flag if the packs ship separable layers. Task 27 branches on the flag and is correct either way.
+- **Task 5 sets `capabilities.characterLayers: true`** — U-1 was answered first-hand against the purchased packs (art-pack QA, 2026-07-29): separable layers exist, so the layered path ships. Task 27 still branches on the flag and is correct either way; palette-remap survives as the documented fallback. Plan 6 Task 3 Step 7 re-verifies the answer on the unpacked copy.
+- **Plan 6 Task 3 precedes Plan 6 Task 3b** — the golden baseline is captured through the legacy scripts and their QA symlinks *before* Task 3b deletes those symlinks. The legacy scripts are broken from 3b onward, by design; the durable paths are the real-pack `files` entries in `sources/limezu.json`.
 - **Task 4's snapshot and Task 19's freeze** are what let Plan 6 run at any time. Neither depends on the art; both exist so Plan 6 does not have to reconstruct the past from git history.
 
 ---
@@ -89,7 +90,7 @@ Tasks cite each other by number, and those numbers stay stable across the split 
 
 Every task's requirements implicitly include this section.
 
-- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM everywhere (`"type": "module"`).
+- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
 - **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
@@ -98,9 +99,10 @@ Every task's requirements implicitly include this section.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`.
-- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — Task 18 asserts it.
-- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api): `$BOTVILLE_API_REPO` → `$BOTVILLE_REPO` → sibling of the repo root → explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
+- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
+- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
@@ -115,7 +117,7 @@ Every task's requirements implicitly include this section.
 | Path | Responsibility |
 |---|---|
 | `contract/assets.contract.json` | Pack-agnostic authority for *what must exist*: names, geometry, anim rows, statuses. |
-| `sources/limezu.json` | The only pack-specific artifact: `name → {file,x,y,w,h}` + capabilities. |
+| `sources/limezu.json` | The only pack-specific artifact: `name → {file,x,y,w,h}` rects with optional `note`/`pin`, + capabilities. |
 | `sources/fixture.json` | Synthetic test pack manifest — same shape, generated pixels. |
 | `venues/<id>/venue.json` | One descriptor per venue (district, cafe, dorm, library, office). |
 | `scripts/lib/assetContract.mjs` | Load + validate the contract. |
@@ -133,7 +135,8 @@ Every task's requirements implicitly include this section.
 | `scripts/validate-contract.mjs` | Entry point for the CI gate. |
 | `scripts/gen-fixture-pack.mjs` | Generate the synthetic pack under `test/fixtures/pack-src/`. |
 | `packages/shared/src/types/Assets.ts` | `VenueDescriptor`, `AppearanceRecord`, `AgentPresence`, `PresenceState`, `PublishedVenue`, `SCHEMA_VERSION`. |
-| `packages/shared/src/appearance/derive.mjs` | Pure derivation + `hashString` + `appearanceHash`. One implementation, shared by bake and runtime. |
+| `packages/shared/src/hash.mjs` | FNV-1a `hashString`. One definition, shared by the appearance bake, `venueSlots` and (by mirror) the api. |
+| `packages/shared/src/appearance/derive.mjs` | Pure derivation + `appearanceHash`; re-exports `hashString` from `../hash.mjs`. One implementation, shared by bake and runtime. |
 | `packages/client/src/game/venueRegistry.ts` | Enumerate venue descriptors; `venueId → VenueDescriptor \| undefined`. |
 | `packages/client/src/game/PresenceModel.ts` | The three presence states. |
 | `packages/client/src/game/agents/AppearanceResolver.ts` | `spriteSeed → appearanceHash → textureKey`, with default-sheet fallback. |
@@ -147,6 +150,9 @@ Every task's requirements implicitly include this section.
 | Path | Change |
 |---|---|
 | `package.json` (root) | `test`, `bake:world`, `bake:agents`, `validate:contract` scripts. |
+| `packages/shared/package.json` | `exports` gains the `./*.mjs` subpath pattern. |
+| `packages/{shared,client}/tsconfig.json` | `allowJs`, so `tsc` follows the shared `.mjs` modules. |
+| `packages/client/vite.config.ts` | String alias → exact+prefix regex pair, so `@botville/shared/*.mjs` subpaths resolve. |
 | `.gitignore:20-24` | `limezu/` → `pack/`; add `baked/`. |
 | `README.md:82-99` | Correct the pack list to four; document the new pipeline. |
 | `scripts/build-district.mjs`, `scripts/build-interiors.mjs` | **Deleted** in Task 19, after `VenueBaker` reproduces their output. |
@@ -157,7 +163,7 @@ Every task's requirements implicitly include this section.
 | `packages/client/src/game/scenes/{Cafe,Dorm,Library,Office}Scene.ts` | **Deleted** in Task 24. |
 | `packages/client/src/game/{SceneRegistry,GameInit}.ts` | Registry-driven scene list. |
 | `packages/client/src/game/agents/AgentSprite.ts` | Texture via `AppearanceResolver`. |
-| `aisocialnetwork-api/src/utils/agentSeed.js` | Export `pickFrom` (currently module-private). |
+| `aisocialnetwork-api/src/utils/agentSeed.js` | Export `pickFrom` (currently module-private) — Plan 5 Task 32 Step 0. |
 | `aisocialnetwork-api/src/models/Schedule.js` | Add `ORDER BY start` (explicit, not load-bearing). |
 | `aisocialnetwork-api/src/workers/populateUserProfiles.js` | Emit + validate + store `venue`; normalise to total coverage. |
 
@@ -169,14 +175,14 @@ This is six plans, not one. Each is independently executable, ends with working
 software, and is worth a fresh reviewer's gate. Execute them in order; only
 Plan 6 needs the licensed art.
 
-| Plan | Tasks | Deliverable | Exit criterion |
-|---|---|---|---|
-| **1 — Foundations** | 1, 2, 4–10 | Contract, adapter, reader, CI gate, fixture pack | `npm run validate:contract` green for both packs; zero behaviour change |
-| **2 — World bake** | 11–19, 25 | Venues and art source become data | `npm run bake:world` builds the whole world from data; a venue no code mentions produces a loadable map (G-C) |
-| **3 — Runtime registry** | 21–24, 34, 36, 37 | Scenes read a registry | Four interiors load, four subclasses gone, typecheck clean |
-| **4 — Appearance** | 26–30, 38 | Identity-derived, content-addressed sprites | Distinct sprites across an 85-agent roster (G-D) |
-| **5 — Platform seam** | 31–33 | `venue` stored at write time, one vocabulary | SC-1 holds for every agent in the live DB (G-F, G-G) |
-| **6 — Art & deployment** | 3, 20, 35, 39 | Real pixels, real deploys | Golden gate green; Vercel and Railway deploys work; hero re-rendered |
+| Plan | Tasks | Depends on | Deliverable | Exit criterion |
+|---|---|---|---|---|
+| **1 — Foundations** | 1, 2, 4–10 | — | Contract, adapter, reader, CI gate, fixture pack | `npm run validate:contract` green for both packs; zero behaviour change |
+| **2 — World bake** | 11–19, 25 | 1 | Venues and art source become data | `npm run bake:world` builds the whole world from data; a venue no code mentions produces a loadable map (G-C) |
+| **3 — Runtime registry** | 21–24, 34, 36, 37 | 1, 2 | Scenes read a registry | Four interiors load, four subclasses gone, typecheck clean |
+| **4 — Appearance** | 26–30, 38 | 1, 3 | Identity-derived, content-addressed sprites | Distinct sprites across an 85-agent roster (G-D) |
+| **5 — Platform seam** | 31–33 | 1, 2 | `venue` stored at write time, one vocabulary | SC-1 holds for every agent in the live DB (G-F, G-G) |
+| **6 — Art & deployment** | 3, 20, 35, 39 | 1–5 | Real pixels, real deploys | Golden gate green; Vercel and Railway deploys work; hero re-rendered |
 
 **Plans 1–5 need no licensed art and no owner input.** They are developed and
 tested against the synthetic fixture pack. Plan 6 is where the packs land, and
@@ -216,15 +222,14 @@ Consequences:
 | # | Task | Plan | Needs art? |
 |---|---|---|---|
 | 1 | Test harness | 1 | no |
-| 2 | Shared asset types, `SCHEMA_VERSION` + `schemaVersion.mjs` | 1 | no |
+| 2 | Shared asset types, `SCHEMA_VERSION` + `schemaVersion.mjs` + `hash.mjs` + the `.mjs` subpath seam | 1 | no |
 | 4 | `assets.contract.json` + `AssetContract` loader | 1 | no |
 | 4a | **Pack index — inventory and sheet hashes** | 1 | no |
 | 5 | `sources/limezu.json` — ground atlas tiles | 1 | no |
 | 6 | `sources/limezu.json` — district props | 1 | no |
 | 7 | `sources/limezu.json` — interior furniture | 1 | no |
 | 8 | `SourceAdapter` + synthetic fixture pack | 1 | no |
-| 8a | **Decision record — the adapter becomes generated, crops get pinned** | 1 | no |
-| 9 | `SpriteReader` | 1 | no |
+| 9 | `SpriteReader` + crop pins | 1 | no |
 | 9a | **Contact sheets — every choice on its floor, at 2×, night-tinted** | 1 | no |
 | 10 | `ContractValidator` + CI gate | 1 | no |
 | 11 | `AtlasBuilder` | 2 | no |
@@ -255,13 +260,15 @@ Consequences:
 | 32 | Schedule population: venue + SC-1 total coverage | 5 | no |
 | 33 | Vocabulary sync CI check (both repos) | 5 | no |
 | 3 | **Acquire packs, capture golden baseline, resolve U-1/U-2** | 6 | **YES — owner-gated** |
+| 3b | Delete the QA symlink compatibility layer (after Task 3's capture) | 6 | **YES** (needs the packs on disk) |
 | 20 | **Golden gate against the frozen legacy pipeline** | 6 | **YES** |
 | 35 | Deployment: bake in Vercel/Railway, Docker for parity | 6 | no |
 | 39 | Hero re-render | 6 | **YES** |
 
 Task 27 left the art-gated set: it develops and tests entirely against the
-fixture pack, and `capabilities.characterLayers` is a data flag Task 3 flips
-afterwards. Nothing in it needs a licensed pixel. Task 35 left it too — the
+fixture pack, and `capabilities.characterLayers` is a data flag — already
+`true` from Task 5 (U-1 answered 2026-07-29), re-verified by Task 3 Step 7.
+Nothing in it needs a licensed pixel. Task 35 left it too — the
 deploy pipelines must work *without* art, which is precisely what makes them
 safe to publish (I-12).
 
@@ -298,7 +305,7 @@ npm run bake:agents -- --roster roster/roster.json
 node -e "import('./packages/shared/src/appearance/derive.mjs').then(()=>console.log('derive.mjs loads under bare node'))"
 ```
 
-**After Plan 5** (platform seam), from the api repo located per Task 26 Step 5:
+**After Plan 5** (platform seam), from the api repo located per Plan 5's «Before you start»:
 
 ```bash
 cd "$API" && npm run migrate && npm test
@@ -333,7 +340,7 @@ outstanding, not a pass.
 | **I-11** identity projected, never copied | `AgentPresence` is four fields (`test/shared-types.test.ts`); BotVille stores no agent identity of its own |
 | **I-12** no art in a public build | `test/deploy-config.test.mjs` "a Vercel Git build cannot contain licensed art"; `.dockerignore` and `PACK=fixture` exclude `assets-src` from every image; `deploy-server.mjs`'s safety gate strips it from the server mirror |
 | **I-13** no animal appearances | `test/appearance-resolver.test.ts` "the fallback is always a human variant"; `test/appearance-derive.test.mjs` "no record can name an animal" |
-| **Curation is recorded, not remembered** | `test/decisions.test.mjs` "every decision says where it came from"; a crop whose pixels changed fails `validate:contract` by name |
+| **Curation is recorded, not remembered** | every rect in `sources/<pack>.json` carries its `note` in the same committed file the build reads; a crop whose pixels changed fails `validate:contract` by name (pin tests in `test/contract-validator.test.mjs`) |
 | **G-C** venues are data | `test/bake/fixture-venue.test.mjs` — a venue no code mentions produces a loadable scene, and the commit that adds it touches only `test/` |
 | **G-F** the city looks inhabited | `tests/scheduleCoverage.test.js` "no venue holds more than half the roster", "every published venue is occupied at some point in the week" |
 | **G-H** BotVille is containerised | `test/deploy-config.test.mjs`; `docker compose up` in Task 35 Step 11 — alongside the Vercel and Railway paths it must not replace |

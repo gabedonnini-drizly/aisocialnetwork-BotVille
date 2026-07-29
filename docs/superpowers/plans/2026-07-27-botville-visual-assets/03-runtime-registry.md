@@ -8,7 +8,7 @@
 
 **Architecture:** `venueRegistry.ts` is the runtime authority — `get()` returning `undefined` for an unknown id is the `unknown` presence path, not an error. `InteriorScene` becomes `VenueScene`, parameterised by a descriptor, and the four subclasses are deleted. `PreloaderScene` and `GameInit` enumerate the registry. `PresenceModel` owns the three presence states. Two art-quality fixes land here because they are cheap once scenes are data-driven: a fixed camera zoom ladder and deterministic in-venue slot assignment.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser 3.88, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose.
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Depends on:** Plan 2 — `venues.json`, the generated registry module and the baked `.tmj` maps.
 
@@ -20,7 +20,7 @@
 
 Every task's requirements implicitly include this section.
 
-- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM everywhere (`"type": "module"`).
+- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
 - **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
@@ -29,9 +29,10 @@ Every task's requirements implicitly include this section.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`.
-- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — Task 18 asserts it.
-- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api): `$BOTVILLE_API_REPO` → `$BOTVILLE_REPO` → sibling of the repo root → explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
+- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
+- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
@@ -218,8 +219,16 @@ git commit -m "feat(runtime): venueRegistry with an unknown-id path and a bake-g
 Replace `InteriorScene.ts:54-61`:
 
 ```ts
-  constructor(private venue: VenueDescriptor) {
+  /**
+   * Явное поле, не parameter property: `node --test` стирает типы, но не
+   * умеет генерировать присваивание (ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX).
+   * Здесь Phaser и тестов под node нет — но отсюда конструктор копируют.
+   */
+  private readonly venue: VenueDescriptor;
+
+  constructor(venue: VenueDescriptor) {
     super({ key: sceneKeyFor(venue.id) });
+    this.venue = venue;
   }
 
   /** Ключ карты = id места; .tmj печёт scripts/world-bake.mjs. */
@@ -239,7 +248,7 @@ import type { VenueDescriptor } from '@botville/shared';
 
 - [ ] **Step 2: Follow the door property rename**
 
-`VenueBaker` (Task 15) writes `targetVenue`, not `targetScene`. Replace `InteriorScene.ts:103-112`:
+`VenueBaker` (Task 15) writes `targetVenue`, not `targetScene`. Replace `InteriorScene.ts:102-112` (the range starts at the `// выход:` comment on 102 — the snippet below includes it, so leaving 102 in place would duplicate it):
 
 ```ts
     // выход: зона над ковриком, hover подсвечивает коврик
@@ -292,7 +301,7 @@ git commit -m "refactor(runtime): parameterise InteriorScene by VenueDescriptor 
 `PreloaderScene` currently iterates `DISTRICT_IMAGES`, `INTERIOR_IMAGES` and `INTERIORS` from `config.ts`. Those three lists become one registry lookup plus one contract lookup. This is also where the emote frame indices leave the code (I-1).
 
 **Files:**
-- Modify: `packages/client/src/game/scenes/PreloaderScene.ts:2,40-63,122-124`
+- Modify: `packages/client/src/game/scenes/PreloaderScene.ts:2,39-69,122-124`
 - Modify: `packages/client/src/game/GameInit.ts:5-10,29`
 - Modify: `packages/client/src/game/assetManifest.ts:71,100,195,211-218,243-247`
 - Modify: `scripts/world-bake.mjs` — emit the generated asset index
@@ -314,12 +323,15 @@ git commit -m "refactor(runtime): parameterise InteriorScene by VenueDescriptor 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DISTRICT_PROPS, INTERIOR_PROPS, EMOTE_FRAMES } from '../packages/client/src/game/assets.generated.ts';
+// A .ts test importing an .mjs library is the allowed direction (Task 1).
+import { loadContract } from '../scripts/lib/assetContract.mjs';
 
 test('the generated index carries every prop the contract declares', () => {
-  assert.equal(DISTRICT_PROPS.length, 32);
-  assert.equal(INTERIOR_PROPS.length, 36);
-  assert.ok(DISTRICT_PROPS.includes('office_building'));
-  assert.ok(INTERIOR_PROPS.includes('bookshelf_a'));
+  // Set equality against the contract, not a transcribed count (Global
+  // Constraints): the claim is "these two artifacts agree", by name.
+  const c = loadContract();
+  assert.deepEqual([...DISTRICT_PROPS].sort(), Object.keys(c.props.district).sort());
+  assert.deepEqual([...INTERIOR_PROPS].sort(), Object.keys(c.props.interior).sort());
 });
 
 test('emote frame indices come from the adapter, not from code (I-1)', () => {
@@ -383,7 +395,7 @@ test('the committed asset index was generated from a real pack, not the fixture'
 
 - [ ] **Step 4: Rewrite `PreloaderScene`'s preload**
 
-Replace `PreloaderScene.ts:39-63` with:
+Replace `PreloaderScene.ts:39-69` with:
 
 ```ts
     // Карты и атласы всех мест (генерирует scripts/world-bake.mjs)
@@ -470,7 +482,7 @@ import { venueRegistry } from './venueRegistry.js';
 - [ ] **Step 7: Bake, test, typecheck**
 
 Run: `npm run bake:world && npm test && npm run typecheck`
-Expected: 3 new tests PASS. Typecheck still errors only in the four subclass files.
+Expected: 4 new tests PASS (Step 1 declares three; Step 3 adds a fourth). Typecheck still errors only in the four subclass files.
 
 - [ ] **Step 8: Commit**
 
@@ -487,7 +499,7 @@ git commit -m "refactor(runtime): registry-driven preload; emote frame indices m
 
 **Files:**
 - Delete: `packages/client/src/game/scenes/{Cafe,Dorm,Library,Office}Scene.ts`
-- Modify: `packages/client/src/game/config.ts:12-23,142-179`
+- Modify: `packages/client/src/game/config.ts:11-23,142-179`
 - Modify: `packages/client/src/game/SceneRegistry.ts`
 - Modify: `packages/client/src/game/scenes/InteriorScene.ts` — drop the deprecated alias
 
@@ -498,7 +510,7 @@ git commit -m "refactor(runtime): registry-driven preload; emote frame indices m
 - [ ] **Step 1: Find every reference**
 
 Run: `grep -rn "CafeScene\|DormScene\|LibraryScene\|OfficeScene\|LOCATION_SCENES\|INTERIOR_IMAGES\|DISTRICT_IMAGES\|INTERIORS\b" packages/client/src --include='*.ts' --include='*.tsx'`
-Expected: hits in `config.ts`, `navigation.ts`, `DistrictScene.ts`, and the four files being deleted.
+Expected: 34 hits in 9 files — `config.ts` (12), `navigation.ts:4,29`, `GameInit.ts:7,8,9,10,29`, `DistrictScene.ts:8,425,440,441`, `PreloaderScene.ts:2,44,57,61`, and the four files being deleted (3 each). `GameInit.ts` and `PreloaderScene.ts` are already rewritten by Task 23 — if they still appear here, Task 23 was applied incompletely.
 
 - [ ] **Step 2: Delete the subclasses and the deprecated alias**
 
@@ -513,7 +525,7 @@ Remove the `export const InteriorScene = VenueScene;` alias added in Task 22 Ste
 
 - [ ] **Step 3: Remove the superseded config lists**
 
-In `config.ts`, delete `LOCATION_SCENES` (lines 12-23), `INTERIORS` (142-148), `INTERIOR_IMAGES` (155-166) and `DISTRICT_IMAGES` (168-179). Keep `INTERIOR_TILESET` and `INTERIOR_CAMERA_ZOOM` — they are camera and tileset settings, not asset enumerations.
+In `config.ts`, delete `LOCATION_SCENES` (lines 11-23 — the doc comment opens with `/**` at 11; starting at 12 leaves an orphaned, unbalanced block comment), `INTERIORS` (142-148), `INTERIOR_IMAGES` (155-166) and `DISTRICT_IMAGES` (168-179). Keep `INTERIOR_TILESET` and `INTERIOR_CAMERA_ZOOM` — they are camera and tileset settings, not asset enumerations.
 
 Replace the `LOCATION_SCENES` block with a pointer, so the next reader knows where it went:
 
@@ -692,7 +704,12 @@ export interface PresencePartition {
 }
 
 export class PresenceModel {
-  constructor(private registry: VenueLookup) {}
+  /** Явное поле: parameter property не переживает strip-only type stripping. */
+  private readonly registry: VenueLookup;
+
+  constructor(registry: VenueLookup) {
+    this.registry = registry;
+  }
 
   resolve(p: AgentPresence): PresenceState {
     return resolvePresence(p, this.registry);
@@ -752,9 +769,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ZOOM_LADDER, CAMERA, nextZoom, snapZoom } from '../packages/client/src/game/config.ts';
 
-test('every rung is a clean ratio for 16px art', () => {
+test('the ladder is the spec-pinned design constant', () => {
   assert.deepEqual([...ZOOM_LADDER], [0.5, 1, 2, 3, 4]);
-  for (const z of ZOOM_LADDER) assert.ok(Number.isInteger(z * 16), `${z} yields fractional pixels`);
 });
 
 test('the initial zoom is on the ladder and integral', () => {
@@ -781,15 +797,11 @@ test('an off-ladder zoom snaps to the nearest rung before stepping', () => {
   assert.equal(snapZoom(3.4), 3);
   assert.equal(nextZoom(1.8, 1), 3, 'snap to 2, then one rung up');
 });
-
-test('no rung produces a fractional world pixel at any tile size we use', () => {
-  for (const z of ZOOM_LADDER) for (const tile of [16, 32, 48]) assert.ok(Number.isInteger(z * tile));
-});
 ```
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `npm test -- --test-name-pattern="every rung is a clean ratio"`
+Run: `npm test -- --test-name-pattern="the ladder is the spec-pinned design constant"`
 Expected: FAIL — `ZOOM_LADDER` is not exported from `config.ts`.
 
 - [ ] **Step 3: Replace the camera config**
@@ -824,9 +836,51 @@ export function nextZoom(current: number, direction: 1 | -1): number {
 
 - [ ] **Step 4: Use the ladder in the camera controls**
 
-Run: `grep -n "zoomStep\|setZoom\|zoom" packages/client/src/game/cameraControls.ts`
+Run: `grep -n "zoomStep\|setZoom\|zoomTo" packages/client/src/game/cameraControls.ts`
 
-Replace every `cam.setZoom(cam.zoom * CAMERA.zoomStep)` / `/ CAMERA.zoomStep` with `cam.setZoom(nextZoom(cam.zoom, 1))` / `nextZoom(cam.zoom, -1)`, and clamp pinch with `cam.setZoom(snapZoom(rawPinchZoom))`. Import both from `./config.js`.
+There is no `cam.setZoom(cam.zoom * CAMERA.zoomStep)` in this file — do not search-and-replace. The keyboard buttons already go through a **300 ms `zoomTo` tween**, and the wheel and the pinch go through a local `setZoom` helper. Three separate edits:
+
+**1. Extend the import (`cameraControls.ts:2`):**
+
+```ts
+import { CAMERA, CAMERA_DRAG, nextZoom, snapZoom } from './config.js';
+```
+
+**2. Step by rung on the keyboard, keeping the glide (`:88-91`):**
+
+```ts
+  scene.input.keyboard?.on('keydown-EQUAL', () =>
+    cam.zoomTo(nextZoom(cam.zoom, 1), 300));
+  scene.input.keyboard?.on('keydown-MINUS', () =>
+    cam.zoomTo(nextZoom(cam.zoom, -1), 300));
+```
+
+`nextZoom` snaps to the nearest rung and clamps at both ends, so the `Phaser.Math.Clamp(..., minZoom, maxZoom)` wrapper is now dead weight — drop it. **Keep the `, 300`.** `cam.zoomTo(z)` with no duration is `setZoom`-with-extra-steps: the button would snap instead of glide, which is a visible regression, not a cleanup.
+
+**3. Snap the wheel and the pinch, which share the `setZoom` helper (`:62-65`):**
+
+Wheel (`:93`) — one rung per notch, so the ladder is actually reachable:
+
+```ts
+  scene.input.on('wheel', (_p: unknown, _go: unknown, _dx: number, dy: number) => {
+    if (dy !== 0) setZoom(nextZoom(cam.zoom, dy < 0 ? 1 : -1));
+  });
+```
+
+Pinch (`:112`) — track continuously so the gesture stays live, then settle on a rung when the fingers lift. Leave `:112` as it is and add the snap to `endPinch` (`:82-86`):
+
+```ts
+  const endPinch = () => {
+    setZoom(snapZoom(cam.zoom));
+    pinch = null;
+    pinchActive = false;
+    pinchEndedAt = Date.now();
+  };
+```
+
+**Dead-zone hazard:** snapping the wheel or the pinch per-event (e.g. `setZoom(snapZoom(cam.zoom - dy * 0.001))`, or `snapZoom` at the existing `:112` call site) produces a **dead control** — the raw delta per event is far smaller than the gap between rungs, so `snapZoom` returns the rung you are already on and zoom never changes. The wheel must step by rung, and the pinch must snap on release, not per-frame.
+
+Note also: `cam.zoomTo` only writes `cam.zoom` when the tween completes, so two button presses inside 300 ms both read the pre-tween value and land on the same rung. That is today's behaviour and is out of scope — do not mistake it for a ladder bug during review.
 
 `CAMERA_FOCUS.zoom` (`config.ts:128`) is `2.4` — snap it to `2`:
 
@@ -842,48 +896,18 @@ export const CAMERA_FOCUS = { panMs: 600, zoom: 2 } as const;
 
 and delete `INTERIOR_CAMERA_ZOOM`.
 
-- [ ] **Step 5: Pin device pixel ratio to whole numbers**
+**Deliberately no `GameInit.ts` change.** Spec §10.1's third bullet ("canvas sizing respects device pixel ratio without fractional scaling") is *not* implemented by touching the `scale` block. Phaser's `ScaleConfig` has no `resolution` key (verified against the installed 3.90 typings) — the once-proposed `resolution: Math.floor(devicePixelRatio)` would be a silently ignored property — and `zoom: 1 / Math.floor(dpr)` halves the CSS size on every 2× display while doing nothing on a 1.5× one. `pixelArt: true` / `roundPixels` are already set, and the ladder from Steps 1–4 is the whole control surface. A unit test cannot see a backing store, so the check that the art stays sharp is the manual one in Step 5.
 
-Spec §10.1's third bullet: "canvas sizing respects device pixel ratio without fractional scaling." Phaser's `Scale.RESIZE` mode uses the raw `devicePixelRatio`, which is `1.5` on many Android devices and `2.5`/`3` on some laptops — a fractional backing store re-introduces exactly the shimmer the ladder just removed.
-
-In `GameInit.ts`, inside the `scale` block:
-
-```ts
-    scale: {
-      mode: Phaser.Scale.RESIZE,
-      autoCenter: Phaser.Scale.CENTER_BOTH,
-      // ТЗ-спец §10.1: дробный DPR (1.5 на многих Android) даёт нецелый
-      // backing store и возвращает мерцание, которое убрала лестница зума.
-      // Округляем вниз до целого — минимум 1.
-      zoom: 1 / Math.max(1, Math.floor(window.devicePixelRatio || 1)),
-      resolution: Math.max(1, Math.floor(window.devicePixelRatio || 1)),
-    },
-```
-
-Add to `test/zoom-ladder.test.ts`:
-
-```ts
-test('device pixel ratio is floored to an integer, never fractional', () => {
-  const floor = (dpr: number) => Math.max(1, Math.floor(dpr || 1));
-  for (const dpr of [0, 1, 1.5, 2, 2.5, 3, 3.75]) {
-    assert.ok(Number.isInteger(floor(dpr)), `${dpr} -> ${floor(dpr)}`);
-    assert.ok(floor(dpr) >= 1);
-  }
-  assert.equal(floor(1.5), 1);
-  assert.equal(floor(2.5), 2);
-});
-```
-
-- [ ] **Step 6: Test, typecheck, look at it**
+- [ ] **Step 5: Test, typecheck, look at it**
 
 Run: `npm test && npm run typecheck && npm run dev`
-Expected: 7 new tests PASS; typecheck clean. In the browser, scroll-zoom steps 0.5 → 1 → 2 → 3 → 4 with no intermediate values, and pixel edges stay sharp at every rung. Check on a 1.5× display if one is available — the sprite edges must not soften.
+Expected: 5 new tests PASS; typecheck clean. In the browser, scroll-zoom steps 0.5 → 1 → 2 → 3 → 4 with no intermediate values, and pixel edges stay sharp at every rung.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add packages/client/src/game/config.ts packages/client/src/game/cameraControls.ts packages/client/src/game/scenes/InteriorScene.ts packages/client/src/game/GameInit.ts test/zoom-ladder.test.ts
-git commit -m "fix(camera): fixed zoom ladder and integral device pixel ratio to stop shimmer on 16px art"
+git add packages/client/src/game/config.ts packages/client/src/game/cameraControls.ts packages/client/src/game/scenes/InteriorScene.ts test/zoom-ladder.test.ts
+git commit -m "fix(camera): fixed zoom ladder to stop shimmer on 16px art"
 ```
 
 ---
@@ -900,7 +924,7 @@ Today `InteriorScene.syncAgents` spreads newcomers over three columns (`(i % 3) 
 - Test: `test/venue-slots.test.ts`
 
 **Interfaces:**
-- Consumes: `hashString` (Task 26), `VenueDescriptor` (Task 2).
+- Consumes: `hashString` (**Plan 1 Task 2**, `packages/shared/src/hash.mjs`), `VenueDescriptor` (Plan 1 Task 2). Nothing in this task depends on Plan 4.
 - Produces `packages/client/src/game/venueSlots.ts`:
   - `assignSlots(venue: VenueDescriptor, agentIds: string[]): Map<string, { x: number; y: number; seatIndex: number | null }>`
   - `standingSlot(venue, agentId, rank): { x: number; y: number }`
@@ -1014,7 +1038,7 @@ Expected: FAIL — `Cannot find module '.../venueSlots.ts'`.
  *
  * Не импортирует Phaser: тестируется под node --test.
  */
-import { hashString } from '@botville/shared/appearance/derive.mjs';
+import { hashString } from '@botville/shared/hash.mjs';
 import type { VenueDescriptor } from '@botville/shared';
 
 const T = 16;
@@ -1132,7 +1156,7 @@ Add the import: `import { assignSlots, isOverCapacity, standingSlot } from '../v
 - [ ] **Step 5: Test, typecheck, look at it**
 
 Run: `npm test && npm run typecheck && npm run dev`
-Expected: 9 new tests PASS; typecheck clean. In the cafe, agents fan out across the room rather than stacking on the spawn point.
+Expected: 10 new tests PASS; typecheck clean. In the cafe, agents fan out across the room rather than stacking on the spawn point.
 
 - [ ] **Step 6: Commit**
 

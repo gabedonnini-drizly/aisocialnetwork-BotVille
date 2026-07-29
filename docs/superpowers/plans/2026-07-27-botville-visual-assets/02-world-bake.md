@@ -8,7 +8,7 @@
 
 **Architecture:** `AtlasBuilder` packs ordered tiles into a ground atlas (order defines GID). `PropBaker` emits one trimmed PNG per contract name and records its true size. `VenueBaker` turns a descriptor into a `.tmj`, reading object sizes from the baked bitmaps and deriving collision from furniture footprints. `districtGround.cityGrid` is the seeded outdoor generator, with its PRNG consumption order preserved exactly. `scripts/world-bake.mjs` runs all of it and publishes `venues.json`.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser 3.88, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose.
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Depends on:** Plan 1 — the contract, the adapter, the reader and the fixture pack.
 
@@ -20,7 +20,7 @@
 
 Every task's requirements implicitly include this section.
 
-- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM everywhere (`"type": "module"`).
+- **Node ≥ 24.** Root `package.json` `engines: { "node": ">=24.0.0" }`, `.nvmrc` = `24`. ESM: the three workspace packages (`client`, `server`, `shared`) each declare `"type": "module"`; the root `package.json` has **no** `type` key, so root-level scripts are ESM by their `.mjs` extension only.
 - **No new npm dependencies.** Not in `packages/client`, not in `packages/server`, not at the root. Build tooling uses `node:` builtins plus the existing `scripts/png-lib.mjs`. Tests use `node:test` + `node:assert/strict`.
 - **Build tooling is `.mjs` under `scripts/`; runtime is TypeScript under `packages/`.** Follow the existing split exactly.
 - **Comments and identifiers in `packages/client/` are Russian and load-bearing** — they record verified crop coordinates and frame layouts. Read them; never delete or "clean up" one. New comments in that package may be English.
@@ -29,9 +29,10 @@ Every task's requirements implicitly include this section.
 - **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`.
-- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — Task 18 asserts it.
-- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api): `$BOTVILLE_API_REPO` → `$BOTVILLE_REPO` → sibling of the repo root → explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
+- **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
+- **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
@@ -868,7 +869,7 @@ Descriptor → `.tmj`. Object sizes come from the baked bitmaps (Task 12), and c
 - Produces `scripts/lib/venueBaker.mjs`:
   - `bakeInterior(contract, descriptor, { atlas, propSizes }) → tmjObject`
   - `propSizes` is `Map<string, {w,h}>` from `bakeProps`.
-  - The emitted `.tmj` carries layers `ground, furniture, seats, animated, doors, spawns, collision` — the exact set `InteriorScene.ts:76-119` reads.
+  - The emitted `.tmj` carries layers `ground, furniture, seats, animated, doors, spawns, collision` — the exact set `InteriorScene.ts:70-119` reads (`ground` is read at `:70`).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1611,7 +1612,7 @@ One entry point that runs the whole world bake, and the vendor-name rename that 
 - Modify: `package.json` — `bake:world` script
 - Modify: `.gitignore:22-24` — `limezu/` → `pack/`, add `baked/`
 - Test: `test/bake/world-bake.test.mjs` (slow suite — it encodes ~70 PNGs per run)
-- Test: `test/clean-tree.test.mjs`
+- Test: `test/bake/zz-clean-tree.test.mjs`
 
 **Interfaces:**
 - Consumes: everything from Tasks 4–17.
@@ -1694,9 +1695,12 @@ test('tilemaps reference ../tilesets/pack/, never a vendor name', () => {
 test('venues.json publishes the vocabulary sorted by id (I-8)', () => {
   const { out } = bake();
   const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
-  assert.deepEqual(pub.map(v => v.id), ['cafe', 'district', 'dorm', 'library', 'office']);
+  assert.deepEqual(pub.map(v => v.id), readdirSync('venues').sort());
   for (const v of pub) assert.deepEqual(Object.keys(v).sort(), ['capacity', 'id', 'indoor', 'label']);
-  assert.equal(pub.find(v => v.id === 'cafe').capacity, 9);
+  // Publisher fidelity, not a magic number: capacity is whatever the
+  // descriptor says (Task 13), read from it rather than transcribed.
+  const cafe = JSON.parse(readFileSync('venues/cafe/venue.json', 'utf8'));
+  assert.equal(pub.find(v => v.id === 'cafe').capacity, cafe.capacity);
 });
 
 test('the bake is deterministic across runs', () => {
@@ -1716,7 +1720,7 @@ test('the bake reports what it wrote, and the report matches the contract', () =
 });
 ```
 
-`test/clean-tree.test.mjs` — the guard that keeps the whole suite honest:
+`test/bake/zz-clean-tree.test.mjs` — the guard that keeps the whole suite honest:
 
 ```js
 import { test } from 'node:test';
@@ -1728,8 +1732,13 @@ import { execFileSync } from 'node:child_process';
  * packages/client/src/ produces a green run and a dirty diff, and the diff is
  * what the next person commits by accident.
  *
- * This runs LAST by filename convention (z-prefixed suites sort late); it is
- * cheap and catches every future task that forgets to pass a temp directory.
+ * It lives in the BAKE suite, beside the tests that actually write files, and
+ * the zz- prefix sorts it last there. But --test-concurrency means file order
+ * is a heuristic, not a guarantee — so the AUTHORITATIVE check is the
+ * shell-level `git status --porcelain` at the end of `test:all` (Plan 1
+ * Task 1 Step 6), which runs after every worker has exited. This in-suite
+ * copy is a best-effort early warning that names the suite that dirtied
+ * the tree.
  */
 test('the test suite leaves the working tree clean', () => {
   const dirty = execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' })
@@ -1900,7 +1909,7 @@ The `clean tree` test is the one to watch. It fails if any suite writes into the
 - [ ] **Step 6: Commit**
 
 ```bash
-git add scripts/world-bake.mjs package.json .gitignore test/bake/world-bake.test.mjs test/clean-tree.test.mjs packages/client/public/assets/venues.json
+git add scripts/world-bake.mjs package.json .gitignore test/bake/world-bake.test.mjs test/bake/zz-clean-tree.test.mjs packages/client/public/assets/venues.json
 git commit -m "feat(bake): world-bake entry point, published venue vocabulary, limezu->pack rename"
 ```
 
@@ -1920,7 +1929,7 @@ The rule this keeps: **one source of truth for building the world, one frozen re
 - Move: `scripts/build-district.mjs` → `test/golden/legacy/build-district.mjs`
 - Move: `scripts/build-interiors.mjs` → `test/golden/legacy/build-interiors.mjs`
 - Create: `test/golden/legacy/README.md`
-- Modify: `README.md`, `packages/client/src/game/assetManifest.ts:7-9`, `packages/client/src/game/config.ts:28`
+- Modify: `README.md`, `packages/client/src/game/config.ts:28,142`, `packages/client/src/game/scenes/InteriorScene.ts:34`, `packages/client/src/game/scenes/PreloaderScene.ts:39`, `scripts/sync-assets.mjs:81`
 
 **Interfaces:**
 - Consumes: Task 18's `worldBake`.
@@ -1929,7 +1938,7 @@ The rule this keeps: **one source of truth for building the world, one frozen re
 - [ ] **Step 1: Confirm nothing still references them**
 
 Run: `grep -rn "build-district\|build-interiors" --include='*.ts' --include='*.mjs' --include='*.json' --include='*.md' . | grep -v node_modules | grep -v docs/superpowers`
-Expected: references only in `README.md`, `assetManifest.ts:7`, `config.ts:28`, `InteriorScene.ts:35`, `PreloaderScene.ts:39` and the two files themselves.
+Expected: exactly five lines — `scripts/sync-assets.mjs:81`, `packages/client/src/game/config.ts:28`, `packages/client/src/game/config.ts:142`, `packages/client/src/game/scenes/InteriorScene.ts:34`, `packages/client/src/game/scenes/PreloaderScene.ts:39`. `README.md` and `assetManifest.ts` do **not** match (both name `sync-assets.mjs`), and neither script self-references.
 
 - [ ] **Step 2: Freeze them, then update every reference**
 
@@ -1963,14 +1972,7 @@ moving target, which is the one thing it must never do.
 
 Prepend the same warning as a comment block at the top of each moved script.
 
-Then update the comments that cite them. In `packages/client/src/game/assetManifest.ts:7-9`, replace the pipeline comment:
-
-```ts
- * Пайплайн: scripts/world-bake.mjs собирает атласы, пропсы и карты из
- * contract/assets.contract.json + sources/<pack>.json + venues/<id>/venue.json
- * в public/assets/{sprites,tilesets}/pack/ — пути ниже указаны
- * относительно public/.
-```
+Then update the comments that cite them. (`assetManifest.ts:7-9` needs **no** edit here — its pipeline comment names `sync-assets.mjs`, not either build script, and it is still accurate until Task 19a rewrites that script's role.)
 
 In `config.ts:28`, replace `/** Карта района (должно совпадать с scripts/build-district.mjs). */` with:
 
@@ -1978,7 +1980,11 @@ In `config.ts:28`, replace `/** Карта района (должно совпа
 /** Карта района (генерируется scripts/world-bake.mjs из venues/district/venue.json). */
 ```
 
-In `InteriorScene.ts:35` replace `(scripts/build-interiors.mjs)` with `(scripts/world-bake.mjs)`. In `PreloaderScene.ts:39` replace `(генерируются scripts/build-district.mjs)` with `(генерируются scripts/world-bake.mjs)`.
+In `config.ts:142`, replace `scripts/build-interiors.mjs` in the comment with `scripts/world-bake.mjs`.
+
+In `InteriorScene.ts:34` replace `(scripts/build-interiors.mjs)` with `(scripts/world-bake.mjs)`. In `PreloaderScene.ts:39` replace `(генерируются scripts/build-district.mjs)` with `(генерируются scripts/world-bake.mjs)`.
+
+In `scripts/sync-assets.mjs:81`, the comment `library_building.png генерируется build-district.mjs (штампуется вывеска BOOKS)` → name `world-bake.mjs` instead. (Load-bearing: Task 19a retires that very list, and the `bookSign` generator moves to the adapter.)
 
 In `README.md`, replace the `node scripts/sync-assets.mjs` block in "About the art" with:
 
@@ -2016,7 +2022,7 @@ git commit -m "refactor(bake): freeze build-district/interiors as test/golden/le
 
 ## Task 19a: Retire `sync-assets.mjs`'s hardcoded file list
 
-Task 19 removed the last pack-specific *coordinates* from `scripts/`. One list survives, and it is the same kind of thing: `scripts/sync-assets.mjs` holds **59 hardcoded `[source, destination]` pairs** naming LimeZu files by path.
+Task 19 removed the last pack-specific *coordinates* from `scripts/`. One list survives, and it is the same kind of thing: `scripts/sync-assets.mjs` holds **61 hardcoded `[source, destination]` pair literals** naming LimeZu files by path (39 `FILES` + 22 `PROPS`; loops and appends grow that to **90 files at runtime**).
 
 That list is a curation decision — *these* sheets, of the thousands in four packs, are the ones that matter — expressed as code. It overlaps the adapter's `files` block by about fifty entries, so the same knowledge now lives in two places and can disagree. Under I-1 it should not exist at all.
 
@@ -2106,7 +2112,7 @@ Add to `contract/assets.contract.json`, at the top level:
 
 ```json
   "runtimeSheets": [
-    "char_body", "char_hair", "char_top", "char_bottom", "char_accessory",
+    "char_body", "char_eyes", "char_hair", "char_outfit", "char_accessory",
     "emote_sheet", "ui_sheet"
   ],
 ```
@@ -2185,11 +2191,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 - [ ] **Step 5: Follow the two callers**
 
 `package.json`'s `deploy:client` calls `node scripts/sync-assets.mjs` with no
-arguments; it now needs the pack, matching the bake beside it:
-
-```json
-    "deploy:client": "node scripts/sync-assets.mjs limezu assets-src && npm run bake:world -- limezu assets-src && ...",
-```
+arguments; it now needs the pack, matching the bake beside it. **Do not write
+the full value here** — Plan 6 Task 35 Step 4 owns the `deploy:client` key and
+defines it once, in full. The only change this task makes is that the
+`sync-assets.mjs` invocation inside it gains the arguments `limezu assets-src`;
+everything else in the value stays exactly as it stands.
 
 `scripts/capture-golden-baseline.mjs` (Plan 6 Task 3) runs it as part of
 reproducing the legacy pipeline. That call is against `limezu`/`assets-src`
