@@ -44,10 +44,10 @@ Every task's requirements implicitly include this section.
 - **Comments in `packages/client/` are English and load-bearing** — they record verified crop coordinates and frame layouts. Read them; preserve them and their intent; never delete or "clean up" an explanatory comment.
 - **`SCHEMA_VERSION = 1`**, exported from `@botville/shared`, and included in every `appearanceHash`.
 - **Path segment rename: `limezu/` → `pack/`** throughout `public/assets/`. No directory, key or string in committed code may name a vendor.
-- **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
+- **The `AgentPresence` boundary is four *required* fields** — `{ id, displayName, spriteSeed, venueId }`, required and unrenamed. Additions are permitted but must be optional; nothing beyond the four may ever be required (addendum §I.4).
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. The pre-existing parameter properties — `packages/client/src/game/Pathfinder.ts:9` and `packages/client/src/game/scenes/InteriorScene.ts:55-58` — are all Phaser-side and never node-tested; leave them, do not copy them, and know that lifting InteriorScene code into a node-tested module will hit this error.
 - **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
@@ -429,8 +429,16 @@ test('hashString matches agentSeed.js bit for bit (cross-repo contract)',
         assert.equal(hashString(seed, salt), apiHash(seed, salt), `${seed}/${salt}`);
   });
 
-test('AgentPresence has exactly the four boundary fields', () => {
+test('AgentPresence requires the four boundary fields; any additions are optional', () => {
+  // Type-level assertion, enforced when tsc typechecks this file (addendum
+  // I.4): an object carrying ONLY the four boundary fields must type-check,
+  // so any field added to the interface later must be optional — additions
+  // may extend the boundary, never re-require it.
   const p: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a', venueId: null };
+  // And the four themselves stay required — dropping one must not type-check:
+  // @ts-expect-error — id is required
+  const noId: AgentPresence = { displayName: 'A', spriteSeed: 'a', venueId: null };
+  void noId;
   assert.deepEqual(Object.keys(p).sort(), ['displayName', 'id', 'spriteSeed', 'venueId']);
 });
 
@@ -532,8 +540,10 @@ export function hashString(str, salt = '') {
 export { SCHEMA_VERSION } from '../schemaVersion.mjs';
 
 // ── The immutable platform↔city boundary (spec §3.1) ────────────────────
-// Four fields. They do not change when a venue is added, a pack is
-// swapped, or the roster grows. Do not extend this interface.
+// Four REQUIRED fields. They do not change when a venue is added, a pack
+// is swapped, or the roster grows. Additions are permitted but MUST be
+// optional — nothing beyond these four may ever be required (addendum I.4),
+// so an object carrying only the four always type-checks.
 
 export interface AgentPresence {
   /** platform agent uuid */
@@ -1237,6 +1247,7 @@ The sheets manifest is the important one. It is a few hundred lines, it lives in
 
 **Files:**
 - Create: `scripts/index-pack.mjs`
+- Create: `sources/fixture.sheets.json` — generated by Step 5's `npm run pack:index`, committed in Step 6
 - Modify: `package.json` — `pack:index` script
 - Modify: `.gitignore` — ignore `sources/*.index.json`
 - Test: `test/bake/pack-index.test.mjs`
@@ -1980,14 +1991,15 @@ Furniture, transcribed from `build-interiors.mjs:63-100`. `trim: true` reproduce
     "emote_sheet": { "file": "ui_emotes" },
     "ui_sheet":    { "file": "ui" },
 
-    "char_body":      { "file": "char_body_sheet" },
+    "char_body":      { "file": "char_body_sheet", "x": 0, "y": 0, "w": 896, "h": 656,
+      "note": "Bodies ship 927 wide (all other layers 896); cols >=896 are pure padding except Body_01's rows 11-12 (lift/throw animations the contract never uses). Crop to the 896x656 shared canvas — 56 whole 16px frames — so every char_* layer lands on one canvas (validator block 4b)" },
     "char_eyes":      { "file": "char_eyes_sheet" },
     "char_hair":      { "file": "char_hair_sheet" },
     "char_outfit":    { "file": "char_outfit_sheet" },
     "char_accessory": { "file": "char_accessory_sheet" }
 ```
 
-The five `char_*` slots each point at their own real Character Generator layer directory — U-1 is answered: the pack ships separable layers (Bodies 9, Eyes 7, Hairstyles 200, Outfits 132, Accessories 84 sheets; art-pack QA 2026-07-29), and `capabilities.characterLayers` is `true` from Task 5. Each alias names the **index-0 file** of its directory; the composer (Plan 4 Task 27) resolves the concrete variant sheet by replacing the index in the file name. One pack caveat is load-bearing: the layer sheets are **927×656** — 927 is *not* a whole number of 16px frames, so the composer crops to whole frames (Plan 4 Task 27) and the validator asserts the shared canvas (Task 10 block 4b).
+The five `char_*` slots each point at their own real Character Generator layer directory — U-1 is answered: the pack ships separable layers (Bodies 9, Eyes 7, Hairstyles 200, Outfits 132, Accessories 84 sheets; art-pack QA 2026-07-29), and `capabilities.characterLayers` is `true` from Task 5. Each alias names the **index-0 file** of its directory; the composer (Plan 4 Task 27) resolves the concrete variant sheet by replacing the index in the file name. One pack caveat is load-bearing: the **Bodies sheets are 927×656** while Eyes/Hairstyles/Outfits/Accessories are **896×656** (pixel-measured 2026-07-29; the only other 927-wide files are the four `Accessory_19_Party_Cone_*` sheets). 896 *is* a whole number of 16px frames (56); 927 is not, and the extra 31 columns hold art in exactly one sheet — Body_01's rows 11–12, lift/throw animations the contract's anims (idle/walk/sit/sleep) never use. So the adapter crops `char_body` to 896 wide (the rect above), every `char_*` layer resolves at the same 896×656, and the validator asserts that post-crop parity (Task 10 block 4b). The composer (Plan 4 Task 27) still sizes its canvas to whole frames as a guard for other packs.
 
 - [ ] **Step 5: Add `emoteFrames`**
 
@@ -3064,11 +3076,14 @@ export function validate(contract, adapter, { checkPixels = true, venues = [], p
 
   // 4b. Layered characters share one canvas, in whole frames.
   //
-  // The real Character Generator sheets are 927x656 — 927 is NOT a whole
-  // number of 16px frames, so the composer crops to whole frames (Plan 4
-  // Task 27). What it cannot survive is the LAYERS disagreeing with each
-  // other: stacking assumes every char_* sheet has the same dimensions and
-  // at least one whole frame each way. Assert that here, per pack.
+  // Dimensions are read THROUGH the adapter's rects (readSprite), so a
+  // declared crop applies before this check. That is what makes the real
+  // pack pass: raw Bodies files are 927x656 while the other layers are
+  // 896x656, and the adapter crops char_body to 896 wide (its rect, Task 7)
+  // — cropping-then-parity, not raw-file parity. What composition cannot
+  // survive is the post-crop LAYERS disagreeing with each other: stacking
+  // assumes every char_* sheet resolves to the same dimensions and at least
+  // one whole frame each way. Assert that here, per pack.
   if (adapter.capabilities.characterLayers === true) {
     const { frameWidth: cfw, frameHeight: cfh, parts } = contract.characters;
     let first = null;
@@ -3137,11 +3152,14 @@ const pack = process.argv[2] ?? 'fixture';
 const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');
 
 const venuesDir = join(ROOT, 'venues');
-// `_`-prefixed entries are not venues: venues/_archetypes/ holds archetype
-// files (Plan 2 Task 14a), each a single <name>.json, not <id>/venue.json.
+// A venue is a directory containing venue.json — filter on that, not on the
+// entry name alone. `_`-prefixed entries are not venues (venues/_archetypes/
+// holds archetype files, Plan 2 Task 14a, each a single <name>.json, not
+// <id>/venue.json), and stray files like .DS_Store must not crash the gate.
 const venues = existsSync(venuesDir)
   ? readdirSync(venuesDir)
       .filter(id => !id.startsWith('_'))
+      .filter(id => existsSync(join(venuesDir, id, 'venue.json')))
       .map(id => JSON.parse(readFileSync(join(venuesDir, id, 'venue.json'), 'utf8')))
   : [];
 

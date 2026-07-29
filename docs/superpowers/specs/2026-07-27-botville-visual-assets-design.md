@@ -583,7 +583,7 @@ Invariants the implementation must not violate. Each is testable.
 | **I-9** | Schedule coverage is total and non-overlapping per `day_type` (SC-1). |
 | **I-10** | Venue is assigned at write time and stored. No read-time text matching. |
 | **I-11** | Identity is projected, never copied. BotVille stores no second source of truth for agent identity (CANON C2). |
-| **I-12** | No art in a publicly pushed container image (§13). |
+| **I-12** | No raw source sheets and no `assets-src/` in any image or repo; baked atlases served to browsers are permitted (§13; restated per D-10 — see the 2026-07-29 addendum, Part III item 2). |
 | **I-13** | No agent is assigned an animal appearance (§6.2). |
 
 ---

@@ -38,10 +38,10 @@ Every task's requirements implicitly include this section.
 - **Comments in `packages/client/` are English and load-bearing** — they record verified crop coordinates and frame layouts. Read them; preserve them and their intent; never delete or "clean up" an explanatory comment.
 - **`SCHEMA_VERSION = 1`**, exported from `@botville/shared`, and included in every `appearanceHash`.
 - **Path segment rename: `limezu/` → `pack/`** throughout `public/assets/`. No directory, key or string in committed code may name a vendor.
-- **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
+- **The `AgentPresence` boundary is four *required* fields** — `{ id, displayName, spriteSeed, venueId }`, required and unrenamed. Additions are permitted but must be optional; nothing beyond the four may ever be required (addendum §I.4).
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. The pre-existing parameter properties — `packages/client/src/game/Pathfinder.ts:9` and `packages/client/src/game/scenes/InteriorScene.ts:55-58` — are all Phaser-side and never node-tested; leave them, do not copy them, and know that lifting InteriorScene code into a node-tested module will hit this error.
 - **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
@@ -83,9 +83,10 @@ The record's axes follow the real Character Generator layers (body, eyes, hair, 
   - `hashString` — re-exported from `../hash.mjs` (Plan 1 Task 2), not redefined
   - `pickFrom(list, seed, salt) → T`
   - `normalizeGender(raw) → Build`
-  - `SKIN_TONES, EYE_VARIANTS, HAIR_STYLES, HAIR_COLORS, OUTFIT_COLORS, ACCESSORIES` — the colour palettes plus the eyes sheet-variant list
+  - `SKIN_TONES, EYE_VARIANTS, HAIR_STYLES, HAIR_COLORS, OUTFIT_COLORS, ACCESSORIES, BUILDS` — the colour palettes, the eyes sheet-variant list and the build list
   - `appearanceRecord(spriteSeed, gender) → AppearanceRecord`
   - `appearanceHash(record) → string` (8 lowercase hex chars)
+  - `appearanceHashAt(record, version) → string` — the version-explicit form `appearanceHash` wraps; the tests use it to prove a `SCHEMA_VERSION` bump changes every hash
   - `appearanceSpaceSize() → number`
 
 - [ ] **Step 1: Write the failing test**
@@ -370,12 +371,12 @@ git commit -m "feat(appearance): pure identity-derived appearance record on the 
 
 **Needs the packs to bake real sheets; develops and tests against the fixture pack.** Composes an `AppearanceRecord` into a character sheet and a 32×32 portrait. Strategy is chosen by `capabilities.characterLayers` (spec §7.3) — the design works either way, only the achieved variety differs. For the real pack the flag is `true` (art-pack QA, 2026-07-29).
 
-Two real-pack facts shape this task:
+Two real-pack facts shape this task (pixel-measured 2026-07-29):
 
-- **The body sheets are 927 px wide** — *not* a whole number of 16 px frames. The composer must size its canvas to whole frames (`floor(w / frameWidth) * frameWidth`, same for height), never to the raw sheet size, or every downstream frame-geometry assertion fails on the real pack.
+- **The shared canvas is 896×656 — 56 whole 16 px frames wide.** Only the Bodies sheets (and the four `Accessory_19_Party_Cone_*` sheets) ship at 927×656; Eyes (7), Hairstyles (200), Outfits (132) and the other 80 Accessories are all 896×656. The extra 31 columns hold art in exactly one sheet — Body_01's rows 11–12, lift/throw animations the contract never uses — so the adapter crops `char_body` to 896 wide (Plan 1 Task 7) and every layer resolves at 896×656; cropping loses nothing the runtime consumes. The composer must still size its canvas to whole frames (`floor(w / frameWidth) * frameWidth`, same for height), never to the raw sheet size, as a guard for packs whose sheets are not frame-aligned; a 927-wide party-cone variant sheet simply has its padding columns clipped by the 896-wide canvas.
 - **Variant axes are sibling files, not rows.** The adapter aliases one index-0 file per layer (`Eyes_01.png`, `Hairstyle_01_01.png`, `Outfit_01_01.png`, ...); the pack ships 7 eye sheets, 200 hairstyle sheets and 132 outfit sheets as siblings. The composer resolves the concrete sheet for a record by replacing the index in the aliased file's name with the record's variant (`eyes: '04'` → `Eyes_04.png`; the record's `hairStyle`/`hairColor` select the hairstyle sheet the same way). One mechanism for all variant layers — do not invent a separate one per layer.
 
-**Recommended Step 0 (real pack only, not blocking):** sit/sleep row coverage for the hair and accessory layers is still unverified — before trusting composed sit/sleep frames, alpha-sample those rows in a handful of hair/accessory sheets and record the answer in `docs/ASSETS.md`.
+Sit/sleep row coverage is **measured, decided, and pinned by Step 0 below** — read it before writing composition code, because it defines which layers a sleep frame contains.
 
 **Files:**
 - Create: `scripts/lib/appearanceComposer.mjs`
@@ -388,6 +389,23 @@ Two real-pack facts shape this task:
   - `composePortrait(contract, adapter, record) → canvas` — 32×32 head-and-shoulders
   - `remapPalette(canvas, from[], to[]) → canvas` — the `characterLayers: false` path
   - `hexToRgba(hex) → [r,g,b,a]`
+
+- [ ] **Step 0 (real pack — BLOCKING): pin sit/sleep row coverage for the curated variants**
+
+The question this step used to ask is answered (pixel pass over the real sheets, 2026-07-29). The 32 px rows of every layer sheet are: r0 preview, r1 idle, r2 walk, **r3 sleep**, r4 sit-right, r5 sit-left (sheets are 656 tall = 20.5 rows; the half row is empty). Measured sleep-row (r3) alpha coverage:
+
+- **Outfits: ZERO sleep-row art** — in every sheet sampled; a universal pack defect, not a bad sample.
+- **Eyes: ZERO sleep-row art** — in all 7 sheets.
+- **Hair: PASSES** — every sampled hairstyle has sleep art.
+- **Accessories: split** — hats (Snapback/Dino/Policeman/Detective/Beanie), Ladybug, Bee, Zombie_Brain, Mustache, Beard and Glasses have sleep art; the Backpack, Gloves, Monocle, Medical_Mask and Party_Cone families have none.
+- **Sit rows (r4/r5): every layer PASSES.**
+
+**Design decision (owner, final — build to it, do not hedge):** composed **sleep frames are body + hair only**. Outfit and eyes are absent by pack design, and the bed's blanket art covers the body, so the missing layers never show on screen. Accessories from the no-sleep-art families simply vanish in sleep frames — **accepted v1 behavior** (they are removed at bedtime, which is arguably correct realism); do not "fix" it by substituting idle-row art or dropping those accessories. The owner verifies the composed sleep look at the first localhost render checkpoint.
+
+What this step does, on the machine with the real pack:
+
+1. **Assert the coverage holds for the CHOSEN curated variants, not samples.** The owner picks the 12 hairstyles and 8 outfits from Task 9a's contact sheets (Plan 1); once picked, alpha-sample rows in each chosen sheet by script — the sleep row (r3) of every chosen **hair** sheet must be non-empty, and the sit rows (r4/r5) of **every** layer in use (bodies, eyes, chosen hairstyles, chosen outfits, accessories) must be non-empty. A chosen hairstyle with an empty sleep row fails this step: pick a different one at the Task 9a checkpoint rather than shipping a bald sleeper.
+2. **Record the outcome in `docs/ASSETS.md`** — the measured row map, the per-layer coverage result for the chosen variants, and the body+hair sleep decision, so the next reader does not re-litigate it from the sheets.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -455,24 +473,29 @@ test('remapPalette never touches transparent pixels', () => {
   assert.equal(out.data[3], 0);
 });
 
-test('a 927px-wide body sheet composes to whole frames (the real-pack crop)', () => {
-  // The real Bodies/Eyes/Hairstyles/Outfits/Accessories sheets are 927x656 —
-  // NOT a whole number of 16px frames (927 = 57*16 + 15). The composer must
-  // crop its canvas to whole frames, never size it to the raw sheet.
+test('a 927px-wide body sheet is cropped onto the 896px shared canvas (the real-pack shape)', () => {
+  // Real pack: Bodies ship 927x656 while Eyes/Hairstyles/Outfits ship
+  // 896x656 — and 896 IS a whole number of 16px frames (56) where 927 is
+  // not. The adapter's rect crops char_body to 896 wide (Plan 1 Task 7);
+  // the composer must land every layer on that shared canvas, sized to
+  // whole frames, never to a raw sheet.
   const dir = mkdtempSync(join(tmpdir(), 'body927-'));
-  writeFileSync(join(dir, 'wide.png'), encodePng(createCanvas(927, 656)));
+  writeFileSync(join(dir, 'body.png'), encodePng(createCanvas(927, 656)));
+  writeFileSync(join(dir, 'layer.png'), encodePng(createCanvas(896, 656)));
   const src = {
     pack: 'wide-fixture',
     capabilities: { characterLayers: true },
-    files: { wide: 'wide.png' },
-    rects: Object.fromEntries(c.characters.parts.map(p => [`char_${p}`, { file: 'wide' }])),
+    files: { body: 'body.png', layer: 'layer.png' },
+    rects: Object.fromEntries(c.characters.parts.map(p => [`char_${p}`,
+      p === 'body' ? { file: 'body', x: 0, y: 0, w: 896, h: 656 } : { file: 'layer' }])),
   };
   writeFileSync(join(dir, 'wide.json'), JSON.stringify(src));
   const wide = loadAdapter(join(dir, 'wide.json'), dir);
   const cv = composeSheet(c, wide, rec('aisha_khan'));
   const fw = c.characters.frameWidth, fh = c.characters.frameHeight;
-  assert.equal(cv.w, Math.floor(927 / fw) * fw);
-  assert.equal(cv.h, Math.floor(656 / fh) * fh);
+  assert.equal(cv.w, Math.floor(896 / fw) * fw, 'the shared canvas is exactly 56 whole frames wide');
+  assert.equal(cv.w, 896);
+  assert.equal(cv.h, Math.floor(656 / fh) * fh, '656px is 20.5 rows — the canvas floors to whole frames');
 });
 ```
 
@@ -554,8 +577,11 @@ export function composeSheet(contract, adapter, record) {
   const parts = contract.characters.parts;
 
   const base = readSprite(adapter, `char_${parts[0]}`);
-  // The real body sheets are 927px wide — NOT a whole number of 16px frames.
-  // Size the canvas to whole frames so every consumer sees frame-aligned art.
+  // readSprite resolves THROUGH the adapter's rect, so the real pack's
+  // char_body arrives already cropped from its raw 927px to the 896px shared
+  // canvas (56 whole frames — Plan 1 Task 7). Flooring to whole frames is a
+  // guard for packs whose resolved sheets are still not frame-aligned; on
+  // the real pack it is a no-op (896 = 56*16).
   const fw = contract.characters.frameWidth;
   const fh = contract.characters.frameHeight;
   const sheetW = Math.floor(base.w / fw) * fw;
@@ -578,6 +604,13 @@ export function composeSheet(contract, adapter, record) {
   // concrete sibling sheet by index replacement in the aliased file's name —
   // see the task header. The fixture pack has one sheet per layer, so there
   // the alias is the sheet; the resolution helper is a no-op for it.
+  //
+  // Sleep row (r3): on the real pack, outfit and eye sheets have NO art in
+  // that row (Step 0) — a composed sleep frame is body+hair by pack design,
+  // and that is the shipped decision (the bed's blanket covers the body).
+  // Do not special-case it here: blitting an empty row is the correct
+  // behavior, not a bug. The Math.min blit clamp below also harmlessly clips
+  // the padding columns of the four 927px-wide party-cone accessory sheets.
   for (const part of parts) {
     if (part === 'accessory' && record.accessory === 'none') continue;
     const layer = readSprite(adapter, `char_${part}`);

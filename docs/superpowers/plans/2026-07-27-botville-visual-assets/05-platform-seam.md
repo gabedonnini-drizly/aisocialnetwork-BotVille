@@ -10,9 +10,9 @@
 
 **Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
-**Depends on:** Plan 2 — the published `venues.json` and `venues.lock.json` — and Plan 1's `test/helpers/siblingRepo.mjs` for locating `$API`. **This is the only plan that touches `aisocialnetwork-api`** — every api-side change, including the one-line `pickFrom` export (Task 32 Step 0), lives here.
+**Depends on:** Plan 2 — the published `venues.json` and `venues.lock.json` — Plan 3 — `venueRegistry.ts`, which Task 33's BotVille-side sync test imports — and Plan 1's `test/helpers/siblingRepo.mjs` for locating `$API`. **This is the only plan that touches `aisocialnetwork-api`** — every api-side change, including the one-line `pickFrom` export (Task 32 Step 0), lives here.
 
-**Exit criterion:** SC-1 holds for every agent and both day types against the live DB; every stored venue is in the published vocabulary; no venue holds more than half the roster at **any** hour — nights included, now that sleep distributes across residences (F-12 resolved per the addendum's night rule); both repos’ vocabulary checks pass.
+**Exit criterion:** SC-1 holds for every agent and both day types against the live DB; every stored venue is in the published vocabulary; no venue holds more than half the roster at **any** hour — nights included, now that sleep distributes across residences (F-12 resolved per the addendum's night rule) and the seeded night-owl minority spreads across the night-open venues; both repos’ vocabulary checks pass.
 
 ---
 
@@ -44,10 +44,10 @@ Every task's requirements implicitly include this section.
 - **Comments in `packages/client/` are English and load-bearing** — they record verified crop coordinates and frame layouts. Read them; preserve them and their intent; never delete or "clean up" an explanatory comment.
 - **`SCHEMA_VERSION = 1`**, exported from `@botville/shared`, and included in every `appearanceHash`.
 - **Path segment rename: `limezu/` → `pack/`** throughout `public/assets/`. No directory, key or string in committed code may name a vendor.
-- **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
+- **The `AgentPresence` boundary is four *required* fields** — `{ id, displayName, spriteSeed, venueId }`, required and unrenamed. Additions are permitted but must be optional; nothing beyond the four may ever be required (addendum §I.4).
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. The pre-existing parameter properties — `packages/client/src/game/Pathfinder.ts:9` and `packages/client/src/game/scenes/InteriorScene.ts:55-58` — are all Phaser-side and never node-tested; leave them, do not copy them, and know that lifting InteriorScene code into a node-tested module will hit this error.
 - **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
@@ -55,6 +55,10 @@ Every task's requirements implicitly include this section.
 - **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
 - **Scope bar (owner, binding):** art-driven changes only. Do not repoint `packages/client/src/lib/api.ts`, do not delete or modify `packages/server/src/world/agentLife.ts`, do not replace SQLite, do not touch the key vault / model picker / heartbeat / MCP registry. This is not the integration work.
+
+---
+
+**Api-repo exemption (this plan only).** The constraints block above is shared verbatim across all six plans and describes the **BotVille** repo. Work performed inside `$API` (`aisocialnetwork-api`) follows *that* repo's conventions instead: CommonJS (`'use strict'`, `require`/`module.exports`), the Node version the api pins (22 — do not add an `engines` bump), and its `tests/` layout under `node --test`. The Node ≥ 24 / ESM / workspace bullets bind only the BotVille side of this plan; everything genuinely cross-repo (no hardcoded sibling paths, no new dependencies, derived test expectations, I-8) binds both.
 
 ---
 
@@ -72,6 +76,7 @@ Every task's requirements implicitly include this section.
 
 **Files (all in the api repo — `$API`, located per «Before you start» above):**
 - Create: `src/db/migrations/037_add_schedule_venue.js`
+- Create: `tests/db/migrations/037_add_schedule_venue.test.js` — the paired migration lint test; every migration since 030 ships one
 - Create: `src/utils/venueVocabulary.js`
 - Create: `config/venues.json`, `config/venues.lock.json`, `config/venues.schema.json` — copies of BotVille's published artifact, its lock and its schema
 - Create: `tests/venueVocabulary.test.js`
@@ -290,6 +295,10 @@ module.exports = { up, down };
 
 **Adjust the export shape** to whatever `035_add_users_concerns.js` uses — Step 1 established it. If migrations there export a single `async function (client)` or take a `pool`, match that.
 
+- [ ] **Step 6b: Write the paired migration lint test**
+
+Every migration since 030 ships a lint test under `tests/db/migrations/`; 037 is no exception. Create `tests/db/migrations/037_add_schedule_venue.test.js` following the pattern of the latest existing migration test (036's) exactly — same requires, same assertion style — adjusted for what 037 declares: the `venue` column (`VARCHAR(64)`, nullable, no CHECK — the vocabulary is another repo's, validated in the writer) and the two indexes, with `down` dropping all three in reverse.
+
 - [ ] **Step 7: Run the migration and the tests**
 
 Run:
@@ -297,7 +306,7 @@ Run:
 ```bash
 cd "$API"
 npm run migrate
-node --test tests/venueVocabulary.test.js
+node --test tests/venueVocabulary.test.js tests/db/migrations/037_add_schedule_venue.test.js
 node -e '
 require("dotenv").config();
 const pg=require("pg");
@@ -307,13 +316,13 @@ p.query("select column_name,data_type,character_maximum_length from information_
 '
 ```
 
-Expected: migration `037_add_schedule_venue.js` applies; 7 tests PASS; the column query prints `[{ column_name: 'venue', data_type: 'character varying', character_maximum_length: 64 }]`.
+Expected: migration `037_add_schedule_venue.js` applies; the 7 vocabulary tests plus the migration lint test PASS; the column query prints `[{ column_name: 'venue', data_type: 'character varying', character_maximum_length: 64 }]`.
 
 - [ ] **Step 8: Commit**
 
 ```bash
 cd "$API"
-git add src/db/migrations/037_add_schedule_venue.js src/utils/venueVocabulary.js config/venues.json config/venues.lock.json config/venues.schema.json tests/venueVocabulary.test.js
+git add src/db/migrations/037_add_schedule_venue.js tests/db/migrations/037_add_schedule_venue.test.js src/utils/venueVocabulary.js config/venues.json config/venues.lock.json config/venues.schema.json tests/venueVocabulary.test.js
 git commit -m "feat(schedules): add users_schedules.venue and the schema-validated venue vocabulary loader"
 ```
 
@@ -327,11 +336,12 @@ Two things at once, because they are the same write. `venue` is chosen from the 
 
 **Every agent's day is independent, and that is a requirement, not a nicety.** The obvious implementation — map each activity to a venue, give every agent the same daily shape — puts all 85 agents in the office from 09:00 to 18:00, in a 20×15 room with four chairs, and leaves the library empty every weekday. It satisfies SC-1 and produces a city that looks like a queue. G-F asks for an *inhabited* city, Task 37's capacity work assumes the roster is spread out, and §10.3 sized the venues on the premise that it is.
 
-Three mechanisms, all pure functions:
+Four mechanisms, all pure functions:
 
 1. **An activity resolves to an affordance; the venues affording it are the pool; the seed picks within it** (addendum §I.1). "Work" resolves to the `work` affordance, which today the office and the library afford — and which one is this agent's business. No activity names a venue, ever.
 2. **Sleep goes home** (addendum §I.2, Part 0 — the night rule that resolves F-12). `deriveHomeVenue(agent, roster, residences)` assigns each agent a residence by roster **creation order**, filling each residence to its *published capacity* before the next opens. Both the roster prefix and the residence instance list are stable, so an existing agent's home never changes when the town grows — with zero stored rows. When moving/marriage land (D-11), a stored column takes precedence via the addendum's `stored ?? derived` registry and this stays the fallback; the registry itself is the platform (MCP) plan set's work, not this plan's.
 3. **Every boundary is seed-derived.** Wake, work start, lunch and bedtime each vary across a three-hour window, so at any given hour the roster is spread across several activities as well as several rooms.
+4. **A seeded night-attendance preference (owner decision — night venues).** The night rule stands: sleep is the default night block and goes home. But `deriveIsNightOwl(spriteSeed)` marks a stable minority of the town as night-owls — a derived axis computed from the seed via the existing `hashString`, stored nowhere. A night-owl's evening runs on into the night life: a block from bedtime to the town's night closing hour — `deriveNightCloseHour`, the latest after-midnight close among the published venues, capped at 02:00 — at a venue **open in that window, chosen by affordance** like every other block; then sleep at home for the remainder. Non-night-owls keep the plain 22–07 night. The night district is thus *mostly* empty, not dead — night-owls attend the night-open venues — while total coverage, the sleep-at-home rule and the crowding invariant all hold unchanged.
 
 **`ACTIVITY_POOLS` never ships — this supersedes F-7.** An earlier draft of this task mapped activity regexes to hardcoded venue-id lists in this repo, which made every new venue a two-repo change and carried an unmatched-activity branch that threw a `ReferenceError` for every weekend schedule (finding F-7: `venueIds` used but never imported, and `'Slow Morning'`/`'Hobbies'` matching no pool). The affordance model removes the error *class*, not the instance: `deriveVenuesAffording` is **total by data** — an activity matching nothing falls back to the venues affording `idle`, and the district always affords `idle`, around the clock (asserted in Plan 2 Task 14). There is no unmatched branch left to throw. Adding a venue is now a data change in one file, in one repo.
 
@@ -354,6 +364,8 @@ Three mechanisms, all pure functions:
   - `deriveVenuesAffording(activity, venues) → venue[]` — the public venues whose `affords` answer the activity; never empty (idle fallback); `home`-role venues are never public candidates
   - `deriveHomeVenue(spriteSeed, roster, residences) → string | null` — creation-order stable home assignment; pure, zero rows
   - `deriveResidenceVenues(venues) → venue[]` — the published homes, in stable instance order
+  - `deriveIsNightOwl(spriteSeed) → boolean` — the seeded night-attendance preference (owner decision); a stable minority, derived from the seed alone, stored nowhere
+  - `deriveNightCloseHour(venues) → number` — how late the night life runs: the latest after-midnight close among public venues, capped at 2; purely from published `hours`
   - `deriveWorkplaceVenue(spriteSeed, venues) → string | null` / `deriveHangoutVenue(spriteSeed, venues) → string | null` — an agent's standing places, from `roles`
   - `deriveVenue(spriteSeed, dayType, startHour, activity, town) → string | null` — the write-time assignment; `town = { venues, roster }`; sleep goes home, everything else is a seeded pick among the affording venues open at that hour
   - `deterministicDay(spriteSeed, dayType, town) → blocks` — the art-free path that actually inhabits the city
@@ -397,7 +409,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const {
   normalizeCoverage, assertTotalCoverage, deriveAffordance, deriveVenuesAffording,
-  deriveVenue, deriveHomeVenue, deriveResidenceVenues,
+  deriveVenue, deriveHomeVenue, deriveResidenceVenues, deriveIsNightOwl,
   deriveWorkplaceVenue, deriveHangoutVenue, deterministicDay,
 } = require('../src/utils/scheduleCoverage');
 const { isValidVenue, venueIds, loadVocabulary } = require('../src/utils/venueVocabulary');
@@ -453,6 +465,7 @@ test('assertTotalCoverage names the offending hour', () => {
 test('every activity resolves to an affordance, and an unknown one to idle', () => {
   assert.equal(deriveAffordance('Sleep'), 'sleep');
   assert.equal(deriveAffordance('Deep Work Sprint'), 'work');
+  assert.equal(deriveAffordance('Night Out'), 'socialize');
   assert.equal(deriveAffordance('Interpretive Yodeling'), 'idle');
   assert.equal(deriveAffordance(''), 'idle');
   assert.equal(deriveAffordance(null), 'idle');
@@ -539,6 +552,45 @@ test("an existing agent's home never changes when the town grows (addendum I.2)"
   for (const seed of ROSTER) {
     assert.equal(deriveHomeVenue(seed, ROSTER, residences),
                  deriveHomeVenue(seed, grown, residences), seed);
+  }
+});
+
+// ── Night venues (owner decision) — a seeded minority attends night life ─
+
+test('night-owls are a stable seeded minority — derived, stored nowhere', () => {
+  const owls = ROSTER.filter(s => deriveIsNightOwl(s));
+  assert.ok(owls.length > 0, 'no night-owls at all — the night would always be sleep-only');
+  assert.ok(owls.length < ROSTER.length / 2,
+    'night-owls must be a minority — sleep stays the default night block');
+  // A function of the seed ALONE (the signature takes nothing else), so
+  // roster growth cannot flip anyone; re-derivation is identical, always.
+  for (const seed of ROSTER) assert.equal(deriveIsNightOwl(seed), deriveIsNightOwl(seed), seed);
+});
+
+test("a night-owl's late block is at a public venue open after midnight (D-12), then sleep at home", () => {
+  const owls = ROSTER.filter(s => deriveIsNightOwl(s));
+  assert.ok(owls.length > 0);
+  for (const seed of owls) {
+    const day = deterministicDay(seed, 'weekday', TOWN);
+    const late = day.find(b => b.start === 0 && b.activity === 'Night Out');
+    assert.ok(late, `${seed} is a night-owl but has no after-midnight block`);
+    const venue = VENUES.find(v => v.id === late.venue);
+    assert.ok(venue, `${seed} goes out to unpublished ${late.venue}`);
+    assert.ok(venue.hours.some(w => w.open <= 0 && 0 < w.close), `${late.venue} is closed after midnight`);
+    assert.equal(venue.roles.includes('home'), false, 'night life happens in public venues');
+    const rest = day.find(b => b.start === late.end && b.activity === 'Sleep');
+    assert.ok(rest, `${seed} must sleep for the remainder of the night`);
+    assert.ok(VENUES.find(v => v.id === rest.venue).roles.includes('home'),
+      `${seed} sleeps in ${rest.venue}, which is not a residence`);
+  }
+});
+
+test('non-night-owls keep the default night: asleep at home after midnight', () => {
+  const sleepers = ROSTER.filter(s => !deriveIsNightOwl(s));
+  assert.ok(sleepers.length > 0);
+  for (const seed of sleepers) {
+    const b = deterministicDay(seed, 'weekday', TOWN).find(x => x.start <= 0 && x.end > 0);
+    assert.equal(b.activity, 'Sleep', seed);
   }
 });
 
@@ -686,6 +738,12 @@ Expected: FAIL — `Cannot find module '../src/utils/scheduleCoverage'`.
  * pure function, zero rows, stable under growth because the residence
  * instance list is append-only.
  *
+ * NIGHT VENUES (owner decision, night-venues amendment): a seeded minority
+ * of night-owls (deriveIsNightOwl — derived, stored nowhere) spends the
+ * front of the night at a venue open in that window, chosen by affordance,
+ * before sleeping at home. Sleep remains the default night block; which
+ * venues host night life is purely `hours` data published by BotVille.
+ *
  * §9.3: 004_add_schedules.js has CHECK (start < end_hour), so 22->07 is
  * illegal — but 22->24 and 00->07 are each legal. The night splits at
  * midnight. Two rows, no migration.
@@ -751,8 +809,42 @@ function assertTotalCoverage(blocks) {
   }
 }
 
-/** Sleep hours. The night block, split at midnight by normalizeCoverage. */
+/**
+ * Default sleep hours. The night block, split at midnight by
+ * normalizeCoverage. Night-owls (below) carve a night-out block from the
+ * front of this window; sleep stays the default for everyone else.
+ */
 const isNight = h => h >= 22 || h < 7;
+
+/**
+ * Seeded night-attendance preference (owner decision, night-venues
+ * amendment): a stable minority of the town prefers going out at night —
+ * the club-goers, the late-gym crowd, the closing-shift regulars. Derived
+ * from the seed ALONE via the existing hash — stored nowhere, so it cannot
+ * drift, and roster growth cannot flip anyone.
+ */
+const NIGHT_OWL_PERCENT = 25;
+function deriveIsNightOwl(spriteSeed) {
+  return hashString(spriteSeed, 'nightowl') % 100 < NIGHT_OWL_PERCENT;
+}
+
+/**
+ * How late the town's night life runs: the latest after-midnight close
+ * among PUBLIC venues, capped at NIGHT_OWL_LATEST. Purely from published
+ * `hours` — late windows split at midnight, so their after-midnight half
+ * has open === 0. A venue gaining a later window extends the night with
+ * zero code change here; a town with no night life returns 0 and every
+ * night-owl degrades to the default sleep block.
+ */
+const NIGHT_OWL_LATEST = 2;
+function deriveNightCloseHour(venues) {
+  const closes = venues
+    .filter(v => !v.roles.includes('home'))
+    .flatMap(v => v.hours)
+    .filter(w => w.open === 0)
+    .map(w => Math.min(w.close, NIGHT_OWL_LATEST));
+  return closes.length ? Math.max(...closes) : 0;
+}
 
 /**
  * Free text -> affordance token. The right-hand side is VOCABULARY, never a
@@ -765,7 +857,7 @@ const ACTIVITY_AFFORDANCES = [
   [/read|study|research|writ|library|learn|book/,     'read'],
   [/coffee|breakfast|lunch|dinner|eat|caf|meal|snack/, 'eat'],
   [/work|meeting|job|shift|project|code|admin/,       'work'],
-  [/social|friend|hang|party|date|chat|visit/,        'socialize'],
+  [/social|friend|hang|party|date|chat|visit|night out|club/, 'socialize'],
   [/errand|shop|market|chore|walk|exercise|outside/,  'wander'],
 ];
 
@@ -912,9 +1004,24 @@ function deterministicDay(spriteSeed, dayType, town) {
   const afternoonStyles = ['Errands', 'Reading', 'Visiting Friends'];
   const afternoon = afternoonStyles[pick('weekendStyle', afternoonStyles.length)];
 
+  // Night venues (owner decision): a night-owl's evening runs on into the
+  // night life — bedtime to the town's night close (≤ 02:00), at a venue
+  // open in that window, then sleep at home for the remainder. The venue is
+  // derived at hour 0, the after-midnight half of the split block, so the
+  // D-12 guarantee (never behind a locked door) holds where it bites.
+  // Everyone else keeps the plain night: sleep, at home, bed -> wake.
+  const nightEnd = deriveIsNightOwl(spriteSeed) ? deriveNightCloseHour(town.venues) : 0;
+  const night = nightEnd > 0
+    ? [
+        { start: bed, end: nightEnd, activity: 'Night Out',
+          venue: deriveVenue(spriteSeed, dayType, 0, 'Night Out', town) },
+        { start: nightEnd, end: wake, activity: 'Sleep', venue: home },
+      ]
+    : [{ start: bed, end: wake, activity: 'Sleep', venue: home }];
+
   const shape = dayType === 'weekday'
     ? [
-        { start: bed, end: wake, activity: 'Sleep', venue: home },
+        ...night,
         { start: wake, end: startWork, activity: 'Breakfast', venue: hangout },
         { start: startWork, end: lunch, activity: 'Work', venue: workplace },
         { start: lunch, end: lunch + 1, activity: 'Lunch', venue: hangout },
@@ -922,7 +1029,7 @@ function deterministicDay(spriteSeed, dayType, town) {
         { start: evening, end: bed, activity: 'Social Time', venue: null },
       ]
     : [
-        { start: bed, end: wake, activity: 'Sleep', venue: home },
+        ...night,
         { start: wake, end: lunch, activity: 'Slow Morning', venue: null },
         { start: lunch, end: lunch + 2, activity: 'Hobbies', venue: null },
         { start: lunch + 2, end: evening, activity: afternoon, venue: null },
@@ -953,6 +1060,7 @@ module.exports = {
   normalizeCoverage, assertTotalCoverage, isNight,
   deriveAffordance, deriveVenuesAffording, deriveVenue,
   deriveHomeVenue, deriveResidenceVenues,
+  deriveIsNightOwl, deriveNightCloseHour,
   deriveWorkplaceVenue, deriveHangoutVenue,
   deterministicDay,
 };
@@ -961,7 +1069,7 @@ module.exports = {
 - [ ] **Step 4: Run the coverage tests**
 
 Run: `cd "$API" && node --test tests/scheduleCoverage.test.js`
-Expected: PASS — 23 tests. Three groups matter most: the F-7 regression pins (`'Slow Morning'` / `'Hobbies'` must resolve to venues, totally), the night-rule group (sleep lands in the agent's own residence, stably under growth), and the occupancy group — which now covers **all 24 hours**, because with F-12 resolved there is no window in which the crowding invariant is allowed to fail.
+Expected: PASS — 26 tests. Four groups matter most: the F-7 regression pins (`'Slow Morning'` / `'Hobbies'` must resolve to venues, totally), the night-rule group (sleep lands in the agent's own residence, stably under growth), the night-owl group (a stable seeded minority spends the front of the night at a night-open public venue, then sleeps at home — everyone else keeps the default night), and the occupancy group — which now covers **all 24 hours**, because with F-12 resolved there is no window in which the crowding invariant is allowed to fail; the night-owl minority is small enough that it never threatens the half-roster bound.
 
 - [ ] **Step 5: Wire venue into the LLM generator**
 

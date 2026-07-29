@@ -26,10 +26,10 @@ Every task's requirements implicitly include this section.
 - **Comments in `packages/client/` are English and load-bearing** — they record verified crop coordinates and frame layouts. Read them; preserve them and their intent; never delete or "clean up" an explanatory comment.
 - **`SCHEMA_VERSION = 1`**, exported from `@botville/shared`, and included in every `appearanceHash`.
 - **Path segment rename: `limezu/` → `pack/`** throughout `public/assets/`. No directory, key or string in committed code may name a vendor.
-- **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
+- **The `AgentPresence` boundary is four *required* fields** — `{ id, displayName, spriteSeed, venueId }`, required and unrenamed. Additions are permitted but must be optional; nothing beyond the four may ever be required (addendum §I.4).
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. The pre-existing parameter properties — `packages/client/src/game/Pathfinder.ts:9` and `packages/client/src/game/scenes/InteriorScene.ts:55-58` — are all Phaser-side and never node-tested; leave them, do not copy them, and know that lifting InteriorScene code into a node-tested module will hit this error.
 - **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
@@ -46,6 +46,7 @@ Every task's requirements implicitly include this section.
 - **Task 3b** — Delete the QA symlink compatibility layer (must follow Task 3)
 - **Task 20** — The golden gate
 - **Task 35** — Deployment — bake in the real pipelines, Docker for parity
+- **Task 38b** — The LimeZu credit link — a licence obligation, not decoration
 - **Task 39** — Hero re-render
 
 ---
@@ -137,8 +138,12 @@ if (!existsSync(join(ROOT, 'assets-src'))) {
   process.exit(1);
 }
 
-const run = f => execFileSync(process.execPath, [f], { cwd: ROOT, stdio: 'inherit' });
-run(join(ROOT, 'scripts', 'sync-assets.mjs'));
+const run = (f, ...args) => execFileSync(process.execPath, [f, ...args], { cwd: ROOT, stdio: 'inherit' });
+// Explicit pack arguments, never a bare call: after Plan 2 Task 19a the
+// script DEFAULTS to the fixture pack, and a bare invocation here would
+// silently copy fixture character sheets into a baseline that claims to
+// describe the real art.
+run(join(ROOT, 'scripts', 'sync-assets.mjs'), 'limezu', 'assets-src');
 run(district);
 run(interiors);
 
@@ -191,7 +196,7 @@ npm run golden:capture
 npm run dev
 ```
 
-Expected: `sync-assets: copied 90/90` with no `MISSING` block — the script's 61 hardcoded `[source, destination]` pair literals expand to **90 files at runtime** (39 `FILES` + 22 `PROPS` + 8 looped fence parts + 9 office singles + 12 premade character sheets); `district.tmj: 48x46, atlas of 23 tiles, objects: 272`; four interior lines; then `golden baseline: 121 images (<m> generated), 5 tilemaps`. The client at http://localhost:5173 renders the district with buildings, trees, lamps and agents — no missing-texture placeholders.
+Expected: `sync-assets: 7 runtime sheet(s) copied from pack "limezu"` — the count is `contract.runtimeSheets.length`, not a magic number, and the script exits non-zero if any source is missing, so a clean line IS the no-missing-files check. (Plan 2 Task 19a runs before this plan and derived the copy list from the contract; its old 61 hardcoded pair literals, which expanded to 90 files, are gone. If you are somehow running this task before Plan 2 — it tolerates any position in the sequence — the pre-19a script prints `copied 90/90` from that hardcoded list instead.) Then `district.tmj: 48x46, atlas of 23 tiles, objects: 272`; four interior lines; then `golden baseline: <n> images (<m> generated), 5 tilemaps` — `<m>` must be at least one image per contract prop plus the two ground atlases (the script refuses to write a partial baseline), and `<n>` is `<m>` plus the synced runtime sheets. The client at http://localhost:5173 renders the district with buildings, trees, lamps and agents — no missing-texture placeholders.
 
 If `sync-assets.mjs` reports missing files, its path does not match your unpack layout. Where to fix it depends on where you are in the sequence: **before Task 19a**, the paths live in `scripts/sync-assets.mjs`'s explicit list; **after Task 19a**, the list is derived from the contract and the paths live in the `files` block of `sources/limezu.json`. Record the correction in `docs/ASSETS.md` either way.
 
@@ -283,7 +288,7 @@ node scripts/png-grid.mjs "assets-src/interiors/2_Characters/Character_Generator
 ls "assets-src/interiors/2_Characters/Character_Generator"
 ```
 
-Expected: the five layer directories listed above, and the layer sheets at 927×656 (whole-frame cropping is Plan 4 Task 27's job). If your unpacked edition differs — layers missing, different sizes — stop and reconcile before Task 27: the fallback (`characterLayers: false`, palette-remap of a premade base; variety drops to `bases × palettes`, nothing breaks — spec §7.3) still exists, but flipping to it is a decision to record, not a silent fix.
+Expected: the five layer directories listed above; Bodies sheets at **927×656** and Eyes/Hairstyles/Outfits sheets at **896×656** (Accessories are 896×656 except the four 927-wide `Accessory_19_Party_Cone_*` sheets). The 31-column difference is padding — art only in Body_01's unused lift/throw rows — and the adapter's `char_body` crop rect (Plan 1 Task 7) lands every layer on the 896×656 shared canvas, so `validate:contract` passes block 4b against these mixed raw widths. If your unpacked edition differs — layers missing, different sizes — stop and reconcile before Task 27: the fallback (`characterLayers: false`, palette-remap of a premade base; variety drops to `bases × palettes`, nothing breaks — spec §7.3) still exists, but flipping to it is a decision to record, not a silent fix.
 
 - [ ] **Step 8: Resolve U-2 — the licence text**
 
@@ -338,7 +343,7 @@ interiors/Room_Builder_16x16.png                    interiors/themes
 interiors/animated
 ```
 
-They are a compatibility shim, not a fix. The durable fix is already in place: the `files` blocks in `sources/limezu.json` (Plan 1 Tasks 5–7) name the **real** pack paths, so nothing in the new pipeline needs the links. What *does* need them is the past — `scripts/sync-assets.mjs`'s legacy list and the frozen `build-district.mjs` / `build-interiors.mjs`, which Task 3 just ran to capture the golden baseline.
+They are a compatibility shim, not a fix. The durable fix is already in place: the `files` blocks in `sources/limezu.json` (Plan 1 Tasks 5–7) name the **real** pack paths, so nothing in the new pipeline needs the links. What *does* need them is the past — the frozen `build-district.mjs` / `build-interiors.mjs`, which Task 3 just ran to capture the golden baseline (and the pre-Task-19a `sync-assets.mjs` hardcoded list, which Plan 2 has already retired by the time this plan runs in order).
 
 **Ordering is the whole task: Task 3 precedes Task 3b.** The baseline must be captured through the legacy paths *before* the links die. From this task onward, the legacy scripts (and any pre-Task-19a `sync-assets.mjs`) are broken by design — if you ever need to re-capture the baseline from scratch, recreate the links, capture, and delete them again.
 
@@ -369,7 +374,7 @@ npm run validate:contract -- limezu assets-src
 npm test
 ```
 
-Expected: `contract validation OK` with pixels checked, tests PASS. Every `files` entry resolves through its real path.
+Expected: `contract validation OK` with pixels checked, tests PASS. Every `files` entry resolves through its real path, and the char_* one-canvas check (block 4b) passes because `char_body`'s crop rect lands every layer on the 896×656 shared canvas despite the Bodies files' raw 927px width.
 
 ---
 
@@ -948,7 +953,11 @@ services:
       NODE_ENV: production
       PORT: 3001
     env_file:
-      - packages/server/.env
+      # Long syntax deliberately: the file is gitignored and absent on a
+      # fresh clone, and without `required: false` `docker compose up`
+      # hard-fails before a single container starts.
+      - path: packages/server/.env
+        required: false
     volumes:
       - botville-data:/app/data
 
@@ -1010,16 +1019,22 @@ docker run --rm --entrypoint sh botville-client -c 'ls /usr/share/nginx/html/ass
 
 Expected: fixture-derived props. With the default `PACK`, no licensed pixel is present.
 
-Vercel, the art-free path — simulate what a Git build does:
+Vercel, the art-free path — simulate what a Git build does. First, one-time: the Vercel CLI is not in `devDependencies`, so add it — `npm install --save-dev vercel` — and commit the `package.json`/`package-lock.json` change in Step 12; that pins the version `npx vercel` resolves here and covers the bare `vercel` calls in `deploy:client` (Step 4) instead of prompting an unpinned network install.
 
 ```bash
-git stash -u                      # make the tree look like a fresh clone
+# Set aside tracked + untracked changes, TAGGED — the stash stack is shared
+# state, so restore your own entry by tag; never bare `git stash` / `pop`,
+# which grab whatever happens to be on top.
+git stash push -u -m "task35-vercel-sim"
 npm ci && npx vercel build
 ls .vercel/output/static/assets/tilemaps
-git stash pop
+git stash apply "$(git rev-parse 'stash^{/task35-vercel-sim}')"
+# once the tree looks right: git stash drop the task35-vercel-sim entry
 ```
 
-Expected: the build succeeds with no `assets-src/`, and the tilemaps are there. **This is the check that matters most in this task** — it proves a public deploy renders a city without shipping a licensed pixel.
+Note what the stash does **not** do: ignored files — `assets-src/` included — are not stashed and stay on disk, so this is not a byte-clean clone. It does not need to be: the claim under test is that the Git-build command never *reads* the licensed art, and it cannot — `buildCommand`'s bare `bake:world` defaults to the fixture pack, and a real Git build has no `assets-src/` at all.
+
+Expected: the build succeeds without touching `assets-src/`, and the tilemaps are there. **This is the check that matters most in this task** — it proves a public deploy renders a city without shipping a licensed pixel.
 
 Railway, the server path:
 
@@ -1048,7 +1063,7 @@ with `vercel deploy --prebuilt`. The packs never enter the repo or a Git build.
 Add a `Docker` section to `README.md` covering the single compose file, the `BOTVILLE_PACK` knob, and the `roster/roster.json` shape — framed as local parity, not as the deployment.
 
 ```bash
-git add Dockerfile.client Dockerfile.server docker-compose.yml nginx.conf .dockerignore vercel.json package.json scripts/deploy-server.mjs README.md DEPLOY.md test/deploy-config.test.mjs roster/.gitkeep
+git add Dockerfile.client Dockerfile.server docker-compose.yml nginx.conf .dockerignore vercel.json package.json package-lock.json scripts/deploy-server.mjs README.md DEPLOY.md test/deploy-config.test.mjs roster/.gitkeep
 git commit -m "feat(deploy): bake the world in the Vercel and deploy:client pipelines; Docker for local parity"
 ```
 
@@ -1058,11 +1073,20 @@ git commit -m "feat(deploy): bake the world in the Vercel and deploy:client pipe
 
 The Modern Interiors and Modern UI licences **require** credit; the addendum
 (Part III.1) records that no task covered it. The credit is one permanent,
-clickable line in the client UI: `Art: LimeZu` → `https://limezu.itch.io/`.
+clickable line in the client UI: `Art: LimeZu` → `https://limezu.itch.io/`,
+plus a `Credits` line in `README.md`.
+
+**Explicit carve-out from the vendor-name-scrubbing rule.** The Global
+Constraint "no directory, key or string in committed code may name a vendor"
+governs asset *paths and keys* — it does **not** apply to this user-facing
+attribution. The licence requires the name to be visible; scrubbing it here
+would be a licence violation, not hygiene. `ArtCredit.tsx`, its test and the
+README `Credits` line are the sanctioned places for the string "LimeZu".
 
 **Files:**
 - Modify: `packages/client/src/App.tsx` — mount the credit line
 - Create: `packages/client/src/ui/ArtCredit.tsx`
+- Modify: `README.md` — a `Credits` line
 - Test: `test/art-credit.test.mjs`
 
 **Interfaces:**
@@ -1121,6 +1145,16 @@ export function ArtCredit() {
 In `packages/client/src/App.tsx`, import it and render `<ArtCredit />` as the
 last child of the root element (beside the existing overlay mounts).
 
+In `README.md`, add a `Credits` line (near the pack buy-list Task 3 Step 9
+rewrote is the natural spot):
+
+```markdown
+## Credits
+
+Art: [LimeZu](https://limezu.itch.io/) — Modern Interiors, Modern Exteriors,
+Modern Office, Modern Farm and Modern UI. Attribution is a licence condition.
+```
+
 - [ ] **Step 4: Run to verify it passes**
 
 Run: `npm test -- --test-name-pattern="LimeZu"`
@@ -1129,7 +1163,7 @@ Expected: PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add packages/client/src/ui/ArtCredit.tsx packages/client/src/App.tsx test/art-credit.test.mjs
+git add packages/client/src/ui/ArtCredit.tsx packages/client/src/App.tsx README.md test/art-credit.test.mjs
 git commit -m "feat: LimeZu attribution link (licence requirement)"
 ```
 
@@ -1189,12 +1223,16 @@ If the recorder references either, update it. Do not change its framing or durat
 - [ ] **Step 4: Bake with the real pack and record**
 
 ```bash
-node scripts/sync-assets.mjs
+node scripts/sync-assets.mjs limezu assets-src
 npm run bake:world -- limezu assets-src
 npm run bake:agents -- --pack limezu --src assets-src --roster roster/roster.json
 npm run build
 node scripts/record-hero.mjs
 ```
+
+Every stage names the real pack — `sync-assets.mjs` included: since Plan 2
+Task 19a it defaults to the fixture pack, and a bare call would put fixture
+character sheets in the hero render.
 
 Expected: the recorder writes all four files. Open `district-night.png` and confirm: real LimeZu art, lit windows and street lamps under the night tint, sharp pixel edges at zoom 2 (no shimmer — that is Task 36 visible), and agents with distinct appearances rather than sixteen repeats.
 

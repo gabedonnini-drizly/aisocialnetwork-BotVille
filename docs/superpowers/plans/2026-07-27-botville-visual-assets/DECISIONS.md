@@ -41,6 +41,10 @@ revisions are not started.
 | D-12 | **Day/night routines and per-venue opening hours are in scope** for the foundation. |
 | D-13 | **Staged behaviours — all four senses are wanted:** multi-step activities within a slot, behaviours that unlock over time, phased rollout of our own build, and an agent state machine. |
 | D-14 | **The foundation must scale to D-11..D-13 with minimal rewrite,** while staying simple at the start. |
+| D-15 | **Doorless residences confirmed for v1** (Track C: interiors jump-reachable, district doors a follow-up) — **but the night district is not dead:** night-open venues (the speakeasy/club, gym, restaurant-type venues) carry night `hours` windows, and agents form a **seeded night-attendance preference** (derived from the agent seed, no stored columns). Night streets are mostly — not entirely — empty. (2026-07-29 pre-flight decision batch.) |
+| D-16 | **Variant curation is the owner's:** the 12 hairstyles / 8 outfits are picked by the owner from the Plan 1 Task 9a contact sheets, at that human-eye checkpoint. |
+| D-17 | **Sleep frames compose body + hair only.** The pack has no sleep-row art for outfits or eyes (verified by pixel measurement 2026-07-29); the bed's blanket art covers the body. Accessory families without sleep art (backpack, gloves, monocle, medical mask, party cone) vanish in bed — accepted v1 behavior. Owner verifies the look at the first localhost render checkpoint. |
+| D-18 | **LimeZu attribution ships with the app.** The pack licence's "Credits required" is binding: a user-visible credit (limezu.itch.io) in the client UI plus a README line. The vendor-name-scrubbing rule does not apply to this user-facing credit. |
 
 ---
 

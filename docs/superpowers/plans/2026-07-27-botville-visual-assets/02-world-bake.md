@@ -26,10 +26,10 @@ Every task's requirements implicitly include this section.
 - **Comments in `packages/client/` are English and load-bearing** — they record verified crop coordinates and frame layouts. Read them; preserve them and their intent; never delete or "clean up" an explanatory comment.
 - **`SCHEMA_VERSION = 1`**, exported from `@botville/shared`, and included in every `appearanceHash`.
 - **Path segment rename: `limezu/` → `pack/`** throughout `public/assets/`. No directory, key or string in committed code may name a vendor.
-- **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
+- **The `AgentPresence` boundary is four *required* fields** — `{ id, displayName, spriteSeed, venueId }`, required and unrenamed. Additions are permitted but must be optional; nothing beyond the four may ever be required (addendum §I.4).
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. The pre-existing parameter properties — `packages/client/src/game/Pathfinder.ts:9` and `packages/client/src/game/scenes/InteriorScene.ts:55-58` — are all Phaser-side and never node-tested; leave them, do not copy them, and know that lifting InteriorScene code into a node-tested module will hit this error.
 - **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
@@ -364,13 +364,15 @@ Transcribe the four `buildRoom({...})` calls from `build-interiors.mjs:230-360` 
 
 `roles`, `affords` and `hours` come from the 2026-07-29 addendum §I.1 (which revises spec §5.3): `roles` is what the venue is to an agent's life, `affords` the activities it supports, `hours` its opening windows (`[{open, close}]`, whole hours; a venue open across midnight splits at midnight into two entries, mirroring the schedule convention). The platform's schedule writer places agents by **querying `affords`**, never by naming a venue id — Plan 5 Task 32 is the consumer. Note the dorm's role is `hangout`, **not** `home`: per the addendum's night rule (Part 0, resolving F-12), sleeping agents are present in their own residence (Task 14a), and the dorm interior — real art, worth keeping — becomes a lounge rather than the universal night bucket.
 
+**The town has night life (owner decision, night-venues amendment).** Venues that plausibly host it carry a late window, split at midnight per the convention above — here that is the café, the restaurant-like descriptor, open into the small hours (`[{open: 7, close: 24}, {open: 0, close: 2}]`). No new venue and no new field: night life is nothing but `hours` data, and Plan 5's seeded night-owl minority finds it by affordance among the venues open in that window (the dorm and the district, both `0–24`, guarantee the window is never empty). A future gym or club is a new descriptor with a night window — a data addition, not a code change.
+
 **Files:**
 - Create: `venues/office/venue.json`, `venues/cafe/venue.json`, `venues/dorm/venue.json`, `venues/library/venue.json`
 - Test: `test/venue-descriptors.test.mjs`
 
 **Interfaces:**
 - Consumes: `VenueDescriptor` (Task 2), `loadContract()` (Task 4).
-- Produces: four descriptor files conforming to `VenueDescriptor`. Task 15 bakes them; Task 21 loads them at runtime; Task 18 publishes their `{id,label,indoor,capacity}` into `venues.json`.
+- Produces: four descriptor files conforming to `VenueDescriptor`. Task 15 bakes them; Task 21 loads them at runtime; Task 18 publishes their `{id,label,indoor,capacity,archetype,roles,affords,hours}` into `venues.json`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -446,6 +448,12 @@ test('every descriptor carries the affordance fields (addendum I.1)', () => {
   }
 });
 
+test('the café stays open past midnight — the night-venues window (owner decision)', () => {
+  const cafe = load('cafe');
+  assert.ok(cafe.hours.some(w => w.open === 0 && w.close >= 2),
+    'the café must carry an after-midnight window (split at midnight, never wrapped) so night-owls have an indoor venue');
+});
+
 test('the dorm is a hangout, not a home — sleep happens in residences (F-12)', () => {
   const dorm = load('dorm');
   assert.deepEqual(dorm.roles, ['hangout']);
@@ -456,7 +464,7 @@ test('the dorm is a hangout, not a home — sleep happens in residences (F-12)',
 test('descriptor ids match their directory', () => {
   // `_`-prefixed entries are not venues — venues/_archetypes/ holds archetype
   // files (Task 14a).
-  for (const dir of readdirSync('venues').filter(d => !d.startsWith('_')))
+  for (const dir of readdirSync('venues').filter(d => !d.startsWith('_') && !d.startsWith('.')))
     assert.equal(load(dir).id, dir);
 });
 ```
@@ -529,7 +537,7 @@ From `build-interiors.mjs:261-297`. The comment at 277-279 explains the 3.5-tile
   "capacity": 9,
   "roles": ["hangout", "work"],
   "affords": ["eat", "socialize", "read"],
-  "hours": [{ "open": 7, "close": 22 }],
+  "hours": [{ "open": 7, "close": 24 }, { "open": 0, "close": 2 }],
   "ground": { "wallA": "wallCafeA", "wallB": "wallCafeB", "floor": "floorCafe" },
   "furniture": [
     { "name": "counter_wide", "at": [2, 3.6] },
@@ -670,7 +678,7 @@ From `build-interiors.mjs:329-360`.
 - [ ] **Step 7: Run tests and the validator**
 
 Run: `npm test && npm run validate:contract`
-Expected: 9 new tests PASS; `contract validation OK: pack "fixture", 4 venue(s), pixels checked`.
+Expected: 10 new tests PASS; `contract validation OK: pack "fixture", 4 venue(s), pixels checked`.
 
 - [ ] **Step 8: Commit**
 
@@ -1900,6 +1908,8 @@ git commit -m "feat(bake): VenueBaker for the district — fence, crops, glows a
 
 One entry point that runs the whole world bake, and the vendor-name rename that the design exists to make possible. The bake also publishes `venues.json` — **BotVille is the only authority for the venue vocabulary** (I-8), and this is where it speaks.
 
+The bake also emits the **generated registry module**, `venues.generated.ts`, into `generatedDir`: the client cannot read `venues/` at runtime, so the full descriptor array is generated as a TypeScript module Vite bundles statically — Plan 3 Task 21's `venueRegistry.ts` imports it. This is what `generatedDir` exists for; Task 25's fixture-venue test asserts the emission.
+
 Two addendum obligations land here too. **Residence instances join the bake** (Task 14a): the archetype is expanded against `town/town.json` and each instance bakes exactly like a hand-authored interior — same `.tmj` path, same published entry. And **the published entries carry `roles` / `affords` / `hours` / `archetype`** (addendum §I.1) — these fields are the reason the file exists: the platform's schedule writer places agents by querying them (Plan 5 Task 32). Per the addendum's Conventions table, the artifact is governed by `schemas/venues.schema.json`, published beside the data. The schema file is the canonical shape statement; mechanical validation is dependency-free at both ends — this repo's tests assert the shape the schema declares (no JSON-Schema engine exists in either repo and no new dependency is permitted), and the api's loader re-asserts it at load time (Plan 5 Task 31). A shared ajv-style validator, if ever wanted, is the MCP plan set's call, not this plan's.
 
 **`worldBake()` takes its output directories as required arguments.** Not defaults — arguments. A library function whose default is "write into the repo" turns every test that calls it into a source-tree mutation, and this one is called eight times by its own test file. The CLI wrapper at the bottom of the module supplies the repo paths; the function itself has no opinion. Step 6 asserts that `npm test` leaves the tree clean, which is the check that keeps it honest.
@@ -1907,6 +1917,7 @@ Two addendum obligations land here too. **Residence instances join the bake** (T
 **Files:**
 - Create: `scripts/world-bake.mjs`
 - Create: `schemas/venues.schema.json`
+- Create (bake outputs, committed in Step 6): `packages/client/public/assets/venues.json`, `packages/client/public/assets/venues.lock.json`, `packages/client/public/assets/venues.schema.json`, `packages/client/src/game/venues.generated.ts`
 - Modify: `package.json` — `bake:world` script
 - Modify: `.gitignore:22-24` — `limezu/` → `pack/`, add `baked/`
 - Test: `test/bake/world-bake.test.mjs` (slow suite — it encodes ~70 PNGs per run)
@@ -1926,6 +1937,8 @@ Two addendum obligations land here too. **Residence instances join the bake** (T
   - `<outDir>/tilemaps/<venue>.tmj` — one per venue **including residence instances**
   - `<outDir>/venues.json` — `PublishedVenue[]`, sorted by `id`, each entry carrying `id, label, indoor, capacity, archetype, roles, affords, hours`
   - `<outDir>/venues.schema.json` — a copy of `schemas/venues.schema.json`, published beside the data (Conventions table)
+  - `<outDir>/venues.lock.json` — `{ sha256, count, schemaVersion }` over the published artifact, so the platform can prove its copy intact without this repo on disk (Plan 5 Tasks 31/33 consume it)
+  - `<generatedDir>/venues.generated.ts` — the full `VenueDescriptor[]` as a generated TS module for Vite to bundle statically (Plan 3 Task 21's `venueRegistry.ts` imports it)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1986,7 +1999,7 @@ test('one tilemap per venue, residence instances included', () => {
   // Derived, not transcribed: authored venue dirs plus the residence
   // instances the town snapshot provisions (Task 14a).
   const town = JSON.parse(readFileSync('town/town.json', 'utf8'));
-  const authored = readdirSync('venues').filter(d => !d.startsWith('_'));
+  const authored = readdirSync('venues').filter(d => !d.startsWith('_') && !d.startsWith('.'));
   const instances = deriveResidenceInstances(town,
     JSON.parse(readFileSync('venues/_archetypes/house.json', 'utf8'))).map(v => v.id);
   assert.deepEqual(readdirSync(join(out, 'tilemaps')).sort(),
@@ -2003,7 +2016,7 @@ test('venues.json publishes the vocabulary sorted by id (I-8)', () => {
   const { out } = bake();
   const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
   assert.deepEqual(pub.map(v => v.id), [...pub.map(v => v.id)].sort());
-  const authored = readdirSync('venues').filter(d => !d.startsWith('_'));
+  const authored = readdirSync('venues').filter(d => !d.startsWith('_') && !d.startsWith('.'));
   for (const id of authored) assert.ok(pub.some(v => v.id === id), id);
   for (const v of pub) {
     assert.deepEqual(Object.keys(v).sort(),
@@ -2036,6 +2049,17 @@ test('the published schema ships beside the data (Conventions table)', () => {
   assert.deepEqual(
     JSON.parse(readFileSync(join(out, 'venues.schema.json'), 'utf8')),
     JSON.parse(readFileSync('schemas/venues.schema.json', 'utf8')));
+});
+
+test('the generated registry module lands in generatedDir, carrying every venue', () => {
+  // generatedDir is REQUIRED because this write exists: Plan 3 Task 21's
+  // venueRegistry.ts imports the module Vite bundles statically.
+  const { gen } = bake();
+  const src = readFileSync(join(gen, 'venues.generated.ts'), 'utf8');
+  assert.ok(src.startsWith('// GENERATED by scripts/world-bake.mjs'));
+  assert.ok(src.includes('export const VENUES: VenueDescriptor[] ='));
+  const authored = readdirSync('venues').filter(d => !d.startsWith('_') && !d.startsWith('.'));
+  for (const id of authored) assert.ok(src.includes(`"id": "${id}"`), id);
 });
 
 test('the bake is deterministic across runs', () => {
@@ -2143,9 +2167,10 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
   const adapter = loadAdapter(`sources/${pack}.json`, srcRoot);
 
   // `_`-prefixed entries are archetypes (venues/_archetypes/), not venues.
+  // Dotfiles (.DS_Store and friends) are not venues either — skip, don't throw.
   const dirs = venuesDirs ?? [join(ROOT, 'venues')];
   const authored = dirs.flatMap(dir => readdirSync(dir)
-    .filter(id => !id.startsWith('_'))
+    .filter(id => !id.startsWith('_') && !id.startsWith('.'))
     .map(id => JSON.parse(readFileSync(join(dir, id, 'venue.json'), 'utf8'))));
 
   // Residence instances (addendum §I.2/I.3): derived from the town snapshot,
@@ -2208,6 +2233,16 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
   const publishedJson = JSON.stringify(published, null, 2) + '\n';
   write(join(outDir, 'venues.json'), publishedJson);
 
+  // The client cannot read venues/ at runtime, so the registry is generated
+  // into a TypeScript module Vite bundles statically — Plan 3 Task 21's
+  // venueRegistry.ts imports it. This write is why generatedDir exists.
+  const generated = `// GENERATED by scripts/world-bake.mjs — do not edit.
+import type { VenueDescriptor } from '@botville/shared';
+
+export const VENUES: VenueDescriptor[] = ${JSON.stringify(venues, null, 2)};
+`;
+  write(join(generatedDir, 'venues.generated.ts'), generated);
+
   // The canonical schema travels with the artifact (Conventions table).
   write(join(outDir, 'venues.schema.json'), readFileSync(join(ROOT, 'schemas', 'venues.schema.json')));
 
@@ -2267,7 +2302,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       "affords": {
         "type": "array",
         "minItems": 1,
-        "items": { "type": "string", "minLength": 1 },
+        "items": { "enum": ["sleep", "read", "eat", "work", "socialize", "wander", "idle"] },
         "uniqueItems": true
       },
       "hours": {
@@ -2290,6 +2325,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
 `hours` windows never wrap (`open < close` is asserted by the descriptor tests): a venue open across midnight carries two entries, the same split-at-midnight convention schedules use (spec §9.3).
 
+`affords` is a **closed enum**, not free strings: the platform's placement machine keys on these exact seven tokens (Plan 5 Task 32's `ACTIVITY_AFFORDANCES` resolves every activity to one of them), so a token outside the set could never match anything and would fail silently. Closing the enum makes a typo'd or invented token a shape violation both ends catch instead. Adding an affordance is a deliberate two-file change — this schema plus the Plan 5 resolution table — which is exactly the visibility a new activity KIND deserves.
+
 - [ ] **Step 4: Wire the script and fix `.gitignore`**
 
 Root `package.json`, in `"scripts"`:
@@ -2309,19 +2346,19 @@ packages/client/public/assets/ui/pack/
 packages/client/public/assets/baked/
 ```
 
-`venues.json` is a bake output but **is committed** — the platform's CI check (Task 33) compares against it. So is `venues.schema.json`, the shape statement travelling beside it.
+`venues.json` is a bake output but **is committed** — the platform's CI check (Task 33) compares against it. So are `venues.lock.json` (Task 33's lock check reads it from the tree) and `venues.schema.json`, the shape statement travelling beside it.
 
 - [ ] **Step 5: Run the bake and the tests**
 
 Run: `npm run bake:world && npm run test:all && git status --porcelain`
-Expected: `world bake OK: 2 atlases, 68 props, 18 venues -> .../public/assets` (the numbers come from the contract, `venues/` and `town/town.json` — 5 authored venues plus `ceil(85 / 7) = 13` residence instances; the test asserts they agree rather than pinning them). Then the fast suite passes, then `test/bake/world-bake.test.mjs` passes, and `git status --porcelain` shows only the intended new files — the bake outputs are gitignored and `venues.json` + `venues.schema.json` are the deliberate additions.
+Expected: `world bake OK: 2 atlases, 68 props, 18 venues -> .../public/assets` (the numbers come from the contract, `venues/` and `town/town.json` — 5 authored venues plus `ceil(85 / 7) = 13` residence instances; the test asserts they agree rather than pinning them). Then the fast suite passes, then `test/bake/world-bake.test.mjs` passes, and `git status --porcelain` shows only the intended new files — the bake outputs are gitignored and `venues.json` + `venues.lock.json` + `venues.schema.json` + `venues.generated.ts` are the deliberate additions.
 
 The `clean tree` test is the one to watch. It fails if any suite writes into the repo, which is exactly what would happen if `outDir`/`generatedDir` had defaults.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add scripts/world-bake.mjs schemas/venues.schema.json package.json .gitignore test/bake/world-bake.test.mjs test/bake/zz-clean-tree.test.mjs packages/client/public/assets/venues.json packages/client/public/assets/venues.schema.json
+git add scripts/world-bake.mjs schemas/venues.schema.json package.json .gitignore test/bake/world-bake.test.mjs test/bake/zz-clean-tree.test.mjs packages/client/public/assets/venues.json packages/client/public/assets/venues.lock.json packages/client/public/assets/venues.schema.json packages/client/src/game/venues.generated.ts
 git commit -m "feat(bake): world-bake entry point, affordance-tagged vocabulary with residence instances, limezu->pack rename"
 ```
 
@@ -2619,7 +2656,7 @@ The point is fewer hardcoded paths, not different output. With the licensed
 pack present the old and new scripts must place the same runtime sheets:
 
 ```bash
-node test/golden/legacy/../../../scripts/sync-assets.mjs limezu assets-src
+node scripts/sync-assets.mjs limezu assets-src
 ls packages/client/public/assets/sprites/pack/
 ```
 
@@ -2708,7 +2745,7 @@ test('it joins the published vocabulary with no code change (G-C)', () => {
   assert.deepEqual(sp, {
     id: 'speakeasy', label: 'Speakeasy', indoor: true, capacity: 3,
     archetype: 'speakeasy', roles: ['hangout'], affords: ['socialize', 'idle'],
-    hours: [{ open: 18, close: 24 }],
+    hours: [{ open: 18, close: 24 }, { open: 0, close: 2 }],
   });
 });
 
@@ -2749,7 +2786,7 @@ Expected: FAIL — `ENOENT ... test/fixtures/venues/speakeasy/venue.json`.
   "capacity": 3,
   "roles": ["hangout"],
   "affords": ["socialize", "idle"],
-  "hours": [{ "open": 18, "close": 24 }],
+  "hours": [{ "open": 18, "close": 24 }, { "open": 0, "close": 2 }],
   "ground": { "wallA": "wallLibA", "wallB": "wallLibB", "floor": "floorDorm" },
   "furniture": [
     { "name": "counter_wide", "at": [4, 4] },

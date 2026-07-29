@@ -84,7 +84,7 @@ Every `VenueDescriptor` — and the published `venues.json` — gains three fiel
   "archetype": "cafe",
   "roles": ["hangout", "work"],
   "affords": ["eat", "socialize", "read"],
-  "hours": { "open": 7, "close": 22 }
+  "hours": [{ "open": 7, "close": 22 }]
 }
 ```
 

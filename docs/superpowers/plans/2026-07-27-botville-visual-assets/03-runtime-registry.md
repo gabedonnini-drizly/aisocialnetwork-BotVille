@@ -26,10 +26,10 @@ Every task's requirements implicitly include this section.
 - **Comments in `packages/client/` are English and load-bearing** — they record verified crop coordinates and frame layouts. Read them; preserve them and their intent; never delete or "clean up" an explanatory comment.
 - **`SCHEMA_VERSION = 1`**, exported from `@botville/shared`, and included in every `appearanceHash`.
 - **Path segment rename: `limezu/` → `pack/`** throughout `public/assets/`. No directory, key or string in committed code may name a vendor.
-- **The immutable boundary is exactly four fields:** `{ id, displayName, spriteSeed, venueId }`. Nothing may be added to `AgentPresence`.
+- **The `AgentPresence` boundary is four *required* fields** — `{ id, displayName, spriteSeed, venueId }`, required and unrenamed. Additions are permitted but must be optional; nothing beyond the four may ever be required (addendum §I.4).
 - **Licensed art is never committed and never enters a publicly pushed image.** `assets-src/`, `public/assets/tilesets/pack/`, `public/assets/sprites/pack/`, `public/assets/ui/pack/`, `public/assets/baked/` stay gitignored.
 - **Pure modules must not import Phaser.** `appearance/derive.mjs`, `venueRegistry.ts`, `PresenceModel.ts` and `AppearanceResolver`'s resolution half are unit-tested under `node --test`, which cannot load Phaser.
-- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. `packages/client/src/game/Pathfinder.ts:9` is the one pre-existing parameter property in the repo; it is Phaser-side and not node-tested — leave it, do not copy it.
+- **No non-erasable TypeScript: no parameter properties, no `enum`, no `namespace`.** `node --test` type-strips only — it never generates code. `constructor(private x: T)` fails with `ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX` on Node 22 *and* 24, and the error names the resolve hook's file, not yours. Declare the field and assign it in the constructor body. The pre-existing parameter properties — `packages/client/src/game/Pathfinder.ts:9` and `packages/client/src/game/scenes/InteriorScene.ts:55-58` — are all Phaser-side and never node-tested; leave them, do not copy them, and know that lifting InteriorScene code into a node-tested module will hit this error.
 - **`.mjs` must never import a `.ts` file, directly or transitively.** `test/ts-resolve.mjs` only exists inside `node --test`. A `.mjs` module in `packages/shared/` or `scripts/` is loaded by bare `node` (the bake CLIs) and by Vite (the client bundle), and **neither rewrites `.js` → `.ts`**. Constants a `.mjs` module needs live in a sibling `.mjs`. See Task 2's `schemaVersion.mjs`, `hash.mjs` and the subpath seam in Step 5b.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
@@ -59,8 +59,8 @@ The runtime authority for which venues exist. `undefined` for an unknown id is t
 The registry is generated into a TypeScript module at bake time so Vite can statically bundle it — the client cannot read `venues/` at runtime.
 
 **Files:**
-- Modify: `scripts/world-bake.mjs` — emit `packages/client/src/game/venues.generated.ts`
 - Create: `packages/client/src/game/venueRegistry.ts`
+- Verify: `scripts/world-bake.mjs` already emits `packages/client/src/game/venues.generated.ts` (Plan 2 Task 18 — no bake change in this task)
 - Test: `test/venue-registry.test.ts`
 
 **Interfaces:**
@@ -135,20 +135,12 @@ test('scene keys: the district keeps its class, venues get one shared scene', ()
 Run: `npm test -- --test-name-pattern="the registry enumerates every baked venue"`
 Expected: FAIL — `Cannot find module '.../packages/client/src/game/venueRegistry.ts'`.
 
-- [ ] **Step 3: Emit the generated module from the bake**
+- [ ] **Step 3: Verify the generated module the bake already emits**
 
-In `scripts/world-bake.mjs`, immediately after the `venues.json` write, add:
+Plan 2 Task 18's `worldBake` writes `venues.generated.ts` immediately after the `venues.json` write — the client cannot read `venues/` at runtime, so the registry data is generated into a module Vite bundles statically. **Nothing to add to the bake here**; confirm the emission and its shape instead:
 
-```js
-  // The client cannot read venues/ at runtime, so the registry is generated
-  // into a module Vite bundles statically.
-  const generated = `// GENERATED by scripts/world-bake.mjs — do not edit.
-import type { VenueDescriptor } from '@botville/shared';
-
-export const VENUES: VenueDescriptor[] = ${JSON.stringify(venues, null, 2)};
-`;
-  write(join(generatedDir, 'venues.generated.ts'), generated);
-```
+Run: `npm run bake:world && head -4 packages/client/src/game/venues.generated.ts`
+Expected: the `// GENERATED by scripts/world-bake.mjs — do not edit.` header, the `import type { VenueDescriptor } from '@botville/shared';` line, and `export const VENUES: VenueDescriptor[] = [` opening the full descriptor array — authored venues plus residence instances, sorted by id.
 
 `generatedDir`, never a repo path. Task 18 made it a required argument for exactly this: `test/bake/world-bake.test.mjs` calls `worldBake` eight times, and every one of those calls would otherwise rewrite a committed source file as a side effect of running the tests.
 
@@ -186,7 +178,19 @@ export const venueRegistry = {
     return VENUES.filter(v => v.indoor);
   },
   published(): PublishedVenue[] {
-    return VENUES.map(({ id, label, indoor, capacity }) => ({ id, label, indoor, capacity }));
+    // Mirrors the bake's published projection EXACTLY (Plan 2 Task 18),
+    // including the `archetype ?? id` default for authored venues — the
+    // byte-for-byte test against the committed venues.json depends on it.
+    return VENUES.map(v => ({
+      id: v.id,
+      label: v.label,
+      indoor: v.indoor,
+      capacity: v.capacity,
+      archetype: v.archetype ?? v.id,
+      roles: v.roles,
+      affords: v.affords,
+      hours: v.hours,
+    }));
   },
 };
 
@@ -207,8 +211,8 @@ Expected: 7 new tests PASS; typecheck clean.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add scripts/world-bake.mjs packages/client/src/game/venueRegistry.ts packages/client/src/game/venues.generated.ts test/venue-registry.test.ts
-git commit -m "feat(runtime): venueRegistry with an unknown-id path and a bake-generated descriptor module"
+git add packages/client/src/game/venueRegistry.ts test/venue-registry.test.ts
+git commit -m "feat(runtime): venueRegistry over the bake-generated descriptor module, with an unknown-id path"
 ```
 
 ---
@@ -315,8 +319,10 @@ git commit -m "refactor(runtime): parameterise InteriorScene by VenueDescriptor 
 **Files:**
 - Modify: `packages/client/src/game/scenes/PreloaderScene.ts:2,39-69,122-124`
 - Modify: `packages/client/src/game/GameInit.ts:5-10,29`
-- Modify: `packages/client/src/game/assetManifest.ts:71,100,195,211-218,243-247`
+- Modify: `packages/client/src/game/assetManifest.ts:71,100,195,211-218,225,243-247`
+- Modify: `packages/client/src/game/agents/AgentSprite.ts:278` — read `EMOTE_FRAMES` from the generated index (Step 5)
 - Modify: `scripts/world-bake.mjs` — emit the generated asset index
+- Create (bake output, committed in Step 8): `packages/client/src/game/assets.generated.ts`
 - Test: `test/asset-index.test.ts`
 
 **Interfaces:**
@@ -539,7 +545,7 @@ Remove the `export const InteriorScene = VenueScene;` alias added in Task 22 Ste
 
 - [ ] **Step 3: Remove the superseded config lists**
 
-In `config.ts`, delete `LOCATION_SCENES` (lines 11-23 — the doc comment opens with `/**` at 11; starting at 12 leaves an orphaned, unbalanced block comment), `INTERIORS` (142-148), `INTERIOR_IMAGES` (155-166) and `DISTRICT_IMAGES` (168-179). Keep `INTERIOR_TILESET` and `INTERIOR_CAMERA_ZOOM` — they are camera and tileset settings, not asset enumerations.
+In `config.ts`, delete `LOCATION_SCENES` (lines 11-23 — the doc comment opens with `/**` at 11; starting at 12 leaves an orphaned, unbalanced block comment), `INTERIORS` (142-148), `INTERIOR_IMAGES` (155-166) and `DISTRICT_IMAGES` (168-179). Keep `INTERIOR_TILESET` and `INTERIOR_CAMERA_ZOOM` — they are camera and tileset settings, not asset enumerations. (`INTERIOR_CAMERA_ZOOM` is deleted later, in Task 36, when the zoom ladder replaces it; at this point it is still read by `InteriorScene`.)
 
 Replace the `LOCATION_SCENES` block with a pointer, so the next reader knows where it went:
 
@@ -763,8 +769,9 @@ git commit -m "feat(runtime): PresenceModel with exactly three states (I-3)"
 `CAMERA` runs `initialZoom: 1.8`, range 0.6–4, step 1.3. Non-integer zoom on 16px art produces shimmer and uneven pixel sizes. This is an art-quality defect and therefore in scope (spec §10.1).
 
 **Files:**
-- Modify: `packages/client/src/game/config.ts:40-45`
+- Modify: `packages/client/src/game/config.ts:40-45` — and delete `INTERIOR_CAMERA_ZOOM` (line 153)
 - Modify: `packages/client/src/game/cameraControls.ts` — step by rung
+- Modify: `packages/client/src/game/scenes/InteriorScene.ts:6,125` — snapped fit; drop the `INTERIOR_CAMERA_ZOOM` import
 - Test: `test/zoom-ladder.test.ts`
 
 **Interfaces:**
@@ -908,7 +915,7 @@ export const CAMERA_FOCUS = { panMs: 600, zoom: 2 } as const;
     cam.setZoom(snapZoom(Phaser.Math.Clamp(fitZoom, CAMERA.minZoom, CAMERA.maxZoom)));
 ```
 
-and delete `INTERIOR_CAMERA_ZOOM`.
+and delete `INTERIOR_CAMERA_ZOOM` from `config.ts` — **including its import in `InteriorScene.ts`** (the Task 22 Step 1 import line brought it in alongside `INTERIOR_TILESET`; remove only `INTERIOR_CAMERA_ZOOM` from that list, and add the `snapZoom`/`CAMERA` imports the snapped fit needs). Task 24 deliberately kept the constant because the scene still read it then; this is where it dies. Grep `INTERIOR_CAMERA_ZOOM` afterwards — zero hits, or typecheck fails on the dangling import.
 
 **Deliberately no `GameInit.ts` change.** Spec §10.1's third bullet ("canvas sizing respects device pixel ratio without fractional scaling") is *not* implemented by touching the `scale` block. Phaser's `ScaleConfig` has no `resolution` key (verified against the installed 3.90 typings) — the once-proposed `resolution: Math.floor(devicePixelRatio)` would be a silently ignored property — and `zoom: 1 / Math.floor(dpr)` halves the CSS size on every 2× display while doing nothing on a 1.5× one. `pixelArt: true` / `roundPixels` are already set, and the ladder from Steps 1–4 is the whole control surface. A unit test cannot see a backing store, so the check that the art stays sharp is the manual one in Step 5.
 
@@ -1276,9 +1283,16 @@ Then replace `InteriorScene.ts:232-251`:
 
       // There is a slot, but it is forbidden (animal + bed) — slot.x/y point at
       // the SAME seat, so walking there is not allowed: it would produce exactly
-      // what we just forbade. Send them to free floor at the same rank.
-      const rank = [...slots.keys()].indexOf(a.id);
-      const floor = seat ? standingSlot(this.venue, a.id, rank, this.furnitureFootprints) : slot;
+      // what we just forbade. Send them to free floor — at a rank that CANNOT
+      // collide with a real standing rank: standing agents occupy floor ranks
+      // 0..(standingCount-1), so the displaced animal takes standingCount plus
+      // its own seatIndex (unique per seat, so two displaced animals cannot
+      // collide either). The bijection wraps modulo the free cells, so an
+      // out-of-range rank is safe by construction.
+      const standingCount = Math.max(0, agentList.length - this.seats.length);
+      const floor = seat
+        ? standingSlot(this.venue, a.id, standingCount + slot.seatIndex!, this.furnitureFootprints)
+        : slot;
       sprite.walkTo(floor.x, floor.y);
     });
 ```
