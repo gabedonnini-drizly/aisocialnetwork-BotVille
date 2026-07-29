@@ -1,0 +1,148 @@
+#!/usr/bin/env node
+/**
+ * Inventories an art pack, so choosing a sprite starts from a candidate list
+ * instead of from someone's memory of what they scrolled past.
+ *
+ * Two outputs, on purpose:
+ *
+ *   sources/<pack>.sheets.json   COMMITTED. One row per sheet with a file
+ *       hash. Small and diffable: when a pack ships an update, this file's
+ *       diff names exactly which sheets moved, which is the signal that the
+ *       crops taken from them need re-reviewing.
+ *
+ *   sources/<pack>.index.json    GITIGNORED. Every non-empty cell, with its
+ *       trimmed bounds, opaque-pixel count, dominant palette and crop hash.
+ *       Regenerable, large, and used for browsing while curating.
+ *
+ *   node scripts/index-pack.mjs [pack] [srcRoot]
+ */
+import { createHash } from 'node:crypto';
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { join, relative, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { decodePng } from './png-lib.mjs';
+import { loadContract } from './lib/assetContract.mjs';
+
+const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
+
+/** Every .png under a directory, as forward-slashed relative paths, sorted. */
+function pngsUnder(root) {
+  const out = [];
+  (function walk(d) {
+    for (const e of readdirSync(d).sort()) {
+      const p = join(d, e);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (p.toLowerCase().endsWith('.png')) out.push(relative(root, p).split('\\').join('/'));
+    }
+  })(root);
+  return out.sort();
+}
+
+/**
+ * What a candidate cell looks like. Returns null when the cell is entirely
+ * transparent — an empty cell is not a candidate, and most of a tilesheet is
+ * empty.
+ *
+ * `palette` is quantised to 5 bits per channel before counting, so two shades
+ * a human reads as "the same brown" group together instead of producing four
+ * near-identical entries.
+ */
+export function cellSignature(img, x, y, w, h) {
+  let minX = w, minY = h, maxX = -1, maxY = -1, opaque = 0;
+  const counts = new Map();
+
+  for (let yy = 0; yy < h; yy++) {
+    for (let xx = 0; xx < w; xx++) {
+      const p = img.px(x + xx, y + yy);
+      if (p[3] <= 8) continue;                 // same alpha threshold as SpriteReader
+      opaque++;
+      if (xx < minX) minX = xx;
+      if (xx > maxX) maxX = xx;
+      if (yy < minY) minY = yy;
+      if (yy > maxY) maxY = yy;
+      const key = ((p[0] >> 3) << 10) | ((p[1] >> 3) << 5) | (p[2] >> 3);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+  }
+  if (maxX < 0) return null;
+
+  const hex = key => '#' + [(key >> 10) & 31, (key >> 5) & 31, key & 31]
+    .map(v => (v << 3).toString(16).padStart(2, '0')).join('');
+  const palette = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0] - b[0])
+    .slice(0, 4)
+    .map(([key]) => hex(key));
+
+  // Hash the TRIMMED pixels: the same sprite at a different offset in a
+  // re-laid-out sheet still hashes the same, which is what makes the adapter's
+  // `pin` field survive a cosmetic pack reshuffle.
+  const hash = createHash('sha256');
+  const row = Buffer.alloc((maxX - minX + 1) * 4);
+  for (let yy = minY; yy <= maxY; yy++) {
+    for (let xx = minX; xx <= maxX; xx++) {
+      const p = img.px(x + xx, y + yy);
+      const i = (xx - minX) * 4;
+      row[i] = p[0]; row[i + 1] = p[1]; row[i + 2] = p[2]; row[i + 3] = p[3];
+    }
+    hash.update(row);
+  }
+
+  return {
+    trimmed: { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 },
+    opaque,
+    palette,
+    sha256: hash.digest('hex'),
+  };
+}
+
+export function indexPack({ srcRoot, tileSize = 16, out }) {
+  const root = resolve(ROOT, srcRoot);
+  const sheets = {};
+  const cells = {};
+
+  for (const rel of pngsUnder(root)) {
+    const file = join(root, rel);
+    sheets[rel] = {
+      ...(({ w, h }) => ({ w, h }))(decodePng(file)),
+      sha256: createHash('sha256').update(readFileSync(file)).digest('hex'),
+    };
+
+    const img = decodePng(file);
+    const list = [];
+
+    // A sheet smaller than two cells in both axes is a single sprite, not a
+    // grid — the packs ship hundreds of those under Singles/ directories.
+    const single = img.w < tileSize * 2 && img.h < tileSize * 2;
+    const step = single ? Math.max(img.w, img.h) : tileSize;
+
+    for (let y = 0; y < img.h; y += step) {
+      for (let x = 0; x < img.w; x += step) {
+        const w = Math.min(step, img.w - x);
+        const h = Math.min(step, img.h - y);
+        const sig = cellSignature(img, x, y, w, h);
+        if (sig) list.push({ x, y, w, h, ...sig });
+      }
+    }
+    if (list.length) cells[rel] = list;
+  }
+
+  if (out) {
+    mkdirSync(out, { recursive: true });
+    writeFileSync(join(out, 'sheets.json'), JSON.stringify(sheets, null, 2) + '\n');
+    writeFileSync(join(out, 'index.json'), JSON.stringify(cells, null, 2) + '\n');
+  }
+  return { sheets, cells };
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const pack = process.argv[2] ?? 'fixture';
+  const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');
+  const { sheets, cells } = indexPack({ srcRoot, tileSize: loadContract().tileSize });
+
+  mkdirSync(join(ROOT, 'sources'), { recursive: true });
+  writeFileSync(join(ROOT, 'sources', `${pack}.sheets.json`), JSON.stringify(sheets, null, 2) + '\n');
+  writeFileSync(join(ROOT, 'sources', `${pack}.index.json`), JSON.stringify(cells, null, 2) + '\n');
+
+  const candidates = Object.values(cells).reduce((n, l) => n + l.length, 0);
+  console.log(`pack index: ${Object.keys(sheets).length} sheets, ${candidates} candidate cells -> sources/${pack}.{sheets,index}.json`);
+}

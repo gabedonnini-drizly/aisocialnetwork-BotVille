@@ -33,3 +33,8 @@ packages/client/public/assets/ui/limezu/
 
 # Internal tooling
 .claude/
+
+# Full per-cell pack inventory — regenerable browsing aid (npm run pack:index).
+# The small sheets manifest beside it IS committed: its diff is how a pack
+# update announces itself.
+sources/*.index.json

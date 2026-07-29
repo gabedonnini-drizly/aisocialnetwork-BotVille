@@ -1,0 +1,12 @@
+{
+  "tiles/dirt.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "d686aa7de220469deef7110423c4d9b93f2326f619e59ac27dc3c07d4404d002"
+  },
+  "tiles/grass.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "a7bdb942a0f0437098980d3b7dd11b7f0ee31607eb6e1c1d51b55d55dad3e1d2"
+  }
+}
