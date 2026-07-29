@@ -378,8 +378,9 @@ The types both packages and both bake stages agree on. Types only — no logic, 
   - `type PresenceState = { kind: 'somewhere'; venueId: string } | { kind: 'absent' } | { kind: 'unknown' }`
   - `interface AppearanceRecord { build: Build; skinTone: string; eyes: string; hairStyle: string; hairColor: string; outfit: string; accessory: string }`
   - `type Build = 'masc' | 'fem' | 'neutral'`
-  - `interface VenueDescriptor { id; label; indoor; sizeTiles; groundAtlas; capacity; ground?; generator?; furniture; seats; spawns; animated; doors; glows }`
-  - `interface PublishedVenue { id: string; label: string; indoor: boolean; capacity: number }`
+  - `interface VenueDescriptor { id; label; indoor; sizeTiles; groundAtlas; capacity; archetype?; roles; affords; hours; ground?; generator?; furniture; seats; spawns; animated; doors; glows }`
+  - `interface PublishedVenue { id: string; label: string; indoor: boolean; capacity: number; archetype: string; roles: VenueRole[]; affords: string[]; hours: VenueHoursWindow[] }`
+  - `type VenueRole = 'home' | 'work' | 'hangout'` and `interface VenueHoursWindow { open: number; close: number }` — the affordance fields from the 2026-07-29 addendum §I.1: `roles` is what a venue is to an agent's life, `affords` the activities it supports, `hours` when it is open. Schedule slots map to venues by querying `affords`, never by naming ids (Plan 5 Task 32).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -446,6 +447,7 @@ test('a minimal VenueDescriptor type-checks', () => {
   const v: VenueDescriptor = {
     id: 'fixture', label: 'Fixture', indoor: true, sizeTiles: [20, 15],
     groundAtlas: 'interiors_ground', capacity: 4,
+    roles: ['hangout'], affords: ['idle'], hours: [{ open: 0, close: 24 }],
     ground: { wallA: 'wallCafeA', wallB: 'wallCafeB', floor: 'floorCafe' },
     furniture: [], seats: [], spawns: [[9, 13]], animated: [], doors: [], glows: [],
   };
@@ -588,6 +590,20 @@ export interface VenueAnimated { name: string; at: TileCoord }
 export interface VenueDoor { name: string; at: TileCoord; targetVenue: string }
 export interface VenueGlow { kind: 'lamp' | 'window' | 'sign' | 'headlight'; at: [number, number] }
 
+// ── Affordances (2026-07-29 addendum §I.1) ──────────────────────────────
+
+/** What a venue IS to an agent's life. `home` marks a residence instance. */
+export type VenueRole = 'home' | 'work' | 'hangout';
+
+/**
+ * One opening window, whole hours. Wrap-around follows the schedule
+ * convention (addendum §I.1): split at midnight, so a venue open 22:00–02:00
+ * carries TWO entries — { open: 22, close: 24 } and { open: 0, close: 2 }.
+ * That rule is why the field is a list; the addendum's single-object example
+ * is the common one-window case, rendered here as a one-entry list.
+ */
+export interface VenueHoursWindow { open: number; close: number }
+
 /**
  * Ground for a simple rectangular room. Outdoor venues use `generator`
  * instead — a 48x46 procedural grid is not honest to express tile-by-tile.
@@ -608,6 +624,14 @@ export interface VenueDescriptor {
   sizeTiles: [number, number];
   groundAtlas: string;
   capacity: number;
+  /** Which archetype stamped this venue. Hand-authored venues are their own archetype; omitted = `id`. */
+  archetype?: string;
+  /** Addendum §I.1: what the venue is to an agent's life. */
+  roles: VenueRole[];
+  /** Addendum §I.1: the activities it supports. Schedule slots query this, never ids. */
+  affords: string[];
+  /** Addendum §I.1 / D-12: opening windows. Outside them the venue is not a placement candidate. */
+  hours: VenueHoursWindow[];
   ground?: VenueGround;
   generator?: VenueGenerator;
   furniture: VenueFurniture[];
@@ -618,12 +642,20 @@ export interface VenueDescriptor {
   glows: VenueGlow[];
 }
 
-/** The bake output the platform consumes. BotVille is its only authority (I-8). */
+/**
+ * The bake output the platform consumes. BotVille is its only authority (I-8).
+ * Carries the addendum §I.1 affordance fields — they are the whole point of
+ * the file: the platform's schedule writer places agents by querying them.
+ */
 export interface PublishedVenue {
   id: string;
   label: string;
   indoor: boolean;
   capacity: number;
+  archetype: string;
+  roles: VenueRole[];
+  affords: string[];
+  hours: VenueHoursWindow[];
 }
 ```
 
@@ -3105,8 +3137,12 @@ const pack = process.argv[2] ?? 'fixture';
 const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');
 
 const venuesDir = join(ROOT, 'venues');
+// `_`-prefixed entries are not venues: venues/_archetypes/ holds archetype
+// files (Plan 2 Task 14a), each a single <name>.json, not <id>/venue.json.
 const venues = existsSync(venuesDir)
-  ? readdirSync(venuesDir).map(id => JSON.parse(readFileSync(join(venuesDir, id, 'venue.json'), 'utf8')))
+  ? readdirSync(venuesDir)
+      .filter(id => !id.startsWith('_'))
+      .map(id => JSON.parse(readFileSync(join(venuesDir, id, 'venue.json'), 'utf8')))
   : [];
 
 const checkPixels = existsSync(join(ROOT, srcRoot));

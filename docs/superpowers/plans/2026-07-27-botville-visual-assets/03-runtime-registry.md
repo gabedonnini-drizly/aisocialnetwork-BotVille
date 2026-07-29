@@ -82,9 +82,15 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { venueRegistry, sceneKeyFor } from '../packages/client/src/game/venueRegistry.ts';
 
-test('the registry enumerates all five venues, sorted', () => {
-  assert.deepEqual(venueRegistry.all().map(v => v.id),
-    ['cafe', 'district', 'dorm', 'library', 'office']);
+test('the registry enumerates every baked venue, sorted by id', () => {
+  // Derived, not transcribed: the five authored venues plus however many
+  // residence instances the town snapshot provisioned (Plan 2 Task 14a).
+  const ids = venueRegistry.all().map(v => v.id);
+  assert.deepEqual(ids, [...ids].sort());
+  for (const id of ['cafe', 'district', 'dorm', 'library', 'office'])
+    assert.ok(ids.includes(id), id);
+  assert.ok(venueRegistry.all().some(v => v.roles.includes('home')),
+    'residence instances are venues like any other and must be enumerable');
 });
 
 test('get() returns the descriptor', () => {
@@ -98,13 +104,18 @@ test('an unknown id is undefined, not a throw — that is the unknown path', () 
 });
 
 test('indoor() excludes the district', () => {
-  assert.deepEqual(venueRegistry.indoor().map(v => v.id), ['cafe', 'dorm', 'library', 'office']);
+  const ids = venueRegistry.indoor().map(v => v.id);
+  assert.equal(ids.includes('district'), false);
+  for (const id of ['cafe', 'dorm', 'library', 'office']) assert.ok(ids.includes(id), id);
 });
 
 test('published() emits exactly the vocabulary fields', () => {
   const pub = venueRegistry.published();
-  assert.equal(pub.length, 5);
-  for (const v of pub) assert.deepEqual(Object.keys(v).sort(), ['capacity', 'id', 'indoor', 'label']);
+  assert.equal(pub.length, venueRegistry.all().length);
+  for (const v of pub) {
+    assert.deepEqual(Object.keys(v).sort(),
+      ['affords', 'archetype', 'capacity', 'hours', 'id', 'indoor', 'label', 'roles']);
+  }
 });
 
 test('published() matches the committed venues.json byte for byte', async () => {
@@ -121,7 +132,7 @@ test('scene keys: the district keeps its class, venues get one shared scene', ()
 
 - [ ] **Step 2: Run to verify it fails**
 
-Run: `npm test -- --test-name-pattern="the registry enumerates all five venues"`
+Run: `npm test -- --test-name-pattern="the registry enumerates every baked venue"`
 Expected: FAIL — `Cannot find module '.../packages/client/src/game/venueRegistry.ts'`.
 
 - [ ] **Step 3: Emit the generated module from the bake**
@@ -478,6 +489,8 @@ import { venueRegistry } from './venueRegistry.js';
       ...venueRegistry.indoor().map(v => new VenueScene(v)),
     ],
 ```
+
+Note what this buys for free: Plan 2 Task 14a's residence instances are ordinary registry entries, so every house gets its `VenueScene` here with no further work, and `navigation.ts`'s agent-click path (`agent:goto` → `sceneKeyFor(venueId)` after Task 24) can already reach them — click a sleeping agent in the HUD, arrive in their house. Their district door tiles remain the FOLLOW-UP recorded in Plan 2 Task 14a.
 
 - [ ] **Step 7: Bake, test, typecheck**
 
@@ -918,16 +931,19 @@ Six venues and a 150-agent town is ~25 agents per venue, in 20×15 rooms with 4�
 
 Today `InteriorScene.syncAgents` spreads newcomers over three columns (`(i % 3) * 14 - 14`), which stacks hard past ~6 agents, and seat assignment is `find(s => !s.occupiedBy)` — order-dependent, so the same agent lands somewhere different on every reload.
 
+**Standing slots respect furniture (F-14).** The naive floor grid — every cell between the walls — puts standing agents inside tables and on top of beds: the bake derives collision from exactly those furniture footprints (Plan 2 Task 15), and the slot assigner must not ignore what the system already knows. So the free-floor cell list is computed by **excluding every cell a footprint touches**, and the stride bijection runs over the *free* cells. The bijection argument survives intact — it only ever needed `cells` to be the count of cells actually in play. The scene supplies the footprints from the baked map's `collision` object layer, which exists precisely because the bake derived it; the structural wall rects in that layer touch no floor cell, so passing the whole layer is safe and simple.
+
 **Files:**
 - Create: `packages/client/src/game/venueSlots.ts`
-- Modify: `packages/client/src/game/scenes/InteriorScene.ts:232-251`
+- Modify: `packages/client/src/game/scenes/InteriorScene.ts:100` (after the seats read — capture footprints) and `:232-251` (the sync rewrite)
 - Test: `test/venue-slots.test.ts`
 
 **Interfaces:**
 - Consumes: `hashString` (**Plan 1 Task 2**, `packages/shared/src/hash.mjs`), `VenueDescriptor` (Plan 1 Task 2). Nothing in this task depends on Plan 4.
 - Produces `packages/client/src/game/venueSlots.ts`:
-  - `assignSlots(venue: VenueDescriptor, agentIds: string[]): Map<string, { x: number; y: number; seatIndex: number | null }>`
-  - `standingSlot(venue, agentId, rank): { x: number; y: number }`
+  - `interface FootprintRect { x: number; y: number; w: number; h: number }` — pixel-space, as the `.tmj` collision layer stores them
+  - `assignSlots(venue: VenueDescriptor, agentIds: string[], footprints?: FootprintRect[]): Map<string, { x: number; y: number; seatIndex: number | null }>`
+  - `standingSlot(venue, agentId, rank, footprints?): { x: number; y: number }`
   - `isOverCapacity(venue, count): boolean`
 
 - [ ] **Step 1: Write the failing test**
@@ -938,10 +954,19 @@ Today `InteriorScene.syncAgents` spreads newcomers over three columns (`(i % 3) 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { assignSlots, standingSlot, isOverCapacity } from '../packages/client/src/game/venueSlots.ts';
+import type { FootprintRect } from '../packages/client/src/game/venueSlots.ts';
 import { venueRegistry } from '../packages/client/src/game/venueRegistry.ts';
 
 const cafe = venueRegistry.get('cafe')!;
 const ids = (n: number) => Array.from({ length: n }, (_, i) => `agent_${i}`);
+
+// Pixel-space furniture footprints, the shape the .tmj collision layer holds.
+// One aligned to the grid, one deliberately off-grid: exclusion is by
+// intersection, not by tile-coordinate equality.
+const FOOTPRINTS: FootprintRect[] = [
+  { x: 4 * 16, y: 8 * 16, w: 48, h: 18 },
+  { x: 12 * 16 + 5, y: 9 * 16 + 3, w: 30, h: 18 },
+];
 
 test('assignment is deterministic — the same roster lands identically', () => {
   assert.deepEqual([...assignSlots(cafe, ids(20))], [...assignSlots(cafe, ids(20))]);
@@ -991,6 +1016,57 @@ test('standing positions stay inside the room', () => {
     assert.ok(v.x > 16 && v.x < (W - 1) * 16, `x ${v.x}`);
     assert.ok(v.y > 32 && v.y < (H - 1) * 16, `y ${v.y}`);
   }
+});
+
+// ── F-14: furniture footprints exclude standing cells ────────────────────
+
+test('no standing slot intersects a furniture footprint (F-14)', () => {
+  const standing = [...assignSlots(cafe, ids(40), FOOTPRINTS).values()]
+    .filter(v => v.seatIndex === null);
+  assert.ok(standing.length > 0, 'the roster must overflow the seats for this test to bite');
+  for (const s of standing) {
+    // The slot is a cell centre; the whole 16px cell must be clear.
+    const cx = s.x - 8, cy = s.y - 8;
+    for (const f of FOOTPRINTS) {
+      const overlaps = f.x < cx + 16 && f.x + f.w > cx && f.y < cy + 16 && f.y + f.h > cy;
+      assert.equal(overlaps, false, `slot at ${s.x},${s.y} stands in the footprint at ${f.x},${f.y}`);
+    }
+  }
+});
+
+test('footprints shrink the bijection without breaking it', () => {
+  // Same guarantee as the free-floor test, over the REDUCED cell set: fill
+  // every free cell exactly once before anything repeats.
+  const [W, H] = cafe.sizeTiles;
+  const T = 16;
+  let free = 0;
+  for (let cy = 3; cy < H - 2; cy++) {
+    for (let cx = 2; cx < W - 2; cx++) {
+      const blocked = FOOTPRINTS.some(f =>
+        f.x < (cx + 1) * T && f.x + f.w > cx * T && f.y < (cy + 1) * T && f.y + f.h > cy * T);
+      if (!blocked) free++;
+    }
+  }
+  const all = (W - 4) * (H - 5);
+  assert.ok(free < all, 'the fixture footprints must actually block cells');
+  const standing = [...assignSlots(cafe, ids(free + cafe.seats.length), FOOTPRINTS).values()]
+    .filter(v => v.seatIndex === null);
+  assert.equal(new Set(standing.map(v => `${v.x},${v.y}`)).size, free,
+    'the free cells should be exactly filled before anything repeats');
+});
+
+test('footprints do not disturb determinism or order-independence', () => {
+  assert.deepEqual([...assignSlots(cafe, ids(20), FOOTPRINTS)],
+                   [...assignSlots(cafe, ids(20), FOOTPRINTS)]);
+  const a = assignSlots(cafe, ids(20), FOOTPRINTS);
+  const b = assignSlots(cafe, [...ids(20)].reverse(), FOOTPRINTS);
+  for (const id of ids(20)) assert.deepEqual(a.get(id), b.get(id), id);
+});
+
+test('a pathologically furnished room degrades to the raw grid, never crashes', () => {
+  const everything: FootprintRect[] = [{ x: 0, y: 0, w: cafe.sizeTiles[0] * 16, h: cafe.sizeTiles[1] * 16 }];
+  const s = standingSlot(cafe, 'a', 0, everything);
+  assert.ok(Number.isFinite(s.x) && Number.isFinite(s.y));
 });
 
 test('standingSlot is a pure function of venue, agent and rank', () => {
@@ -1045,6 +1121,9 @@ const T = 16;
 
 export interface Slot { x: number; y: number; seatIndex: number | null }
 
+/** Прямоугольник футпринта в пикселях — как его хранит слой collision в .tmj. */
+export interface FootprintRect { x: number; y: number; w: number; h: number }
+
 export function isOverCapacity(venue: VenueDescriptor, count: number): boolean {
   return count > venue.capacity;
 }
@@ -1062,34 +1141,68 @@ function strideFor(cells: number): number {
 }
 
 /**
+ * Клетки СВОБОДНОГО пола (F-14): сетка между стенами МИНУС клетки, которых
+ * касается футпринт мебели. Bake выводит слой collision ровно из этих
+ * футпринтов (Plan 2 Task 15) — система знает, какие клетки заняты, и
+ * раскладка обязана этим знанием пользоваться, иначе агенты стоят в столах.
+ *
+ * Структурные прямоугольники стен из того же слоя не пересекают сетку
+ * (она отступает от стен), так что сцена может передавать слой целиком.
+ */
+function freeFloorCells(venue: VenueDescriptor, footprints: FootprintRect[]): { cx: number; cy: number }[] {
+  const [W, H] = venue.sizeTiles;
+  // пол: от 2-го ряда (под стенами) до предпоследнего, без крайних колонок
+  const cells: { cx: number; cy: number }[] = [];
+  for (let cy = 3; cy < H - 2; cy++) {
+    for (let cx = 2; cx < W - 2; cx++) {
+      const blocked = footprints.some(f =>
+        f.x < (cx + 1) * T && f.x + f.w > cx * T &&
+        f.y < (cy + 1) * T && f.y + f.h > cy * T);
+      if (!blocked) cells.push({ cx, cy });
+    }
+  }
+  return cells;
+}
+
+/**
  * Позиция стоящего агента: клетка свободного пола, выведенная из ранга.
  *
  * Индивидуальность даёт не хеш ЗДЕСЬ, а порядок в assignSlots: ранг агента
  * выводится из его seed. Поэтому раскладка одновременно детерминированная,
  * зависящая от агента и БЕЗ коллизий, пока стоящих меньше, чем клеток.
+ * Биекция ранг -> клетка живёт на СВОБОДНЫХ клетках: cells — это их число,
+ * и аргумент из strideFor переносится без изменений (F-14).
  */
-export function standingSlot(venue: VenueDescriptor, agentId: string, rank: number): { x: number; y: number } {
-  const [W, H] = venue.sizeTiles;
-  // пол: от 2-го ряда (под стенами) до предпоследнего, без крайних колонок
-  const cols = W - 4;
-  const rows = H - 5;
-  const cells = cols * rows;
+export function standingSlot(
+  venue: VenueDescriptor,
+  agentId: string,
+  rank: number,
+  footprints: FootprintRect[] = [],
+): { x: number; y: number } {
+  let free = freeFloorCells(venue, footprints);
+  // Патология «мебель покрыла весь пол»: деградируем к сырой сетке —
+  // стоять в столе хуже, чем не стоять нигде, но упасть нельзя.
+  if (free.length === 0) free = freeFloorCells(venue, []);
+  const cells = free.length;
 
   // Сдвиг — свойство МЕСТА, не агента: разные комнаты заполняются по-разному,
   // но внутри комнаты отображение остаётся биекцией.
   const offset = hashString(venue.id, 'slot:offset') % cells;
-  const cell = (rank * strideFor(cells) + offset) % cells;
-
-  const cx = 2 + (cell % cols);
-  const cy = 3 + Math.floor(cell / cols);
+  const { cx, cy } = free[(rank * strideFor(cells) + offset) % cells];
   return { x: cx * T + T / 2, y: cy * T + T / 2 };
 }
 
 /**
  * Раздать места всему ростеру за один проход.
  * Стулья заполняются раньше, чем кто-то встаёт; порядок ростера не влияет.
+ * footprints — слой collision из запечённой карты: стоящие агенты обходят
+ * мебель (F-14).
  */
-export function assignSlots(venue: VenueDescriptor, agentIds: string[]): Map<string, Slot> {
+export function assignSlots(
+  venue: VenueDescriptor,
+  agentIds: string[],
+  footprints: FootprintRect[] = [],
+): Map<string, Slot> {
   // стабильный порядок независимо от того, в каком порядке пришёл ростер
   const ordered = [...agentIds].sort((a, b) => {
     const ha = hashString(a, `order:${venue.id}`);
@@ -1103,7 +1216,7 @@ export function assignSlots(venue: VenueDescriptor, agentIds: string[]): Map<str
       const seat = venue.seats[rank];
       out.set(id, { x: seat.at[0] * T, y: seat.at[1] * T, seatIndex: rank });
     } else {
-      const { x, y } = standingSlot(venue, id, rank - venue.seats.length);
+      const { x, y } = standingSlot(venue, id, rank - venue.seats.length, footprints);
       out.set(id, { x, y, seatIndex: null });
     }
   });
@@ -1113,12 +1226,29 @@ export function assignSlots(venue: VenueDescriptor, agentIds: string[]): Map<str
 
 - [ ] **Step 4: Use it in the scene**
 
-Replace `InteriorScene.ts:232-251`:
+First, capture the derived footprints. In `create()`, immediately after the seats read (the block ending at `InteriorScene.ts:100` with `});`), add a field read from the baked map:
+
+```ts
+    // F-14: стоящие агенты обходят мебель. Слой collision выведен при
+    // запекании ровно из футпринтов (Plan 2 Task 15) — читаем его из карты.
+    this.furnitureFootprints = (map.getObjectLayer('collision')?.objects ?? [])
+      .map(o => ({ x: o.x ?? 0, y: o.y ?? 0, w: o.width ?? 0, h: o.height ?? 0 }));
+```
+
+with the field declared beside the other scene fields:
+
+```ts
+  /** Прямоугольники слоя collision — вход F-14 для venueSlots. */
+  private furnitureFootprints: FootprintRect[] = [];
+```
+
+Then replace `InteriorScene.ts:232-251`:
 
 ```ts
     // Детерминированная раскладка: стулья заполняются раньше стоящих, и
     // один и тот же агент при перезагрузке садится на то же место.
-    const slots = assignSlots(this.venue, agentList.map(a => a.id));
+    // Футпринты мебели исключают занятые клетки (F-14).
+    const slots = assignSlots(this.venue, agentList.map(a => a.id), this.furnitureFootprints);
     if (isOverCapacity(this.venue, agentList.length)) {
       // R-3: UX переполнения отложен; факт фиксируем, чтобы он был виден
       console.debug(`[${this.venue.id}] over capacity: ${agentList.length}/${this.venue.capacity}`);
@@ -1146,21 +1276,21 @@ Replace `InteriorScene.ts:232-251`:
       // на ТО ЖЕ сиденье, поэтому идти туда нельзя: получится ровно то, что
       // мы только что запретили. Отправляем на свободный пол по тому же рангу.
       const rank = [...slots.keys()].indexOf(a.id);
-      const floor = seat ? standingSlot(this.venue, a.id, rank) : slot;
+      const floor = seat ? standingSlot(this.venue, a.id, rank, this.furnitureFootprints) : slot;
       sprite.walkTo(floor.x, floor.y);
     });
 ```
 
-Add the import: `import { assignSlots, isOverCapacity, standingSlot } from '../venueSlots.js';`
+Add the import: `import { assignSlots, isOverCapacity, standingSlot } from '../venueSlots.js';` and the type import `import type { FootprintRect } from '../venueSlots.js';`
 
 - [ ] **Step 5: Test, typecheck, look at it**
 
 Run: `npm test && npm run typecheck && npm run dev`
-Expected: 10 new tests PASS; typecheck clean. In the cafe, agents fan out across the room rather than stacking on the spawn point.
+Expected: 14 new tests PASS; typecheck clean. In the cafe, agents fan out across the room rather than stacking on the spawn point — and nobody stands inside a table or on a bed (F-14).
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add packages/client/src/game/venueSlots.ts packages/client/src/game/scenes/InteriorScene.ts test/venue-slots.test.ts
-git commit -m "feat(runtime): deterministic in-venue slot assignment with capacity awareness (R-3)"
+git commit -m "feat(runtime): deterministic slot assignment; standing slots exclude furniture footprints (R-3, F-14)"
 ```

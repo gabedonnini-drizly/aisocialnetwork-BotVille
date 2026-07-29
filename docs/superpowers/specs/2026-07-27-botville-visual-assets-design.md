@@ -253,6 +253,8 @@ declares whether the pack provides separable character parts; see §7.3.
 
 ### 5.3 Venue descriptor — `venues/<id>/venue.json`
 
+> **Revised by the 2026-07-29 addendum** (`2026-07-29-botville-world-addendum-design.md` §I.1, §I.3): descriptors additionally carry `roles`, `affords`, `hours`, and residence venues are stamped from archetypes in `venues/_archetypes/`. The addendum is the authority; the example below predates it.
+
 ```jsonc
 {
   "id": "cafe",
@@ -275,6 +277,8 @@ Collision is no longer hand-authored, which removes a class of silent bug where
 a moved prop leaves a stale collision box.
 
 ### 5.4 Published vocabulary — `venues.json` (bake output)
+
+> **Revised by the 2026-07-29 addendum** (§I.1): published entries additionally carry `archetype`, `roles`, `affords`, `hours`, are governed by `schemas/venues.schema.json`, and include derived residence instances. The addendum is the authority; the example below predates it.
 
 ```jsonc
 [ { "id": "cafe", "label": "Café", "indoor": true, "capacity": 12 } ]

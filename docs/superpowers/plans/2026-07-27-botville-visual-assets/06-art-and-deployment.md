@@ -1054,6 +1054,85 @@ git commit -m "feat(deploy): bake the world in the Vercel and deploy:client pipe
 
 ---
 
+## Task 38b: The LimeZu credit link — a licence obligation, not decoration
+
+The Modern Interiors and Modern UI licences **require** credit; the addendum
+(Part III.1) records that no task covered it. The credit is one permanent,
+clickable line in the client UI: `Art: LimeZu` → `https://limezu.itch.io/`.
+
+**Files:**
+- Modify: `packages/client/src/App.tsx` — mount the credit line
+- Create: `packages/client/src/ui/ArtCredit.tsx`
+- Test: `test/art-credit.test.mjs`
+
+**Interfaces:**
+- Consumes: nothing — static UI.
+- Produces: the licence-required attribution, pinned by test so no refactor can
+  silently drop it.
+
+- [ ] **Step 1: Write the failing test**
+
+`test/art-credit.test.mjs` — the plans' static-grep idiom: the obligation is
+that the link *ships*, which a source assertion pins without a browser:
+
+```js
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+
+test('the LimeZu credit link is present and wired into the app', () => {
+  const credit = readFileSync('packages/client/src/ui/ArtCredit.tsx', 'utf8');
+  assert.match(credit, /https:\/\/limezu\.itch\.io\//, 'licence requires the credit URL');
+  assert.match(credit, /LimeZu/, 'the artist is named');
+  const app = readFileSync('packages/client/src/App.tsx', 'utf8');
+  assert.match(app, /ArtCredit/, 'the credit is actually mounted');
+});
+```
+
+- [ ] **Step 2: Run to verify it fails**
+
+Run: `npm test -- --test-name-pattern="LimeZu"`
+Expected: FAIL — `ENOENT … ArtCredit.tsx`.
+
+- [ ] **Step 3: Implement**
+
+`packages/client/src/ui/ArtCredit.tsx`:
+
+```tsx
+// Лицензии LimeZu (Modern Interiors, Modern UI) ТРЕБУЮТ указания авторства.
+// Эта строка — условие лицензии, а не украшение: не удалять при редизайне.
+export function ArtCredit() {
+  return (
+    <a
+      href="https://limezu.itch.io/"
+      target="_blank"
+      rel="noreferrer"
+      style={{
+        position: 'fixed', right: 8, bottom: 4, zIndex: 300,
+        fontSize: 10, opacity: 0.7, color: 'inherit', textDecoration: 'none',
+      }}
+    >
+      Art: LimeZu
+    </a>
+  );
+}
+```
+
+In `packages/client/src/App.tsx`, import it and render `<ArtCredit />` as the
+last child of the root element (beside the existing overlay mounts).
+
+- [ ] **Step 4: Run to verify it passes**
+
+Run: `npm test -- --test-name-pattern="LimeZu"`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add packages/client/src/ui/ArtCredit.tsx packages/client/src/App.tsx test/art-credit.test.mjs
+git commit -m "feat: LimeZu attribution link (licence requirement)"
+```
+
 ## Task 39: Hero re-render
 
 **Needs the art packs.** `packages/client/public/hero/district-night.{png,gif,mp4,webm}` are pre-rendered artifacts from when someone had the packs — currently the only visual evidence BotVille exists. Re-render them from the new pipeline so the product documents show the real thing.

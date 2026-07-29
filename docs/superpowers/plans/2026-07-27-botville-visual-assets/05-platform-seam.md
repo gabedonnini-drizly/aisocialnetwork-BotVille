@@ -6,13 +6,13 @@
 
 **Goal:** Give schedules a stored venue and total 24-hour coverage, so a connected BotVille shows an inhabited city and the two repos cannot drift on what a venue is.
 
-**Architecture:** One migration adds `users_schedules.venue`. `venueVocabulary.js` loads BotVille’s published `venues.json` and validates against it — it never enumerates a venue itself. `scheduleCoverage.js` normalises generated schedules to tile `[0,24)` exactly per `day_type` and assigns each block a venue at **write** time, chosen by the agent’s seed from the pool an activity makes plausible. A lock file lets the platform prove its copy is intact without needing BotVille on disk.
+**Architecture:** One migration adds `users_schedules.venue`. `venueVocabulary.js` loads BotVille’s published `venues.json` and validates against it — it never enumerates a venue itself. `scheduleCoverage.js` normalises generated schedules to tile `[0,24)` exactly per `day_type` and assigns each block a venue at **write** time, by **querying the published affordances** (addendum §I.1): an activity resolves to an affordance token, `deriveVenuesAffording` returns the open venues supporting it, and the agent’s seed picks within that pool. Sleep goes to the agent’s own residence via the creation-order-stable `deriveHomeVenue` (addendum §I.2) — pure function, zero rows. No venue id is named in api code, anywhere. A lock file lets the platform prove its copy is intact without needing BotVille on disk.
 
 **Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Depends on:** Plan 2 — the published `venues.json` and `venues.lock.json` — and Plan 1's `test/helpers/siblingRepo.mjs` for locating `$API`. **This is the only plan that touches `aisocialnetwork-api`** — every api-side change, including the one-line `pickFrom` export (Task 32 Step 0), lives here.
 
-**Exit criterion:** SC-1 holds for every agent and both day types against the live DB; every stored venue is in the published vocabulary; no venue holds more than half the roster during waking hours; both repos’ vocabulary checks pass.
+**Exit criterion:** SC-1 holds for every agent and both day types against the live DB; every stored venue is in the published vocabulary; no venue holds more than half the roster at **any** hour — nights included, now that sleep distributes across residences (F-12 resolved per the addendum's night rule); both repos’ vocabulary checks pass.
 
 ---
 
@@ -30,7 +30,7 @@ echo "BotVille: $BOTVILLE"; echo "api:      $API"
 
 `test/helpers/siblingRepo.mjs` comes from Plan 1 Task 1. Resolution order is `$BOTVILLE_API_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → a sibling of the repo root.
 
-**This plan needs Plan 2's output on disk**, specifically `packages/client/public/assets/venues.json` and `venues.lock.json`. If they are missing, run `npm run bake:world` in `$BOTVILLE` first — the platform copies them, and it must never author its own list (I-8).
+**This plan needs Plan 2's output on disk**, specifically `packages/client/public/assets/venues.json`, `venues.lock.json` and `venues.schema.json`. If they are missing, run `npm run bake:world` in `$BOTVILLE` first — the platform copies them, and it must never author its own list (I-8).
 
 ---
 
@@ -73,13 +73,13 @@ Every task's requirements implicitly include this section.
 **Files (all in the api repo — `$API`, located per «Before you start» above):**
 - Create: `src/db/migrations/037_add_schedule_venue.js`
 - Create: `src/utils/venueVocabulary.js`
-- Create: `config/venues.json`, `config/venues.lock.json` — copies of BotVille's published artifact and its lock
+- Create: `config/venues.json`, `config/venues.lock.json`, `config/venues.schema.json` — copies of BotVille's published artifact, its lock and its schema
 - Create: `tests/venueVocabulary.test.js`
 
 **Interfaces:**
-- Consumes: `packages/client/public/assets/venues.json` from BotVille (Task 18).
+- Consumes: `packages/client/public/assets/venues.json` from BotVille (Task 18) — each entry carrying `id, label, indoor, capacity, archetype, roles, affords, hours` per `venues.schema.json` (addendum §I.1 and its Conventions table).
 - Produces `src/utils/venueVocabulary.js`:
-  - `loadVocabulary(path?) → PublishedVenue[]`
+  - `loadVocabulary(path?) → PublishedVenue[]` — **validates the schema'd shape at load time** (the api end of the Conventions table's "validated at both ends"; structural checks, no JSON-Schema engine — the api has no such dependency and gains none)
   - `isValidVenue(id) → boolean`
   - `venueIds() → string[]`
   - `indoorVenueIds() → string[]`
@@ -99,8 +99,19 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { isValidVenue, venueIds, indoorVenueIds, loadVocabulary } = require('../src/utils/venueVocabulary');
 
-test('the vocabulary loads the five published venues', () => {
-  assert.deepEqual(venueIds().sort(), ['cafe', 'district', 'dorm', 'library', 'office']);
+test('the vocabulary carries the public venues and the baked residences', () => {
+  const ids = venueIds();
+  for (const id of ['cafe', 'district', 'dorm', 'library', 'office']) assert.ok(ids.includes(id), id);
+  assert.equal(new Set(ids).size, ids.length, 'duplicate venue id');
+});
+
+test('residence instances are published and afford sleep (addendum I.2)', () => {
+  const homes = loadVocabulary().filter(v => v.roles.includes('home'));
+  assert.ok(homes.length >= 1, 'no residences published — re-run BotVille\'s bake and re-copy');
+  for (const h of homes) assert.ok(h.affords.includes('sleep'), h.id);
+  // Only residences afford sleep: the schedule writer cannot put a sleeping
+  // agent anywhere else (the F-12 night rule, by data).
+  assert.deepEqual(loadVocabulary().filter(v => v.affords.includes('sleep')), homes);
 });
 
 test('isValidVenue accepts published ids and rejects everything else', () => {
@@ -113,14 +124,28 @@ test('isValidVenue accepts published ids and rejects everything else', () => {
 });
 
 test('indoor venues exclude the district', () => {
-  assert.deepEqual(indoorVenueIds().sort(), ['cafe', 'dorm', 'library', 'office']);
+  const indoor = indoorVenueIds();
+  assert.equal(indoor.includes('district'), false);
+  for (const id of ['cafe', 'dorm', 'library', 'office']) assert.ok(indoor.includes(id), id);
 });
 
-test('each entry carries exactly the vocabulary fields', () => {
+test('each entry carries exactly the schema fields (venues.schema.json)', () => {
   for (const v of loadVocabulary()) {
-    assert.deepEqual(Object.keys(v).sort(), ['capacity', 'id', 'indoor', 'label']);
+    assert.deepEqual(Object.keys(v).sort(),
+      ['affords', 'archetype', 'capacity', 'hours', 'id', 'indoor', 'label', 'roles']);
     assert.equal(typeof v.capacity, 'number');
+    for (const w of v.hours) assert.ok(w.open >= 0 && w.close <= 24 && w.open < w.close, v.id);
   }
+});
+
+test('a copy missing the affordance fields is refused at load time', () => {
+  const { mkdtempSync, writeFileSync } = require('fs');
+  const { join } = require('path');
+  const { tmpdir } = require('os');
+  const file = join(mkdtempSync(join(tmpdir(), 'vocab-')), 'venues.json');
+  writeFileSync(file, JSON.stringify([{ id: 'cafe', label: 'Café', indoor: true, capacity: 9 }]));
+  assert.throws(() => loadVocabulary(file), /roles/,
+    'the loader must name the missing field — this is the api end of the schema check');
 });
 
 test('the platform never invents a venue — the list is data, not code', () => {
@@ -138,8 +163,9 @@ Expected: FAIL — `Cannot find module '../src/utils/venueVocabulary'`.
 
 ```bash
 mkdir -p "$API/config"
-cp packages/client/public/assets/venues.json      "$API/config/venues.json"
-cp packages/client/public/assets/venues.lock.json "$API/config/venues.lock.json"
+cp packages/client/public/assets/venues.json        "$API/config/venues.json"
+cp packages/client/public/assets/venues.lock.json   "$API/config/venues.lock.json"
+cp packages/client/public/assets/venues.schema.json "$API/config/venues.schema.json"
 ```
 
 - [ ] **Step 5: Write the loader**
@@ -158,6 +184,11 @@ cp packages/client/public/assets/venues.lock.json "$API/config/venues.lock.json"
  *   aisocialnetwork-BotVille/packages/client/public/assets/venues.json
  * Emitted by that repo's `npm run bake:world`. tests/venueVocabularySync
  * asserts this copy matches it.
+ *
+ * The artifact is governed by config/venues.schema.json (2026-07-29 addendum,
+ * Conventions table: schema'd files are validated at BOTH ends). This loader
+ * is the api end: a dependency-free structural check mirroring the schema —
+ * the api ships no JSON-Schema engine and gains none.
  */
 
 const fs = require('fs');
@@ -165,14 +196,34 @@ const path = require('path');
 
 const VOCABULARY_PATH = path.join(__dirname, '..', '..', 'config', 'venues.json');
 
+/** Mirrors config/venues.schema.json `required`. */
+const REQUIRED_FIELDS = ['id', 'label', 'indoor', 'capacity', 'archetype', 'roles', 'affords', 'hours'];
+const LIST_FIELDS = ['roles', 'affords', 'hours'];
+
+function assertVocabularyShape(parsed, file) {
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error(`venue vocabulary at ${file} is empty or malformed`);
+  }
+  for (const v of parsed) {
+    for (const field of REQUIRED_FIELDS) {
+      if (!(field in v)) {
+        throw new Error(`venue vocabulary at ${file}: entry "${v.id ?? '?'}" is missing "${field}" (see config/venues.schema.json)`);
+      }
+    }
+    for (const field of LIST_FIELDS) {
+      if (!Array.isArray(v[field])) {
+        throw new Error(`venue vocabulary at ${file}: entry "${v.id}" field "${field}" must be an array`);
+      }
+    }
+  }
+}
+
 let cache = null;
 
 function loadVocabulary(file = VOCABULARY_PATH) {
   if (file === VOCABULARY_PATH && cache) return cache;
   const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
-  if (!Array.isArray(parsed) || parsed.length === 0) {
-    throw new Error(`venue vocabulary at ${file} is empty or malformed`);
-  }
+  assertVocabularyShape(parsed, file);
   if (file === VOCABULARY_PATH) cache = parsed;
   return parsed;
 }
@@ -256,14 +307,14 @@ p.query("select column_name,data_type,character_maximum_length from information_
 '
 ```
 
-Expected: migration `037_add_schedule_venue.js` applies; 5 tests PASS; the column query prints `[{ column_name: 'venue', data_type: 'character varying', character_maximum_length: 64 }]`.
+Expected: migration `037_add_schedule_venue.js` applies; 7 tests PASS; the column query prints `[{ column_name: 'venue', data_type: 'character varying', character_maximum_length: 64 }]`.
 
 - [ ] **Step 8: Commit**
 
 ```bash
 cd "$API"
-git add src/db/migrations/037_add_schedule_venue.js src/utils/venueVocabulary.js config/venues.json config/venues.lock.json tests/venueVocabulary.test.js
-git commit -m "feat(schedules): add users_schedules.venue and the published venue vocabulary loader"
+git add src/db/migrations/037_add_schedule_venue.js src/utils/venueVocabulary.js config/venues.json config/venues.lock.json config/venues.schema.json tests/venueVocabulary.test.js
+git commit -m "feat(schedules): add users_schedules.venue and the schema-validated venue vocabulary loader"
 ```
 
 ---
@@ -276,12 +327,15 @@ Two things at once, because they are the same write. `venue` is chosen from the 
 
 **Every agent's day is independent, and that is a requirement, not a nicety.** The obvious implementation — map each activity to a venue, give every agent the same daily shape — puts all 85 agents in the office from 09:00 to 18:00, in a 20×15 room with four chairs, and leaves the library empty every weekday. It satisfies SC-1 and produces a city that looks like a queue. G-F asks for an *inhabited* city, Task 37's capacity work assumes the roster is spread out, and §10.3 sized the venues on the premise that it is.
 
-Two mechanisms, both pure functions of the agent's seed:
+Three mechanisms, all pure functions:
 
-1. **An activity narrows the pool; the seed picks within it.** "Work" means `office` *or* `library`, and which one is this agent's business. No activity maps to exactly one venue except sleep.
-2. **Every boundary is seed-derived.** Wake, work start, lunch and bedtime each vary across a three-hour window, so at any given hour the roster is spread across several activities as well as several rooms.
+1. **An activity resolves to an affordance; the venues affording it are the pool; the seed picks within it** (addendum §I.1). "Work" resolves to the `work` affordance, which today the office and the library afford — and which one is this agent's business. No activity names a venue, ever.
+2. **Sleep goes home** (addendum §I.2, Part 0 — the night rule that resolves F-12). `deriveHomeVenue(agent, roster, residences)` assigns each agent a residence by roster **creation order**, filling each residence to its *published capacity* before the next opens. Both the roster prefix and the residence instance list are stable, so an existing agent's home never changes when the town grows — with zero stored rows. When moving/marriage land (D-11), a stored column takes precedence via the addendum's `stored ?? derived` registry and this stays the fallback; the registry itself is the platform (MCP) plan set's work, not this plan's.
+3. **Every boundary is seed-derived.** Wake, work start, lunch and bedtime each vary across a three-hour window, so at any given hour the roster is spread across several activities as well as several rooms.
 
-`venueAffinity(spriteSeed)` gives each agent a stable workplace and hangout, so the variation reads as a routine rather than as noise: the same agent goes back to the same library tomorrow. The tests below assert the outcome directly — no venue holds more than half the roster during waking hours, and every published venue is used at some point in the week.
+**`ACTIVITY_POOLS` never ships — this supersedes F-7.** An earlier draft of this task mapped activity regexes to hardcoded venue-id lists in this repo, which made every new venue a two-repo change and carried an unmatched-activity branch that threw a `ReferenceError` for every weekend schedule (finding F-7: `venueIds` used but never imported, and `'Slow Morning'`/`'Hobbies'` matching no pool). The affordance model removes the error *class*, not the instance: `deriveVenuesAffording` is **total by data** — an activity matching nothing falls back to the venues affording `idle`, and the district always affords `idle`, around the clock (asserted in Plan 2 Task 14). There is no unmatched branch left to throw. Adding a venue is now a data change in one file, in one repo.
+
+`deriveWorkplaceVenue` / `deriveHangoutVenue` give each agent stable standing places — seeded picks among the venues whose `roles` say `work` / `hangout` — so the variation reads as a routine rather than as noise: the same agent goes back to the same library tomorrow. The tests below assert the outcome directly — no venue holds more than half the roster at any hour, and every public venue is used at some point in the week.
 
 **Files (all in the api repo — `$API`, located per «Before you start» above):**
 - Create: `src/utils/scheduleCoverage.js`
@@ -292,18 +346,21 @@ Two mechanisms, both pure functions of the agent's seed:
 - Create: `src/scripts/populateSchedulesDeterministic.js`
 
 **Interfaces:**
-- Consumes: `venueVocabulary` (Task 31), `hashString`/`pickFrom` from `agentSeed.js`. **`pickFrom` must already be exported** — Step 0 below does it; nothing outside this plan touches the api.
-- Produces `src/utils/scheduleCoverage.js`:
+- Consumes: `venueVocabulary` (Task 31) — including the `roles` / `affords` / `hours` fields — and `hashString`/`pickFrom` from `agentSeed.js`. **`pickFrom` must already be exported** — Step 0 below does it; nothing outside this plan touches the api.
+- Produces `src/utils/scheduleCoverage.js` (naming per the addendum's Conventions: pure derivations are `derive<Thing>`):
   - `normalizeCoverage(blocks) → blocks` — sorted, clipped, gap-filled, midnight-split, tiling `[0,24)` exactly
   - `assertTotalCoverage(blocks) → void` — throws with the offending hour
-  - `poolFor(activity) → string[]` — the venues an activity makes plausible; never a single forced answer except sleep
-  - `deriveVenue(spriteSeed, dayType, startHour, activity) → string | null` — picks within that pool, by seed
-  - `venueAffinity(spriteSeed) → { workplace, hangout }` — an agent's two standing places, stable forever
-  - `deterministicDay(spriteSeed, dayType) → blocks` — the art-free path that actually inhabits the city
+  - `deriveAffordance(activity) → string` — free text → affordance token; **total**, anything unmatched is `'idle'`
+  - `deriveVenuesAffording(activity, venues) → venue[]` — the public venues whose `affords` answer the activity; never empty (idle fallback); `home`-role venues are never public candidates
+  - `deriveHomeVenue(spriteSeed, roster, residences) → string | null` — creation-order stable home assignment; pure, zero rows
+  - `deriveResidenceVenues(venues) → venue[]` — the published homes, in stable instance order
+  - `deriveWorkplaceVenue(spriteSeed, venues) → string | null` / `deriveHangoutVenue(spriteSeed, venues) → string | null` — an agent's standing places, from `roles`
+  - `deriveVenue(spriteSeed, dayType, startHour, activity, town) → string | null` — the write-time assignment; `town = { venues, roster }`; sleep goes home, everything else is a seeded pick among the affording venues open at that hour
+  - `deterministicDay(spriteSeed, dayType, town) → blocks` — the art-free path that actually inhabits the city
 
 - [ ] **Step 0: Export `pickFrom` from `agentSeed.js`**
 
-`scheduleCoverage.js` below opens with `const { hashString, pickFrom } = require('./agentSeed')`. `pickFrom` is module-private today — defined at `agentSeed.js:178`, absent from `module.exports` at lines 199-206 — so without this one-line export every `deriveVenue` / `venueAffinity` call throws `TypeError: pickFrom is not a function`. In `$API/src/utils/agentSeed.js`, add it:
+`scheduleCoverage.js` below opens with `const { hashString, pickFrom } = require('./agentSeed')`. `pickFrom` is module-private today — defined at `agentSeed.js:178`, absent from `module.exports` at lines 199-206 — so without this one-line export every `deriveVenue` / `deriveWorkplaceVenue` call throws `TypeError: pickFrom is not a function`. In `$API/src/utils/agentSeed.js`, add it:
 
 ```js
 module.exports = {
@@ -339,10 +396,15 @@ git commit -m "chore(seed): export pickFrom for seed-derived venue assignment"
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const {
-  normalizeCoverage, assertTotalCoverage, deriveVenue, venueAffinity,
-  deterministicDay, poolFor,
+  normalizeCoverage, assertTotalCoverage, deriveAffordance, deriveVenuesAffording,
+  deriveVenue, deriveHomeVenue, deriveResidenceVenues,
+  deriveWorkplaceVenue, deriveHangoutVenue, deterministicDay,
 } = require('../src/utils/scheduleCoverage');
-const { isValidVenue, venueIds } = require('../src/utils/venueVocabulary');
+const { isValidVenue, venueIds, loadVocabulary } = require('../src/utils/venueVocabulary');
+
+const VENUES = loadVocabulary();
+const ROSTER = Array.from({ length: 85 }, (_, i) => `agent_${i}`);
+const TOWN = { venues: VENUES, roster: ROSTER };
 
 const hours = blocks => { const h = []; for (const b of blocks) for (let x = b.start; x < b.end; x++) h.push(x); return h; };
 
@@ -386,11 +448,40 @@ test('assertTotalCoverage names the offending hour', () => {
   assert.throws(() => assertTotalCoverage([{ start: 0, end: 12 }, { start: 8, end: 24 }]), /hour 8/);
 });
 
+// ── Affordances (addendum I.1) — the model that supersedes F-7 ───────────
+
+test('every activity resolves to an affordance, and an unknown one to idle', () => {
+  assert.equal(deriveAffordance('Sleep'), 'sleep');
+  assert.equal(deriveAffordance('Deep Work Sprint'), 'work');
+  assert.equal(deriveAffordance('Interpretive Yodeling'), 'idle');
+  assert.equal(deriveAffordance(''), 'idle');
+  assert.equal(deriveAffordance(null), 'idle');
+});
+
+test('deriveVenuesAffording is total: any activity yields venues (supersedes F-7)', () => {
+  // F-7 was every weekend schedule throwing because 'Slow Morning' and
+  // 'Hobbies' matched no pool regex. There is no unmatched branch any more:
+  // the fallback is the venues affording 'idle', and the district always
+  // does. The two F-7 activities are pinned here as the regression case.
+  for (const activity of ['Slow Morning', 'Hobbies', 'Work', 'Interpretive Yodeling', '', null, 42]) {
+    const pool = deriveVenuesAffording(activity, VENUES);
+    assert.ok(pool.length > 0, `no venue affords anything for ${JSON.stringify(activity)}`);
+  }
+});
+
+test('residences are never public candidates — a home is reached only via the home assignment', () => {
+  for (const activity of ['Work', 'Lunch', 'Social Time', 'Interpretive Yodeling']) {
+    for (const v of deriveVenuesAffording(activity, VENUES)) {
+      assert.equal(v.roles.includes('home'), false, `${v.id} offered publicly for ${activity}`);
+    }
+  }
+});
+
 test('every derived venue is in the published vocabulary (I-8)', () => {
-  for (let i = 0; i < 500; i++) {
+  for (const seed of ROSTER) {
     for (const day of ['weekday', 'weekend']) {
       for (let h = 0; h < 24; h++) {
-        const v = deriveVenue(`agent_${i}`, day, h, 'Work');
+        const v = deriveVenue(seed, day, h, 'Work', TOWN);
         if (v !== null) assert.ok(isValidVenue(v), `${v} is not published`);
       }
     }
@@ -398,18 +489,64 @@ test('every derived venue is in the published vocabulary (I-8)', () => {
 });
 
 test('venue derivation is deterministic (I-5 in spirit)', () => {
-  assert.equal(deriveVenue('aisha_khan', 'weekday', 9, 'Work'), deriveVenue('aisha_khan', 'weekday', 9, 'Work'));
+  assert.equal(deriveVenue('aisha_khan', 'weekday', 9, 'Work', TOWN),
+               deriveVenue('aisha_khan', 'weekday', 9, 'Work', TOWN));
 });
 
-test('night hours put agents in the dorm, not the office', () => {
-  for (let i = 0; i < 200; i++) assert.equal(deriveVenue(`agent_${i}`, 'weekday', 3, 'Sleep'), 'dorm');
+test('a venue outside its hours is not a candidate (D-12)', () => {
+  // Work at 03:00: the work-affording venues are closed, so the assignment
+  // degrades to an open idle venue rather than placing anyone behind a
+  // locked door. The day/night cycle emerges from data.
+  for (const seed of ROSTER.slice(0, 20)) {
+    const id = deriveVenue(seed, 'weekday', 3, 'Work', TOWN);
+    const venue = VENUES.find(x => x.id === id);
+    assert.ok(venue.hours.some(w => w.open <= 3 && 3 < w.close), `${id} is closed at 03:00`);
+  }
+});
+
+// ── The night rule (addendum Part 0 / I.2) — resolves F-12 ───────────────
+
+test('sleeping agents are present in their own residence (F-12)', () => {
+  for (const seed of ROSTER) {
+    const home = deriveVenue(seed, 'weekday', 3, 'Sleep', TOWN);
+    const venue = VENUES.find(v => v.id === home);
+    assert.ok(venue, `${seed} sleeps in unpublished ${home}`);
+    assert.ok(venue.roles.includes('home'), `${seed} sleeps in ${home}, which is not a residence`);
+  }
+});
+
+test('home assignment fills residences to published capacity, in roster creation order', () => {
+  const residences = deriveResidenceVenues(VENUES);
+  const counts = new Map();
+  for (const seed of ROSTER) {
+    const home = deriveHomeVenue(seed, ROSTER, residences);
+    counts.set(home, (counts.get(home) ?? 0) + 1);
+  }
+  for (const [id, n] of counts) {
+    const cap = residences.find(r => r.id === id).capacity;
+    assert.ok(n <= cap, `${id} houses ${n} agents against capacity ${cap}`);
+  }
+  // The first residents share the first residence: creation order, not hash order.
+  const first = residences[0];
+  for (const seed of ROSTER.slice(0, first.capacity)) {
+    assert.equal(deriveHomeVenue(seed, ROSTER, residences), first.id, seed);
+  }
+});
+
+test("an existing agent's home never changes when the town grows (addendum I.2)", () => {
+  const residences = deriveResidenceVenues(VENUES);
+  const grown = [...ROSTER, 'newcomer_1', 'newcomer_2'];
+  for (const seed of ROSTER) {
+    assert.equal(deriveHomeVenue(seed, ROSTER, residences),
+                 deriveHomeVenue(seed, grown, residences), seed);
+  }
 });
 
 test('deterministicDay tiles the day for both day types (SC-1)', () => {
   for (const day of ['weekday', 'weekend']) {
-    for (let i = 0; i < 200; i++) {
-      const blocks = deterministicDay(`agent_${i}`, day);
-      assert.doesNotThrow(() => assertTotalCoverage(blocks), `${day}/agent_${i}`);
+    for (const seed of ROSTER) {
+      const blocks = deterministicDay(seed, day, TOWN);
+      assert.doesNotThrow(() => assertTotalCoverage(blocks), `${day}/${seed}`);
       for (const b of blocks) assert.ok(b.venue === null || isValidVenue(b.venue));
     }
   }
@@ -420,20 +557,23 @@ test('deterministicDay tiles the day for both day types (SC-1)', () => {
 // "office" for everyone: 85 agents in one four-chair room, library empty all
 // week. They assert on the whole roster across the whole day, not one hour.
 
-const ROSTER = Array.from({ length: 85 }, (_, i) => `agent_${i}`);
 const occupancyAt = (dayType, hour) => {
   const counts = new Map();
   for (const seed of ROSTER) {
-    const block = deterministicDay(seed, dayType).find(b => b.start <= hour && b.end > hour);
+    const block = deterministicDay(seed, dayType, TOWN).find(b => b.start <= hour && b.end > hour);
     const v = block?.venue ?? '(absent)';
     counts.set(v, (counts.get(v) ?? 0) + 1);
   }
   return counts;
 };
 
-test('no venue holds more than half the roster during waking hours', () => {
+test('no venue holds more than half the roster at ANY hour — nights included (F-12)', () => {
+  // The old exit criterion said "during waking hours" because the night was
+  // known to violate it 100% of the time. With sleep distributed across
+  // residences there is no excluded window left: the invariant holds around
+  // the clock, and this test says so.
   for (const dayType of ['weekday', 'weekend']) {
-    for (let h = 8; h < 22; h++) {
+    for (let h = 0; h < 24; h++) {
       const counts = occupancyAt(dayType, h);
       for (const [venue, n] of counts) {
         assert.ok(n <= ROSTER.length * 0.5,
@@ -459,7 +599,7 @@ test('agents are not all doing the same thing at the same hour', () => {
   // shape, this collapses to one activity and the town moves in lockstep.
   const activities = new Set();
   for (const seed of ROSTER) {
-    const b = deterministicDay(seed, 'weekday').find(x => x.start <= 9 && x.end > 9);
+    const b = deterministicDay(seed, 'weekday', TOWN).find(x => x.start <= 9 && x.end > 9);
     activities.add(b.activity);
   }
   assert.ok(activities.size >= 2, `every agent is doing "${[...activities][0]}" at 09:00`);
@@ -467,33 +607,43 @@ test('agents are not all doing the same thing at the same hour', () => {
 
 test('an agent keeps the same workplace and hangout across both day types', () => {
   for (const seed of ROSTER.slice(0, 20)) {
-    const a = venueAffinity(seed);
-    assert.deepEqual(a, venueAffinity(seed), 'affinity must be a pure function of the seed');
-    assert.ok(isValidVenue(a.workplace) && isValidVenue(a.hangout), seed);
+    const w = deriveWorkplaceVenue(seed, VENUES);
+    const g = deriveHangoutVenue(seed, VENUES);
+    assert.equal(w, deriveWorkplaceVenue(seed, VENUES), 'workplace must be a pure function of the seed');
+    assert.ok(isValidVenue(w) && isValidVenue(g), seed);
 
-    const weekdayWork = deterministicDay(seed, 'weekday').filter(b => b.activity === 'Work');
-    for (const b of weekdayWork) assert.equal(b.venue, a.workplace, `${seed} works somewhere else`);
+    const weekdayWork = deterministicDay(seed, 'weekday', TOWN).filter(b => b.activity === 'Work');
+    for (const b of weekdayWork) assert.equal(b.venue, w, `${seed} works somewhere else`);
   }
 });
 
 test('the roster splits across workplaces rather than all sharing one', () => {
   const workplaces = new Map();
   for (const seed of ROSTER) {
-    const w = venueAffinity(seed).workplace;
+    const w = deriveWorkplaceVenue(seed, VENUES);
     workplaces.set(w, (workplaces.get(w) ?? 0) + 1);
   }
   assert.ok(workplaces.size >= 2, `all 85 agents work in ${[...workplaces.keys()][0]}`);
   for (const [w, n] of workplaces) {
-    assert.ok(n >= ROSTER.length * 0.2, `${w} has only ${n}/${ROSTER.length} — the split is lopsided`);
+    assert.ok(n >= ROSTER.length * 0.15, `${w} has only ${n}/${ROSTER.length} — the split is lopsided`);
   }
 });
 
 test('an activity narrows the pool but never picks the venue on its own', () => {
   // "Work" must not be a synonym for "office". Same activity, same hour,
   // different agents -> more than one venue.
-  const seen = new Set(ROSTER.map(s => deriveVenue(s, 'weekday', 10, 'Work')));
+  const seen = new Set(ROSTER.map(s => deriveVenue(s, 'weekday', 10, 'Work', TOWN)));
   assert.ok(seen.size >= 2, 'deriveVenue collapsed "Work" onto a single venue');
-  for (const v of seen) assert.ok(poolFor('Work').includes(v), `${v} is outside the Work pool`);
+  const pool = deriveVenuesAffording('Work', VENUES).map(v => v.id);
+  for (const v of seen) assert.ok(pool.includes(v), `${v} is outside the Work pool`);
+});
+
+test('no venue id is named in code — placement is a query over data (I.1)', () => {
+  const src = require('fs').readFileSync(require.resolve('../src/utils/scheduleCoverage'), 'utf8');
+  for (const id of venueIds()) {
+    assert.equal(new RegExp(`['"\`]${id}['"\`]`).test(src), false,
+      `scheduleCoverage.js names venue "${id}" — adding a venue must be a data change in one repo`);
+  }
 });
 ```
 
@@ -510,7 +660,7 @@ Expected: FAIL — `Cannot find module '../src/utils/scheduleCoverage'`.
 'use strict';
 
 /**
- * Schedule coverage and venue assignment.
+ * Schedule coverage and affordance-based venue assignment.
  *
  * INVARIANT SC-1 (I-9): for every agent and every day_type the slots tile
  * [0,24) exactly — no gaps, no overlaps. models/Schedule.js getCurrentSlot
@@ -523,13 +673,26 @@ Expected: FAIL — `Cannot find module '../src/utils/scheduleCoverage'`.
  * matching prose at read time makes an agent teleport when the model writes
  * "coffee break" one day and "grabbing coffee" the next (vision §5 seam 2).
  *
+ * ADDENDUM §I.1 (2026-07-29): activities map to venues by QUERYING
+ * AFFORDANCES, never by naming venue ids. No venue id appears in this file
+ * (a test pins that). An activity matching nothing falls back to venues
+ * affording 'idle' — the district always does, around the clock — so the
+ * assignment is total by data. This supersedes finding F-7: the unmatched
+ * branch that threw is not fixed, it no longer exists.
+ *
+ * ADDENDUM §I.2 / Part 0 (the night rule, resolves F-12): sleeping agents
+ * are present in their own residence. deriveHomeVenue assigns homes by
+ * roster CREATION ORDER, filling each residence to its published capacity —
+ * pure function, zero rows, stable under growth because the residence
+ * instance list is append-only.
+ *
  * §9.3: 004_add_schedules.js has CHECK (start < end_hour), so 22->07 is
  * illegal — but 22->24 and 00->07 are each legal. The night splits at
  * midnight. Two rows, no migration.
  */
 
 const { hashString, pickFrom } = require('./agentSeed');
-const { indoorVenueIds, isValidVenue } = require('./venueVocabulary');
+const { isValidVenue } = require('./venueVocabulary');
 
 const DAY_START = 0;
 const DAY_END = 24;
@@ -592,38 +755,95 @@ function assertTotalCoverage(blocks) {
 const isNight = h => h >= 22 || h < 7;
 
 /**
- * An activity maps to a KIND of place, never to one place.
- *
- * This is the difference between a city and a conveyor belt. If "Work" maps
- * to `office`, then every agent whose day contains a Work block is in the
- * office at that hour — all 85 of them, in a 20x15 room with four chairs,
- * while the library stands empty all week. The town has to look inhabited
- * (G-F), and an inhabited town is agents in different places.
- *
- * So the activity narrows the pool and the AGENT'S SEED picks within it.
- * Two agents doing the same thing at the same hour land in different rooms,
- * deterministically, and each one goes back to the same room tomorrow.
- *
- * Pools name venue ids from the published vocabulary and are filtered
- * through isValidVenue, so retiring a venue in BotVille degrades this to the
- * remaining choices instead of writing an id nothing recognises (I-8).
+ * Free text -> affordance token. The right-hand side is VOCABULARY, never a
+ * venue id: this table changes when a new KIND of activity exists, not when
+ * a venue is added. TOTAL: anything unmatched is 'idle', so there is no
+ * unmatched branch to throw (the F-7 class, gone by construction).
  */
-const ACTIVITY_POOLS = [
-  [/sleep|nap|bed/,                                  ['dorm']],
-  [/read|study|research|writ|library|learn|book/,    ['library']],
-  [/coffee|breakfast|lunch|dinner|eat|cafe|café/,    ['cafe']],
-  [/work|meeting|job|shift|project|code|admin/,      ['office', 'library']],
-  [/social|friend|hang|party|date|chat/,             ['cafe', 'district']],
-  [/errand|shop|market|chore|walk|exercise|outside/, ['district', 'cafe']],
-  [/home|rest|downtime|quiet/,                       ['dorm', 'library']],
+const ACTIVITY_AFFORDANCES = [
+  [/sleep|nap|bed/,                                   'sleep'],
+  [/read|study|research|writ|library|learn|book/,     'read'],
+  [/coffee|breakfast|lunch|dinner|eat|caf|meal|snack/, 'eat'],
+  [/work|meeting|job|shift|project|code|admin/,       'work'],
+  [/social|friend|hang|party|date|chat|visit/,        'socialize'],
+  [/errand|shop|market|chore|walk|exercise|outside/,  'wander'],
 ];
 
-function poolFor(activity) {
+function deriveAffordance(activity) {
   const text = String(activity ?? '').toLowerCase();
-  const hit = ACTIVITY_POOLS.find(([re]) => re.test(text));
-  // No match: any published venue is plausible. Deliberately wide — a made-up
-  // activity should scatter agents, not funnel them somewhere arbitrary.
-  return hit ? hit[1] : venueIds();
+  const hit = ACTIVITY_AFFORDANCES.find(([re]) => re.test(text));
+  return hit ? hit[1] : 'idle';
+}
+
+/** Is the venue open at this hour? Windows never wrap — split at midnight. */
+function isOpenAtHour(venue, hour) {
+  return venue.hours.some(w => w.open <= hour && hour < w.close);
+}
+
+/** The published residences, in stable instance order (house_2 before house_10). */
+function deriveResidenceVenues(venues) {
+  return venues
+    .filter(v => v.roles.includes('home'))
+    .sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
+}
+
+/**
+ * The venues whose affordances answer an activity (addendum I.1).
+ *
+ * An activity maps to a KIND of place, never to one place: "Work" resolves
+ * to the work affordance and every venue affording it is a candidate. This
+ * is the difference between a city and a conveyor belt — if "Work" meant
+ * one venue, all 85 agents would share one room while the rest stood empty.
+ *
+ * Residences are NEVER public candidates: a home is reached only through
+ * the home assignment, so strangers do not lunch in a living room.
+ *
+ * Total by data: an unmatched activity falls back to the venues affording
+ * 'idle', and the district always affords 'idle' (Plan 2 Task 14 pins it).
+ */
+function deriveVenuesAffording(activity, venues) {
+  const publicVenues = venues.filter(v => !v.roles.includes('home'));
+  const wanted = deriveAffordance(activity);
+  const hits = publicVenues.filter(v => v.affords.includes(wanted));
+  return hits.length ? hits : publicVenues.filter(v => v.affords.includes('idle'));
+}
+
+/**
+ * Creation-order stable home assignment (addendum I.2). Agents fill each
+ * residence to its PUBLISHED capacity before the next opens. The roster
+ * prefix and the residence-instance prefix are both stable, so an existing
+ * agent's home never changes when the town grows — with zero stored rows.
+ * When moving/marriage land (D-11), a stored column takes precedence via
+ * the `stored ?? derived` registry and this function remains the fallback.
+ */
+function deriveHomeVenue(spriteSeed, roster, residences) {
+  const index = roster.indexOf(spriteSeed);
+  if (index === -1 || residences.length === 0) return null;
+  let remaining = index;
+  for (const home of residences) {
+    if (remaining < home.capacity) return home.id;
+    remaining -= home.capacity;
+  }
+  // The roster outgrew the last bake: the newest agents share the last
+  // residence until BotVille re-bakes with the new population.
+  return residences[residences.length - 1].id;
+}
+
+/**
+ * The agent's standing places. Same seed, same answer, forever — this is
+ * what makes a routine legible: you learn that this one works in the
+ * library and drinks in the cafe, and tomorrow that is still true. The
+ * pools come from published `roles`, so a new work venue joins them by
+ * being published, not by an edit here.
+ */
+function deriveWorkplaceVenue(spriteSeed, venues) {
+  const pool = venues.filter(v => v.roles.includes('work')).map(v => v.id);
+  return pool.length ? pickFrom(pool, spriteSeed, 'venue:workplace') : null;
+}
+
+function deriveHangoutVenue(spriteSeed, venues) {
+  const pool = venues.filter(v => v.roles.includes('hangout')).map(v => v.id);
+  return pool.length ? pickFrom(pool, spriteSeed, 'venue:hangout') : null;
 }
 
 /**
@@ -631,33 +851,37 @@ function poolFor(activity) {
  * re-run never churns an already-assigned value, exactly like agentSeed.js.
  * Returns null for "no venue asserted" -> BotVille renders `absent`.
  *
+ * Sleep goes HOME (the addendum's night rule, F-12). Everything else is a
+ * seeded pick among the affording venues open at that hour; if every
+ * affording venue is closed, the open idle venues catch it.
+ *
  * I-10 holds: this runs ONCE, at generation time, and the result is stored.
  * Nothing reads `activity` at render time, so an agent cannot teleport
  * because the model phrased tomorrow's schedule differently.
+ *
+ * @param {{venues: object[], roster: string[]}} town — the published
+ *   vocabulary and the full username roster in creation order.
  */
-function deriveVenue(spriteSeed, dayType, startHour, activity) {
-  if (isNight(startHour)) return 'dorm';
+function deriveVenue(spriteSeed, dayType, startHour, activity, town) {
+  const { venues, roster } = town;
 
-  const pool = poolFor(activity).filter(isValidVenue);
-  if (!pool.length) return null;                   // vocabulary retired them all
+  if (deriveAffordance(activity) === 'sleep') {
+    return deriveHomeVenue(spriteSeed, roster, deriveResidenceVenues(venues));
+  }
+
+  const affording = deriveVenuesAffording(activity, venues).filter(v => isOpenAtHour(v, startHour));
+  // Everything affording this is closed right now: fall back to the open
+  // idle venues (null derives to 'idle' by construction — the total default).
+  const pool = (affording.length
+    ? affording
+    : deriveVenuesAffording(null, venues).filter(v => isOpenAtHour(v, startHour)))
+    .map(v => v.id)
+    .filter(isValidVenue);
+  if (!pool.length) return null;   // every venue closed at this hour — absent, never a guess
 
   // Salted by hour as well as seed: an agent moves through its day rather
   // than sitting in one room from 07:00 to 22:00.
   return pickFrom(pool, spriteSeed, `venue:${dayType}:${startHour}`);
-}
-
-/**
- * The agent's two standing places. Same seed, same answer, forever — this is
- * what makes a routine legible: you learn that this one works in the library
- * and drinks in the cafe, and tomorrow that is still true.
- */
-function venueAffinity(spriteSeed) {
-  const work = ['office', 'library'].filter(isValidVenue);
-  const play = ['cafe', 'district'].filter(isValidVenue);
-  return {
-    workplace: work.length ? pickFrom(work, spriteSeed, 'venue:workplace') : null,
-    hangout: play.length ? pickFrom(play, spriteSeed, 'venue:hangout') : null,
-  };
 }
 
 /**
@@ -666,13 +890,15 @@ function venueAffinity(spriteSeed) {
  * generator depends on an external server. Same seed, same schedule.
  *
  * Every boundary is seed-derived, so agents are not all eating lunch at the
- * same moment. The spread is deliberately wider than "realistic" would
- * demand: with 85 agents and six venues, a two-hour spread on each boundary
- * is the difference between a busy town and a queue.
+ * same moment. Weekend afternoons additionally split by STYLE — errands,
+ * reading, visiting — so a single-venue affordance (wandering happens
+ * outdoors) cannot funnel the whole roster into one place.
  */
-function deterministicDay(spriteSeed, dayType) {
+function deterministicDay(spriteSeed, dayType, town) {
   const pick = (salt, n) => hashString(spriteSeed, `${salt}:${dayType}`) % n;
-  const { workplace, hangout } = venueAffinity(spriteSeed);
+  const workplace = deriveWorkplaceVenue(spriteSeed, town.venues);
+  const hangout = deriveHangoutVenue(spriteSeed, town.venues);
+  const home = deriveHomeVenue(spriteSeed, town.roster, deriveResidenceVenues(town.venues));
 
   const wake = 6 + pick('wake', 3);           // 6, 7 or 8
   const startWork = 8 + pick('start', 3);     // 8, 9 or 10
@@ -680,9 +906,15 @@ function deterministicDay(spriteSeed, dayType) {
   const evening = 17 + pick('evening', 3);    // 17, 18 or 19
   const bed = 21 + pick('bed', 2);            // 21 or 22
 
+  // Weekend afternoons differ per agent, structurally: a third of the town
+  // runs errands, a third reads, a third visits — each style resolving to a
+  // different affordance pool.
+  const afternoonStyles = ['Errands', 'Reading', 'Visiting Friends'];
+  const afternoon = afternoonStyles[pick('weekendStyle', afternoonStyles.length)];
+
   const shape = dayType === 'weekday'
     ? [
-        { start: bed, end: wake, activity: 'Sleep', venue: 'dorm' },
+        { start: bed, end: wake, activity: 'Sleep', venue: home },
         { start: wake, end: startWork, activity: 'Breakfast', venue: hangout },
         { start: startWork, end: lunch, activity: 'Work', venue: workplace },
         { start: lunch, end: lunch + 1, activity: 'Lunch', venue: hangout },
@@ -690,41 +922,46 @@ function deterministicDay(spriteSeed, dayType) {
         { start: evening, end: bed, activity: 'Social Time', venue: null },
       ]
     : [
-        { start: bed, end: wake, activity: 'Sleep', venue: 'dorm' },
+        { start: bed, end: wake, activity: 'Sleep', venue: home },
         { start: wake, end: lunch, activity: 'Slow Morning', venue: null },
         { start: lunch, end: lunch + 2, activity: 'Hobbies', venue: null },
-        { start: lunch + 2, end: evening, activity: 'Errands', venue: null },
+        { start: lunch + 2, end: evening, activity: afternoon, venue: null },
         { start: evening, end: bed, activity: 'Social Time', venue: hangout },
       ];
 
   const withVenue = shape.map(b => ({
     ...b,
-    // An explicit affinity wins; otherwise the activity pool decides. Either
-    // way the answer is a pure function of this agent's seed.
+    // An explicit assignment (home, workplace, hangout) wins; otherwise the
+    // affordance query decides. Either way the answer is a pure function of
+    // this agent's seed — and the sleep block passes through isValidVenue
+    // like every other, closing F-12's smaller I-8 gap.
     venue: (b.venue && isValidVenue(b.venue) ? b.venue : null)
-      ?? deriveVenue(spriteSeed, dayType, b.start, b.activity),
+      ?? deriveVenue(spriteSeed, dayType, b.start, b.activity, town),
     online_probability: isNight(b.start) ? 0.05 : 0.6,
     posting_probability: isNight(b.start) ? 0.01 : 0.25,
   }));
 
   const normalized = normalizeCoverage(withVenue).map(b => ({
     ...b,
-    venue: b.venue ?? deriveVenue(spriteSeed, dayType, b.start, b.activity),
+    venue: b.venue ?? deriveVenue(spriteSeed, dayType, b.start, b.activity, town),
   }));
   assertTotalCoverage(normalized);
   return normalized;
 }
 
 module.exports = {
-  normalizeCoverage, assertTotalCoverage, deriveVenue, venueAffinity,
-  deterministicDay, isNight, poolFor,
+  normalizeCoverage, assertTotalCoverage, isNight,
+  deriveAffordance, deriveVenuesAffording, deriveVenue,
+  deriveHomeVenue, deriveResidenceVenues,
+  deriveWorkplaceVenue, deriveHangoutVenue,
+  deterministicDay,
 };
 ```
 
 - [ ] **Step 4: Run the coverage tests**
 
 Run: `cd "$API" && node --test tests/scheduleCoverage.test.js`
-Expected: PASS — 16 tests. The six occupancy tests are the ones that matter: they are what fails if `deriveVenue` ever collapses an activity onto a single venue again.
+Expected: PASS — 23 tests. Three groups matter most: the F-7 regression pins (`'Slow Morning'` / `'Hobbies'` must resolve to venues, totally), the night-rule group (sleep lands in the agent's own residence, stably under growth), and the occupancy group — which now covers **all 24 hours**, because with F-12 resolved there is no window in which the crowding invariant is allowed to fail.
 
 - [ ] **Step 5: Wire venue into the LLM generator**
 
@@ -733,16 +970,16 @@ In `src/workers/populateUserProfiles.js`:
 Add at the top with the other requires:
 
 ```js
-const { indoorVenueIds } = require('../utils/venueVocabulary');
+const { loadVocabulary, isValidVenue } = require('../utils/venueVocabulary');
 const { normalizeCoverage, assertTotalCoverage, deriveVenue } = require('../utils/scheduleCoverage');
 ```
 
-Add `venue` to both block schemas in `SCHEDULE_TOOL` (lines 226-234 and 241-249), inside `properties`:
+Add `venue` to both block schemas in `SCHEDULE_TOOL` (lines 226-234 and 241-249), inside `properties`. The enum offers the **public** venues only — residences are reached through the home assignment, never named by the model:
 
 ```js
               venue: {
                 type: 'string',
-                enum: indoorVenueIds(),
+                enum: loadVocabulary().filter(v => !v.roles.includes('home')).map(v => v.id),
                 description: 'Where the agent physically is during this block. Choose from the list.',
               },
 ```
@@ -767,16 +1004,24 @@ function validateScheduleBlock(block) {
 }
 ```
 
-(add `isValidVenue` to the `venueVocabulary` require).
+(the `isValidVenue` require is already in place from the top-of-file edit).
 
-Replace `saveSchedule` (lines 296-331) so it normalises and stores `venue`:
+Replace `saveSchedule` (lines 296-331) so it normalises and stores `venue`. It takes a `town` — the published venues plus the **full** username roster in creation order — because the home assignment (sleep blocks) depends on the whole roster, not on the user being written:
 
 ```js
-async function saveSchedule(userId, schedule, spriteSeed) {
+async function saveSchedule(userId, schedule, spriteSeed, town) {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
     await client.query('DELETE FROM users_schedules WHERE user_id = $1', [userId]);
+
+    // A model-supplied venue must be a PUBLIC one: a residence id is treated
+    // as unassigned and re-derived, so the model cannot put an agent in
+    // someone's living room.
+    const isPublicVenue = id => {
+      const v = town.venues.find(x => x.id === id);
+      return !!v && !v.roles.includes('home');
+    };
 
     for (const [dayType, raw] of [['weekday', schedule.weekday_blocks], ['weekend', schedule.weekend_blocks]]) {
       const valid = (raw ?? []).filter(b => {
@@ -790,7 +1035,8 @@ async function saveSchedule(userId, schedule, spriteSeed) {
       // and a gap renders every agent absent for that hour.
       const blocks = normalizeCoverage(valid).map(b => ({
         ...b,
-        venue: b.venue ?? deriveVenue(spriteSeed, dayType, b.start, b.activity),
+        venue: (b.venue != null && isPublicVenue(b.venue) ? b.venue : null)
+          ?? deriveVenue(spriteSeed, dayType, b.start, b.activity, town),
       }));
       assertTotalCoverage(blocks);
 
@@ -814,7 +1060,16 @@ async function saveSchedule(userId, schedule, spriteSeed) {
 }
 ```
 
-Update the one caller at line 346: `await saveSchedule(user.id, schedule, user.username);` and add `users.username` to `findUsersWithoutSchedules`'s SELECT — it is already there (line 258).
+Then build the town once per worker run, before the per-user loop, and pass it through. Above the loop that processes users:
+
+```js
+  // The FULL roster in creation order — the home assignment (addendum I.2)
+  // is a function of it, independent of which users need schedules today.
+  const { rows: rosterRows } = await pool.query('SELECT username FROM users ORDER BY created_at');
+  const town = { venues: loadVocabulary(), roster: rosterRows.map(r => r.username) };
+```
+
+Update the one caller at line 346: `await saveSchedule(user.id, schedule, user.username, town);` and add `users.username` to `findUsersWithoutSchedules`'s SELECT — it is already there (line 258).
 
 - [ ] **Step 6: Add `ORDER BY start` to `getCurrentSlot`**
 
@@ -850,12 +1105,18 @@ Also add `users_schedules.venue,` to the SELECT list so callers can read it, and
 require('dotenv').config();
 const pool = require('../config/database');
 const { deterministicDay, assertTotalCoverage } = require('../utils/scheduleCoverage');
-const { isValidVenue } = require('../utils/venueVocabulary');
+const { isValidVenue, loadVocabulary } = require('../utils/venueVocabulary');
 
 const force = process.argv.includes('--force');
 const dryRun = process.argv.includes('--dry-run');
 
 async function main() {
+  // The FULL roster in creation order, independent of who needs populating:
+  // the home assignment (addendum I.2) is a pure function of it, and using a
+  // subset would give agents different homes on different runs.
+  const { rows: rosterRows } = await pool.query('SELECT username FROM users ORDER BY created_at');
+  const town = { venues: loadVocabulary(), roster: rosterRows.map(r => r.username) };
+
   const { rows: users } = await pool.query(
     force
       ? 'SELECT id, username FROM users ORDER BY created_at'
@@ -868,7 +1129,7 @@ async function main() {
   let written = 0;
 
   for (const user of users) {
-    const days = ['weekday', 'weekend'].map(d => [d, deterministicDay(user.username, d)]);
+    const days = ['weekday', 'weekend'].map(d => [d, deterministicDay(user.username, d, town)]);
     for (const [dayType, blocks] of days) {
       assertTotalCoverage(blocks);
       for (const b of blocks) {

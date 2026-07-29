@@ -18,11 +18,11 @@
 | | Plan | Tasks | Needs art? |
 |---|---|---|---|
 | 1 | [Foundations](01-foundations.md) — contract, curation record, fixture pack, CI gate | 1, 2, 4–10 (+4a, 9a) | no |
-| 2 | [The world bake](02-world-bake.md) — venues become data | 11–19 (+19a), 25 | no |
+| 2 | [The world bake](02-world-bake.md) — venues become data | 11–19 (+14a, 19a), 25 | no |
 | 3 | [The runtime registry](03-runtime-registry.md) — scenes read the registry | 21–24, 34, 36, 37 | no |
 | 4 | [Appearance](04-appearance.md) — identity-derived, content-addressed sprites | 26–30, 38 | no |
 | 5 | [The platform seam](05-platform-seam.md) — venue at write time, one vocabulary | 31–33 | no |
-| 6 | [Art and deployment](06-art-and-deployment.md) — real pixels, real deploys | 3, 20, 35, 39 | **yes, Tasks 3/20/39** |
+| 6 | [Art and deployment](06-art-and-deployment.md) — real pixels, real deploys | 3, 20, 35, 38b, 39 | **yes, Tasks 3/20/39** |
 
 Execute in order. Pause after Plan 2 and look at the result: it is where the
 design's central claim (venues are data) either holds or does not, and every
@@ -119,7 +119,11 @@ Every task's requirements implicitly include this section.
 | `contract/assets.contract.json` | Pack-agnostic authority for *what must exist*: names, geometry, anim rows, statuses. |
 | `sources/limezu.json` | The only pack-specific artifact: `name → {file,x,y,w,h}` rects with optional `note`/`pin`, + capabilities. |
 | `sources/fixture.json` | Synthetic test pack manifest — same shape, generated pixels. |
-| `venues/<id>/venue.json` | One descriptor per venue (district, cafe, dorm, library, office). |
+| `venues/<id>/venue.json` | One descriptor per authored venue (district, cafe, dorm, library, office), carrying `roles`/`affords`/`hours` (addendum I.1). |
+| `venues/_archetypes/house.json` | Residence archetype — layout, affordances, capacity of a venue *type* (addendum I.3). |
+| `town/town.json` | Measured town snapshot (`population`); input to residence provisioning. |
+| `scripts/lib/residences.mjs` | `deriveResidenceCount` / `deriveResidenceInstances` — append-only instance list (addendum I.2). |
+| `schemas/venues.schema.json` | Canonical JSON Schema for the published vocabulary, published beside it (Conventions table). |
 | `scripts/lib/assetContract.mjs` | Load + validate the contract. |
 | `scripts/lib/sourceAdapter.mjs` | Load an adapter; resolve names; report unresolved. |
 | `scripts/lib/spriteReader.mjs` | Crop a rect from a pack PNG, trim transparent margins, report true bounds. |
@@ -143,7 +147,8 @@ Every task's requirements implicitly include this section.
 | `test/*.test.mjs`, `test/*.test.ts` | All tests. |
 | `Dockerfile.client`, `Dockerfile.server`, `docker-compose.yml` | Containerisation. |
 | `aisocialnetwork-api/src/db/migrations/037_add_schedule_venue.js` | `users_schedules.venue`. |
-| `aisocialnetwork-api/src/utils/venueVocabulary.js` | Load + validate against the published `venues.json`. |
+| `aisocialnetwork-api/src/utils/venueVocabulary.js` | Load + validate against the published `venues.json` (schema'd shape checked at load time). |
+| `aisocialnetwork-api/src/utils/scheduleCoverage.js` | SC-1 normalisation + affordance-queried venue assignment (`deriveVenuesAffording`, `deriveHomeVenue`, …). Supersedes the `ACTIVITY_POOLS` design (F-7). |
 
 ### Modified
 
@@ -178,11 +183,11 @@ Plan 6 needs the licensed art.
 | Plan | Tasks | Depends on | Deliverable | Exit criterion |
 |---|---|---|---|---|
 | **1 — Foundations** | 1, 2, 4–10 | — | Contract, adapter, reader, CI gate, fixture pack | `npm run validate:contract` green for both packs; zero behaviour change |
-| **2 — World bake** | 11–19, 25 | 1 | Venues and art source become data | `npm run bake:world` builds the whole world from data; a venue no code mentions produces a loadable map (G-C) |
+| **2 — World bake** | 11–19 (+14a, 19a), 25 | 1 | Venues and art source become data | `npm run bake:world` builds the whole world from data — residence instances included; a venue no code mentions produces a loadable map (G-C) |
 | **3 — Runtime registry** | 21–24, 34, 36, 37 | 1, 2 | Scenes read a registry | Four interiors load, four subclasses gone, typecheck clean |
 | **4 — Appearance** | 26–30, 38 | 1, 3 | Identity-derived, content-addressed sprites | Distinct sprites across an 85-agent roster (G-D) |
 | **5 — Platform seam** | 31–33 | 1, 2 | `venue` stored at write time, one vocabulary | SC-1 holds for every agent in the live DB (G-F, G-G) |
-| **6 — Art & deployment** | 3, 20, 35, 39 | 1–5 | Real pixels, real deploys | Golden gate green; Vercel and Railway deploys work; hero re-rendered |
+| **6 — Art & deployment** | 3, 20, 35, 38b, 39 | 1–5 | Real pixels, real deploys | Golden gate green; Vercel and Railway deploys work; LimeZu credit shipped; hero re-rendered |
 
 **Plans 1–5 need no licensed art and no owner input.** They are developed and
 tested against the synthetic fixture pack. Plan 6 is where the packs land, and
@@ -236,6 +241,7 @@ Consequences:
 | 12 | `PropBaker` | 2 | no |
 | 13 | Venue descriptors — four interiors | 2 | no |
 | 14 | Venue descriptor — district | 2 | no |
+| 14a | **Residence archetype + derived instances (addendum I.2/I.3, F-12)** | 2 | no |
 | 15 | `VenueBaker` — interiors | 2 | no |
 | 16 | `districtGround` generator | 2 | no |
 | 17 | `VenueBaker` — district | 2 | no |
@@ -263,6 +269,7 @@ Consequences:
 | 3b | Delete the QA symlink compatibility layer (after Task 3's capture) | 6 | **YES** (needs the packs on disk) |
 | 20 | **Golden gate against the frozen legacy pipeline** | 6 | **YES** |
 | 35 | Deployment: bake in Vercel/Railway, Docker for parity | 6 | no |
+| 38b | LimeZu credit link (licence obligation) | 6 | no |
 | 39 | Hero re-render | 6 | **YES** |
 
 Task 27 left the art-gated set: it develops and tests entirely against the
@@ -342,7 +349,7 @@ outstanding, not a pass.
 | **I-13** no animal appearances | `test/appearance-resolver.test.ts` "the fallback is always a human variant"; `test/appearance-derive.test.mjs` "no record can name an animal" |
 | **Curation is recorded, not remembered** | every rect in `sources/<pack>.json` carries its `note` in the same committed file the build reads; a crop whose pixels changed fails `validate:contract` by name (pin tests in `test/contract-validator.test.mjs`) |
 | **G-C** venues are data | `test/bake/fixture-venue.test.mjs` — a venue no code mentions produces a loadable scene, and the commit that adds it touches only `test/` |
-| **G-F** the city looks inhabited | `tests/scheduleCoverage.test.js` "no venue holds more than half the roster", "every published venue is occupied at some point in the week" |
+| **G-F** the city looks inhabited | `tests/scheduleCoverage.test.js` "no venue holds more than half the roster at ANY hour — nights included" (F-12 resolved: sleep distributes across residences), "every published venue is occupied at some point in the week" |
 | **G-H** BotVille is containerised | `test/deploy-config.test.mjs`; `docker compose up` in Task 35 Step 11 — alongside the Vercel and Railway paths it must not replace |
 | **G-D** ≥10⁴ appearance space | `test/appearance-derive.test.mjs` "the space is at least 10^4" — 691,200 against 16 today |
 
@@ -357,6 +364,7 @@ Recorded so a later reader does not mistake absence for oversight.
 - **`agentLife.ts` is not deleted, SQLite is not replaced.** Both explicitly out of scope (spec §2 non-goals).
 - **`users.avatar` still points at `fakepersongenerator.com`.** The portrait is *produced* at `baked/<hash>-portrait.png` (Task 28); pointing the column at it is a one-column data decision for the owner, not an art task (spec §6.3, open decision 2).
 - **Overflow UX above venue capacity is deferred.** `capacity` and deterministic slotting are in (Task 37); what a genuinely over-capacity room should *look* like needs a populated world to evaluate against (R-3, open decision 3).
+- **Residence door tiles on the district map are a recorded FOLLOW-UP, not a gap.** Houses exist, bake, publish and load (Task 14a), and are reachable through the HUD agent-click path — but the `cityGrid` residential-zone extension (door tiles, addendum I.3 lazy-load LOD) deliberately waits until Plan 6 Task 20 captures the golden baseline, because extending the generator first would make the byte-exact gate compare against a moving target. See Task 14a's FOLLOW-UP note for the full reasoning.
 - **O-5, the licence, is unblocked but unanswered.** The adapter makes the pack a data choice; Task 3 Step 8 reads the actual terms and Task 35 offers both deploy configurations. The design does not decide it (R-2, open decision 1).
 - **Animals are not moved into the district descriptor as scenery.** Spec §6.2 says both that no agent may be *assigned* an animal appearance and that "animals move to the district descriptor as ambient scenery in the farm pen." The first is binding and is enforced (I-13, Task 30). The second would change what `agentLife.ts` renders in the farm pen today, and that file still owns the world and is explicitly out of scope — the same paragraph says so. So animal *textures* stay loaded, existing SQLite agents keep their `avatar_variant`, and the district descriptor keeps only the four `animal_sleep` night points it has now. What is forbidden is *deriving* an animal appearance, which nothing in the new path can do. Moving them to scenery belongs with the integration project that retires `agentLife.ts`.
 - **`agentLife.ts`'s six-venue random mover keeps running.** It is what makes the city move until the platform feed exists.

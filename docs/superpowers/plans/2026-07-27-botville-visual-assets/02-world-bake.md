@@ -4,7 +4,7 @@
 
 > **Plan 2 of 6.** Index and sequencing: [`00-INDEX.md`](00-INDEX.md). Spec: `docs/superpowers/specs/2026-07-27-botville-visual-assets-design.md` (commit `d695881`) — approved, do not re-brainstorm.
 
-**Goal:** Turn venues into data. Five descriptors plus one bake replace ~35KB of imperative crop coordinates, and adding a place stops requiring code.
+**Goal:** Turn venues into data. Five descriptors, one residence archetype and one bake replace ~35KB of imperative crop coordinates, and adding a place stops requiring code.
 
 **Architecture:** `AtlasBuilder` packs ordered tiles into a ground atlas (order defines GID). `PropBaker` emits one trimmed PNG per contract name and records its true size. `VenueBaker` turns a descriptor into a `.tmj`, reading object sizes from the baked bitmaps and deriving collision from furniture footprints. `districtGround.cityGrid` is the seeded outdoor generator, with its PRNG consumption order preserved exactly. `scripts/world-bake.mjs` runs all of it and publishes `venues.json`.
 
@@ -46,6 +46,7 @@ Every task's requirements implicitly include this section.
 - **Task 12** — `PropBaker`
 - **Task 13** — Venue descriptors — the four interiors
 - **Task 14** — Venue descriptor — the district
+- **Task 14a** — Residence archetype and derived instances
 - **Task 15** — `VenueBaker` — interiors
 - **Task 16** — The `cityGrid` ground generator
 - **Task 17** — `VenueBaker` — the district
@@ -361,6 +362,8 @@ Transcribe the four `buildRoom({...})` calls from `build-interiors.mjs:230-360` 
 
 `capacity` is new and comes from spec §5.3 / §10.3. Set it to the seat count of each room, which is what the art actually supports.
 
+`roles`, `affords` and `hours` come from the 2026-07-29 addendum §I.1 (which revises spec §5.3): `roles` is what the venue is to an agent's life, `affords` the activities it supports, `hours` its opening windows (`[{open, close}]`, whole hours; a venue open across midnight splits at midnight into two entries, mirroring the schedule convention). The platform's schedule writer places agents by **querying `affords`**, never by naming a venue id — Plan 5 Task 32 is the consumer. Note the dorm's role is `hangout`, **not** `home`: per the addendum's night rule (Part 0, resolving F-12), sleeping agents are present in their own residence (Task 14a), and the dorm interior — real art, worth keeping — becomes a lounge rather than the universal night bucket.
+
 **Files:**
 - Create: `venues/office/venue.json`, `venues/cafe/venue.json`, `venues/dorm/venue.json`, `venues/library/venue.json`
 - Test: `test/venue-descriptors.test.mjs`
@@ -430,8 +433,31 @@ test('every interior exits to the district', () => {
   }
 });
 
+test('every descriptor carries the affordance fields (addendum I.1)', () => {
+  for (const id of INTERIORS) {
+    const v = load(id);
+    assert.ok(Array.isArray(v.roles) && v.roles.length > 0, `${id}.roles`);
+    assert.ok(Array.isArray(v.affords) && v.affords.length > 0, `${id}.affords`);
+    assert.ok(Array.isArray(v.hours) && v.hours.length > 0, `${id}.hours`);
+    for (const w of v.hours) {
+      assert.ok(Number.isInteger(w.open) && Number.isInteger(w.close), `${id}.hours`);
+      assert.ok(w.open >= 0 && w.close <= 24 && w.open < w.close, `${id}.hours ${w.open}-${w.close} must not wrap — split at midnight`);
+    }
+  }
+});
+
+test('the dorm is a hangout, not a home — sleep happens in residences (F-12)', () => {
+  const dorm = load('dorm');
+  assert.deepEqual(dorm.roles, ['hangout']);
+  assert.equal(dorm.affords.includes('sleep'), false,
+    'the dorm must not afford sleep, or the schedule writer funnels the whole roster back into it');
+});
+
 test('descriptor ids match their directory', () => {
-  for (const dir of readdirSync('venues')) assert.equal(load(dir).id, dir);
+  // `_`-prefixed entries are not venues — venues/_archetypes/ holds archetype
+  // files (Task 14a).
+  for (const dir of readdirSync('venues').filter(d => !d.startsWith('_')))
+    assert.equal(load(dir).id, dir);
 });
 ```
 
@@ -452,6 +478,9 @@ Transcribed from `build-interiors.mjs:230-259`. `collide: false` reproduces the 
   "sizeTiles": [20, 15],
   "groundAtlas": "interiors_ground",
   "capacity": 4,
+  "roles": ["work"],
+  "affords": ["work"],
+  "hours": [{ "open": 8, "close": 20 }],
   "ground": { "wallA": "wallOfficeA", "wallB": "wallOfficeB", "floor": "floorOffice" },
   "furniture": [
     { "name": "workstation_single", "at": [2, 1.2] },
@@ -498,6 +527,9 @@ From `build-interiors.mjs:261-297`. The comment at 277-279 explains the 3.5-tile
   "sizeTiles": [20, 15],
   "groundAtlas": "interiors_ground",
   "capacity": 9,
+  "roles": ["hangout", "work"],
+  "affords": ["eat", "socialize", "read"],
+  "hours": [{ "open": 7, "close": 22 }],
   "ground": { "wallA": "wallCafeA", "wallB": "wallCafeB", "floor": "floorCafe" },
   "furniture": [
     { "name": "counter_wide", "at": [2, 3.6] },
@@ -552,6 +584,9 @@ From `build-interiors.mjs:299-327`.
   "sizeTiles": [20, 15],
   "groundAtlas": "interiors_ground",
   "capacity": 6,
+  "roles": ["hangout"],
+  "affords": ["socialize", "idle"],
+  "hours": [{ "open": 0, "close": 24 }],
   "ground": { "wallA": "wallDormA", "wallB": "wallDormB", "floor": "floorDorm" },
   "furniture": [
     { "name": "bed_green", "at": [2, 1.6] },
@@ -595,6 +630,9 @@ From `build-interiors.mjs:329-360`.
   "sizeTiles": [20, 15],
   "groundAtlas": "interiors_ground",
   "capacity": 4,
+  "roles": ["work", "hangout"],
+  "affords": ["read", "work", "idle"],
+  "hours": [{ "open": 8, "close": 22 }],
   "ground": { "wallA": "wallLibA", "wallB": "wallLibB", "floor": "floorLib" },
   "furniture": [
     { "name": "bookshelf_a", "at": [1, 0.7] },
@@ -632,7 +670,7 @@ From `build-interiors.mjs:329-360`.
 - [ ] **Step 7: Run tests and the validator**
 
 Run: `npm test && npm run validate:contract`
-Expected: 7 new tests PASS; `contract validation OK: pack "fixture", 4 venue(s), pixels checked`.
+Expected: 9 new tests PASS; `contract validation OK: pack "fixture", 4 venue(s), pixels checked`.
 
 - [ ] **Step 8: Commit**
 
@@ -709,6 +747,14 @@ test('glows declare a kind the client knows (GLOW_KINDS)', () => {
 test('capacity is generous — the district is the outdoor overflow', () => {
   assert.ok(v.capacity >= 64);
 });
+
+test('the district affords idle at every hour — the total fallback (addendum I.1)', () => {
+  // Plan 5's deriveVenuesAffording falls back to venues affording 'idle';
+  // the district always affording it, always open, is what makes that
+  // fallback total and the F-7 ReferenceError class unrepresentable.
+  assert.ok(v.affords.includes('idle'));
+  assert.deepEqual(v.hours, [{ open: 0, close: 24 }]);
+});
 ```
 
 - [ ] **Step 2: Run to verify it fails**
@@ -728,6 +774,9 @@ Expected: FAIL — `ENOENT ... venues/district/venue.json`.
   "sizeTiles": [48, 46],
   "groundAtlas": "district_ground",
   "capacity": 96,
+  "roles": ["hangout"],
+  "affords": ["wander", "socialize", "idle"],
+  "hours": [{ "open": 0, "close": 24 }],
   "generator": {
     "name": "cityGrid",
     "seed": 20260703,
@@ -845,13 +894,259 @@ The `glows` coordinates are the `build-district.mjs:310-333` values with the per
 - [ ] **Step 4: Run tests and the validator**
 
 Run: `npm test && npm run validate:contract`
-Expected: 7 new tests PASS; `contract validation OK: pack "fixture", 5 venue(s), pixels checked`.
+Expected: 8 new tests PASS; `contract validation OK: pack "fixture", 5 venue(s), pixels checked`.
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add venues/district/venue.json test/venue-district-descriptor.test.mjs
 git commit -m "feat(venues): district descriptor with a named ground generator"
+```
+
+---
+
+## Task 14a: Residence archetype and derived instances
+
+**This is the addendum's §I.2/§I.3 residence model, and the structural fix for F-12.** Today every agent sleeps in `venue: 'dorm'` — 85 agents in a declared capacity of 6, while the district stands empty. The addendum's night rule (Part 0, O-3): sleeping agents are **present in their own residence**. That needs residences to exist, and they are *derived, not authored*:
+
+- `venues/_archetypes/house.json` holds the layout, affordances and furniture of a residence **type**. One archetype is enough for v1 — `apartment` and `hotel` are later **data additions** (one file each plus a seeded mix in the provisioning function), not code changes. The addendum's seeded per-archetype weighting arrives with the second archetype; with one archetype it would be a weight table with one row.
+- The instance list is derived at bake time: `deriveResidenceCount(town) = ceil(population / RESIDENCE_OCCUPANCY_TARGET_AGENTS)`, target 7 (addendum §I.2, "target ≈ 6–8"). With today's 85 agents that is 13 houses. **No fixed number anywhere** — growth re-runs the bake with a bigger `population`.
+- The instance list is **append-only**: ids `house_1 … house_N` in provisioning order, and growing the town appends `house_{N+1}…` without touching the prefix. That prefix stability is what lets the api assign homes by roster creation order (Plan 5 Task 32's `deriveHomeVenue`) with **zero stored rows** and no reshuffling when the town grows.
+- The occupancy constant lives **only in this repo**. It is published as each instance's `capacity`, and the api fills residences by *published capacity*, not by a mirrored constant — so the number never crosses the repo boundary as code. (A future `hotel` with `capacity: 20` needs no api change.)
+
+**Where the pieces live, stated once:** instance *emission* is here (the bake owns what exists); home *assignment* — `deriveHomeVenue(agent, roster, residences)` — is api-side in Plan 5 Task 32, beside the other schedule derivations, because that is where sleep slots get venues.
+
+**District map and doors — the honest option, and why.** Houses do **not** get district door tiles in this plan. Task 16's `cityGrid` is a verbatim transcription of `build-district.mjs` whose **PRNG consumption order is part of the contract**, and Plan 6 Task 20's golden gate proves the new pipeline reproduces the legacy district **byte for byte**. Extending the generator with a residential zone before that baseline is captured would turn the gate into a comparison against a moving target — the one thing Task 19's freeze exists to prevent — and siting 13+ buildings on the 48×46 map is layout design, not transcription. So the interiors ship now as **registry-reachable instances**: they join `venues.json`, bake to loadable `.tmj` maps, register as scenes via Plan 3's registry-driven `GameInit`, and are reached through the HUD agent-click path (`navigation.ts` → `sceneKeyFor(venueId)`) — click a sleeping agent, arrive in their house.
+
+> **FOLLOW-UP (recorded, not silent):** the residential-zone extension of `cityGrid` — a `residential` param block, door tiles linking district → house instances, and the addendum §I.3 lazy-load LOD — lands as its own task **after Plan 6 Task 20 captures the golden baseline**, alongside the O-2 #2 "residential zone" map work. Until then a house interior is reachable from the HUD but has no walkable district door. This gap is deliberate and this note is its record.
+
+**Files:**
+- Create: `venues/_archetypes/house.json`
+- Create: `town/town.json`
+- Create: `scripts/lib/residences.mjs`
+- Test: `test/residences.test.mjs`
+
+**Interfaces:**
+- Consumes: `loadContract()` (Task 4) — archetype furniture/seat names must be contract names.
+- Produces `scripts/lib/residences.mjs`:
+  - `RESIDENCE_OCCUPANCY_TARGET_AGENTS = 7` — the one definition; published to the api as instance `capacity`
+  - `deriveResidenceCount(town) → number` — `ceil(population / target)`; pure, total, throws on a malformed town
+  - `deriveResidenceInstances(town, archetype) → VenueDescriptor[]` — append-only ids `<archetype>_1…N`
+- Produces `town/town.json` — the measured town snapshot the bake reads (`population` = the platform roster count, 85 as of 2026-07-27's pre-flight). Committed data, re-measured when the roster grows.
+- Task 18 consumes both: instances join the bake, the `.tmj` set and the published `venues.json`.
+
+- [ ] **Step 1: Write the failing test**
+
+`test/residences.test.mjs`:
+
+```js
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { loadContract } from '../scripts/lib/assetContract.mjs';
+import {
+  RESIDENCE_OCCUPANCY_TARGET_AGENTS,
+  deriveResidenceCount,
+  deriveResidenceInstances,
+} from '../scripts/lib/residences.mjs';
+
+const archetype = JSON.parse(readFileSync('venues/_archetypes/house.json', 'utf8'));
+const town = JSON.parse(readFileSync('town/town.json', 'utf8'));
+
+test('residence count is derived from population, never authored', () => {
+  const T = RESIDENCE_OCCUPANCY_TARGET_AGENTS;
+  assert.equal(deriveResidenceCount({ population: 0 }), 0);
+  assert.equal(deriveResidenceCount({ population: 1 }), 1);
+  assert.equal(deriveResidenceCount({ population: T }), 1);
+  assert.equal(deriveResidenceCount({ population: T + 1 }), 2);
+  assert.equal(deriveResidenceCount(town), Math.ceil(town.population / T));
+});
+
+test('a malformed town is refused, not guessed at', () => {
+  assert.throws(() => deriveResidenceCount({}), /population/);
+  assert.throws(() => deriveResidenceCount({ population: -1 }), /population/);
+  assert.throws(() => deriveResidenceCount({ population: 2.5 }), /population/);
+});
+
+test('instances are stamped from the archetype with unique sequential ids', () => {
+  const instances = deriveResidenceInstances(town, archetype);
+  assert.equal(instances.length, deriveResidenceCount(town));
+  assert.deepEqual(instances.map(v => v.id),
+    instances.map((_, i) => `house_${i + 1}`));
+  for (const v of instances) {
+    assert.equal(v.archetype, 'house');
+    assert.deepEqual(v.roles, ['home']);
+    assert.ok(v.affords.includes('sleep'), `${v.id} must afford sleep`);
+    assert.equal(v.capacity, RESIDENCE_OCCUPANCY_TARGET_AGENTS,
+      'published capacity IS the occupancy target — the api fills homes by it');
+  }
+});
+
+test('the instance list is append-only: growth never reshuffles the prefix (addendum I.2)', () => {
+  const now = deriveResidenceInstances(town, archetype);
+  const grown = deriveResidenceInstances({ ...town, population: town.population * 2 }, archetype);
+  assert.ok(grown.length > now.length);
+  assert.deepEqual(grown.slice(0, now.length), now,
+    'an existing agent\'s home must never change when the town grows');
+});
+
+test('instances are independent copies, not shared references', () => {
+  const [a, b] = deriveResidenceInstances({ population: RESIDENCE_OCCUPANCY_TARGET_AGENTS * 2 }, archetype);
+  a.furniture.push({ name: 'plant_pot', at: [1, 1] });
+  assert.notEqual(a.furniture.length, b.furniture.length);
+});
+
+test('the archetype names only contract furniture, seats within the room', () => {
+  const c = loadContract();
+  const props = new Set(Object.keys(c.props.interior));
+  const anims = new Set(Object.keys(c.animatedObjects));
+  for (const f of archetype.furniture) assert.ok(props.has(f.name), f.name);
+  for (const a of archetype.animated) assert.ok(anims.has(a.name), a.name);
+  const [W, H] = archetype.sizeTiles;
+  for (const s of archetype.seats) {
+    assert.ok(s.at[0] > 0 && s.at[0] < W && s.at[1] > 0 && s.at[1] < H);
+  }
+});
+
+test('the archetype seats what it houses', () => {
+  assert.equal(archetype.seats.length, archetype.capacity,
+    'every resident needs a place to be — beds and chairs together');
+  assert.ok(archetype.seats.filter(s => s.kind === 'bed').length >= 4);
+});
+```
+
+- [ ] **Step 2: Run to verify it fails**
+
+Run: `npm test -- --test-name-pattern="residence count is derived from population"`
+Expected: FAIL — `Cannot find module '.../scripts/lib/residences.mjs'`.
+
+- [ ] **Step 3: Write the town snapshot**
+
+`town/town.json`:
+
+```json
+{
+  "population": 85
+}
+```
+
+85 is the measured `users` row count from the pre-flight verification (2026-07-27), not an invented quantity. When the roster grows, this number is re-measured, the bake re-runs, and `deriveResidenceCount` appends houses.
+
+- [ ] **Step 4: Write the archetype**
+
+`venues/_archetypes/house.json`. The shape is a `VenueDescriptor` minus `id`/`label` (stamped per instance) plus `labelPrefix`. Layout reuses the dorm's proven furniture vocabulary — four beds, a table, sitting corner — because that is what the interior prop set supports; a visually distinct house is an art pass on this one file later.
+
+```json
+{
+  "archetype": "house",
+  "labelPrefix": "House",
+  "indoor": true,
+  "sizeTiles": [20, 15],
+  "groundAtlas": "interiors_ground",
+  "capacity": 7,
+  "roles": ["home"],
+  "affords": ["sleep", "idle"],
+  "hours": [{ "open": 0, "close": 24 }],
+  "ground": { "wallA": "wallDormA", "wallB": "wallDormB", "floor": "floorDorm" },
+  "furniture": [
+    { "name": "bed_green", "at": [2, 1.6] },
+    { "name": "bed_blue", "at": [6, 1.6] },
+    { "name": "bed_teal", "at": [12, 1.6] },
+    { "name": "bed_green", "at": [16, 1.6] },
+    { "name": "nightstand", "at": [4.3, 2.4] },
+    { "name": "nightstand", "at": [14.3, 2.4] },
+    { "name": "table_plain", "at": [8.5, 7.5] },
+    { "name": "chair_red_r", "at": [6.9, 7.8], "collide": false },
+    { "name": "chair_red_l", "at": [11.7, 7.8], "collide": false },
+    { "name": "armchair_grey_r", "at": [2.6, 10.6] },
+    { "name": "rug_pink", "at": [8, 10.4], "collide": false },
+    { "name": "lamp_red", "at": [18, 7.6] },
+    { "name": "plant_pot", "at": [1.2, 12] }
+  ],
+  "seats": [
+    { "at": [2.8, 3.4], "side": "right", "kind": "bed" },
+    { "at": [6.8, 3.4], "side": "right", "kind": "bed" },
+    { "at": [12.8, 3.4], "side": "left", "kind": "bed" },
+    { "at": [16.8, 3.4], "side": "left", "kind": "bed" },
+    { "at": [7.7, 9.6], "side": "right", "kind": "chair" },
+    { "at": [12.5, 9.6], "side": "left", "kind": "chair" },
+    { "at": [3.5, 13.2], "side": "right", "kind": "chair" }
+  ],
+  "animated": [{ "name": "tv_news", "at": [9, 0.4] }],
+  "spawns": [[9.8, 12.8]],
+  "doors": [{ "name": "exit", "at": [9.5, 14], "targetVenue": "district" }],
+  "glows": []
+}
+```
+
+`affords` is deliberately `["sleep", "idle"]` and **not** `socialize`: Plan 5's placement excludes `home`-role venues from every public candidate pool — a residence is reached only through the home assignment, so strangers do not lunch in someone's living room.
+
+- [ ] **Step 5: Write the provisioning module**
+
+`scripts/lib/residences.mjs`:
+
+```js
+/**
+ * Residence provisioning (2026-07-29 addendum §I.2, §I.3). Pure functions of
+ * the town — no fixed residence count exists anywhere.
+ *
+ * THE INSTANCE LIST IS APPEND-ONLY. Ids are `house_1..house_N` in
+ * provisioning order; growing the town appends, never reshuffles. The api
+ * assigns agents to residences by roster creation order against this stable
+ * prefix (Plan 5 Task 32 deriveHomeVenue), which is what makes "my agent's
+ * home" a durable fact with zero stored rows.
+ *
+ * The occupancy target is defined HERE and nowhere else. It reaches the api
+ * as each instance's published `capacity` — data, not a mirrored constant.
+ */
+
+/** Addendum §I.2: target ≈ 6–8 agents per residence. */
+export const RESIDENCE_OCCUPANCY_TARGET_AGENTS = 7;
+
+/** @param {{population: number}} town */
+export function deriveResidenceCount(town) {
+  const p = town?.population;
+  if (!Number.isInteger(p) || p < 0) {
+    throw new Error(`deriveResidenceCount: town.population must be a non-negative integer, got ${p}`);
+  }
+  return Math.ceil(p / RESIDENCE_OCCUPANCY_TARGET_AGENTS);
+}
+
+/**
+ * Stamp concrete venue descriptors out of an archetype.
+ * One archetype in v1; when `apartment`/`hotel` land, this is where the
+ * seeded per-archetype mix goes — deterministic in (townId, index), per the
+ * addendum. With one archetype a weight table would have one row.
+ *
+ * @param {{population: number}} town
+ * @param {object} archetype — venues/_archetypes/<name>.json
+ * @returns {object[]} VenueDescriptor[]
+ */
+export function deriveResidenceInstances(town, archetype) {
+  const count = deriveResidenceCount(town);
+  return Array.from({ length: count }, (_, i) => {
+    // structuredClone is a Node global (≥17): each instance must be an
+    // independent copy — the "instances are independent copies" test pins it.
+    const { labelPrefix, ...template } = structuredClone(archetype);
+    return {
+      ...template,
+      id: `${archetype.archetype}_${i + 1}`,
+      label: `${labelPrefix ?? archetype.archetype} ${i + 1}`,
+    };
+  });
+}
+```
+
+- [ ] **Step 6: Run tests**
+
+Run: `npm test`
+Expected: PASS — 7 new tests. `validate:contract` is unaffected: its venue enumeration skips `_`-prefixed entries (Task 10), and the archetype's names are checked by this task's own test.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add venues/_archetypes/house.json town/town.json scripts/lib/residences.mjs test/residences.test.mjs
+git commit -m "feat(venues): house archetype and derived residence instances (addendum I.2/I.3, fixes F-12's cause)"
 ```
 
 ---
@@ -1605,27 +1900,32 @@ git commit -m "feat(bake): VenueBaker for the district — fence, crops, glows a
 
 One entry point that runs the whole world bake, and the vendor-name rename that the design exists to make possible. The bake also publishes `venues.json` — **BotVille is the only authority for the venue vocabulary** (I-8), and this is where it speaks.
 
+Two addendum obligations land here too. **Residence instances join the bake** (Task 14a): the archetype is expanded against `town/town.json` and each instance bakes exactly like a hand-authored interior — same `.tmj` path, same published entry. And **the published entries carry `roles` / `affords` / `hours` / `archetype`** (addendum §I.1) — these fields are the reason the file exists: the platform's schedule writer places agents by querying them (Plan 5 Task 32). Per the addendum's Conventions table, the artifact is governed by `schemas/venues.schema.json`, published beside the data. The schema file is the canonical shape statement; mechanical validation is dependency-free at both ends — this repo's tests assert the shape the schema declares (no JSON-Schema engine exists in either repo and no new dependency is permitted), and the api's loader re-asserts it at load time (Plan 5 Task 31). A shared ajv-style validator, if ever wanted, is the MCP plan set's call, not this plan's.
+
 **`worldBake()` takes its output directories as required arguments.** Not defaults — arguments. A library function whose default is "write into the repo" turns every test that calls it into a source-tree mutation, and this one is called eight times by its own test file. The CLI wrapper at the bottom of the module supplies the repo paths; the function itself has no opinion. Step 6 asserts that `npm test` leaves the tree clean, which is the check that keeps it honest.
 
 **Files:**
 - Create: `scripts/world-bake.mjs`
+- Create: `schemas/venues.schema.json`
 - Modify: `package.json` — `bake:world` script
 - Modify: `.gitignore:22-24` — `limezu/` → `pack/`, add `baked/`
 - Test: `test/bake/world-bake.test.mjs` (slow suite — it encodes ~70 PNGs per run)
 - Test: `test/bake/zz-clean-tree.test.mjs`
 
 **Interfaces:**
-- Consumes: everything from Tasks 4–17.
+- Consumes: everything from Tasks 4–17, plus `deriveResidenceInstances` + `town/town.json` + `venues/_archetypes/` (Task 14a).
 - Produces `scripts/world-bake.mjs`:
-  - `worldBake({ pack, srcRoot, outDir, generatedDir, venuesDirs }) → { atlases, props, venues, outDir, generatedDir }`
+  - `worldBake({ pack, srcRoot, outDir, generatedDir, venuesDirs, town }) → { atlases, props, venues, outDir, generatedDir }`
   - `outDir` and `generatedDir` are **required**; the function throws if either is missing.
-  - `venuesDirs` defaults to `[<repo>/venues]`; Task 25 passes a second directory.
+  - `venuesDirs` defaults to `[<repo>/venues]`; Task 25 passes a second directory. `_`-prefixed entries in a venues dir are skipped — `venues/_archetypes/` holds archetypes, not venues.
+  - `town` defaults to reading `<repo>/town/town.json` (the same internal-default seam as `venuesDirs`); tests pass `{ population: n }` directly.
   - CLI `npm run bake:world [pack] [srcRoot]` (default `fixture`) supplies `outDir = packages/client/public/assets` and `generatedDir = packages/client/src/game`.
 - Emits:
   - `<outDir>/tilesets/pack/{district_ground,interiors_ground}.png`
   - `<outDir>/sprites/pack/{district,interior}/<name>.png`
-  - `<outDir>/tilemaps/<venue>.tmj`
-  - `<outDir>/venues.json` — `PublishedVenue[]`, sorted by `id`
+  - `<outDir>/tilemaps/<venue>.tmj` — one per venue **including residence instances**
+  - `<outDir>/venues.json` — `PublishedVenue[]`, sorted by `id`, each entry carrying `id, label, indoor, capacity, archetype, roles, affords, hours`
+  - `<outDir>/venues.schema.json` — a copy of `schemas/venues.schema.json`, published beside the data (Conventions table)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1639,6 +1939,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { worldBake } from '../../scripts/world-bake.mjs';
 import { loadContract } from '../../scripts/lib/assetContract.mjs';
+import { deriveResidenceCount, deriveResidenceInstances } from '../../scripts/lib/residences.mjs';
 
 const c = loadContract();
 
@@ -1680,10 +1981,16 @@ test('one prop PNG per contract name, in every group', () => {
   }
 });
 
-test('five tilemaps are written', () => {
+test('one tilemap per venue, residence instances included', () => {
   const { out } = bake();
+  // Derived, not transcribed: authored venue dirs plus the residence
+  // instances the town snapshot provisions (Task 14a).
+  const town = JSON.parse(readFileSync('town/town.json', 'utf8'));
+  const authored = readdirSync('venues').filter(d => !d.startsWith('_'));
+  const instances = deriveResidenceInstances(town,
+    JSON.parse(readFileSync('venues/_archetypes/house.json', 'utf8'))).map(v => v.id);
   assert.deepEqual(readdirSync(join(out, 'tilemaps')).sort(),
-    ['cafe.tmj', 'district.tmj', 'dorm.tmj', 'library.tmj', 'office.tmj']);
+    [...authored, ...instances].map(id => `${id}.tmj`).sort());
 });
 
 test('tilemaps reference ../tilesets/pack/, never a vendor name', () => {
@@ -1695,12 +2002,40 @@ test('tilemaps reference ../tilesets/pack/, never a vendor name', () => {
 test('venues.json publishes the vocabulary sorted by id (I-8)', () => {
   const { out } = bake();
   const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
-  assert.deepEqual(pub.map(v => v.id), readdirSync('venues').sort());
-  for (const v of pub) assert.deepEqual(Object.keys(v).sort(), ['capacity', 'id', 'indoor', 'label']);
+  assert.deepEqual(pub.map(v => v.id), [...pub.map(v => v.id)].sort());
+  const authored = readdirSync('venues').filter(d => !d.startsWith('_'));
+  for (const id of authored) assert.ok(pub.some(v => v.id === id), id);
+  for (const v of pub) {
+    assert.deepEqual(Object.keys(v).sort(),
+      ['affords', 'archetype', 'capacity', 'hours', 'id', 'indoor', 'label', 'roles']);
+  }
   // Publisher fidelity, not a magic number: capacity is whatever the
   // descriptor says (Task 13), read from it rather than transcribed.
   const cafe = JSON.parse(readFileSync('venues/cafe/venue.json', 'utf8'));
   assert.equal(pub.find(v => v.id === 'cafe').capacity, cafe.capacity);
+  assert.deepEqual(pub.find(v => v.id === 'cafe').affords, cafe.affords);
+});
+
+test('residence instances join the vocabulary and afford sleep (addendum I.2)', () => {
+  const { out } = bake();
+  const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
+  const town = JSON.parse(readFileSync('town/town.json', 'utf8'));
+  const homes = pub.filter(v => v.roles.includes('home'));
+  assert.equal(homes.length, deriveResidenceCount(town));
+  for (const h of homes) {
+    assert.equal(h.archetype, 'house');
+    assert.ok(h.affords.includes('sleep'), h.id);
+  }
+  // No other venue affords sleep — the schedule writer can only put a
+  // sleeping agent in a residence (the F-12 night rule, by construction).
+  assert.deepEqual(pub.filter(v => v.affords.includes('sleep')), homes);
+});
+
+test('the published schema ships beside the data (Conventions table)', () => {
+  const { out } = bake();
+  assert.deepEqual(
+    JSON.parse(readFileSync(join(out, 'venues.schema.json'), 'utf8')),
+    JSON.parse(readFileSync('schemas/venues.schema.json', 'utf8')));
 });
 
 test('the bake is deterministic across runs', () => {
@@ -1781,6 +2116,7 @@ import { loadAdapter } from './lib/sourceAdapter.mjs';
 import { buildAtlas } from './lib/atlasBuilder.mjs';
 import { bakeProps, writeProps } from './lib/propBaker.mjs';
 import { bakeInterior, bakeDistrict } from './lib/venueBaker.mjs';
+import { deriveResidenceInstances } from './lib/residences.mjs';
 import { validate } from './lib/contractValidator.mjs';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
@@ -1792,24 +2128,33 @@ function write(p, buf) {
 
 /**
  * @param {{pack?: string, srcRoot: string, outDir: string, generatedDir: string,
- *          venuesDirs?: string[]}} opts
+ *          venuesDirs?: string[], town?: {population: number}}} opts
  *
  * outDir and generatedDir are REQUIRED. This function has no idea where the
  * repo is and must not: a default of "write into packages/client" turns every
  * caller — including this module's own tests — into a source-tree mutation.
  * The CLI at the bottom of this file is the only place those paths live.
  */
-export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs } = {}) {
+export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs, town } = {}) {
   if (!outDir) throw new Error('worldBake: outDir is required');
   if (!generatedDir) throw new Error('worldBake: generatedDir is required');
 
   const contract = loadContract();
   const adapter = loadAdapter(`sources/${pack}.json`, srcRoot);
 
+  // `_`-prefixed entries are archetypes (venues/_archetypes/), not venues.
   const dirs = venuesDirs ?? [join(ROOT, 'venues')];
-  const venues = dirs
-    .flatMap(dir => readdirSync(dir).map(id => JSON.parse(readFileSync(join(dir, id, 'venue.json'), 'utf8'))))
-    .sort((a, b) => a.id.localeCompare(b.id));
+  const authored = dirs.flatMap(dir => readdirSync(dir)
+    .filter(id => !id.startsWith('_'))
+    .map(id => JSON.parse(readFileSync(join(dir, id, 'venue.json'), 'utf8'))));
+
+  // Residence instances (addendum §I.2/I.3): derived from the town snapshot,
+  // stamped from the archetype, baked exactly like an authored venue.
+  const townSnapshot = town ?? JSON.parse(readFileSync(join(ROOT, 'town', 'town.json'), 'utf8'));
+  const houseArchetype = JSON.parse(readFileSync(join(ROOT, 'venues', '_archetypes', 'house.json'), 'utf8'));
+  const instances = deriveResidenceInstances(townSnapshot, houseArchetype);
+
+  const venues = [...authored, ...instances].sort((a, b) => a.id.localeCompare(b.id));
 
   const dupes = venues.map(v => v.id).filter((id, i, all) => all.indexOf(id) !== i);
   if (dupes.length) throw new Error(`duplicate venue id across venue directories: ${[...new Set(dupes)].join(', ')}`);
@@ -1848,9 +2193,23 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
   }
 
   // ── published vocabulary (I-8): BotVille is the only authority ─────────
-  const published = venues.map(v => ({ id: v.id, label: v.label, indoor: v.indoor, capacity: v.capacity }));
+  // The affordance fields (addendum §I.1) are the payload: the platform's
+  // schedule writer places agents by querying roles/affords/hours, never ids.
+  const published = venues.map(v => ({
+    id: v.id,
+    label: v.label,
+    indoor: v.indoor,
+    capacity: v.capacity,
+    archetype: v.archetype ?? v.id,
+    roles: v.roles,
+    affords: v.affords,
+    hours: v.hours,
+  }));
   const publishedJson = JSON.stringify(published, null, 2) + '\n';
   write(join(outDir, 'venues.json'), publishedJson);
+
+  // The canonical schema travels with the artifact (Conventions table).
+  write(join(outDir, 'venues.schema.json'), readFileSync(join(ROOT, 'schemas', 'venues.schema.json')));
 
   // A lock beside the artifact, so the platform can prove its copy is intact
   // WITHOUT needing this repo on disk. The sibling-repo comparison in Task 33
@@ -1878,6 +2237,59 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 ```
 
+- [ ] **Step 3b: Write the vocabulary schema**
+
+`schemas/venues.schema.json` — the canonical shape of the published artifact (addendum Conventions: published data files are governed by a JSON Schema living in `schemas/`, published beside the data). The tests in this plan and the api's loader (Plan 5 Task 31) assert exactly what this file declares; neither repo ships a JSON-Schema engine, and none is added.
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "botville/venues.schema.json",
+  "title": "Published venue vocabulary",
+  "description": "Emitted by scripts/world-bake.mjs. BotVille is the only authority (I-8). roles/affords/hours per the 2026-07-29 addendum I.1.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "label", "indoor", "capacity", "archetype", "roles", "affords", "hours"],
+    "properties": {
+      "id": { "type": "string", "minLength": 1 },
+      "label": { "type": "string", "minLength": 1 },
+      "indoor": { "type": "boolean" },
+      "capacity": { "type": "integer", "minimum": 0 },
+      "archetype": { "type": "string", "minLength": 1 },
+      "roles": {
+        "type": "array",
+        "items": { "enum": ["home", "work", "hangout"] },
+        "uniqueItems": true
+      },
+      "affords": {
+        "type": "array",
+        "minItems": 1,
+        "items": { "type": "string", "minLength": 1 },
+        "uniqueItems": true
+      },
+      "hours": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["open", "close"],
+          "properties": {
+            "open": { "type": "integer", "minimum": 0, "maximum": 23 },
+            "close": { "type": "integer", "minimum": 1, "maximum": 24 }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+`hours` windows never wrap (`open < close` is asserted by the descriptor tests): a venue open across midnight carries two entries, the same split-at-midnight convention schedules use (spec §9.3).
+
 - [ ] **Step 4: Wire the script and fix `.gitignore`**
 
 Root `package.json`, in `"scripts"`:
@@ -1897,20 +2309,20 @@ packages/client/public/assets/ui/pack/
 packages/client/public/assets/baked/
 ```
 
-`venues.json` is a bake output but **is committed** — the platform's CI check (Task 33) compares against it.
+`venues.json` is a bake output but **is committed** — the platform's CI check (Task 33) compares against it. So is `venues.schema.json`, the shape statement travelling beside it.
 
 - [ ] **Step 5: Run the bake and the tests**
 
 Run: `npm run bake:world && npm run test:all && git status --porcelain`
-Expected: `world bake OK: 2 atlases, 68 props, 5 venues -> .../public/assets` (the numbers come from the contract and `venues/`; the test asserts they agree rather than pinning them). Then the fast suite passes, then `test/bake/world-bake.test.mjs` passes, and `git status --porcelain` shows only the intended new files — the bake outputs are gitignored and `venues.json` is the one deliberate addition.
+Expected: `world bake OK: 2 atlases, 68 props, 18 venues -> .../public/assets` (the numbers come from the contract, `venues/` and `town/town.json` — 5 authored venues plus `ceil(85 / 7) = 13` residence instances; the test asserts they agree rather than pinning them). Then the fast suite passes, then `test/bake/world-bake.test.mjs` passes, and `git status --porcelain` shows only the intended new files — the bake outputs are gitignored and `venues.json` + `venues.schema.json` are the deliberate additions.
 
 The `clean tree` test is the one to watch. It fails if any suite writes into the repo, which is exactly what would happen if `outDir`/`generatedDir` had defaults.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add scripts/world-bake.mjs package.json .gitignore test/bake/world-bake.test.mjs test/bake/zz-clean-tree.test.mjs packages/client/public/assets/venues.json
-git commit -m "feat(bake): world-bake entry point, published venue vocabulary, limezu->pack rename"
+git add scripts/world-bake.mjs schemas/venues.schema.json package.json .gitignore test/bake/world-bake.test.mjs test/bake/zz-clean-tree.test.mjs packages/client/public/assets/venues.json packages/client/public/assets/venues.schema.json
+git commit -m "feat(bake): world-bake entry point, affordance-tagged vocabulary with residence instances, limezu->pack rename"
 ```
 
 ---
@@ -2293,7 +2705,11 @@ test('it joins the published vocabulary with no code change (G-C)', () => {
   const { out } = bakeWithFixture();
   const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
   const sp = pub.find(v => v.id === 'speakeasy');
-  assert.deepEqual(sp, { id: 'speakeasy', label: 'Speakeasy', indoor: true, capacity: 3 });
+  assert.deepEqual(sp, {
+    id: 'speakeasy', label: 'Speakeasy', indoor: true, capacity: 3,
+    archetype: 'speakeasy', roles: ['hangout'], affords: ['socialize', 'idle'],
+    hours: [{ open: 18, close: 24 }],
+  });
 });
 
 test('it lands in the generated registry module', () => {
@@ -2331,6 +2747,9 @@ Expected: FAIL — `ENOENT ... test/fixtures/venues/speakeasy/venue.json`.
   "sizeTiles": [20, 15],
   "groundAtlas": "interiors_ground",
   "capacity": 3,
+  "roles": ["hangout"],
+  "affords": ["socialize", "idle"],
+  "hours": [{ "open": 18, "close": 24 }],
   "ground": { "wallA": "wallLibA", "wallB": "wallLibB", "floor": "floorDorm" },
   "furniture": [
     { "name": "counter_wide", "at": [4, 4] },
