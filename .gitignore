@@ -18,7 +18,7 @@ dist/
 *.db-wal
 
 # Paid LimeZu art — licence permits use, forbids redistribution
-assets-src/
+assets-src
 packages/client/public/assets/tilesets/limezu/
 packages/client/public/assets/sprites/limezu/
 packages/client/public/assets/ui/limezu/
