@@ -361,7 +361,7 @@ The types both packages and both bake stages agree on. Types only — no logic, 
 - Create: `packages/shared/src/types/Assets.ts`
 - Modify: `packages/shared/src/index.ts:5` (append an export)
 - Modify: `packages/shared/package.json` — `exports` gains the `./*.mjs` subpath pattern (Step 5b)
-- Modify: `packages/shared/tsconfig.json` and `packages/client/tsconfig.json` — `allowJs` (Step 5)
+- Modify: `packages/shared/tsconfig.json`, `packages/client/tsconfig.json`, `packages/server/tsconfig.json`, `packages/server/tsconfig.build.json` — `allowJs` (Step 5)
 - Modify: `packages/client/vite.config.ts` — regex alias pair (Step 5b)
 - Modify: `test/harness-no-hook.test.mjs` — the modules are now real
 - Test: `test/shared-types.test.ts`
@@ -637,9 +637,13 @@ export * from './types/Assets.js';
 
 `tsc` must be told to follow the `.mjs` re-export, or the build fails with
 *"Could not find a declaration file for module '../schemaVersion.mjs'"* (TS7016).
-`tsconfig.base.json` has no `allowJs`, so add it to **two** package configs —
-not to the base, because the server never has a `.mjs` in its program and
-widening the whole repo buys nothing.
+`tsconfig.base.json` has no `allowJs`, so add it to **four** package configs:
+shared, client, and **both server tsconfigs**. The server is not exempt —
+verified by executing this task 2026-07-29: `packages/server/tsconfig.json`
+`include`s `../shared/src/**/*` and paths-maps `@botville/shared` →
+`../shared/src/index.ts`, and `tsconfig.build.json`'s import graph pulls shared
+src in too, so both server programs contain the `Assets.ts` → `.mjs` re-export
+and fail TS7016 without it.
 
 **`packages/shared/tsconfig.json`** — it owns the `.mjs` sources:
 
@@ -691,6 +695,15 @@ unrelated-looking typecheck break:
 }
 ```
 
+**`packages/server/tsconfig.json` and `packages/server/tsconfig.build.json`** —
+add the same single line to each `compilerOptions`:
+
+```json
+    "allowJs": true
+```
+
+No other change to either file; their `include`/`paths` stay as they are.
+
 `checkJs` stays off: the `.mjs` modules are typed by their JSDoc and their
 tests, not by `tsc`.
 
@@ -701,6 +714,11 @@ decision could bite:
 npm run build --workspace=packages/shared
 node -e "import('./packages/shared/dist/index.js').then(m => console.log('dist SCHEMA_VERSION =', m.SCHEMA_VERSION))"
 ```
+
+One environment note for the subpath check in Step 5b: run it from a checkout
+that has had its own `npm install` — without a local workspace symlink in
+`node_modules`, bare `node -e` walks up and silently resolves a *different*
+checkout's `@botville/shared`.
 
 Expected: `dist SCHEMA_VERSION = 1`.
 
@@ -768,7 +786,7 @@ Expected: PASS — 7 new tests pass, including `SCHEMA_VERSION has exactly one d
 - [ ] **Step 7: Commit**
 
 ```bash
-git add packages/shared/src/schemaVersion.mjs packages/shared/src/hash.mjs packages/shared/src/types/Assets.ts packages/shared/src/index.ts packages/shared/package.json packages/shared/tsconfig.json packages/client/tsconfig.json packages/client/vite.config.ts test/shared-types.test.ts
+git add packages/shared/src/schemaVersion.mjs packages/shared/src/hash.mjs packages/shared/src/types/Assets.ts packages/shared/src/index.ts packages/shared/package.json packages/shared/tsconfig.json packages/client/tsconfig.json packages/server/tsconfig.json packages/server/tsconfig.build.json packages/client/vite.config.ts test/shared-types.test.ts
 git commit -m "feat(shared): asset, venue and presence types; SCHEMA_VERSION and hashString in .mjs, importable from every loader"
 ```
 
