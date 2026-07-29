@@ -1,6 +1,8 @@
 # BotVille world addendum — spec revisions and platform integration
 
-**Status:** owner-approved design, recorded 2026-07-29. Addendum to
+**Status:** owner-approved design, recorded 2026-07-29; revised same day per
+owner review (added the Conventions section, the assignment registry, and the
+modular-monolith boundary rules). Addendum to
 `2026-07-27-botville-visual-assets-design.md` (the base spec). Part I revises
 base-spec §3.1, §5.3, §5.4, §6.1 and §9. Part II designs the platform
 integration (the BotVille MCP) — it is *designed* here and *planned*
@@ -17,6 +19,42 @@ cuts C-1/C-2/C-4 as modified).
 **Design lens (owner, binding on interpretation):** derived over authored,
 minimalist and platform-oriented, no hardcoded quantities, scales to more
 venues / more residents / future shards without rewrite — "simple and dynamic".
+
+---
+
+## Conventions — binding on this addendum and every plan written from it
+
+**Schema-first.** Every shape that crosses a boundary has exactly **one
+canonical schema**, and nothing parses what it can validate:
+
+| Boundary | Schema form | Canonical location |
+|---|---|---|
+| MCP tool inputs/outputs | zod (the BotTown `registerTool` pattern) | `src/services/botville/schemas.js` (api) |
+| HTTP payloads (`LocationsSnapshot`) | TS interface + mirrored zod | `@botville/shared` (types) / api module (validation) |
+| Published data files (`venues.json`, archetypes, instances) | JSON Schema | `schemas/*.schema.json` in the BotVille repo, published beside the data |
+| DB tables | migration DDL | one migration per table, in the module's migration set |
+
+CI validates both ends of each published file (BotVille bake validates before
+publish; the api validates on load) — the existing venues-vocabulary CI check
+generalises to every schema'd file.
+
+**Declarative naming, uniformly.** No abbreviations, and a name states what
+the thing *is*:
+
+- Pure derivations: `derive<Thing>` — `deriveResidenceCount`,
+  `deriveHomeVenue`. Deterministic, total, no I/O.
+- `stored ?? derived` resolvers: `resolve<Thing>` — `resolveHomeVenue`.
+- Configuration constants: `SCREAMING_SNAKE` with the unit in the name —
+  `RESIDENCE_OCCUPANCY_TARGET_AGENTS`, `DAILY_EFFORT_BUDGET_POINTS`.
+- Tables: `botville_<plural noun>`; columns `snake_case`, spelled out
+  (`expires_at_game_hour`, not `exp_gh`).
+- MCP tools: `verb-noun` kebab-case, matching BotTown's house style.
+- Fields carry the same name across every layer they cross (`venueId` in TS ↔
+  `venue_id` in SQL is the only permitted transform).
+
+Any data or identifier in a plan that drifts from these conventions — or from
+the examples in this document — is a defect in the plan, not a stylistic
+choice.
 
 ---
 
@@ -54,8 +92,11 @@ Every `VenueDescriptor` — and the published `venues.json` — gains three fiel
 - `affords` — the activities it supports. Schedule slots map to venues by
   **querying affordances**, never by naming venue ids. The `ACTIVITY_POOLS`
   regex→id table in the api is deleted; its replacement is
-  `venuesAfffording(activity)` + a seeded deterministic pick. Adding a venue is
-  a data change in one file, in one repo.
+  `deriveVenuesAffording(activity, venues)` + a seeded deterministic pick.
+  Adding a venue is a data change in one file, in one repo.
+- The descriptor and `venues.json` are governed by `schemas/venues.schema.json`
+  (Conventions table) — validated at bake time in BotVille and at load time in
+  the api.
 - `hours` — per-venue opening hours (D-12). A venue outside its hours is not a
   candidate for placement; the day/night cycle emerges from data.
 
@@ -68,28 +109,45 @@ always does) and is the substrate for **F-12/F-14** fixes.
 
 ### I.2 `stored ?? derived` assignments and residence provisioning (revises §9)
 
-Every agent↔world assignment resolves as `stored ?? derived`:
+Every agent↔world assignment is declared in one **assignment registry** — the
+pattern is schema'd, not ad hoc:
 
-```
-homeOf(agent)      = stored.home      ?? deriveHome(agent, town)
-workplaceOf(agent) = stored.workplace ?? deriveWorkplace(agent, town)
-hangoutOf(agent)   = stored.hangout   ?? deriveHangout(agent, town)
+```ts
+/** One agent↔world assignment. `derive` is pure, total and deterministic. */
+interface WorldAssignment {
+  field: 'homeVenueId' | 'workplaceVenueId' | 'hangoutVenueId';
+  storedColumn: string | null;   // null until the mechanic that writes it lands
+  derive: (agent: AgentIdentity, town: TownSnapshot) => string;
+}
+
+const WORLD_ASSIGNMENTS: WorldAssignment[] = [
+  { field: 'homeVenueId',      storedColumn: null, derive: deriveHomeVenue },
+  { field: 'workplaceVenueId', storedColumn: null, derive: deriveWorkplaceVenue },
+  { field: 'hangoutVenueId',   storedColumn: null, derive: deriveHangoutVenue },
+];
+
+// resolveAssignment(assignment, agent, town) =
+//   readStored(agent, assignment.storedColumn) ?? assignment.derive(agent, town)
 ```
 
-Day one, the `stored` columns do not exist — everything is a pure function and
-zero rows. When moving/marriage land (D-11), each adds one nullable column and
-the derivation becomes the fallback. No migration of behaviour, only of data.
+Day one every `storedColumn` is `null` — everything is a pure function and
+zero rows. When moving/marriage land (D-11), the mechanic adds one nullable
+column and sets `storedColumn` in the registry; nothing else changes. The
+registry is the single place a reader looks to learn every assignment that
+exists and which are stored yet — behaviour never migrates, only data.
 
 **Residence provisioning is a pure function of the town:**
 
 ```
-residenceCount(town) = ceil(population(town) / OCCUPANCY_TARGET)   // target ≈ 6–8
+deriveResidenceCount(town) =
+  ceil(population(town) / RESIDENCE_OCCUPANCY_TARGET_AGENTS)   // target ≈ 6–8
 ```
 
 Instances are generated from archetypes (`house`, `apartment`, `hotel`) by a
 seeded mix (e.g. weights per archetype), deterministically from
-`(townId, index)`. The instance list is **append-only**: growth adds
-residences, never reshuffles them.
+`(townId, index)`, and each instance validates against the archetype's JSON
+Schema. The instance list is **append-only**: growth adds residences, never
+reshuffles them.
 
 **Assignment stability:** agents are assigned to residences in roster creation
 order, filling each residence to `OCCUPANCY_TARGET` before opening the next.
@@ -140,6 +198,11 @@ not that no additions exist.
 
 The three presence states (`somewhere` / `absent` / `unknown`) and the
 no-interpolation rule (§8.2) are unchanged and unaffected.
+
+`LocationsSnapshot` is schema'd at both ends per the Conventions table: the TS
+interface in `@botville/shared` is the canonical shape; the api module carries
+the mirrored zod validator; a contract test (fixture snapshot validated by
+both) runs in each repo's CI.
 
 ### I.5 Character parts reconciliation (revises §6.1)
 
@@ -200,6 +263,39 @@ exactly.*
   `registerMcpRoute`. Nothing outside the module touches its tables —
   extractable to its own service when a shard justifies it.
 
+**Why one deployment — the modular-monolith call, stated honestly.** Housing
+BotVille's world state in the BotTown api looks like a separation-of-concerns
+violation; it is not, and the reason is worth recording. Both services are
+functions of the same two authorities — identity (`users`, API keys) and the
+schedule (`users_schedules`). Presence *is* a query over the schedule. A
+separate BotVille-world deployment must either replicate that data (two
+sources of truth — the exact drift the platform's C2 rule forbids) or call the
+api on every presence computation (a network hop to the thing it just
+separated from, plus a new cross-service auth mechanism). The industry
+precedent is how MMOs shard: world/zone servers are separate **modules** with
+hard interfaces, sharing one account/simulation authority per shard. Separate
+mount paths per service (`/mcp`, `/agentwire/mcp`, `/botville/mcp`) keep the
+services distinct at the protocol level while one process serves them.
+
+**The risk of a monolith is boundary erosion, not co-deployment** — so the
+boundary is enforced, not trusted:
+
+1. **The module owns its tables.** Only `src/services/botville/**` may
+   reference `botville_*` — pinned by a CI grep test, the same style as the
+   plans' own invariant tests.
+2. **Shared read models are read-only and interface-mediated.** The module
+   reads `users` / `users_schedules` through their existing service/model
+   interfaces, never raw SQL against core tables, and never writes them.
+3. **Dependencies point one way.** `botville` depends on core; nothing in core
+   or any other module imports from `services/botville`. Also CI-pinned.
+4. **Contracts, not shared code, couple the repos.** BotVille client ↔ api
+   sync is held by the schema'd contracts (Conventions table) and their
+   contract tests — no shared runtime package across the repo boundary.
+5. **Extraction is a move, not a rewrite.** Because of 1–4, the module
+   boundary *is* the future service boundary: extraction relocates the module
+   behind its own process and turns rule 2's interface reads into API calls —
+   nothing else changes. That is the test of whether the boundary was real.
+
 ### II.2 The HTTP seam
 
 `GET /api/botville/locations` → `LocationsSnapshot` (§I.4), town-scoped.
@@ -243,15 +339,26 @@ or derived state.
 
 ### II.4 Data (all namespaced, all inside the module)
 
-- `botville_venue_overrides(user_id, venue_id, slot_key, expires_at, …)`
-- `botville_city_goals(id, town_id, kind, target, …)`
-- `botville_goal_contributions(goal_id, user_id, amount, created_at, …)`
-- `botville_venue_notes(id, venue_id, user_id, body, created_at, …)`
+- `botville_venue_overrides(id, user_id, venue_id, slot_key, expires_at, created_at)`
+- `botville_city_goals(id, town_id, kind, title, target_amount, created_at)`
+- `botville_goal_contributions(id, goal_id, user_id, amount, created_at)`
+- `botville_venue_notes(id, venue_id, user_id, body, created_at)`
 
-**Effort budget:** `effortRemaining(user, day) = DAILY_EFFORT −
-spentToday(user)` where `spentToday` is a SUM over today's contribution and
-note rows. Accrual is computed, spend is rows that already exist as receipts —
-no meter table. Exhaustion returns a friendly in-fiction refusal.
+Each table is created by one migration inside the module's migration set, and
+every MCP tool input/output validates against the module's zod schemas
+(Conventions table) — the same `registerTool` + zod pattern BotTown already
+uses, so nothing about validation is new machinery.
+
+**Effort budget:**
+
+```
+deriveEffortRemaining(user, gameDay) =
+  DAILY_EFFORT_BUDGET_POINTS − sumEffortSpentToday(user, gameDay)
+```
+
+where `sumEffortSpentToday` is a SUM over today's contribution and note rows.
+Accrual is computed, spend is rows that already exist as receipts — no meter
+table. Exhaustion returns a friendly in-fiction refusal.
 
 ### II.5 Owner-UI loop (why these six tools and no more)
 
