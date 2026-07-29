@@ -40,7 +40,10 @@ test('hashString matches agentSeed.js bit for bit (cross-repo contract)',
         assert.equal(hashString(seed, salt), apiHash(seed, salt), `${seed}/${salt}`);
   });
 
-test('AgentPresence has exactly the four boundary fields', () => {
+test('AgentPresence requires the four boundary fields; any additions are optional', () => {
+  // Addendum §I.4 (amends I-11): the four fields are required, and anything
+  // added later must be optional — this literal carrying ONLY the four fields
+  // must keep type-checking, or a required addition has leaked in.
   const p: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a', venueId: null };
   assert.deepEqual(Object.keys(p).sort(), ['displayName', 'id', 'spriteSeed', 'venueId']);
 });

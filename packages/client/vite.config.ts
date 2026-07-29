@@ -9,10 +9,10 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: [
-      // Точное совпадение -> бочка пакета.
+      // Exact match -> the package barrel.
       { find: /^@botville\/shared$/, replacement: path.resolve(__dirname, '../shared/src/index.ts') },
-      // Подпуть -> файл в src/. Строковый alias здесь ломается: rollup
-      // сопоставляет по префиксу и клеит путь ЧЕРЕЗ index.ts (ENOTDIR).
+      // Subpath -> a file in src/. A string alias breaks here: rollup
+      // matches by prefix and glues the path THROUGH index.ts (ENOTDIR).
       { find: /^@botville\/shared\//, replacement: path.resolve(__dirname, '../shared/src') + '/' },
     ],
   },
