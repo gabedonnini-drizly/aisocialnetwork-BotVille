@@ -46,6 +46,9 @@ test('AgentPresence requires the four boundary fields; any additions are optiona
   // must keep type-checking, or a required addition has leaked in.
   const p: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a', venueId: null };
   assert.deepEqual(Object.keys(p).sort(), ['displayName', 'id', 'spriteSeed', 'venueId']);
+  // @ts-expect-error — dropping a required boundary field must not type-check.
+  const q: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a' };
+  void q;
 });
 
 test('PresenceState admits exactly three kinds', () => {
