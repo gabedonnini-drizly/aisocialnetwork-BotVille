@@ -1,5 +1,9 @@
 # Next session — BotVille visual assets
 
+> **SUPERSEDED 2026-07-29.** All three tracks below are closed (A applied and
+> execution-verified, B done, C incorporated). The live entry point is
+> `../2026-07-30-EXECUTION-PREFLIGHT-PROMPT.md`.
+
 Paste into a fresh session at the repo root. Assumes no prior context.
 
 ---
