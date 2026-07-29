@@ -286,6 +286,52 @@ allowed"*).
 | Kenney roguelike + Ninja Adventure | free | CC0, zero licence risk. Kenney's modular characters are **static single-frame poses**; Ninja Adventure is feudal-Japan. Prototype tier, not a shipping look. |
 | Cute SCKR, amadeva Modern Town, bobmac321 | $2.99–3.99 | Seller-flagged "AI Assisted / AI Graphics". |
 
+## Owner-proposed alternatives, evaluated 2026-07-29
+
+Three packs the owner raised, checked directly against their store pages.
+
+| | Modular layers | Animations | Interiors | Price | Verdict |
+|---|---|---|---|---|---|
+| [Rare Onion City Asset Pack](https://rareonion.itch.io/city-asset-pack) | ❌ premade sheets, and a **paid add-on** | idle + walk only | 11 named; facades-vs-interiors not stated | $19.99 (was $24.99) + add-on | Fails the layer requirement |
+| [Tiny Tile Town](https://iknowkingrabbit.itch.io/tiny-tile-town) | ❌ **no characters at all** | disasters + vehicles | exteriors only | $12.50 | Fails |
+| [Cozy City](https://maygetsu.itch.io/cozy-city-16x16-topdown-pixel-asset-pack) | ⚠️ characters exist, modularity **not stated** | unspecified | 5, all retail | $6.99 (−30%) | Unproven |
+
+**The reframing that decides it: BotVille is not a city builder.** It is an
+agent social sim — 50–150 agents living inside rooms. The two genres want
+opposite things. A city builder needs building facades, road and zoning
+variety; characters are tiny or absent. An agent sim needs character variety,
+animation depth, and interiors you can see people inside. Tiny Tile Town and
+Rare Onion are built for the first (Tiny Tile Town ships UFOs, meteor rain,
+earthquakes and tornados). Only LimeZu is built for the second.
+
+Specific disqualifiers:
+
+- **Rare Onion's characters are "Diagonal Characters"** — a different projection
+  from LimeZu's straight top-down; diagonal and orthogonal art cannot share a
+  scene. Idle + walk only, so no sit and no sleep — and agents spend most of the
+  day seated.
+- **Tiny Tile Town's last update was 15 Jun 2021** — five years stale, 7 ratings.
+- **Cozy City launched ~Apr 2026 with 1 rating.** Its five interiors (coffee
+  shop, deli, barber, bakery, florist) are all retail; LimeZu already has
+  bakery, grocery and flower shop plus 34 others.
+
+**Two licence notes worth keeping.**
+
+*Not every `AI` hit disqualifies.* Rare Onion's clause is *"Cannot be used as
+material for AI training tools"* — that governs training models **on the art**,
+which BotVille does not do. Materially narrower than Kokoro's *"anything
+AI-related… NO EXCEPTIONS"*. Read the clause, don't pattern-match the word.
+
+*Cozy City is stricter than LimeZu on web delivery*, not looser: *"Share the
+files publicly (free or paid), **even if modified**."* Conversely **Tiny Tile
+Town has the clearest wording found anywhere**: *"You can NOT re-distribute…
+on any publicly available server, **unless as part of a game or similar
+product**."* That explicit carve-out is precisely the clarity LimeZu's licence
+lacks — it simply sits on a pack with no characters.
+
+**Also note:** buying only `modernexteriors` would get the city with no people
+system. The Character Generator ships with Modern **Interiors**.
+
 **Optional top-up if niche venues are wanted:**
 [X Modern RPG Environment](https://finalbossblues.itch.io/x-modern-rpg-tile-asset-packs)
 ($8.00, 16px) covers exactly what LimeZu lacks — arcade, pinball, bowling, ball
