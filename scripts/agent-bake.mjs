@@ -60,6 +60,10 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const roster = JSON.parse(readFileSync(rosterFile, 'utf8'));
     const r = await bakeRoster(ctx, roster);
     console.log(`agent bake: ${r.baked} baked, ${r.skipped} already present, ${new Set(r.hashes).size} distinct appearances for ${roster.length} agents`);
+
+    const { writeFileSync } = await import('node:fs');
+    writeFileSync(join(ctx.outDir, 'manifest.json'),
+      JSON.stringify({ hashes: [...new Set(r.hashes)].sort() }, null, 2) + '\n');
   } else {
     const seed = arg('--seed');
     if (!seed) { console.error('usage: --roster <file.json> | --seed <username> [--gender <value>]'); process.exit(2); }

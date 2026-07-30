@@ -13,6 +13,7 @@ import {
 } from '../assetManifest.js';
 import { EMOTE_FRAMES } from '../assets.generated.js';
 import type { AgentStatus } from '@botville/shared';
+import { AppearanceResolver } from './AppearanceResolver.js';
 
 /** A scene that can answer walkability questions (DistrictScene and interiors). */
 interface WalkableHost {
@@ -60,6 +61,8 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     avatarVariant: number,
     pixelX: number,
     pixelY: number,
+    /** TZ-BotVille: the identity for a derived appearance. Absent — the old path. */
+    identity?: { spriteSeed: string; gender: string },
   ) {
     super(scene, pixelX, pixelY);
     this.agentId = agentId;
@@ -74,8 +77,13 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.shadow = scene.add.ellipse(0, 0, Math.max(10, spriteW * 0.7), Math.max(4, spriteW * 0.22), 0x000000, 0.3);
     this.shadow.setOrigin(0.5, 0.5);
 
+    // Derived appearance (spec §6): a baked sheet or the fallback human.
+    const textureKey = identity
+      ? new AppearanceResolver(scene.textures).textureFor(identity.spriteSeed, identity.gender)
+      : vd.textureKey;
+
     // Sprite: origin at the feet
-    this.sprite = scene.add.sprite(0, 0, vd.textureKey, 0);
+    this.sprite = scene.add.sprite(0, 0, textureKey, 0);
     this.sprite.setOrigin(0.5, 1);
     this.sprite.setScale(vd.scale);
     this.sprite.setInteractive({ useHandCursor: true });

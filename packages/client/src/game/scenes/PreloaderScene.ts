@@ -73,14 +73,25 @@ export class PreloaderScene extends Phaser.Scene {
       frameWidth: EMOTES.icons.frameWidth,
       frameHeight: EMOTES.icons.frameHeight,
     });
+
+    // Baked appearance sheets (on the volume, not in the image — see spec §7.2).
+    // The manifest lists which hashes have been built; a missing file is not an
+    // error, AppearanceResolver substitutes the fallback sheet.
+    this.load.json('baked-manifest', 'assets/baked/manifest.json');
   }
 
   create() {
     this.registerAgentAnimations();
 
-    this.time.delayedCall(50, () => {
-      this.scene.start('DistrictScene');
-    });
+    const baked = (this.cache.json.get('baked-manifest') as { hashes?: string[] } | undefined)?.hashes ?? [];
+    for (const hash of baked) {
+      this.load.spritesheet(`agent-${hash}`, `assets/baked/${hash}.png`, {
+        frameWidth: AVATAR_VARIANTS[0].frameWidth,
+        frameHeight: AVATAR_VARIANTS[0].frameHeight,
+      });
+    }
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => this.scene.start('DistrictScene'));
+    this.load.start();
   }
 
   /** All agent and emote animations — driven by manifest data, no magic numbers. */
