@@ -3,7 +3,7 @@ import { AgentSprite } from '../agents/AgentSprite.js';
 import { GameBridge } from '../GameBridge.js';
 import { sceneRegistry } from '../SceneRegistry.js';
 import { Pathfinder } from '../Pathfinder.js';
-import { CAMERA_FOCUS, INTERIOR_CAMERA_ZOOM, INTERIOR_TILESET, NIGHT_SCHEDULE, SCENE_FADE_MS } from '../config.js';
+import { CAMERA, CAMERA_FOCUS, INTERIOR_TILESET, NIGHT_SCHEDULE, SCENE_FADE_MS, snapZoom } from '../config.js';
 import { sceneKeyFor } from '../venueRegistry.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
 import { ANIMATED_OBJECTS, getVariant } from '../assetManifest.js';
@@ -133,7 +133,7 @@ export class VenueScene extends Phaser.Scene {
     // camera: the whole room centered, zoom sized to the viewport
     const cam = this.cameras.main;
     const fitZoom = Math.min(this.scale.width / this.roomW, this.scale.height / this.roomH);
-    cam.setZoom(Phaser.Math.Clamp(fitZoom, 1.5, INTERIOR_CAMERA_ZOOM + 1));
+    cam.setZoom(snapZoom(Phaser.Math.Clamp(fitZoom, CAMERA.minZoom, CAMERA.maxZoom)));
     cam.centerOn(this.roomW / 2, this.roomH / 2);
     cam.setBackgroundColor('#0a0a14');
     // on a phone the room is wider than the viewport: pan/pinch (TZ-09); if it fits

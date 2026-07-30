@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { CAMERA, CAMERA_DRAG } from './config.js';
+import { CAMERA, CAMERA_DRAG, nextZoom, snapZoom } from './config.js';
 
 /**
  * Shared camera controls (TZ-09), one implementation for all scenes:
@@ -80,17 +80,18 @@ export function attachCameraControls(scene: Phaser.Scene, opts: CameraControlOpt
   let pinch: { dist: number; midX: number; midY: number } | null = null;
 
   const endPinch = () => {
+    setZoom(snapZoom(cam.zoom));
     pinch = null;
     pinchActive = false;
     pinchEndedAt = Date.now();
   };
 
   scene.input.keyboard?.on('keydown-EQUAL', () =>
-    cam.zoomTo(Phaser.Math.Clamp(cam.zoom * CAMERA.zoomStep, minZoom, maxZoom), 300));
+    cam.zoomTo(nextZoom(cam.zoom, 1), 300));
   scene.input.keyboard?.on('keydown-MINUS', () =>
-    cam.zoomTo(Phaser.Math.Clamp(cam.zoom / CAMERA.zoomStep, minZoom, maxZoom), 300));
+    cam.zoomTo(nextZoom(cam.zoom, -1), 300));
   scene.input.on('wheel', (_p: unknown, _go: unknown, _dx: number, dy: number) => {
-    setZoom(cam.zoom - dy * 0.001);
+    if (dy !== 0) setZoom(nextZoom(cam.zoom, dy < 0 ? 1 : -1));
   });
 
   scene.input.on('pointerdown', () => {

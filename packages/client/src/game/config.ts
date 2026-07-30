@@ -30,12 +30,29 @@ export const DISTRICT = {
 
 export const WALK_SPEED = 48; // px/sec (16px tile, speed ~3 tiles/sec)
 
+/**
+ * Zoom ladder: clean multiples only. Non-integer zoom on 16px art produces
+ * shimmer and uneven pixel size (spec §10.1) — the old step of 1.3 from
+ * initialZoom 1.8 landed exactly there. The controls move rung by rung.
+ */
+export const ZOOM_LADDER: readonly number[] = [0.5, 1, 2, 3, 4] as const;
+
 export const CAMERA = {
-  initialZoom: 1.8,
-  minZoom: 0.6,
-  maxZoom: 4,
-  zoomStep: 1.3,
+  initialZoom: 2,
+  minZoom: ZOOM_LADDER[0],
+  maxZoom: ZOOM_LADDER[ZOOM_LADDER.length - 1],
 } as const;
+
+/** The nearest rung of the ladder — for pinch and any arbitrary zoom. */
+export function snapZoom(z: number): number {
+  return ZOOM_LADDER.reduce((best, r) => (Math.abs(r - z) < Math.abs(best - z) ? r : best), ZOOM_LADDER[0]);
+}
+
+/** Exactly one rung up (+1) or down (-1), clamped at the ends. */
+export function nextZoom(current: number, direction: 1 | -1): number {
+  const i = ZOOM_LADDER.indexOf(snapZoom(current));
+  return ZOOM_LADDER[Math.min(ZOOM_LADDER.length - 1, Math.max(0, i + direction))];
+}
 
 /** Camera drag controls (TZ-09, cameraControls.ts). */
 export const CAMERA_DRAG = {
@@ -118,7 +135,7 @@ export const NIGHT_SCHEDULE = {
 export const SCENE_FADE_MS = 300;
 
 /** Camera focus on an agent when clicked in the HUD panel. */
-export const CAMERA_FOCUS = { panMs: 600, zoom: 2.4 } as const;
+export const CAMERA_FOCUS = { panMs: 600, zoom: 2 } as const;
 
 /** Ambience: a car driving down the road every 30-45 sec. */
 export const AMBIENT_CAR = {
@@ -133,6 +150,3 @@ export const AMBIENT_CAR = {
 } as const;
 
 export const INTERIOR_TILESET = 'interiors_ground';
-
-/** Interior camera: a 20x15 tile room. */
-export const INTERIOR_CAMERA_ZOOM = 2.4;
