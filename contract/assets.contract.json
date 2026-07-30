@@ -1,6 +1,10 @@
 {
   "schemaVersion": 1,
   "tileSize": 16,
+  "runtimeSheets": [
+    "char_body", "char_eyes", "char_hair", "char_outfit", "char_accessory",
+    "emote_sheet", "ui_sheet"
+  ],
   "groundAtlases": {
     "district_ground": {
       "columns": 8,
