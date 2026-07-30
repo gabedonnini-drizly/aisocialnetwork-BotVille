@@ -12,12 +12,34 @@
  * animal look, not drawing animals at all.
  */
 import { appearanceHash, appearanceRecord, hashString } from '@botville/shared/appearance/derive.mjs';
-import { AVATAR_VARIANTS } from '../assetManifest.js';
+import { AVATAR_VARIANTS, type AvatarVariantDef } from '../assetManifest.js';
 
 /** Humans are ids 0..11 in AVATAR_VARIANTS. Animals (12..15) are excluded for good. */
 export const HUMAN_VARIANT_IDS: number[] = AVATAR_VARIANTS
   .filter(v => v.kind === 'human')
   .map(v => v.id);
+
+/**
+ * Every baked sheet shares the EXACT layout of every human premade — Task
+ * 27's composer canvas spec (896x656, 16x32 frame, 56 columns, rows
+ * idle/walk/sleep/sit, 6 frames per direction) is HUMAN_SHEET in
+ * assetManifest.ts, byte-for-byte. Cloning a real human variant's def with
+ * only `textureKey` swapped means the frame-index math (animStartFrame,
+ * sitFrames, sleepFrames — all pure, all keyed off the def's own fields, not
+ * off which specific human it came from) needs no separate layout table for
+ * baked sheets, and the anim key strings it produces (`${textureKey}-idle-down`,
+ * etc.) line up exactly with whatever PreloaderScene.registerAgentAnimations()
+ * registers for that same textureKey (baked hash or fallback premade alike).
+ *
+ * Fixes Task 30 review Finding 1: without this, `AgentSprite` picked the
+ * resolved texture for the initial `add.sprite(...)` call only, then played
+ * animations keyed off the LEGACY `avatarVariant` def — whose frames each
+ * carry their own texture reference — so Phaser's `sprite.play()` silently
+ * switched the sprite straight back to the legacy sheet before first render.
+ */
+export function resolvedAnimDef(textureKey: string): AvatarVariantDef {
+  return { ...AVATAR_VARIANTS[HUMAN_VARIANT_IDS[0]], textureKey };
+}
 
 export interface ResolvedAppearance {
   hash: string;

@@ -13,7 +13,7 @@ import {
 } from '../assetManifest.js';
 import { EMOTE_FRAMES } from '../assets.generated.js';
 import type { AgentStatus } from '@botville/shared';
-import { AppearanceResolver } from './AppearanceResolver.js';
+import { AppearanceResolver, resolvedAnimDef } from './AppearanceResolver.js';
 
 /** A scene that can answer walkability questions (DistrictScene and interiors). */
 interface WalkableHost {
@@ -53,6 +53,16 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   public agentId: string;
   public currentStatus: AgentStatus = 'idle';
   private variantDef: AvatarVariantDef;
+  /**
+   * The def whose animKey()s are actually registered against the texture
+   * on screen: `variantDef` itself when there's no `identity` (legacy path,
+   * unchanged), or a human-shaped clone of the resolved texture key when
+   * there is (Task 30 review Finding 1 fix — see the constructor and
+   * AppearanceResolver.resolvedAnimDef). `variantDef` keeps driving geometry
+   * (footGaps, frame size for the shadow/name-label/emote) per the brief's
+   * documented "known geometry caveat" — only ANIMATION SELECTION moves.
+   */
+  private animDef: AvatarVariantDef;
 
   constructor(
     scene: Phaser.Scene,
@@ -81,6 +91,10 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     const textureKey = identity
       ? new AppearanceResolver(scene.textures).textureFor(identity.spriteSeed, identity.gender)
       : vd.textureKey;
+    // Animations must target whatever texture is ACTUALLY on screen, not
+    // vd — otherwise Phaser's sprite.play() switches straight back to the
+    // legacy sheet the moment any animation starts (review Finding 1).
+    this.animDef = identity ? resolvedAnimDef(textureKey) : vd;
 
     // Sprite: origin at the feet
     this.sprite = scene.add.sprite(0, 0, textureKey, 0);
@@ -156,7 +170,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   };
 
   private playAnim(type: 'idle' | 'walk', dir: Direction) {
-    this.sprite.play(animKey(this.variantDef, type, dir), true);
+    this.sprite.play(animKey(this.animDef, type, dir), true);
     // feet on the ground: in animals' side views the frame bottom doesn't match the feet
     this.targetFootY = (this.variantDef.footGaps?.[dir] ?? 0) * this.variantDef.scale;
   }
@@ -169,10 +183,10 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   sit(side: 'right' | 'left' = 'right', kind: 'chair' | 'stool' | 'bed' = 'chair') {
     this.sitting = true;
     this.path = [];
-    if (kind === 'bed' && this.variantDef.rows.sleep !== undefined) {
-      this.sprite.play(animKey(this.variantDef, 'sleep'), true);
-    } else if (kind !== 'bed' && this.variantDef.rows.sit !== undefined) {
-      this.sprite.play(animKey(this.variantDef, side === 'right' ? 'sit-right' : 'sit-left'), true);
+    if (kind === 'bed' && this.animDef.rows.sleep !== undefined) {
+      this.sprite.play(animKey(this.animDef, 'sleep'), true);
+    } else if (kind !== 'bed' && this.animDef.rows.sit !== undefined) {
+      this.sprite.play(animKey(this.animDef, side === 'right' ? 'sit-right' : 'sit-left'), true);
     } else {
       this.playAnim('idle', side === 'right' ? 'right' : 'left');
     }

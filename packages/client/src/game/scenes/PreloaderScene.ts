@@ -13,6 +13,7 @@ import {
   sitFrames,
   sleepFrames,
 } from '../assetManifest.js';
+import { resolvedAnimDef } from '../agents/AppearanceResolver.js';
 
 const ANIM_RATE = { idle: 5, walk: 10, sit: 4, sleep: 3 } as const;
 
@@ -81,9 +82,9 @@ export class PreloaderScene extends Phaser.Scene {
   }
 
   create() {
-    this.registerAgentAnimations();
-
     const baked = (this.cache.json.get('baked-manifest') as { hashes?: string[] } | undefined)?.hashes ?? [];
+    this.registerAgentAnimations(baked);
+
     for (const hash of baked) {
       this.load.spritesheet(`agent-${hash}`, `assets/baked/${hash}.png`, {
         frameWidth: AVATAR_VARIANTS[0].frameWidth,
@@ -94,8 +95,17 @@ export class PreloaderScene extends Phaser.Scene {
     this.load.start();
   }
 
-  /** All agent and emote animations — driven by manifest data, no magic numbers. */
-  private registerAgentAnimations() {
+  /**
+   * All agent and emote animations — driven by manifest data, no magic
+   * numbers. `bakedHashes` are the baked-appearance textures the manifest
+   * lists (see preload()'s `baked-manifest` load) — each gets the identical
+   * idle/walk/sit/sleep set registered against ITS OWN texture key, via
+   * `resolvedAnimDef` (Task 30 review Finding 1 fix): without this, a
+   * baked/derived sprite's animations play back against the wrong sheet the
+   * instant any animation starts, because Phaser's `sprite.play()` switches
+   * the sprite to whatever texture the played frames reference.
+   */
+  private registerAgentAnimations(bakedHashes: string[] = []) {
     const mk = (key: string, texture: string, frames: number[], frameRate: number, repeat = -1) => {
       if (this.anims.exists(key)) return;
       this.anims.create({
@@ -119,6 +129,20 @@ export class PreloaderScene extends Phaser.Scene {
       if (v.rows.sleep !== undefined) {
         mk(animKey(v, 'sleep'), v.textureKey, sleepFrames(v), ANIM_RATE.sleep);
       }
+    }
+
+    // Baked appearance sheets: same human layout, a fresh texture key per
+    // hash. rows.sit/rows.sleep are always defined for resolvedAnimDef (it
+    // clones a human), so no existence guard is needed here, unlike above.
+    for (const hash of bakedHashes) {
+      const v = resolvedAnimDef(`agent-${hash}`);
+      for (const dir of DIRECTION_ORDER) {
+        mk(animKey(v, 'idle', dir), v.textureKey, range(animStartFrame(v, 'idle', dir), v.framesPerDirection), ANIM_RATE.idle);
+        mk(animKey(v, 'walk', dir), v.textureKey, range(animStartFrame(v, 'walk', dir), v.framesPerDirection), ANIM_RATE.walk);
+      }
+      mk(animKey(v, 'sit-right'), v.textureKey, sitFrames(v, 'right'), ANIM_RATE.sit);
+      mk(animKey(v, 'sit-left'), v.textureKey, sitFrames(v, 'left'), ANIM_RATE.sit);
+      mk(animKey(v, 'sleep'), v.textureKey, sleepFrames(v), ANIM_RATE.sleep);
     }
 
     // The "thinking" bubble: appears, then a looped "bubbling"
