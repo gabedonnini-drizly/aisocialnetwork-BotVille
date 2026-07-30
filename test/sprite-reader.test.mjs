@@ -1,9 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { loadAdapter } from '../scripts/lib/sourceAdapter.mjs';
 import { readSprite, asSource, pinFor } from '../scripts/lib/spriteReader.mjs';
-import { createCanvas } from '../scripts/png-lib.mjs';
+import { createCanvas, encodePng } from '../scripts/png-lib.mjs';
 
 const a = () => loadAdapter('sources/fixture.json', 'test/fixtures/pack-src');
 
@@ -44,6 +46,37 @@ test('asSource round-trips a canvas into a readable source', () => {
   const cv = createCanvas(2, 1);
   cv.set(1, 0, [1, 2, 3, 255]);
   assert.deepEqual(asSource(cv).px(1, 0), [1, 2, 3, 255]);
+});
+
+// (D-19, 2026-07-30) The optional third argument appearanceComposer.mjs's
+// resolveVariantFile needs: an explicit file overrides the adapter's
+// resolved path while every other rect field (x/y/w/h/trim) still comes
+// from the adapter's declared rect. Omitting it (every call above this one)
+// must stay byte-for-byte the old two-argument behavior — that is the
+// additive guarantee Plan 1's pin semantics (pins pin the DEFAULT file) rely
+// on: pinFor never passes an override, so no pin is affected by this change.
+test('readSprite with no override behaves exactly as the two-argument call did', () => {
+  const s2 = readSprite(a(), 'grass');
+  const s3 = readSprite(a(), 'grass', undefined);
+  assert.deepEqual([...s2.canvas.data], [...s3.canvas.data]);
+});
+
+test('an explicit file override reads a different file under the same rect geometry', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'sprite-override-'));
+  const cvA = createCanvas(8, 8);
+  cvA.set(2, 2, [10, 20, 30, 255]);
+  const cvB = createCanvas(8, 8);
+  cvB.set(2, 2, [40, 50, 60, 255]);
+  writeFileSync(join(dir, 'a.png'), encodePng(cvA));
+  writeFileSync(join(dir, 'b.png'), encodePng(cvB));
+  const adapter = {
+    resolve: () => ({ name: 'x', absPath: join(dir, 'a.png'), x: 0, y: 0, w: 8, h: 8, trim: false }),
+  };
+  const withoutOverride = readSprite(adapter, 'x');
+  const withOverride = readSprite(adapter, 'x', { file: join(dir, 'b.png') });
+  const pixelAt = (canvas, x, y) => [...canvas.data.subarray(4 * (y * canvas.w + x), 4 * (y * canvas.w + x) + 4)];
+  assert.deepEqual(pixelAt(withoutOverride.canvas, 2, 2), [10, 20, 30, 255]);
+  assert.deepEqual(pixelAt(withOverride.canvas, 2, 2), [40, 50, 60, 255]);
 });
 
 test('pinFor is a pure function of the pixels — same crop, same pin; different crop, different pin', () => {

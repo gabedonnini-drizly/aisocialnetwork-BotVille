@@ -10,6 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createCanvas, encodePng } from './png-lib.mjs';
 import { loadContract } from './lib/assetContract.mjs';
+import { EYE_VARIANTS, HAIR_MANIFEST, OUTFIT_MANIFEST } from '../packages/shared/src/appearance/derive.mjs';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
 const OUT = join(ROOT, 'test', 'fixtures', 'pack-src');
@@ -42,6 +43,48 @@ function write(rel, canvas) {
   mkdirSync(dirname(p), { recursive: true });
   writeFileSync(p, encodePng(canvas));
 }
+
+/**
+ * Like `block`, but confined to a horizontal slice (`[bandTop, bandBottom)`)
+ * of every `frameHeight`-px animation row, transparent elsewhere. Real
+ * separable character layers only paint PART of their 16x32 cell — body
+ * legs, a 2px eye band, hair over the head, outfit over the torso (measured
+ * bounding boxes, docs/ASSETS.md) — never the whole cell. `composeSheet`
+ * stacks five such layers; a fixture layer that (like plain `block`) fills
+ * its ENTIRE cell would hide every earlier layer regardless of which file
+ * got picked, no matter how many per-variant siblings exist. Same
+ * deterministic colour derivation as `block` (`colorFor`, keyed off the
+ * caller's `name`), just confined to a band so multiple stacked layers stay
+ * visible in one composed frame — not a different generation algorithm.
+ */
+function characterLayerBlock(name, w, h, frameHeight, [bandTop, bandBottom]) {
+  const cv = createCanvas(w, h);
+  const [r, g, b] = colorFor(name);
+  for (let y = 0; y < h; y++) {
+    const yInFrame = y % frameHeight;
+    if (yInFrame < bandTop || yInFrame >= bandBottom) continue;
+    const edge = yInFrame === bandTop || yInFrame === bandBottom - 1;
+    for (let x = 0; x < w; x++) cv.set(x, y, edge ? [r >> 1, g >> 1, b >> 1, 255] : [r, g, b, 255]);
+  }
+  return cv;
+}
+
+/**
+ * Bands within one 32px animation row, in z-order (composeSheet stacks
+ * body -> eyes -> hair -> outfit -> accessory). Deliberately overlapping in
+ * spots (hair over the top of body, outfit over the middle of body,
+ * accessory over the top of hair) — that IS the point: it proves later
+ * layers draw over earlier ones while still leaving every layer a surviving
+ * band in the final composite, so a test that changes one part's file can
+ * tell from the composed pixels alone.
+ */
+const CHARACTER_BANDS = {
+  body: [8, 32],
+  eyes: [18, 20],
+  hair: [0, 16],
+  outfit: [20, 28],
+  accessory: [0, 6],
+};
 
 const c = loadContract();
 const rects = {};
@@ -99,11 +142,65 @@ write('ui/ui.png', block('ui', 160, 160));
 // *subset* AVATAR_VARIANTS uses (rows 0-7). The real premade sheets are
 // 896x656 (20.5 rows of 32px); the fixture generates only the rows the
 // runtime reads.
+//
+// (D-19, 2026-07-30, Task 27 dependency flag #2) Hair, outfit and eyes are
+// TWO-STAGE (hair/outfit) or single-stage (eyes) VARIANT layers on the real
+// pack: the adapter aliases one index-0 sibling file
+// (`Hairstyle_01_01.png`, `Outfit_01_01.png`, `Eyes_01.png`) and
+// appearanceComposer.mjs's `resolveVariantFile` substitutes the record's
+// own style/variant into that same filename shape to pick a sibling. Task
+// 8's original generator emitted one monolithic sheet per part — no
+// siblings to resolve — so composer tests against the fixture pack had
+// nothing to select between.
+//
+// The sibling set generated here is derived from HAIR_MANIFEST /
+// OUTFIT_MANIFEST / EYE_VARIANTS — the SAME committed, generated data
+// `appearanceRecord()` (derive.mjs) actually draws its style/variant ids
+// from — deliberately NOT `sources/fixture.variants{,.outfit}.json`'s
+// smaller synthetic 3-style scaffold (that manifest exists to exercise
+// `buildVariantManifest`'s grouping logic on an uneven-per-style shape, an
+// orthogonal concern; `gen-variant-manifest.mjs`'s FIXTURE_HAIR_FILES /
+// FIXTURE_OUTFIT_FILES are unrelated to this generator). `derive.mjs`
+// hardcodes the import to the SHIPPING (limezu) manifest regardless of
+// which adapter a test composes against (I-7 wants one manifest swap to
+// re-roll every appearance, not a manifest per test pack) — so a seed can
+// hash to any of the shipping manifest's 200 hair / 132 outfit
+// combinations even when composing against the fixture pack. The fixture
+// must therefore have a sibling file for every one of those combinations,
+// not just a hand-picked few, or `resolveVariantFile` resolves a path that
+// does not exist. Same deterministic `block()` algorithm, one distinct
+// colour per file (the colour key is the filename, so every sibling is
+// visually distinguishable); `char_<part>` aliases the INDEX-0 file
+// (`variantFiles[0]`, sorted styles-then-variants — `01_01`), exactly as
+// the real pack does.
+function siblingFilenames(prefix, manifest) {
+  const names = [];
+  for (const style of manifest.styles) {
+    for (const variant of manifest.variantsByStyle[style]) names.push(`${prefix}_${style}_${variant}.png`);
+  }
+  return names;
+}
+const VARIANT_LAYER_FILES = {
+  hair: siblingFilenames('Hairstyle', HAIR_MANIFEST),
+  outfit: siblingFilenames('Outfit', OUTFIT_MANIFEST),
+  eyes: EYE_VARIANTS.map(v => `Eyes_${v}.png`),
+};
 for (const part of c.characters.parts) {
+  const band = CHARACTER_BANDS[part] ?? [0, 32];
+  const variantFiles = VARIANT_LAYER_FILES[part];
+  if (variantFiles) {
+    for (const filename of variantFiles) {
+      const alias = `c_${part}_${filename}`;
+      files[alias] = `characters/${filename}`;
+      write(`characters/${filename}`, characterLayerBlock(`char_${part}:${filename}`, 16 * 56, 32 * 8, 32, band));
+    }
+    rects[`char_${part}`] = { file: `c_${part}_${variantFiles[0]}` };
+    continue;
+  }
   const alias = `c_${part}`;
   files[alias] = `characters/${part}.png`;
   rects[`char_${part}`] = { file: alias };
-  write(`characters/${part}.png`, block(`char_${part}`, 16 * 56, 32 * 8));
+  write(`characters/${part}.png`, characterLayerBlock(`char_${part}`, 16 * 56, 32 * 8, 32, band));
 }
 
 // Any other runtime sheet without bespoke geometry above — interim, Task 23

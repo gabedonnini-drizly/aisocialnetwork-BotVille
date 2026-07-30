@@ -65,9 +65,19 @@ export function filenamesFor(pack, kind) {
   return realPackFilenames(kind === 'hair' ? 'Hairstyles' : 'Outfits');
 }
 
-export function generate(pack) {
-  const hair = buildVariantManifest(filenamesFor(pack, 'hair'), HAIR_PATTERN);
-  const outfit = buildVariantManifest(filenamesFor(pack, 'outfit'), OUTFIT_PATTERN);
+/**
+ * (D-19, 2026-07-30, Task 27 Step 0) `exclude` names files to drop BEFORE
+ * grouping — the automatic-exclusion mechanism the amended plan requires:
+ * a variant that fails sleep/sit-row coverage (`scripts/gen-row-coverage.mjs`)
+ * is excluded from the committed manifest by never being counted in the
+ * first place, never by hand-editing the generated JSON. `exclude.hair` /
+ * `exclude.outfit` are Sets of exact filenames (e.g. `Hairstyle_14_03.png`).
+ */
+export function generate(pack, exclude = {}) {
+  const hairFiles = filenamesFor(pack, 'hair').filter(f => !exclude.hair?.has(f));
+  const outfitFiles = filenamesFor(pack, 'outfit').filter(f => !exclude.outfit?.has(f));
+  const hair = buildVariantManifest(hairFiles, HAIR_PATTERN);
+  const outfit = buildVariantManifest(outfitFiles, OUTFIT_PATTERN);
   mkdirSync(join(ROOT, 'sources'), { recursive: true });
   writeFileSync(join(ROOT, 'sources', `${pack}.variants.json`), JSON.stringify(hair, null, 2) + '\n');
   writeFileSync(join(ROOT, 'sources', `${pack}.variants.outfit.json`), JSON.stringify(outfit, null, 2) + '\n');
@@ -77,11 +87,19 @@ export function generate(pack) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const i = process.argv.indexOf('--pack');
   const pack = i >= 0 ? process.argv[i + 1] : 'fixture';
-  const { hair, outfit } = generate(pack);
+  const excludeArg = name => {
+    const j = process.argv.indexOf(name);
+    return j >= 0 ? new Set(process.argv[j + 1].split(',').filter(Boolean)) : undefined;
+  };
+  const exclude = { hair: excludeArg('--exclude-hair'), outfit: excludeArg('--exclude-outfit') };
+  const { hair, outfit } = generate(pack, exclude);
   const hairCount = Object.values(hair.variantsByStyle).reduce((n, v) => n + v.length, 0);
   const outfitCount = Object.values(outfit.variantsByStyle).reduce((n, v) => n + v.length, 0);
   console.log(
     `${pack}: ${hair.styles.length} hair styles / ${hairCount} files, ` +
     `${outfit.styles.length} outfit styles / ${outfitCount} files -> ` +
-    `sources/${pack}.variants{,.outfit}.json`);
+    `sources/${pack}.variants{,.outfit}.json` +
+    (exclude.hair?.size || exclude.outfit?.size
+      ? ` (excluded ${exclude.hair?.size ?? 0} hair / ${exclude.outfit?.size ?? 0} outfit variant(s), Task 27 Step 0)`
+      : ''));
 }

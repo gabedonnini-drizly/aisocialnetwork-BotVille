@@ -26,11 +26,21 @@ export function asSource(canvas) {
 }
 
 /**
+ * @param {{file?:string}} [override] (D-19, 2026-07-30) Optional file-path
+ *   override for exactly one case: a two-stage variant layer (hair, outfit,
+ *   eyes — appearanceComposer.mjs's `resolveVariantFile`) where the record
+ *   picks a SIBLING file of the adapter's declared alias, not the alias
+ *   itself. Every other rect field (x/y/w/h/trim) still comes from the
+ *   adapter's resolved rect for `name` — siblings share one sheet's layout
+ *   by pack convention, only the file differs. Omitting this argument (the
+ *   default) is byte-for-byte the old two-argument behavior: pins, which
+ *   hash the DEFAULT file, are computed by callers that never pass it.
  * @returns {{name:string, w:number, h:number, canvas:object}} true post-trim bounds
  */
-export function readSprite(adapter, name) {
+export function readSprite(adapter, name, override) {
   const r = adapter.resolve(name);
-  const img = adapter._override ?? decodeCached(r.absPath);
+  const absPath = override?.file ?? r.absPath;
+  const img = adapter._override ?? decodeCached(absPath);
 
   const rx = r.x;
   const ry = r.y;
