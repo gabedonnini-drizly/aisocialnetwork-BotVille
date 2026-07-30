@@ -31,9 +31,13 @@ test('ground rects are 16x16 and carry a file alias', () => {
 });
 
 test('grass matches build-district.mjs ATLAS_TILES (TERR tile 1,12)', () => {
-  assert.deepEqual(src.rects.grass, { file: 'terrains', x: 16, y: 192, w: 16, h: 16 });
+  // pin is Task 9/10 tooling metadata (npm run pin), not part of the
+  // geometry this test asserts — strip it before comparing.
+  const { pin, ...rest } = src.rects.grass;
+  assert.deepEqual(rest, { file: 'terrains', x: 16, y: 192, w: 16, h: 16 });
 });
 
 test('border matches build-interiors.mjs ATLAS_TILES (RB tile 1,44)', () => {
-  assert.deepEqual(src.rects.border, { file: 'room_builder', x: 16, y: 704, w: 16, h: 16 });
+  const { pin, ...rest } = src.rects.border;
+  assert.deepEqual(rest, { file: 'room_builder', x: 16, y: 704, w: 16, h: 16 });
 });

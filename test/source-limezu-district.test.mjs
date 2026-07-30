@@ -22,8 +22,10 @@ test('whole-file props carry a file alias and no x/y/w/h', () => {
 });
 
 test('villa_building keeps build-district.mjs region 152,216 148x232', () => {
-  assert.deepEqual(src.rects.villa_building,
-    { file: 'villas', x: 152, y: 216, w: 148, h: 232, trim: true });
+  // pin is Task 9/10 tooling metadata (npm run pin), not part of the
+  // geometry this test asserts — strip it before comparing.
+  const { pin, ...rest } = src.rects.villa_building;
+  assert.deepEqual(rest, { file: 'villas', x: 152, y: 216, w: 148, h: 232, trim: true });
 });
 
 test('library_building is generated, not cropped — the pack has no book shop', () => {

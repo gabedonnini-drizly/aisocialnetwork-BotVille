@@ -1,6 +1,8 @@
 {
   "pack": "limezu",
-  "capabilities": { "characterLayers": true },
+  "capabilities": {
+    "characterLayers": true
+  },
   "files": {
     "city_terrains": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/2_City_Terrains_16x16.png",
     "terrains": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/1_Terrains_and_Fences_16x16.png",
@@ -11,29 +13,29 @@
     "livingroom": "interiors/1_Interiors/16x16/Theme_Sorter/2_LivingRoom_16x16.png",
     "classroom": "interiors/1_Interiors/16x16/Theme_Sorter/5_Classroom_and_library_16x16.png",
     "kitchen": "interiors/1_Interiors/16x16/Theme_Sorter/12_Kitchen_16x16.png",
-    "office_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/16_Office_Singles_16x16/ME_Singles_Office_16x16_Example_1.png",
-    "market_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_1.png",
-    "hardware_single":   "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Hardware_Store.png",
-    "barn_single":       "farm/16x16/Single_Files_16x16/Props_and_Buildings_16x16/Barn_Small_16x16.png",
-    "tree_oak_big_s":    "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Big_16x16.png",
-    "tree_oak_med_s":    "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Medium_16x16.png",
-    "tree_birch_s":      "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Birch_Green_Medium_16x16.png",
-    "lamp_single":       "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Street_Lamp_1.png",
-    "bench_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Bench_1.png",
-    "trash_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Black_Closed_Trash_Can.png",
-    "hydrant_single":    "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Hydrant_1.png",
-    "car_r1_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_1.png",
-    "car_l1_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Left_5.png",
-    "car_r2_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_12.png",
-    "car_d1_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_1.png",
-    "car_d2_single":     "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_12.png",
-    "bush1_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_1.png",
-    "bush2_single":      "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_4.png",
-    "crop_cabbage_s":    "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Cabbage_Ripe_16x16.png",
-    "crop_berry_s":      "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Berry_Ripe_16x16.png",
-    "soil_left_s":       "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Left_16x16.png",
-    "soil_mid_s":        "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Middle_16x16.png",
-    "soil_right_s":      "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Right_16x16.png",
+    "office_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/16_Office_Singles_16x16/ME_Singles_Office_16x16_Example_1.png",
+    "market_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_1.png",
+    "hardware_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Hardware_Store.png",
+    "barn_single": "farm/16x16/Single_Files_16x16/Props_and_Buildings_16x16/Barn_Small_16x16.png",
+    "tree_oak_big_s": "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Big_16x16.png",
+    "tree_oak_med_s": "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Medium_16x16.png",
+    "tree_birch_s": "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Birch_Green_Medium_16x16.png",
+    "lamp_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Street_Lamp_1.png",
+    "bench_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Bench_1.png",
+    "trash_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Black_Closed_Trash_Can.png",
+    "hydrant_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Hydrant_1.png",
+    "car_r1_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_1.png",
+    "car_l1_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Left_5.png",
+    "car_r2_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_12.png",
+    "car_d1_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_1.png",
+    "car_d2_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_19.png",
+    "bush1_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_1.png",
+    "bush2_single": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_4.png",
+    "crop_cabbage_s": "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Cabbage_Ripe_16x16.png",
+    "crop_berry_s": "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Berry_Ripe_16x16.png",
+    "soil_left_s": "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Left_16x16.png",
+    "soil_mid_s": "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Middle_16x16.png",
+    "soil_right_s": "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Right_16x16.png",
     "fence_tl": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Left_16x16.png",
     "fence_tm": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Middle_16x16.png",
     "fence_tr": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Right_16x16.png",
@@ -42,7 +44,7 @@
     "fence_bl": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Left_16x16.png",
     "fence_bm": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Middle_16x16.png",
     "fence_br": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Right_16x16.png",
-    "office_singles_99":  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_99.png",
+    "office_singles_99": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_99.png",
     "office_singles_100": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_100.png",
     "office_singles_103": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_103.png",
     "office_singles_104": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_104.png",
@@ -51,162 +53,811 @@
     "office_singles_225": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_225.png",
     "office_singles_227": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_227.png",
     "office_singles_323": "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_323.png",
-    "anim_coffee":       "interiors/3_Animated_objects/16x16/spritesheets/animated_coffee.png",
-    "anim_cake_fridge":  "interiors/3_Animated_objects/16x16/spritesheets/animated_canteen_big_fridge_cake_16x16.png",
-    "anim_tv":           "interiors/3_Animated_objects/16x16/spritesheets/animated_TV_reportage.png",
-    "anim_office_screen":"interiors/3_Animated_objects/16x16/spritesheets/animated_control_room_facebook_scrolling.png",
-    "anim_cuckoo":       "interiors/3_Animated_objects/16x16/spritesheets/animated_cuckoo_clock.png",
-    "ui":                "interiors/4_User_Interface_Elements/UI_16x16.png",
-    "ui_emotes":         "interiors/4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png",
-    "char_body_sheet":      "interiors/2_Characters/Character_Generator/Bodies/16x16/Body_01.png",
-    "char_eyes_sheet":      "interiors/2_Characters/Character_Generator/Eyes/16x16/Eyes_01.png",
-    "char_hair_sheet":      "interiors/2_Characters/Character_Generator/Hairstyles/16x16/Hairstyle_01_01.png",
-    "char_outfit_sheet":    "interiors/2_Characters/Character_Generator/Outfits/16x16/Outfit_01_01.png",
+    "anim_coffee": "interiors/3_Animated_objects/16x16/spritesheets/animated_coffee.png",
+    "anim_cake_fridge": "interiors/3_Animated_objects/16x16/spritesheets/animated_canteen_big_fridge_cake_16x16.png",
+    "anim_tv": "interiors/3_Animated_objects/16x16/spritesheets/animated_TV_reportage.png",
+    "anim_office_screen": "interiors/3_Animated_objects/16x16/spritesheets/animated_control_room_facebook_scrolling.png",
+    "anim_cuckoo": "interiors/3_Animated_objects/16x16/spritesheets/animated_cuckoo_clock.png",
+    "ui": "interiors/4_User_Interface_Elements/UI_16x16.png",
+    "ui_emotes": "interiors/4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png",
+    "char_body_sheet": "interiors/2_Characters/Character_Generator/Bodies/16x16/Body_01.png",
+    "char_eyes_sheet": "interiors/2_Characters/Character_Generator/Eyes/16x16/Eyes_01.png",
+    "char_hair_sheet": "interiors/2_Characters/Character_Generator/Hairstyles/16x16/Hairstyle_01_01.png",
+    "char_outfit_sheet": "interiors/2_Characters/Character_Generator/Outfits/16x16/Outfit_01_01.png",
     "char_accessory_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_01_Ladybug_01.png"
   },
   "rects": {
-    "grass":  { "file": "terrains", "x": 16,  "y": 192, "w": 16, "h": 16 },
-    "grassA": { "file": "terrains", "x": 48,  "y": 96,  "w": 16, "h": 16,
-      "note": "row 5 (y:80) is a transparent 2-row gap in the sheet — build-district.mjs's ATLAS_TILES entry baked an invisible tile there with no alpha check. Content verified one row lower (y:96) by pin + pixel decode, 2026-07-29" },
-    "grassB": { "file": "terrains", "x": 64,  "y": 96,  "w": 16, "h": 16,
-      "note": "same gap as grassA — shifted from y:80 to y:96, verified by pin + pixel decode, 2026-07-29" },
-    "sideA":  { "file": "city_terrains", "x": 144, "y": 0,  "w": 16, "h": 16 },
-    "sideB":  { "file": "city_terrains", "x": 160, "y": 0,  "w": 16, "h": 16 },
-    "sideC":  { "file": "city_terrains", "x": 176, "y": 0,  "w": 16, "h": 16 },
-    "sideD":  { "file": "city_terrains", "x": 192, "y": 0,  "w": 16, "h": 16 },
-    "asphA":  { "file": "city_terrains", "x": 0,  "y": 64, "w": 16, "h": 16 },
-    "asphB":  { "file": "city_terrains", "x": 16, "y": 64, "w": 16, "h": 16 },
-    "asphC":  { "file": "city_terrains", "x": 32, "y": 64, "w": 16, "h": 16 },
-    "asphD":  { "file": "city_terrains", "x": 48, "y": 64, "w": 16, "h": 16 },
-    "dashH":  { "file": "city_terrains", "x": 192, "y": 96, "w": 16, "h": 16 },
-    "dashV":  { "file": "city_terrains", "x": 176, "y": 96, "w": 16, "h": 16 },
-    "zebHa1": { "file": "city_terrains", "x": 112, "y": 64,  "w": 16, "h": 16 },
-    "zebHb1": { "file": "city_terrains", "x": 128, "y": 64,  "w": 16, "h": 16 },
-    "zebHa2": { "file": "city_terrains", "x": 112, "y": 80,  "w": 16, "h": 16 },
-    "zebHb2": { "file": "city_terrains", "x": 128, "y": 80,  "w": 16, "h": 16 },
-    "zebVa1": { "file": "city_terrains", "x": 80,  "y": 96,  "w": 16, "h": 16 },
-    "zebVb1": { "file": "city_terrains", "x": 96,  "y": 96,  "w": 16, "h": 16 },
-    "zebVa2": { "file": "city_terrains", "x": 80,  "y": 112, "w": 16, "h": 16 },
-    "zebVb2": { "file": "city_terrains", "x": 96,  "y": 112, "w": 16, "h": 16 },
-    "dirt":   { "file": "farm_terrains", "x": 288, "y": 80, "w": 16, "h": 16 },
-    "dirtA":  { "file": "farm_terrains", "x": 304, "y": 80, "w": 16, "h": 16 },
-
-    "border":      { "file": "room_builder", "x": 16, "y": 704, "w": 16, "h": 16 },
-    "wallOfficeA": { "file": "room_builder", "x": 16, "y": 336, "w": 16, "h": 16 },
-    "wallOfficeB": { "file": "room_builder", "x": 16, "y": 352, "w": 16, "h": 16 },
-    "wallCafeA":   { "file": "room_builder", "x": 16, "y": 272, "w": 16, "h": 16 },
-    "wallCafeB":   { "file": "room_builder", "x": 16, "y": 288, "w": 16, "h": 16 },
-    "wallDormA":   { "file": "room_builder", "x": 16, "y": 176, "w": 16, "h": 16 },
-    "wallDormB":   { "file": "room_builder", "x": 16, "y": 192, "w": 16, "h": 16 },
-    "wallLibA":    { "file": "room_builder", "x": 16, "y": 592, "w": 16, "h": 16 },
-    "wallLibB":    { "file": "room_builder", "x": 16, "y": 608, "w": 16, "h": 16 },
-    "floorOffice": { "file": "room_builder", "x": 544, "y": 176, "w": 16, "h": 16 },
-    "floorCafe":   { "file": "room_builder", "x": 672, "y": 176, "w": 16, "h": 16 },
-    "floorDorm":   { "file": "room_builder", "x": 624, "y": 384, "w": 16, "h": 16 },
-    "floorLib":    { "file": "room_builder", "x": 672, "y": 304, "w": 16, "h": 16 },
-
-    "office_building":  { "file": "office_single" },
-    "cafe_building":    { "file": "market_single" },
-    "villa_building":   { "file": "villas", "x": 152, "y": 216, "w": 148, "h": 232, "trim": true },
-    "library_building": { "file": "hardware_single", "generated": "bookSign" },
-    "barn":             { "file": "barn_single" },
-    "tree_oak_big":     { "file": "tree_oak_big_s" },
-    "tree_oak_med":     { "file": "tree_oak_med_s" },
-    "tree_birch":       { "file": "tree_birch_s" },
-    "street_lamp":      { "file": "lamp_single" },
-    "bench":            { "file": "bench_single" },
-    "trash_can":        { "file": "trash_single" },
-    "hydrant":          { "file": "hydrant_single" },
-    "car_right_1":      { "file": "car_r1_single" },
-    "car_left_1":       { "file": "car_l1_single" },
-    "car_right_2":      { "file": "car_r2_single" },
-    "car_down_1":       { "file": "car_d1_single" },
-    "car_down_2":       { "file": "car_d2_single" },
-    "bush_1":           { "file": "bush1_single" },
-    "bush_2":           { "file": "bush2_single" },
-    "crop_cabbage":     { "file": "crop_cabbage_s" },
-    "crop_berry":       { "file": "crop_berry_s" },
-    "soil_left":        { "file": "soil_left_s" },
-    "soil_mid":         { "file": "soil_mid_s" },
-    "soil_right":       { "file": "soil_right_s" },
-    "fence_top_left":      { "file": "fence_tl" },
-    "fence_top_middle":    { "file": "fence_tm" },
-    "fence_top_right":     { "file": "fence_tr" },
-    "fence_middle_left":   { "file": "fence_ml" },
-    "fence_middle_right":  { "file": "fence_mr" },
-    "fence_bottom_left":   { "file": "fence_bl" },
-    "fence_bottom_middle": { "file": "fence_bm" },
-    "fence_bottom_right":  { "file": "fence_br" },
-
-    "bed_green":  { "file": "bedroom", "x": 128, "y": 320, "w": 32, "h": 56, "trim": true },
-    "bed_blue":   { "file": "bedroom", "x": 160, "y": 320, "w": 32, "h": 56, "trim": true },
-    "bed_teal":   { "file": "bedroom", "x": 192, "y": 320, "w": 32, "h": 56, "trim": true },
-    "nightstand": { "file": "bedroom", "x": 224, "y": 296, "w": 16, "h": 21, "trim": true },
-    "rug_pink":   { "file": "bedroom", "x": 7,   "y": 349, "w": 36, "h": 34, "trim": true,
-      "note": "taken from a tablecloth" },
-
-    "chair_blue_r":   { "file": "bedroom", "x": 81, "y": 192, "w": 14, "h": 32, "trim": true,
-      "note": "dining sets: clean chairs without the adjoining table corner — 2nd (left, x=34) and 3rd (right, x=81)" },
-    "chair_blue_l":   { "file": "bedroom", "x": 34, "y": 192, "w": 14, "h": 32, "trim": true },
-    "chair_red_r":    { "file": "bedroom", "x": 81, "y": 224, "w": 14, "h": 32, "trim": true },
-    "chair_red_l":    { "file": "bedroom", "x": 34, "y": 224, "w": 14, "h": 32, "trim": true },
-    "chair_yellow_r": { "file": "bedroom", "x": 81, "y": 256, "w": 14, "h": 32, "trim": true },
-    "chair_yellow_l": { "file": "bedroom", "x": 34, "y": 256, "w": 14, "h": 32, "trim": true },
-    "table_plain":    { "file": "bedroom", "x": 48, "y": 208, "w": 32, "h": 40, "trim": true },
-
-    "armchair_grey_r": { "file": "livingroom", "x": 145, "y": 582, "w": 22, "h": 42, "trim": true,
-      "note": "BROWN pair (row 582), not grey — the grey one read as a concrete slab on warm parquet (TZ-08 v2 acceptance). _r faces right = back on the left. h:42 stops before the strip of floor and next row below" },
-    "armchair_grey_l": { "file": "livingroom", "x": 121, "y": 582, "w": 22, "h": 42, "trim": true },
-    "armchair_blue_r": { "file": "livingroom", "x": 145, "y": 518, "w": 22, "h": 42, "trim": true },
-    "armchair_blue_l": { "file": "livingroom", "x": 121, "y": 518, "w": 22, "h": 42, "trim": true },
-    "lamp_red":        { "file": "livingroom", "x": 206, "y": 150, "w": 17, "h": 36, "trim": true },
-    "plant_palm":      { "file": "livingroom", "x": 214, "y": 0,   "w": 28, "h": 50, "trim": true },
-
-    "bookshelf_a":      { "file": "classroom", "x": 0,   "y": 360, "w": 48, "h": 50, "trim": true },
-    "bookshelf_b":      { "file": "classroom", "x": 0,   "y": 424, "w": 48, "h": 50, "trim": true },
-    "bookshelf_narrow": { "file": "classroom", "x": 195, "y": 354, "w": 13, "h": 62, "trim": true },
-    "lectern":          { "file": "classroom", "x": 230, "y": 282, "w": 20, "h": 34, "trim": true,
-      "note": "getting clipped" },
-    "globe":            { "file": "classroom", "x": 208, "y": 16,  "w": 16, "h": 24, "trim": true },
-    "chalkboard":       { "file": "classroom", "x": 160, "y": 78,  "w": 28, "h": 34, "trim": true,
-      "note": "getting clipped" },
-
-    "counter_wide": { "file": "kitchen", "x": 192, "y": 268, "w": 52, "h": 22, "trim": true },
-    "stool":        { "file": "kitchen", "x": 1,   "y": 177, "w": 14, "h": 15, "trim": true },
-    "doormat":      { "file": "kitchen", "x": 105, "y": 432, "w": 30, "h": 38, "trim": true },
-
-    "plant_small":         { "file": "office_singles_99" },
-    "plant_pot":           { "file": "office_singles_100" },
-    "office_chair_right":  { "file": "office_singles_103" },
-    "office_chair_left":   { "file": "office_singles_104" },
-    "whiteboard":          { "file": "office_singles_116" },
-    "printer":             { "file": "office_singles_156" },
-    "workstation_single":  { "file": "office_singles_225" },
-    "workstation_double":  { "file": "office_singles_227" },
-    "coffee_machine":      { "file": "office_singles_323" },
-
-    "coffee_steam":  { "file": "anim_coffee" },
-    "cake_fridge":   { "file": "anim_cake_fridge" },
-    "tv_news":       { "file": "anim_tv" },
-    "office_screen": { "file": "anim_office_screen" },
-    "cuckoo_clock":  { "file": "anim_cuckoo" },
-
-    "emote_sheet": { "file": "ui_emotes" },
-    "ui_sheet":    { "file": "ui" },
-
-    "char_body":      { "file": "char_body_sheet", "x": 0, "y": 0, "w": 896, "h": 656,
-      "note": "Bodies ship 927 wide (all other layers 896). Art in columns >=896 exists only at pixel rows y368-415 (32px animation rows 11-12, 0-indexed — lift/throw rows per pack guide), which the contract never uses. Crop to the 896x656 shared canvas — 56 whole 16px frames — so every char_* layer lands on one canvas (validator block 4b)" },
-    "char_eyes":      { "file": "char_eyes_sheet" },
-    "char_hair":      { "file": "char_hair_sheet" },
-    "char_outfit":    { "file": "char_outfit_sheet" },
-    "char_accessory": { "file": "char_accessory_sheet" }
+    "grass": {
+      "file": "terrains",
+      "x": 16,
+      "y": 192,
+      "w": 16,
+      "h": 16,
+      "pin": "23b30c558c549223d8da81d9c7e2a807a0cc76c02e32f1a861c90d955f4c1c50"
+    },
+    "grassA": {
+      "file": "terrains",
+      "x": 48,
+      "y": 96,
+      "w": 16,
+      "h": 16,
+      "note": "row 5 (y:80) is a transparent 2-row gap in the sheet — build-district.mjs's ATLAS_TILES entry baked an invisible tile there with no alpha check. Content verified one row lower (y:96) by pin + pixel decode, 2026-07-29",
+      "pin": "284ad3bb3cb6bee9b05db1d561b5e02c26afe494cd0806b0dc0216839776b1e8"
+    },
+    "grassB": {
+      "file": "terrains",
+      "x": 64,
+      "y": 96,
+      "w": 16,
+      "h": 16,
+      "note": "same gap as grassA — shifted from y:80 to y:96, verified by pin + pixel decode, 2026-07-29",
+      "pin": "7718283eaa85e331d4d3841cec597bbc19ee5610d7445d37bf6caa9928fb59b9"
+    },
+    "sideA": {
+      "file": "city_terrains",
+      "x": 144,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "59ff8d76dc6edc9ef53c628b0a6d6417f203ac8bbcf02e7cade747e3589404c8"
+    },
+    "sideB": {
+      "file": "city_terrains",
+      "x": 160,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "8af061870a8c8b2a664c496d22d5073620ff1c080d5697521c08450f96a04842"
+    },
+    "sideC": {
+      "file": "city_terrains",
+      "x": 176,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "10feedb425ec86be08c82c5bc240067b84271c8cfb7080922a2989341470c970"
+    },
+    "sideD": {
+      "file": "city_terrains",
+      "x": 192,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "8af061870a8c8b2a664c496d22d5073620ff1c080d5697521c08450f96a04842"
+    },
+    "asphA": {
+      "file": "city_terrains",
+      "x": 0,
+      "y": 64,
+      "w": 16,
+      "h": 16,
+      "pin": "0090769e30bb6d3d4436ea1614407f8fa2974e6a72b09f385b9d81aeac3cd4bf"
+    },
+    "asphB": {
+      "file": "city_terrains",
+      "x": 16,
+      "y": 64,
+      "w": 16,
+      "h": 16,
+      "pin": "ff1778b59c970f1a306e7c7f341a0cee911d5b85a729c5838ccf59b225548f42"
+    },
+    "asphC": {
+      "file": "city_terrains",
+      "x": 32,
+      "y": 64,
+      "w": 16,
+      "h": 16,
+      "pin": "c1767bc6b09c9acd68da5142b5dc1ecb8a892afd23077e4512f4fecafdecb469"
+    },
+    "asphD": {
+      "file": "city_terrains",
+      "x": 48,
+      "y": 64,
+      "w": 16,
+      "h": 16,
+      "pin": "de636ceaebd22ee7aef9b4ba1d91b242d5247bc5df675f48c41516a7102e5d19"
+    },
+    "dashH": {
+      "file": "city_terrains",
+      "x": 192,
+      "y": 96,
+      "w": 16,
+      "h": 16,
+      "pin": "f30f59023d10b6df9b3ae840d48b4396aa22f8dd07d3e1c7f7f40983aa6fc54b"
+    },
+    "dashV": {
+      "file": "city_terrains",
+      "x": 176,
+      "y": 96,
+      "w": 16,
+      "h": 16,
+      "pin": "0f37d8afee676d36d8aec7033951c46fb97efa16b982bfa627b5abae66adaad9"
+    },
+    "zebHa1": {
+      "file": "city_terrains",
+      "x": 112,
+      "y": 64,
+      "w": 16,
+      "h": 16,
+      "pin": "b9ec5403060664dd2cacf66de199223d5dedb8cee7de8533ac990b8209db9a84"
+    },
+    "zebHb1": {
+      "file": "city_terrains",
+      "x": 128,
+      "y": 64,
+      "w": 16,
+      "h": 16,
+      "pin": "a2c8ff7db36479498f2e026923096c85e759e08fea5cbac49580ca4347b75c67"
+    },
+    "zebHa2": {
+      "file": "city_terrains",
+      "x": 112,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "pin": "d60c9c0196dbda63957f3c29ad2cf940a1d5b7bb3c0847bcba3f5975e9621629"
+    },
+    "zebHb2": {
+      "file": "city_terrains",
+      "x": 128,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "pin": "e81db74abcf538a1aa6bbbc2a87837f3e853c593770d74149d405adb9f740fd6"
+    },
+    "zebVa1": {
+      "file": "city_terrains",
+      "x": 80,
+      "y": 96,
+      "w": 16,
+      "h": 16,
+      "pin": "58bde2476f683a89c8b9bbe7b4ecac822b8976c2bce48e3e13633a5b50adbf60"
+    },
+    "zebVb1": {
+      "file": "city_terrains",
+      "x": 96,
+      "y": 96,
+      "w": 16,
+      "h": 16,
+      "pin": "66b0b4894004ab33e619352a72e734091265022ed7c9b8f218a3b78817a040a5"
+    },
+    "zebVa2": {
+      "file": "city_terrains",
+      "x": 80,
+      "y": 112,
+      "w": 16,
+      "h": 16,
+      "pin": "46d9f9d2039d6c2c893af896d50eb63e179a5cc0111c0cbf210f76c4f882f207"
+    },
+    "zebVb2": {
+      "file": "city_terrains",
+      "x": 96,
+      "y": 112,
+      "w": 16,
+      "h": 16,
+      "pin": "d260d2b255c0b11c2da226550d0f7ef24ba1eb8b26b2f279943302dc69e1a766"
+    },
+    "dirt": {
+      "file": "farm_terrains",
+      "x": 288,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "pin": "e1d4f512e743cc64bb158f17494645004db79eff9b96f3070ddea377db93ca5c"
+    },
+    "dirtA": {
+      "file": "farm_terrains",
+      "x": 304,
+      "y": 80,
+      "w": 16,
+      "h": 16,
+      "pin": "94b5c9390341e1b341b7e2733d1787e12132dbb167b8e4145b9302e2703622c8"
+    },
+    "border": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 704,
+      "w": 16,
+      "h": 16,
+      "pin": "a7f436d93380b0a391e406a7f9b05b09a9b68ec818635346279f6fb015096dcd"
+    },
+    "wallOfficeA": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 336,
+      "w": 16,
+      "h": 16,
+      "pin": "c5f82ac33ca8d1beca242b70197db683a3ba66a42bd6a4d6532f3e27393d9f75"
+    },
+    "wallOfficeB": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 352,
+      "w": 16,
+      "h": 16,
+      "pin": "6214e235124ff667f7c10b5320c09cf8f69a12e18dc2bf886f8fabcfa62bafd1"
+    },
+    "wallCafeA": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 272,
+      "w": 16,
+      "h": 16,
+      "pin": "bce2db28038d90aed01a2a0c4e42cba582ade2c73385082bad9cd22cea04e6db"
+    },
+    "wallCafeB": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 288,
+      "w": 16,
+      "h": 16,
+      "pin": "d1046d619c8231641e1329f005ec345d75676455d53a2206aa0e3a10cab6ab7c"
+    },
+    "wallDormA": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 176,
+      "w": 16,
+      "h": 16,
+      "pin": "a8850addc4aa570814373a8f19ad47593324518a50d1313bae4aad9fe86cac7c"
+    },
+    "wallDormB": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 192,
+      "w": 16,
+      "h": 16,
+      "pin": "fa442fd9fa4acc85052a3e8179536698c0206544b6bdab2c0f50d48ca8e7bb13"
+    },
+    "wallLibA": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 592,
+      "w": 16,
+      "h": 16,
+      "pin": "4e92cfc1956eded77773f6b470199a381cbdf6ba48294b0de5ede26febe7e68f"
+    },
+    "wallLibB": {
+      "file": "room_builder",
+      "x": 16,
+      "y": 608,
+      "w": 16,
+      "h": 16,
+      "pin": "67217aef60e7e6c71c7e7506272ed094f95c1d339dbfd5e1ac5ff7b8fa559089"
+    },
+    "floorOffice": {
+      "file": "room_builder",
+      "x": 544,
+      "y": 176,
+      "w": 16,
+      "h": 16,
+      "pin": "26454cdb27fe628c44cfe40c39c04d82bd762ca76f5a159044b0d80a8d025a73"
+    },
+    "floorCafe": {
+      "file": "room_builder",
+      "x": 672,
+      "y": 176,
+      "w": 16,
+      "h": 16,
+      "pin": "532f701c63b9439b59d8772c5197dcdd005183cb9f763afae6008903884bd3e3"
+    },
+    "floorDorm": {
+      "file": "room_builder",
+      "x": 624,
+      "y": 384,
+      "w": 16,
+      "h": 16,
+      "pin": "6c8efe01c9c77b1320bc4beea112e92dea979e39bbe7e8113febb810bb225f44"
+    },
+    "floorLib": {
+      "file": "room_builder",
+      "x": 672,
+      "y": 304,
+      "w": 16,
+      "h": 16,
+      "pin": "35a9bc372be140e695a5c5cd9af347823498d29b6adeb99285b5eac38a55ddaf"
+    },
+    "office_building": {
+      "file": "office_single",
+      "pin": "46436408f9ec51d351bc1ead6b7ace26c7c7bf98a2b3a98c76feaeb42c7e9953"
+    },
+    "cafe_building": {
+      "file": "market_single",
+      "pin": "17b8aa4b14cb902457ac36ff68f4f389da4a52c02405701c200ab3ce1a463bb5"
+    },
+    "villa_building": {
+      "file": "villas",
+      "x": 152,
+      "y": 216,
+      "w": 148,
+      "h": 232,
+      "trim": true,
+      "pin": "6639f93de977eac3bd152586c231877ab1b43066deba0f75e121fc3571a574b3"
+    },
+    "library_building": {
+      "file": "hardware_single",
+      "generated": "bookSign",
+      "pin": "d58de52114565d269e6fbf51ae175ba0003d07c7880b61deb13cf6ee4d15a016"
+    },
+    "barn": {
+      "file": "barn_single",
+      "pin": "153fb3f70a7c6a17ed9b25baff844d960118d0505a5567f2692fe5c151a6d629"
+    },
+    "tree_oak_big": {
+      "file": "tree_oak_big_s",
+      "pin": "2398b7f41705f2621ec09deca59a4a125294364b8c49d33a8fbdd54d6eb0f182"
+    },
+    "tree_oak_med": {
+      "file": "tree_oak_med_s",
+      "pin": "5575fce039ff43cfd21e5e5192a46c5163fc78a06e39b16ef243308d715fe956"
+    },
+    "tree_birch": {
+      "file": "tree_birch_s",
+      "pin": "ed925f418766010614f3e19913f9abb3dda9cec05cadad010339ba999097f2de"
+    },
+    "street_lamp": {
+      "file": "lamp_single",
+      "pin": "d6e3e6d8a4738841297bcaf128faed2edb536d119328313448c5218e20a05000"
+    },
+    "bench": {
+      "file": "bench_single",
+      "pin": "3e326171c3151f606bc59004d66cdea576800494df8e82ad67b2353deeca9fcb"
+    },
+    "trash_can": {
+      "file": "trash_single",
+      "pin": "12a0c0715803ab8cd0655943aca3db70c925363701ff3d58e0f8e336f2233d1a"
+    },
+    "hydrant": {
+      "file": "hydrant_single",
+      "pin": "3460787f805be3c9996e2d7fd176a9d18d9009ea15a819e8e9043023c9004169"
+    },
+    "car_right_1": {
+      "file": "car_r1_single",
+      "pin": "b67afb44b59028d377f6d4a440a7a689c1d4742e3d9029ca870a6f3254277c2b"
+    },
+    "car_left_1": {
+      "file": "car_l1_single",
+      "pin": "bd5ad509ecd6b6133e089a73db76f63637aa69598522e6712b8fb6abe1a61c01"
+    },
+    "car_right_2": {
+      "file": "car_r2_single",
+      "pin": "0a6cdf2cbe649008859629db6c7c517c1d00cac872b508422b5ef31a1e9781da"
+    },
+    "car_down_1": {
+      "file": "car_d1_single",
+      "pin": "65f4998cefb7efb9e01ac27124e019be43c31ce7564bd42f8791ce4879e10648"
+    },
+    "car_down_2": {
+      "file": "car_d2_single",
+      "note": "was Car_Down_12 (48x80, bbox 37x71) — exceeded contract maxSize [80,64] even trimmed (validator catch, 2026-07-29). scripts/sync-assets.mjs:95 inherited the same oversize pick, predating Task 5. Retargeted to Car_Down_19 (48x64, fits): closest body-paint color match among the same-height Car_Down_14-20 sedans (tan/cream, distance 19.4 vs 12's average vs 30.7 for the next closest)",
+      "pin": "4dce90ad4d8c572e1a484ca199d1f0958bc26e113a8fd4a5feceed0d6bbf209f"
+    },
+    "bush_1": {
+      "file": "bush1_single",
+      "pin": "8538e245a07cd74eb8ca56440df816372b63faac97644847dc1733a7b1257552"
+    },
+    "bush_2": {
+      "file": "bush2_single",
+      "pin": "651b6ae3ee22d9e7fdd3f7841cc70a566bb5f2b09af2fa37f56b78aaf368e788"
+    },
+    "crop_cabbage": {
+      "file": "crop_cabbage_s",
+      "pin": "40e37482b6b4e8bb6b5561c7ecfaf3205830ccaa6369d2e9e4204553ee575dee"
+    },
+    "crop_berry": {
+      "file": "crop_berry_s",
+      "pin": "40a398737818002301b4a119de13f2dd5d6937eb52537e39c1f249ccae663644"
+    },
+    "soil_left": {
+      "file": "soil_left_s",
+      "pin": "d8747706a5cc297959abb3867e25530346dd3ad247670b488e532ed879851e51"
+    },
+    "soil_mid": {
+      "file": "soil_mid_s",
+      "pin": "49f1430b13ce3b3d8a5a0437b83d5f1d2053139253d44f1da5fe179fdfc03aa2"
+    },
+    "soil_right": {
+      "file": "soil_right_s",
+      "pin": "9705eb8ad02799175c98c32614a15cde6e952bd0620f099a4e1c4bc98cc7ca37"
+    },
+    "fence_top_left": {
+      "file": "fence_tl",
+      "pin": "624d2d2f17b23b0b66c3b370d383df6efdf96196daca56b485ae5f74cf85514e"
+    },
+    "fence_top_middle": {
+      "file": "fence_tm",
+      "pin": "cff87703db36dc84887cd1d7513ab53b188712f9632f408f37ee895ca693efd6"
+    },
+    "fence_top_right": {
+      "file": "fence_tr",
+      "pin": "742ccf0b109af12aa40164514b876c98e51f387ebfe39859e4033bbf10d6e241"
+    },
+    "fence_middle_left": {
+      "file": "fence_ml",
+      "pin": "8c726c06518917a252ca9595c2f44042fbf3b468fabdeb83e7e1f8aa17fc905a"
+    },
+    "fence_middle_right": {
+      "file": "fence_mr",
+      "pin": "15f84f6b0290229de45035ed709b2c5466445b6519e1638c05b8cc0516541c66"
+    },
+    "fence_bottom_left": {
+      "file": "fence_bl",
+      "pin": "c593abbacadd1130be7e495960a48378f8abe920842dfce71ee8975f42540999"
+    },
+    "fence_bottom_middle": {
+      "file": "fence_bm",
+      "pin": "fd561c13226c49899e4122611984ed5ae2239016dbc79950f1613b29a46f8a0f"
+    },
+    "fence_bottom_right": {
+      "file": "fence_br",
+      "pin": "d4608c74bd84c5470371f78b8531c560417983bdb38c39dc95dfc10081b0329b"
+    },
+    "bed_green": {
+      "file": "bedroom",
+      "x": 128,
+      "y": 320,
+      "w": 32,
+      "h": 56,
+      "trim": true,
+      "pin": "40530123ba0fc91a594e121b54a2f641cc8c976840e5c8012ae44ff1152c0088"
+    },
+    "bed_blue": {
+      "file": "bedroom",
+      "x": 160,
+      "y": 320,
+      "w": 32,
+      "h": 56,
+      "trim": true,
+      "pin": "ca5e22ec23a3577a7a7ace6e1c910efec64ede7c51332ac43b37f6569ae1d1df"
+    },
+    "bed_teal": {
+      "file": "bedroom",
+      "x": 192,
+      "y": 320,
+      "w": 32,
+      "h": 56,
+      "trim": true,
+      "pin": "20dd13fec3496301f3f8a464ecf7c1cea9e659bea9d55416656bc3f5e25d98ae"
+    },
+    "nightstand": {
+      "file": "bedroom",
+      "x": 224,
+      "y": 296,
+      "w": 16,
+      "h": 21,
+      "trim": true,
+      "pin": "96350015236561d3d88d99d899aeb96810333183a6bad289e931ddb2a8a1b705"
+    },
+    "rug_pink": {
+      "file": "bedroom",
+      "x": 7,
+      "y": 349,
+      "w": 36,
+      "h": 34,
+      "trim": true,
+      "note": "taken from a tablecloth",
+      "pin": "f1cf6f57b09f36190729276bf819058d28e6f892959a9d286c46df9a94afa23e"
+    },
+    "chair_blue_r": {
+      "file": "bedroom",
+      "x": 81,
+      "y": 192,
+      "w": 14,
+      "h": 32,
+      "trim": true,
+      "note": "dining sets: clean chairs without the adjoining table corner — 2nd (left, x=34) and 3rd (right, x=81)",
+      "pin": "29a40b0cd74ae6b467dbcf606e34904548ffed3302ad921aa44f01dbfc3b3728"
+    },
+    "chair_blue_l": {
+      "file": "bedroom",
+      "x": 34,
+      "y": 192,
+      "w": 14,
+      "h": 32,
+      "trim": true,
+      "pin": "bb8949bee83df465c72e0a4e791cd0d2bb377c0b3d7559b6f324de6929f67742"
+    },
+    "chair_red_r": {
+      "file": "bedroom",
+      "x": 81,
+      "y": 224,
+      "w": 14,
+      "h": 32,
+      "trim": true,
+      "pin": "4be79a6821070de821f601a275ab7033d42a95d25f3996b6a3ea1325d5fe0cc2"
+    },
+    "chair_red_l": {
+      "file": "bedroom",
+      "x": 34,
+      "y": 224,
+      "w": 14,
+      "h": 32,
+      "trim": true,
+      "pin": "6c6f4b2b19f30c70a32783ae05fb448d75f7ca72bd8f990df20101d9ab0b2ea0"
+    },
+    "chair_yellow_r": {
+      "file": "bedroom",
+      "x": 81,
+      "y": 256,
+      "w": 14,
+      "h": 32,
+      "trim": true,
+      "pin": "abd7164a35b4c1349f584ca5905bc14de1d36d0a7cb63cf1fdb6cf9f6d77426e"
+    },
+    "chair_yellow_l": {
+      "file": "bedroom",
+      "x": 34,
+      "y": 256,
+      "w": 14,
+      "h": 32,
+      "trim": true,
+      "pin": "ad5163b94ea9bfcd85340308e15251af4727329b2ba70b6adcbf0e01743edc2d"
+    },
+    "table_plain": {
+      "file": "bedroom",
+      "x": 48,
+      "y": 208,
+      "w": 32,
+      "h": 40,
+      "trim": true,
+      "pin": "7cfac4cb7a06f2c4005cabe914e62e8c25f7aa744b8a7d66156490d570672421"
+    },
+    "armchair_grey_r": {
+      "file": "livingroom",
+      "x": 145,
+      "y": 582,
+      "w": 22,
+      "h": 42,
+      "trim": true,
+      "note": "BROWN pair (row 582), not grey — the grey one read as a concrete slab on warm parquet (TZ-08 v2 acceptance). _r faces right = back on the left. h:42 stops before the strip of floor and next row below",
+      "pin": "f5a878e09bfeb7a9023fedd8a7613e8ed7bf2134a2879997aaa74ccba59408c2"
+    },
+    "armchair_grey_l": {
+      "file": "livingroom",
+      "x": 121,
+      "y": 582,
+      "w": 22,
+      "h": 42,
+      "trim": true,
+      "pin": "c7fd5e47d8d74612dddbe36b73ef1656f215febc14340cdd43c0560ff83f610f"
+    },
+    "armchair_blue_r": {
+      "file": "livingroom",
+      "x": 145,
+      "y": 518,
+      "w": 22,
+      "h": 42,
+      "trim": true,
+      "pin": "ae34ce707a516db84010ded40425694f9370c7c3e93377087209d4eeefe0b727"
+    },
+    "armchair_blue_l": {
+      "file": "livingroom",
+      "x": 121,
+      "y": 518,
+      "w": 22,
+      "h": 42,
+      "trim": true,
+      "pin": "518dea60422383172d4b7f2ffeb1427e0271ad333ad3031b5801e427dccb05ff"
+    },
+    "lamp_red": {
+      "file": "livingroom",
+      "x": 206,
+      "y": 150,
+      "w": 17,
+      "h": 36,
+      "trim": true,
+      "pin": "aa1ed69311ddce15a831f544168da17c8de610b19c735aaf785769a91458a30c"
+    },
+    "plant_palm": {
+      "file": "livingroom",
+      "x": 214,
+      "y": 0,
+      "w": 28,
+      "h": 50,
+      "trim": true,
+      "pin": "51d4120cda66764a9e9b7371f6150e5ed5158f0d39abcc5d632ecd3ce7b7ddd4"
+    },
+    "bookshelf_a": {
+      "file": "classroom",
+      "x": 0,
+      "y": 360,
+      "w": 48,
+      "h": 50,
+      "trim": true,
+      "pin": "e7c4c6a2506e191a299393e2464697189995d37045e85f770666b80c488ad0c6"
+    },
+    "bookshelf_b": {
+      "file": "classroom",
+      "x": 0,
+      "y": 424,
+      "w": 48,
+      "h": 50,
+      "trim": true,
+      "pin": "eb7f674a6598a72ff122c4005822b2397dfd1f14e290c63d74766dcac43e2501"
+    },
+    "bookshelf_narrow": {
+      "file": "classroom",
+      "x": 195,
+      "y": 354,
+      "w": 13,
+      "h": 62,
+      "trim": true,
+      "pin": "54055ee9ba310f2e8da5377f53230643790321b582a4b2075e993ec5a168c093"
+    },
+    "lectern": {
+      "file": "classroom",
+      "x": 230,
+      "y": 282,
+      "w": 20,
+      "h": 34,
+      "trim": true,
+      "note": "getting clipped",
+      "pin": "c62a6548088c0789cd8b993dc9f1fa31fa11b5faeffd1c4f7c147e5db2c812c2"
+    },
+    "globe": {
+      "file": "classroom",
+      "x": 208,
+      "y": 16,
+      "w": 16,
+      "h": 24,
+      "trim": true,
+      "pin": "908be1fd65764e709bb47d3fb905de4e215ae1dfd8a8511313ecd2d22ff93dca"
+    },
+    "chalkboard": {
+      "file": "classroom",
+      "x": 160,
+      "y": 78,
+      "w": 28,
+      "h": 34,
+      "trim": true,
+      "note": "getting clipped",
+      "pin": "a4a738d2a6db20f13533b0f3e7b297d1f9fe8dfb8852d844d0bfdd0236cc36b7"
+    },
+    "counter_wide": {
+      "file": "kitchen",
+      "x": 192,
+      "y": 268,
+      "w": 52,
+      "h": 22,
+      "trim": true,
+      "pin": "203314b07389448fec1c2244beab128e497d8c638a5937e25e588bc0fadc7ab8"
+    },
+    "stool": {
+      "file": "kitchen",
+      "x": 1,
+      "y": 177,
+      "w": 14,
+      "h": 15,
+      "trim": true,
+      "pin": "0d63446220f41fde3adcc1cd004371aa97c1ebe29ab4ef9ce4806678e80b6a0d"
+    },
+    "doormat": {
+      "file": "kitchen",
+      "x": 105,
+      "y": 432,
+      "w": 30,
+      "h": 38,
+      "trim": true,
+      "pin": "1804869ad621e33b38c4a3e33c58a903ecf1fea69db6e91a12fef4f8791867c8"
+    },
+    "plant_small": {
+      "file": "office_singles_99",
+      "trim": true,
+      "note": "raw file is 32x48 (untrimmed exceeds contract maxSize [32,32]); real content bbox is 16x18 — same padding pattern as plant_palm (validator catch, 2026-07-29)",
+      "pin": "e5e64ae47a7f2f4b8a9362bad6edc7dd754d71b89099ea2242a98e260d035cf4"
+    },
+    "plant_pot": {
+      "file": "office_singles_100",
+      "trim": true,
+      "note": "raw file is 32x48 (untrimmed exceeds contract maxSize [32,32]); real content bbox is 12x26 — same padding pattern as plant_palm (validator catch, 2026-07-29)",
+      "pin": "82535f0ca188e10e657269a6338fe33c6f2e6c3ed03c96258bff03f14df12cd1"
+    },
+    "office_chair_right": {
+      "file": "office_singles_103",
+      "pin": "42bec9d86805a0f12061082bdf7c98b974c20c25a1d546ea7f955cf3b58486e8"
+    },
+    "office_chair_left": {
+      "file": "office_singles_104",
+      "pin": "e66d0f7fd10813e3fb56e0ea0b4b4fb050f9e1a8a88dcfb93db600bdba843cd8"
+    },
+    "whiteboard": {
+      "file": "office_singles_116",
+      "pin": "7092826c5bd95f9575c39af2827d3347c5909ae35ad6ab8c63d7dbd2027bb8e0"
+    },
+    "printer": {
+      "file": "office_singles_156",
+      "pin": "b6d0aebfeeb064d1bf0fe17eee69493d1a9dbd6e123a27c872bcb7816e962b59"
+    },
+    "workstation_single": {
+      "file": "office_singles_225",
+      "pin": "7350598f78596149c582fe4d3de8ddf9b02a5f03308a8c4fc6823b633b799e8d"
+    },
+    "workstation_double": {
+      "file": "office_singles_227",
+      "pin": "f1497c0e97be97908c9fe5667bfb4f2539112e72827b842609ee792f78166481"
+    },
+    "coffee_machine": {
+      "file": "office_singles_323",
+      "pin": "af4c6c30a9358ce1566385946b02ce094d6299b7b643fd79bfb3fad5e4fb5048"
+    },
+    "coffee_steam": {
+      "file": "anim_coffee",
+      "pin": "04a3c3231f339034840cffe2646691331ce2940696cb08d4a149f29fcc59dfd7"
+    },
+    "cake_fridge": {
+      "file": "anim_cake_fridge",
+      "pin": "42f063355b5925b1806cd309be5bb9a0aafe5d73092b3165d5dd71138cc17d85"
+    },
+    "tv_news": {
+      "file": "anim_tv",
+      "pin": "c484e59dd433c9af1116a2edd3a689f0824924348e0967d2a1b4b87f7d596e66"
+    },
+    "office_screen": {
+      "file": "anim_office_screen",
+      "pin": "1500836778e5e039643316ab5b0e0a7a4a361207b6e9fae4f5ec5332ef990415"
+    },
+    "cuckoo_clock": {
+      "file": "anim_cuckoo",
+      "pin": "8c73c1ff99cdc62fb6f58ae18a42724cef161d4860ac7e5db8b907d114bb2dd0"
+    },
+    "emote_sheet": {
+      "file": "ui_emotes",
+      "pin": "4e60866b751929db8836dc42583fed408c03673a78166cc39e76ebf1034a7c33"
+    },
+    "ui_sheet": {
+      "file": "ui",
+      "pin": "dc6b9542441a7b6628b91643ad7d8625626f7c35b7670fde31f47b480b088f68"
+    },
+    "char_body": {
+      "file": "char_body_sheet",
+      "x": 0,
+      "y": 0,
+      "w": 896,
+      "h": 656,
+      "note": "Bodies ship 927 wide (all other layers 896). Art in columns >=896 exists only at pixel rows y368-415 (32px animation rows 11-12, 0-indexed — lift/throw rows per pack guide), which the contract never uses. Crop to the 896x656 shared canvas — 56 whole 16px frames — so every char_* layer lands on one canvas (validator block 4b)",
+      "pin": "13e24528284368e89557c89dfe2f7895dadff11f81a85b02a122adbc1be89375"
+    },
+    "char_eyes": {
+      "file": "char_eyes_sheet",
+      "pin": "6faed83b118f535f5f698ea7736dba946b61e15bf7d1156b519cc48e8b4b87d9"
+    },
+    "char_hair": {
+      "file": "char_hair_sheet",
+      "pin": "c46da81fe1f78377d232b7ad3a4cbc6f9dcf8717e04ae6ace345e6b5b078a7a9"
+    },
+    "char_outfit": {
+      "file": "char_outfit_sheet",
+      "pin": "c929e3b1ddecc2e655ae6533b10eadf8370d4f18a4697f8da4455a6bdae47c85"
+    },
+    "char_accessory": {
+      "file": "char_accessory_sheet",
+      "pin": "c02e96bb95195ea1ecd461763a02f85af4a97668b0aa25dcbbbcd84e715dd438"
+    }
   },
   "emoteFrames": {
-    "work":         [44, 45],
-    "task_running": [40, 41],
-    "task_done":    [64, 65],
-    "chat_npc":     [66, 67],
-    "rest":         [56, 57],
-    "error":        [50, 51]
+    "work": [
+      44,
+      45
+    ],
+    "task_running": [
+      40,
+      41
+    ],
+    "task_done": [
+      64,
+      65
+    ],
+    "chat_npc": [
+      66,
+      67
+    ],
+    "rest": [
+      56,
+      57
+    ],
+    "error": [
+      50,
+      51
+    ]
   }
 }

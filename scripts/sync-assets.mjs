@@ -92,7 +92,7 @@ const PROPS = [
   // passing cars (day/night ambience)
   [`${EXT}/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_12.png`, 'car_right_2.png'],
   [`${EXT}/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_1.png`, 'car_down_1.png'],
-  [`${EXT}/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_12.png`, 'car_down_2.png'],
+  [`${EXT}/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_19.png`, 'car_down_2.png'],
   [`${EXT}/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_1.png`, 'bush_1.png'],
   [`${EXT}/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_4.png`, 'bush_2.png'],
   [`${FARM}/Single_Files_16x16/Crops_16x16/Crop_Cabbage_Ripe_16x16.png`, 'crop_cabbage.png'],
