@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build --workspace=packages/client",
+  "buildCommand": "npm run fixture && npm run bake:world && npm run build --workspace=packages/client",
   "outputDirectory": "packages/client/dist",
   "framework": "vite",
   "rewrites": [

@@ -14,6 +14,15 @@ at least 32 characters; the server refuses to start in production otherwise.
 the server end up on different domains, set `COOKIE_SAMESITE=none` on the server
 so the session survives the cross-site request.
 
-**Art.** The LimeZu packs are not in this repo, so a build from a clean checkout
-renders missing-texture placeholders. Add the packs before building if you want
-the real world — see the README section *About the art*.
+**Art.** A build with no licensed packs is no longer broken — it bakes the
+synthetic fixture pack and renders a complete city in flat colours. That is
+what a Vercel Git build produces, and it is deliberately art-free (I-12).
+
+To deploy the real art, run `npm run deploy:client` from a machine that has
+`assets-src/`: it bakes with the licensed pack and uploads the built output
+with `vercel deploy --prebuilt`. The packs never enter the repo or a Git build.
+
+**Docker.** `docker-compose.yml` is not a third deployment target — it is
+local parity for the pair above (and a self-host option), reusing the same
+`bake:world`/`bake:agents`/`turbo build` commands Vercel and Railway run. See
+the README section *Docker*.

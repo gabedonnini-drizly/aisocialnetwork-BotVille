@@ -1,0 +1,25 @@
+node_modules
+**/node_modules
+**/dist
+.turbo
+**/.turbo
+.git
+assets-src
+test/fixtures/pack-src
+packages/client/public/assets/tilesets/pack
+packages/client/public/assets/sprites/pack
+packages/client/public/assets/baked
+# The frozen legacy pipeline (scripts/capture-golden-baseline.mjs) still
+# writes REAL licensed pixels straight from assets-src/ to these vendor-named
+# paths (see .gitignore) — gitignored, so `git archive` never ships them, but
+# a Docker build context reads the working tree directly. Verified: without
+# this rule a stray `npm run golden:capture` residue on disk gets COPIed
+# straight into the image (I-12).
+packages/client/public/assets/tilesets/limezu
+packages/client/public/assets/sprites/limezu
+packages/client/public/assets/ui/limezu
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.*

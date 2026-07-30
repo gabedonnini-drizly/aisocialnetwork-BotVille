@@ -1,0 +1,31 @@
+# BotVille server — local parity only. Production is Railway/Nixpacks
+# (railway.toml), which builds from the repo root with turbo. This image
+# reproduces that build so `docker compose up` gives a working pair.
+#
+# SQLite stays. Replacing it is integration work and out of scope (spec §13).
+FROM node:24-alpine AS build
+WORKDIR /app
+
+COPY package.json package-lock.json turbo.json tsconfig.base.json ./
+COPY packages/shared/package.json packages/shared/
+COPY packages/server/package.json packages/server/
+COPY packages/client/package.json packages/client/
+RUN npm ci
+
+COPY packages/shared packages/shared
+COPY packages/server packages/server
+# The same filter Railway uses, so a green container is evidence about production.
+RUN npx turbo build --filter=@botville/server
+
+FROM node:24-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app/node_modules node_modules
+COPY --from=build /app/packages/shared/dist packages/shared/dist
+COPY --from=build /app/packages/shared/package.json packages/shared/
+COPY --from=build /app/packages/server/dist packages/server/dist
+COPY --from=build /app/packages/server/package.json packages/server/
+VOLUME ["/app/data"]
+EXPOSE 3001
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:3001/health || exit 1
+CMD ["node", "packages/server/dist/index.js"]

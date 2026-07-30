@@ -78,6 +78,48 @@ Client on http://localhost:5173, server on http://localhost:3001. Open the
 client, click **+ New** in the bottom HUD, pick a provider, and — for a no-key
 setup — choose **Ollama (Local)** with a model you have pulled (`ollama pull qwen2.5`).
 
+## Docker
+
+BotVille does not deploy with Docker — production is Vercel (client) +
+Railway (server), see [DEPLOY.md](DEPLOY.md). `docker-compose.yml` exists for
+**local parity** (the same bake and build Vercel/Railway run, reproducible on
+a machine with nothing but Docker) and as a **self-hosting** path.
+
+```bash
+mkdir -p roster
+echo '[{"spriteSeed":"aisha_khan","gender":"female"}]' > roster/roster.json
+
+docker compose build
+docker compose --profile bake run --rm agent-bake   # bakes agent sprites once
+docker compose up -d
+```
+
+The client is on http://localhost:8080, the server on http://localhost:3001
+(`/health`). `roster/roster.json` — a JSON array of `{ spriteSeed, gender }` —
+is the batch input the `agent-bake` profile reads; the file itself is
+git-ignored (only `roster/.gitkeep` is tracked, so the directory exists on a
+fresh clone).
+
+One compose file, not two: the licence fork is a build arg, not a fork of the
+file. `PACK` defaults to `fixture`, so `docker compose build` with no
+environment set produces images with **zero licensed pixels** (I-12) —
+`.dockerignore` excludes `assets-src/` from **every** build context
+unconditionally, so a plain `docker build` cannot pick up licensed pixels
+even by accident.
+
+That same exclusion means `BOTVILLE_PACK=limezu` alone is not enough: the
+build context has to actually contain `assets-src/` for the bake to find it.
+Self-hosters who own the LimeZu licence and want the real art baked in have
+to opt in explicitly — comment out the `assets-src` line in `.dockerignore`
+locally (never commit that change) before building:
+
+```bash
+BOTVILLE_PACK=limezu BOTVILLE_SRC_ROOT=assets-src docker compose build
+```
+
+and then treat the resulting images as private — they contain licensed
+pixels and must not be pushed to a public registry.
+
 ## About the art
 
 The pixel art is **not in this repository**. BotVille is drawn with the paid
@@ -115,11 +157,21 @@ git-ignored — do not commit them. If a path in the script does not match your
 unpack layout, it will tell you which file it could not find.
 
 Running `bake:world -- limezu assets-src` also rewrites the 18 tracked `.tmj`
-maps under `packages/client/public/assets/tilemaps/` with real-pack geometry —
-the committed maps are the art-free fixture bake by default (see the artifact
-policy finalized in Plan 6 Task 35), so run
-`git restore packages/client/public/assets/tilemaps` afterwards if you're not
-deploying.
+maps under `packages/client/public/assets/tilemaps/` with real-pack geometry.
+
+**Artifact policy: the committed `.tmj` files stay fixture geometry, always.**
+A fresh clone bakes and renders a complete city with zero licensed pixels
+(I-12) — that is what a Vercel Git build does, automatically, because
+`assets-src/` is never uploaded. Real-art geometry is a **deploy-time**
+artifact: `npm run deploy:client` bakes it on a machine that holds
+`assets-src/` and uploads the built output directly, and a Docker image built
+with `PACK=limezu` bakes it into that image — neither path writes real
+geometry back into the repo. If you baked locally with the real pack just to
+look at the result, run `git restore packages/client/public/assets/tilemaps`
+before committing anything. `test/bake/tmj-fixture-geometry-guard.test.mjs`
+enforces this structurally: it re-bakes the fixture pack into a temp dir and
+diffs it, byte for byte, against what's checked in, so an accidental
+`git add` after a real-pack bake fails the test suite loudly.
 
 ### The venue vocabulary
 

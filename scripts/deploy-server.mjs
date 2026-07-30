@@ -93,6 +93,13 @@ function excludeReason(relPath) {
     return 'paid assets';
   }
 
+  // Baked appearance sheets (Plan 6 Task 35): the server serves no art at
+  // all, so a baked-artifact directory riding along in a snapshot bound for
+  // botville-app would be dead weight at best and licensed pixels at worst.
+  // Normally absent anyway (gitignored, and `git archive` only ships tracked
+  // files) — this is belt and braces, matching the assets-src rule above.
+  if (/^packages\/[^/]+\/public\/assets\/baked(\/|$)/.test(relPath)) return 'baked appearance sheets';
+
   // Internal development machinery.
   if (relPath === '.claude' || relPath.startsWith('.claude/')) return 'internal settings';
 
@@ -108,6 +115,7 @@ const FORBIDDEN = [
   { label: 'strategy doc', test: (p) => p.startsWith('docs/') },
   { label: 'screenshot', test: (p) => /\.(png|jpe?g|gif|webm|mp4)$/i.test(p) && !p.startsWith('packages/client/public/hero/') },
   { label: 'paid LimeZu asset', test: (p) => /limezu/i.test(p) || p.startsWith('assets-src/') },
+  { label: 'baked appearance sheets', test: (p) => /^packages\/[^/]+\/public\/assets\/baked(\/|$)/.test(p) },
   { label: 'archive/zip', test: (p) => /\.zip$/i.test(p) },
   { label: 'database', test: (p) => /\.db(-shm|-wal)?$/i.test(p) },
 ];
