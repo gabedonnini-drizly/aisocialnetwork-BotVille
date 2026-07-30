@@ -38,3 +38,6 @@ packages/client/public/assets/ui/limezu/
 # The small sheets manifest beside it IS committed: its diff is how a pack
 # update announces itself.
 sources/*.index.json
+
+# Generated synthetic test pack (npm run fixture) — pixels are derived, not authored
+test/fixtures/pack-src/

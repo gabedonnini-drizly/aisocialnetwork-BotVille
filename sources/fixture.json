@@ -1,0 +1,780 @@
+{
+  "pack": "fixture",
+  "capabilities": {
+    "characterLayers": true
+  },
+  "emoteFrames": {
+    "work": [
+      40,
+      41
+    ],
+    "task_running": [
+      42,
+      43
+    ],
+    "task_done": [
+      44,
+      45
+    ],
+    "chat_npc": [
+      46,
+      47
+    ],
+    "rest": [
+      48,
+      49
+    ],
+    "error": [
+      50,
+      51
+    ]
+  },
+  "files": {
+    "t_grass": "tiles/grass.png",
+    "t_grassA": "tiles/grassA.png",
+    "t_grassB": "tiles/grassB.png",
+    "t_sideA": "tiles/sideA.png",
+    "t_sideB": "tiles/sideB.png",
+    "t_sideC": "tiles/sideC.png",
+    "t_sideD": "tiles/sideD.png",
+    "t_asphA": "tiles/asphA.png",
+    "t_asphB": "tiles/asphB.png",
+    "t_asphC": "tiles/asphC.png",
+    "t_asphD": "tiles/asphD.png",
+    "t_dashH": "tiles/dashH.png",
+    "t_dashV": "tiles/dashV.png",
+    "t_zebHa1": "tiles/zebHa1.png",
+    "t_zebHb1": "tiles/zebHb1.png",
+    "t_zebHa2": "tiles/zebHa2.png",
+    "t_zebHb2": "tiles/zebHb2.png",
+    "t_zebVa1": "tiles/zebVa1.png",
+    "t_zebVb1": "tiles/zebVb1.png",
+    "t_zebVa2": "tiles/zebVa2.png",
+    "t_zebVb2": "tiles/zebVb2.png",
+    "t_dirt": "tiles/dirt.png",
+    "t_dirtA": "tiles/dirtA.png",
+    "t_border": "tiles/border.png",
+    "t_wallOfficeA": "tiles/wallOfficeA.png",
+    "t_wallOfficeB": "tiles/wallOfficeB.png",
+    "t_wallCafeA": "tiles/wallCafeA.png",
+    "t_wallCafeB": "tiles/wallCafeB.png",
+    "t_wallDormA": "tiles/wallDormA.png",
+    "t_wallDormB": "tiles/wallDormB.png",
+    "t_wallLibA": "tiles/wallLibA.png",
+    "t_wallLibB": "tiles/wallLibB.png",
+    "t_floorOffice": "tiles/floorOffice.png",
+    "t_floorCafe": "tiles/floorCafe.png",
+    "t_floorDorm": "tiles/floorDorm.png",
+    "t_floorLib": "tiles/floorLib.png",
+    "p_office_building": "props/office_building.png",
+    "p_cafe_building": "props/cafe_building.png",
+    "p_villa_building": "props/villa_building.png",
+    "p_library_building": "props/library_building.png",
+    "p_barn": "props/barn.png",
+    "p_tree_oak_big": "props/tree_oak_big.png",
+    "p_tree_oak_med": "props/tree_oak_med.png",
+    "p_tree_birch": "props/tree_birch.png",
+    "p_street_lamp": "props/street_lamp.png",
+    "p_bench": "props/bench.png",
+    "p_trash_can": "props/trash_can.png",
+    "p_hydrant": "props/hydrant.png",
+    "p_car_right_1": "props/car_right_1.png",
+    "p_car_left_1": "props/car_left_1.png",
+    "p_car_right_2": "props/car_right_2.png",
+    "p_car_down_1": "props/car_down_1.png",
+    "p_car_down_2": "props/car_down_2.png",
+    "p_bush_1": "props/bush_1.png",
+    "p_bush_2": "props/bush_2.png",
+    "p_crop_cabbage": "props/crop_cabbage.png",
+    "p_crop_berry": "props/crop_berry.png",
+    "p_soil_left": "props/soil_left.png",
+    "p_soil_mid": "props/soil_mid.png",
+    "p_soil_right": "props/soil_right.png",
+    "p_fence_top_left": "props/fence_top_left.png",
+    "p_fence_top_middle": "props/fence_top_middle.png",
+    "p_fence_top_right": "props/fence_top_right.png",
+    "p_fence_middle_left": "props/fence_middle_left.png",
+    "p_fence_middle_right": "props/fence_middle_right.png",
+    "p_fence_bottom_left": "props/fence_bottom_left.png",
+    "p_fence_bottom_middle": "props/fence_bottom_middle.png",
+    "p_fence_bottom_right": "props/fence_bottom_right.png",
+    "p_bed_green": "props/bed_green.png",
+    "p_bed_blue": "props/bed_blue.png",
+    "p_bed_teal": "props/bed_teal.png",
+    "p_nightstand": "props/nightstand.png",
+    "p_rug_pink": "props/rug_pink.png",
+    "p_chair_blue_r": "props/chair_blue_r.png",
+    "p_chair_blue_l": "props/chair_blue_l.png",
+    "p_chair_red_r": "props/chair_red_r.png",
+    "p_chair_red_l": "props/chair_red_l.png",
+    "p_chair_yellow_r": "props/chair_yellow_r.png",
+    "p_chair_yellow_l": "props/chair_yellow_l.png",
+    "p_table_plain": "props/table_plain.png",
+    "p_armchair_grey_r": "props/armchair_grey_r.png",
+    "p_armchair_grey_l": "props/armchair_grey_l.png",
+    "p_armchair_blue_r": "props/armchair_blue_r.png",
+    "p_armchair_blue_l": "props/armchair_blue_l.png",
+    "p_lamp_red": "props/lamp_red.png",
+    "p_plant_palm": "props/plant_palm.png",
+    "p_bookshelf_a": "props/bookshelf_a.png",
+    "p_bookshelf_b": "props/bookshelf_b.png",
+    "p_bookshelf_narrow": "props/bookshelf_narrow.png",
+    "p_lectern": "props/lectern.png",
+    "p_globe": "props/globe.png",
+    "p_chalkboard": "props/chalkboard.png",
+    "p_counter_wide": "props/counter_wide.png",
+    "p_stool": "props/stool.png",
+    "p_doormat": "props/doormat.png",
+    "p_plant_small": "props/plant_small.png",
+    "p_plant_pot": "props/plant_pot.png",
+    "p_office_chair_right": "props/office_chair_right.png",
+    "p_office_chair_left": "props/office_chair_left.png",
+    "p_whiteboard": "props/whiteboard.png",
+    "p_printer": "props/printer.png",
+    "p_workstation_single": "props/workstation_single.png",
+    "p_workstation_double": "props/workstation_double.png",
+    "p_coffee_machine": "props/coffee_machine.png",
+    "a_coffee_steam": "animated/coffee_steam.png",
+    "a_cake_fridge": "animated/cake_fridge.png",
+    "a_tv_news": "animated/tv_news.png",
+    "a_office_screen": "animated/office_screen.png",
+    "a_cuckoo_clock": "animated/cuckoo_clock.png",
+    "emotes": "ui/emotes.png",
+    "ui": "ui/ui.png",
+    "c_body": "characters/body.png",
+    "c_eyes": "characters/eyes.png",
+    "c_hair": "characters/hair.png",
+    "c_outfit": "characters/outfit.png",
+    "c_accessory": "characters/accessory.png"
+  },
+  "rects": {
+    "grass": {
+      "file": "t_grass",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "grassA": {
+      "file": "t_grassA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "grassB": {
+      "file": "t_grassB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "sideA": {
+      "file": "t_sideA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "sideB": {
+      "file": "t_sideB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "sideC": {
+      "file": "t_sideC",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "sideD": {
+      "file": "t_sideD",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "asphA": {
+      "file": "t_asphA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "asphB": {
+      "file": "t_asphB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "asphC": {
+      "file": "t_asphC",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "asphD": {
+      "file": "t_asphD",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "dashH": {
+      "file": "t_dashH",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "dashV": {
+      "file": "t_dashV",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebHa1": {
+      "file": "t_zebHa1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebHb1": {
+      "file": "t_zebHb1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebHa2": {
+      "file": "t_zebHa2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebHb2": {
+      "file": "t_zebHb2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebVa1": {
+      "file": "t_zebVa1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebVb1": {
+      "file": "t_zebVb1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebVa2": {
+      "file": "t_zebVa2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "zebVb2": {
+      "file": "t_zebVb2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "dirt": {
+      "file": "t_dirt",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "dirtA": {
+      "file": "t_dirtA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "border": {
+      "file": "t_border",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallOfficeA": {
+      "file": "t_wallOfficeA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallOfficeB": {
+      "file": "t_wallOfficeB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallCafeA": {
+      "file": "t_wallCafeA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallCafeB": {
+      "file": "t_wallCafeB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallDormA": {
+      "file": "t_wallDormA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallDormB": {
+      "file": "t_wallDormB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallLibA": {
+      "file": "t_wallLibA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "wallLibB": {
+      "file": "t_wallLibB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "floorOffice": {
+      "file": "t_floorOffice",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "floorCafe": {
+      "file": "t_floorCafe",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "floorDorm": {
+      "file": "t_floorDorm",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "floorLib": {
+      "file": "t_floorLib",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16
+    },
+    "office_building": {
+      "file": "p_office_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "cafe_building": {
+      "file": "p_cafe_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "villa_building": {
+      "file": "p_villa_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "library_building": {
+      "file": "p_library_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "barn": {
+      "file": "p_barn",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "tree_oak_big": {
+      "file": "p_tree_oak_big",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "tree_oak_med": {
+      "file": "p_tree_oak_med",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "tree_birch": {
+      "file": "p_tree_birch",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "street_lamp": {
+      "file": "p_street_lamp",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bench": {
+      "file": "p_bench",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "trash_can": {
+      "file": "p_trash_can",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "hydrant": {
+      "file": "p_hydrant",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "car_right_1": {
+      "file": "p_car_right_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "car_left_1": {
+      "file": "p_car_left_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "car_right_2": {
+      "file": "p_car_right_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "car_down_1": {
+      "file": "p_car_down_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "car_down_2": {
+      "file": "p_car_down_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bush_1": {
+      "file": "p_bush_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bush_2": {
+      "file": "p_bush_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "crop_cabbage": {
+      "file": "p_crop_cabbage",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "crop_berry": {
+      "file": "p_crop_berry",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "soil_left": {
+      "file": "p_soil_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "soil_mid": {
+      "file": "p_soil_mid",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "soil_right": {
+      "file": "p_soil_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_top_left": {
+      "file": "p_fence_top_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_top_middle": {
+      "file": "p_fence_top_middle",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_top_right": {
+      "file": "p_fence_top_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_middle_left": {
+      "file": "p_fence_middle_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_middle_right": {
+      "file": "p_fence_middle_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_bottom_left": {
+      "file": "p_fence_bottom_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_bottom_middle": {
+      "file": "p_fence_bottom_middle",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "fence_bottom_right": {
+      "file": "p_fence_bottom_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bed_green": {
+      "file": "p_bed_green",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bed_blue": {
+      "file": "p_bed_blue",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bed_teal": {
+      "file": "p_bed_teal",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "nightstand": {
+      "file": "p_nightstand",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "rug_pink": {
+      "file": "p_rug_pink",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "chair_blue_r": {
+      "file": "p_chair_blue_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "chair_blue_l": {
+      "file": "p_chair_blue_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "chair_red_r": {
+      "file": "p_chair_red_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "chair_red_l": {
+      "file": "p_chair_red_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "chair_yellow_r": {
+      "file": "p_chair_yellow_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "chair_yellow_l": {
+      "file": "p_chair_yellow_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "table_plain": {
+      "file": "p_table_plain",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "armchair_grey_r": {
+      "file": "p_armchair_grey_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "armchair_grey_l": {
+      "file": "p_armchair_grey_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "armchair_blue_r": {
+      "file": "p_armchair_blue_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "armchair_blue_l": {
+      "file": "p_armchair_blue_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "lamp_red": {
+      "file": "p_lamp_red",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "plant_palm": {
+      "file": "p_plant_palm",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bookshelf_a": {
+      "file": "p_bookshelf_a",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bookshelf_b": {
+      "file": "p_bookshelf_b",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "bookshelf_narrow": {
+      "file": "p_bookshelf_narrow",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "lectern": {
+      "file": "p_lectern",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "globe": {
+      "file": "p_globe",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "chalkboard": {
+      "file": "p_chalkboard",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "counter_wide": {
+      "file": "p_counter_wide",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "stool": {
+      "file": "p_stool",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "doormat": {
+      "file": "p_doormat",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "plant_small": {
+      "file": "p_plant_small",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "plant_pot": {
+      "file": "p_plant_pot",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "office_chair_right": {
+      "file": "p_office_chair_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "office_chair_left": {
+      "file": "p_office_chair_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "whiteboard": {
+      "file": "p_whiteboard",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "printer": {
+      "file": "p_printer",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "workstation_single": {
+      "file": "p_workstation_single",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "workstation_double": {
+      "file": "p_workstation_double",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "coffee_machine": {
+      "file": "p_coffee_machine",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+    },
+    "coffee_steam": {
+      "file": "a_coffee_steam"
+    },
+    "cake_fridge": {
+      "file": "a_cake_fridge"
+    },
+    "tv_news": {
+      "file": "a_tv_news"
+    },
+    "office_screen": {
+      "file": "a_office_screen"
+    },
+    "cuckoo_clock": {
+      "file": "a_cuckoo_clock"
+    },
+    "emote_sheet": {
+      "file": "emotes"
+    },
+    "ui_sheet": {
+      "file": "ui"
+    },
+    "char_body": {
+      "file": "c_body"
+    },
+    "char_eyes": {
+      "file": "c_eyes"
+    },
+    "char_hair": {
+      "file": "c_hair"
+    },
+    "char_outfit": {
+      "file": "c_outfit"
+    },
+    "char_accessory": {
+      "file": "c_accessory"
+    }
+  }
+}
