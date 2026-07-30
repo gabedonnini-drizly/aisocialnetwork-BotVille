@@ -6,13 +6,13 @@
 
 **Goal:** Land the real pixels, prove the new pipeline reproduces the old one, and make the bake part of the deployments BotVille actually has.
 
-**Architecture:** Task 3 is the one owner-gated task in the whole build: it needs four purchased packs and produces the golden baseline plus the answers to U-1 and U-2. Task 20 is a two-tier gate — byte-exact pixels and byte-exact tile layers; object placement is asserted against the descriptors by Plan 2's tests, and collision gets a one-time human diff. Task 35 wires the world bake into `vercel.json` and `deploy:client` and adds Docker for local parity. Task 39 re-renders the hero artifacts.
+**Architecture:** Task 3 is the one owner-gated task in the whole build: it needs four purchased packs and produces the golden baseline plus the answers to U-1 and U-2. Task 20 is a two-tier gate — byte-exact pixels and byte-exact tile layers; object placement is asserted against the descriptors by Plan 2's tests, and collision gets a one-time human diff. Task 35 retires the Vercel/Railway wiring this task originally added and makes Docker Compose the deployment packaging itself — two self-hosted node apps, the same shape as the BotTown api and frontend (D-20, 2026-07-30). Task 39 re-renders the hero artifacts.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (the self-hosted deployment packaging, D-20 — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Depends on:** Plans 1–5. Task 3 additionally needs the licensed packs on disk; Tasks 20 and 39 need Task 3.
 
-**Exit criterion:** The golden gate is green with art present. A Vercel Git build produces a complete, art-free city. The Railway server build is unchanged and healthy. The hero images show the real world.
+**Exit criterion:** The golden gate is green with art present. A plain `docker compose build` (no `BOTVILLE_PACK`) produces a complete, art-free city (D-20, 2026-07-30). The server image builds and its `/health` check passes. The hero images show the real world.
 
 ---
 
@@ -34,7 +34,7 @@ Every task's requirements implicitly include this section.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
-- **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
+- **Deployment is self-hosted (D-20), like the BotTown api and frontend.** Local dev servers for development; production is the owner's own server, Docker-packaged for convenience. `vercel.json`, `railway.toml` and the `deploy:*` scripts are retired legacy. No raw sheets or `assets-src/` in any image pushed anywhere (I-12); real-art bakes happen on the host, never in a committed image. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
 - **Scope bar (owner, binding):** art-driven changes only. Do not repoint `packages/client/src/lib/api.ts`, do not delete or modify `packages/server/src/world/agentLife.ts`, do not replace SQLite, do not touch the key vault / model picker / heartbeat / MCP registry. This is not the integration work.
 
@@ -45,7 +45,7 @@ Every task's requirements implicitly include this section.
 - **Task 3** — Acquire the packs, capture the golden baseline, resolve U-1 and U-2
 - **Task 3b** — Delete the QA symlink compatibility layer (must follow Task 3)
 - **Task 20** — The golden gate
-- **Task 35** — Deployment — bake in the real pipelines, Docker for parity
+- **Task 35** — Deployment — retire Vercel/Railway, self-host via Docker (D-20, 2026-07-30)
 - **Task 38b** — The LimeZu credit link — a licence obligation, not decoration
 - **Task 39** — Hero re-render
 
@@ -600,408 +600,95 @@ git commit -m "test(bake): golden gate — exact pixels, exact tiles against the
 
 ---
 
-## Task 35: Deployment — bake in the real pipelines, Docker for parity
+## Task 35: Deployment — retire Vercel/Railway, self-host via Docker (D-20, 2026-07-30)
 
-Spec §13 asks for containerisation (G-H). Taken literally that reads as "write a Dockerfile", and an earlier draft of this plan did exactly that: two Dockerfiles, nginx, and two compose files describing a deployment BotVille does not have.
+**Supersedes this task's original brief.** As written, Task 35 wired the world bake into `vercel.json` and `deploy:client`, and added Docker as a local-parity/self-host option alongside them. The owner has since decided (D-20) that BotVille deploys the way BotTown's own api and frontend already do: **self-hosted, two Docker-packaged node apps on the owner's own server.** Vercel and Railway are not a fallback or a parity target any more — they are retired. This task's end state is the same two Dockerfiles and the one compose file this task always intended to write, just promoted from "local parity" to "the deployment," plus deleting the config they replace.
 
-**BotVille already deploys, and not with Docker.** Before writing anything, look at what is in the repo:
+### What is retired and what stays
 
-| Path | What it says |
+| Path | Status |
 |---|---|
-| `railway.toml` | The **server** builds on Railway with Nixpacks from the repo root, `npx turbo build --filter=@botville/server`, starts `node packages/server/dist/index.js`, health-checks `/health` |
-| `scripts/deploy-server.mjs` | That build runs from a **private mirror repo** (`botville-app`) populated by `git archive` of HEAD, with `docs/`, `.env` and the asset directories stripped by a safety gate |
-| `vercel.json` | The **client** is a static Vite build — `npm run build --workspace=packages/client`, output `packages/client/dist`, SPA rewrite |
-| `package.json` `deploy:client` | `sync-assets.mjs` → `vercel pull` → `vercel build --prod` → `vercel deploy --prebuilt --prod` |
+| `vercel.json` | **Deleted.** No client build target reads it. |
+| `railway.toml` | **Deleted.** No server build target reads it. |
+| `scripts/deploy-server.mjs` | **Deleted.** Its job — get a safe snapshot of the server onto a host — is now `Dockerfile.server`'s multi-stage build; there is no private-mirror-repo step to gate. |
+| `package.json` `deploy:client` / `deploy:server` | **Deleted**, along with the `vercel` devDependency the old `deploy:client` needed. |
+| `Dockerfile.client`, `Dockerfile.server`, `docker-compose.yml`, `nginx.conf`, `.dockerignore` | **Kept, retitled.** The build content this task already wrote for local parity is correct for self-hosting too — only the file-header comments ("this is NOT how BotVille deploys, production is Vercel/Railway") need to say the opposite. |
+| The fixture-pack-by-default fork (I-12) | **Unchanged.** `docker compose build` with no `BOTVILLE_PACK` set still bakes the fixture pack and produces a complete, art-free image — that guarantee did not depend on Vercel or Railway existing, it depended on `assets-src/` being absent from the build context by default. |
+| The `.tmj` artifact policy (README, "About the art") | **Unchanged.** The committed `.tmj` maps stay fixture geometry, always; `test/bake/tmj-fixture-geometry-guard.test.mjs` still enforces it structurally. Real-art geometry is still never written back into the repo, by any deploy path. |
 
-So the deliverable is not a second deployment story. It is: **make the world bake part of the deployments that already exist**, and add Docker as a local-parity and self-host option that reuses the same commands.
+### Real art on a self-hosted deployment — two paths, never a third
 
-### The licence fork falls out of the existing pipelines
+Spec §7.2's baked-artifact-on-a-volume pattern was written against "not available on Vercel." On a self-host box it is not a workaround for a limitation — it is the natural shape. Two supported ways for real pixels to reach a deployment, both requiring the operator to hold the LimeZu licence, both meaning the resulting artifacts stay private:
 
-The earlier draft invented `docker-compose.public.yml` to express "an image with art" versus "an image without art". That distinction already exists in the real setup, for free:
+1. **Bake into the image at build time.** `BOTVILLE_PACK=limezu BOTVILLE_SRC_ROOT=assets-src docker compose build`, on a machine that holds `assets-src/` and has deliberately commented out `.dockerignore`'s `assets-src` line locally (never committed). Bakes world geometry (tilesets, props, tilemaps) straight into the client image. Do not push these images to a public registry.
+2. **Bake on the host, mount the result in — no image rebuild, Docker never sees `assets-src/`.** Run `bake:agents` (or `bake:world`) directly with Node on the host, then point the client service's volume at that output directory instead of the named `botville-baked` volume. The running container serves whatever is there; a missing sheet falls back to a default (spec §8.3). This path covers per-agent appearance sheets today; world geometry has no runtime mount and still needs path 1.
 
-| Path | Has `assets-src/`? | Result |
-|---|---|---|
-| **Vercel Git build** (push to the repo) | No — it is gitignored and never uploaded | Bakes the **fixture pack**. A complete, renderable, publishable city with **zero licensed pixels** (I-12) |
-| **`npm run deploy:client`** (local, `--prebuilt`) | Yes, on the owner's machine | Bakes the **real pack** and uploads the built output to the production deployment |
-| **Railway server** | No, and does not need art | Serves no art at all |
-
-That is the whole fork, and it is better than the invented one: the *public* path is art-free **by construction**, not by remembering to use a different compose file. Nothing has to be got right at deploy time.
-
-The one thing that must be true for this to work is that a bake with no art produces a working city — which is exactly what the fixture pack (Task 8) is for. Plans 1–5 have been proving it on every commit.
-
-### Where baked appearance sheets live
-
-Spec §7.2 says baked artifacts belong on a mounted volume, not in the image, because they grow with the realized appearance space. That is right for a container. It is not available on Vercel, where the static output is immutable.
-
-So the output location is a **deploy-target choice**, expressed as `--out`, and safe on all three because `AppearanceResolver` falls back to a default sheet when a sheet is missing (spec §8.3):
-
-| Target | `--out` | Why |
-|---|---|---|
-| Vercel | `packages/client/public/assets/baked` (baked during `deploy:client`) | Static hosting; ~85 small PNGs for the current roster is nothing |
-| Docker / self-host | a mounted volume | Grows with the roster; image stays fixed-size |
-| Local dev | `packages/client/public/assets/baked` (gitignored) | Whatever is there is served |
-
-A missing sheet is never an error, so a target that has not baked yet degrades to default sprites rather than breaking.
+Both paths are host-side, deliberate, opt-in acts — never something a default `docker compose build` does, and never something that lands in a committed image (I-12).
 
 **Files:**
-- Create: `Dockerfile.client`, `Dockerfile.server`, `docker-compose.yml`, `.dockerignore`
-- Modify: `vercel.json` — bake before building
-- Modify: `package.json` — `deploy:client` bakes with the real pack
-- Modify: `scripts/deploy-server.mjs` — add the bake outputs to the safety gate
-- Modify: `README.md`, `DEPLOY.md`
-- Test: `test/deploy-config.test.mjs`
+- Delete: `vercel.json`, `railway.toml`, `scripts/deploy-server.mjs`
+- Modify: `package.json` — remove `deploy:client`, `deploy:server` and the `vercel` devDependency
+- Modify: `Dockerfile.client`, `Dockerfile.server`, `docker-compose.yml`, `nginx.conf` — reframe the header comments from "local parity, not how BotVille deploys" to "this is the self-hosted deployment (D-20), same shape as the platform's api/frontend pair"
+- Modify: `README.md` — the `## Docker` section becomes the deployment story, not a local-parity aside; the "About the art" section's deploy-time sentence names `docker compose build` / the host-bake-or-mount paths instead of a Vercel Git build / `deploy:client`. **Leave the "Artifact policy: the committed `.tmj` files stay fixture geometry" paragraph and its guard test untouched** — that invariant does not change under D-20.
+- Modify: `DEPLOY.md` — one self-host Docker story replacing the separate Railway/Vercel server and client paragraphs
+- Modify: `test/deploy-config.test.mjs` — retargeted: asserts the retired configs stay gone, and that the Docker packaging (plus its I-12 guards) is what actually ships
 
 **Interfaces:**
 - Consumes: `npm run bake:world`, `npm run bake:agents`, `npm run build`.
-- Produces: a Vercel build that bakes the fixture pack; a `deploy:client` that bakes the real one; `docker compose up` serving the client on `:8080` and the server on `:3001`.
+- Produces: `docker compose build` with no environment set producing a complete, art-free city (I-12); `docker compose up` serving the client on `:8080` and the server on `:3001` — this pair **is** the deployment, not a rehearsal of one.
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Retire the dead config (D-20, 2026-07-30)**
 
-`test/deploy-config.test.mjs`:
+```bash
+git rm vercel.json railway.toml scripts/deploy-server.mjs
+```
+
+Remove `deploy:client`, `deploy:server` and the `vercel` devDependency from root `package.json`, then refresh the lockfile.
+
+Extend `test/deploy-config.test.mjs` with a structural guard against the retired config quietly reappearing:
 
 ```js
-import { test } from 'node:test';
-import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+// ── D-20: Vercel and Railway are retired. Docker is the deployment ───────
+// (self-hosting two Node apps, same as the platform's own api/frontend
+// pair) — not just local parity. These are structural guards against
+// quietly reintroducing the retired config.
 
-const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
-const vercel = JSON.parse(readFileSync('vercel.json', 'utf8'));
-
-// ── The real deploy paths ────────────────────────────────────────────────
-
-test('the Vercel build bakes the world before building the client', () => {
-  assert.match(vercel.buildCommand, /bake:world/,
-    'a Vercel build without a bake ships a client with no maps');
-  assert.ok(vercel.buildCommand.indexOf('bake:world') < vercel.buildCommand.indexOf('build'),
-    'the bake has to run first — vite copies public/ at build time');
+test('the retired hosting configs do not come back', () => {
+  for (const f of ['vercel.json', 'railway.toml', 'scripts/deploy-server.mjs'])
+    assert.equal(existsSync(f), false, `${f} was retired by D-20 — self-hosting via Docker replaced it`);
 });
 
-test('a Vercel Git build cannot contain licensed art (I-12)', () => {
-  // assets-src/ is gitignored, so a Git-triggered build has no packs and the
-  // bake falls back to the fixture. Belt and braces: the command must not
-  // name the licensed pack.
-  assert.equal(/limezu/.test(vercel.buildCommand), false,
-    'the public build command names the licensed pack — a Git build must be art-free');
+test('package.json carries no deploy:client/deploy:server script', () => {
+  assert.equal(pkg.scripts['deploy:client'], undefined);
+  assert.equal(pkg.scripts['deploy:server'], undefined);
 });
 
-test('deploy:client bakes with the real pack before uploading prebuilt output', () => {
-  const cmd = pkg.scripts['deploy:client'];
-  // Every stage must name the real pack. A bare sync-assets.mjs would copy
-  // the FIXTURE character sheets next to real tiles, silently.
-  assert.match(cmd, /sync-assets\.mjs limezu assets-src/);
-  assert.match(cmd, /bake:world -- limezu assets-src/);
-  assert.match(cmd, /bake:agents -- --pack limezu --src assets-src/);
-  assert.match(cmd, /--prebuilt/, 'prebuilt is what makes the local bake reach production');
-  assert.equal(/\.\.\./.test(cmd), false, 'a literal "..." means a plan placeholder leaked into package.json');
-});
-
-test('the Railway server build is untouched by the art pipeline', () => {
-  const railway = readFileSync('railway.toml', 'utf8');
-  assert.match(railway, /turbo build --filter=@botville\/server/);
-  assert.equal(/bake:world/.test(railway), false,
-    'the server serves no art; baking in its build is wasted time and a licence risk');
-});
-
-test('the server deploy snapshot still strips every art directory (I-12)', () => {
-  const src = readFileSync('scripts/deploy-server.mjs', 'utf8');
-  for (const p of ['assets-src', 'baked'])
-    assert.ok(src.includes(p), `deploy-server.mjs no longer strips ${p}`);
-});
-
-// ── Docker: parity, not a second deployment ──────────────────────────────
-
-test('the container files exist', () => {
-  for (const f of ['Dockerfile.client', 'Dockerfile.server', 'docker-compose.yml', '.dockerignore'])
-    assert.ok(existsSync(f), f);
-});
-
-test('there is exactly one compose file — the pack is a build arg, not a fork', () => {
-  assert.equal(existsSync('docker-compose.public.yml'), false,
-    'a second compose file duplicates the deploy story; PACK/SRC_ROOT already express the fork');
-});
-
-test('compose declares the baked-artifact volume (spec §7.2)', () => {
-  const c = readFileSync('docker-compose.yml', 'utf8');
-  assert.match(c, /botville-baked/);
-  assert.match(c, /assets\/baked/);
-});
-
-test('the future Postgres seam is declared but inactive (R-6)', () => {
-  const c = readFileSync('docker-compose.yml', 'utf8');
-  assert.match(c, /#\s*BOTVILLE_PLATFORM_DB_URL/);
-  assert.equal(/^\s*BOTVILLE_PLATFORM_DB_URL\s*[:=]/m.test(c), false,
-    'the DB connection must stay commented out');
-});
-
-test('.dockerignore excludes the licensed art from every build context (I-12)', () => {
-  const d = readFileSync('.dockerignore', 'utf8');
-  for (const p of ['assets-src', 'node_modules', 'packages/client/public/assets/baked'])
-    assert.ok(d.includes(p), `missing ${p}`);
-});
-
-test('the images pin the same Node major as the rest of the repo', () => {
-  const engines = pkg.engines.node.replace(/[^\d]/g, '').slice(0, 2);
-  for (const f of ['Dockerfile.client', 'Dockerfile.server'])
-    assert.match(readFileSync(f, 'utf8'), new RegExp(`FROM node:${engines}`), f);
+test('vercel is not a dependency anywhere in package.json', () => {
+  const all = { ...pkg.dependencies, ...pkg.devDependencies };
+  assert.equal(Object.hasOwn(all, 'vercel'), false);
 });
 ```
 
-- [ ] **Step 2: Run to verify it fails**
+Run: `npm test -- --test-name-pattern="retired"`
+Expected: PASS. This is a regression guard, not a TDD red step — by the time this task lands, nothing in Tasks 3, 20, 38b or 39 has ever named `vercel` or `railway.toml`.
 
-Run: `npm test -- --test-name-pattern="the Vercel build bakes"`
-Expected: FAIL — `vercel.json` `buildCommand` has no bake step.
+- [ ] **Step 2: Docker Compose is the deployment packaging, not local parity (D-20, 2026-07-30)**
 
-- [ ] **Step 3: Bake in the Vercel build**
+The multi-stage builds this task already designed do not change: `Dockerfile.client` bakes (`fixture` by default, `PACK`/`SRC_ROOT` build args for the real pack) and runs `vite build`, then copies the static output into an `nginx:1.27-alpine` stage with the baked-appearance volume mount; `Dockerfile.server` builds the server with the same `turbo build --filter=@botville/server` command a bare-metal install would run, then runs it on `node:24-alpine` with a `/health` healthcheck and a `/app/data` volume for SQLite. What changes is the framing: rewrite each file's header comment away from "this is NOT how BotVille deploys — production is Vercel/Railway" to state plainly that this pair **is** the deployment (D-20), the same two-node-app shape as the platform's own api/frontend pair. Retitle `docker-compose.yml`'s header comment the same way, and update `nginx.conf`'s SPA-fallback comment, which used to say "matching vercel.json's rewrite," to describe the SPA fallback on its own terms — there is no `vercel.json` left to match.
 
-`vercel.json`:
+Retain everything else already in place: the single-compose-file rule (the licence fork is `BOTVILLE_PACK`/`BOTVILLE_SRC_ROOT`, never a second compose file), the `agent-bake` profile and its `botville-baked`/`roster` volumes, the commented-out `BOTVILLE_PLATFORM_DB_URL` future-integration seam (R-6), and `.dockerignore`'s exclusion of `assets-src/` plus the frozen legacy pipeline's vendor-named residue (`packages/client/public/assets/{tilesets,sprites,ui}/limezu`) from every build context (I-12).
 
-```json
-{
-  "buildCommand": "npm run bake:world && npm run build --workspace=packages/client",
-  "outputDirectory": "packages/client/dist",
-  "framework": "vite",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
-```
+- [ ] **Step 3: Rewrite `README.md` and `DEPLOY.md`'s deployment sections (D-20, 2026-07-30)**
 
-No pack argument: `bake:world` defaults to `fixture`, and a Git-triggered build has no `assets-src/` anyway. A push to the repo therefore produces a **complete, renderable, art-free** deployment. That is the publishable artifact I-12 asks for, and it needs no special care to keep that way.
+`README.md`'s `## Docker` section stops describing itself as an alternative to a real deployment ("BotVille does not deploy with Docker — production is Vercel + Railway") and states plainly that this **is** the deployment, and also a drop-in local-dev alternative to `npm run dev`. The roster/`agent-bake` walkthrough, the one-compose-file rule and the I-12 default-is-art-free guarantee carry over unchanged.
 
-The bake must precede the build because Vite copies `public/` during `vite build`; a bake afterwards writes files nothing will ever serve.
+In the "About the art" section, the one sentence naming the old deploy path — "that is what a Vercel Git build does... `npm run deploy:client` bakes it on a machine that holds `assets-src/`... uploads the built output" — is rewritten to name `docker compose build` (art-free by default) and the two self-host real-art paths from this task's intro (bake into the image at build time, or bake on the host and mount the result in). **The paragraph immediately after it — "Artifact policy: the committed `.tmj` files stay fixture geometry, always" — and `test/bake/tmj-fixture-geometry-guard.test.mjs` are untouched.** That policy is orthogonal to which host runs the container.
 
-- [ ] **Step 4: Bake the real pack in the owner's deploy**
+`DEPLOY.md` collapses its separate Railway ("server") and Vercel ("client") paragraphs into one self-host Docker story: both node apps build and run via `docker-compose.yml`; server env vars come from `packages/server/.env.production.example` via the compose `env_file`; the Art/Serving-the-real-art paragraphs restate the two paths from this task's intro.
 
-Root `package.json`:
+- [ ] **Step 4: Verify**
 
-```json
-    "deploy:client": "node scripts/sync-assets.mjs limezu assets-src && npm run bake:world -- limezu assets-src && npm run bake:agents -- --pack limezu --src assets-src && vercel pull --yes --environment=production && vercel build --prod && vercel deploy --prebuilt --prod",
-```
-
-This is the one full definition of the key — Plan 2 Task 19a Step 5 only added the `limezu assets-src` arguments to the `sync-assets.mjs` invocation and deferred the rest to here. Every stage names the real pack explicitly: `sync-assets.mjs` with no arguments would copy the *fixture* character sheets next to real tiles, silently.
-
-`--prebuilt` uploads locally-built output, so this is the path where real pixels reach production — deliberately, from a machine that holds the licence. It fails loudly without `assets-src/` because `sync-assets.mjs` already does.
-
-- [ ] **Step 5: Keep the server deploy art-free**
-
-`railway.toml` needs no change: the server serves no art, and adding a bake to its build would put licensed pixels in the mirror repo for nothing.
-
-Confirm `scripts/deploy-server.mjs`'s safety gate covers the new outputs. It already strips `assets-src/` and the asset directories; add `packages/client/public/assets/baked` to the same list if it is not covered by an existing prefix rule, and add a line to its forbidden-path check so a future baked artifact cannot ride along into the public-ish mirror.
-
-Run: `node scripts/deploy-server.mjs --dry-run`
-Expected: the preview lists no `assets`, `assets-src` or `baked` path.
-
-- [ ] **Step 6: Write `.dockerignore`**
-
-```
-node_modules
-**/node_modules
-**/dist
-.turbo
-**/.turbo
-.git
-assets-src
-test/fixtures/pack-src
-packages/client/public/assets/tilesets/pack
-packages/client/public/assets/sprites/pack
-packages/client/public/assets/baked
-*.db
-*.db-shm
-*.db-wal
-.env
-.env.*
-```
-
-- [ ] **Step 7: Write `Dockerfile.client`**
-
-```dockerfile
-# BotVille client — local parity and self-hosting.
-#
-# This is NOT how BotVille deploys. Production is Vercel (see vercel.json);
-# this image exists so the same bake can be reproduced on a machine that has
-# nothing but Docker, and so a self-hoster has a supported path.
-#
-# The default PACK is `fixture`: no licensed pixel enters the image unless
-# someone deliberately passes PACK=limezu with assets-src in the build
-# context. Keep it that way before pushing anywhere public (I-12).
-FROM node:24-alpine AS build
-WORKDIR /app
-
-COPY package.json package-lock.json turbo.json tsconfig.base.json ./
-COPY packages/shared/package.json packages/shared/
-COPY packages/client/package.json packages/client/
-COPY packages/server/package.json packages/server/
-RUN npm ci
-
-COPY . .
-
-ARG PACK=fixture
-ARG SRC_ROOT=test/fixtures/pack-src
-RUN if [ "$PACK" = "fixture" ]; then npm run fixture; fi \
- && node scripts/world-bake.mjs "$PACK" "$SRC_ROOT" \
- && npm run build --workspace=packages/client
-
-FROM nginx:1.27-alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/packages/client/dist /usr/share/nginx/html
-# Baked appearance sheets arrive on a volume, not in the image: they grow with
-# the realized appearance space while the image stays fixed-size (spec §7.2).
-VOLUME ["/usr/share/nginx/html/assets/baked"]
-EXPOSE 80
-```
-
-- [ ] **Step 8: Write `Dockerfile.server`**
-
-```dockerfile
-# BotVille server — local parity only. Production is Railway/Nixpacks
-# (railway.toml), which builds from the repo root with turbo. This image
-# reproduces that build so `docker compose up` gives a working pair.
-#
-# SQLite stays. Replacing it is integration work and out of scope (spec §13).
-FROM node:24-alpine AS build
-WORKDIR /app
-
-COPY package.json package-lock.json turbo.json tsconfig.base.json ./
-COPY packages/shared/package.json packages/shared/
-COPY packages/server/package.json packages/server/
-COPY packages/client/package.json packages/client/
-RUN npm ci
-
-COPY packages/shared packages/shared
-COPY packages/server packages/server
-# The same filter Railway uses, so a green container is evidence about production.
-RUN npx turbo build --filter=@botville/server
-
-FROM node:24-alpine
-WORKDIR /app
-ENV NODE_ENV=production
-COPY --from=build /app/node_modules node_modules
-COPY --from=build /app/packages/shared/dist packages/shared/dist
-COPY --from=build /app/packages/shared/package.json packages/shared/
-COPY --from=build /app/packages/server/dist packages/server/dist
-COPY --from=build /app/packages/server/package.json packages/server/
-VOLUME ["/app/data"]
-EXPOSE 3001
-HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:3001/health || exit 1
-CMD ["node", "packages/server/dist/index.js"]
-```
-
-The healthcheck hits the same `/health` endpoint `railway.toml` does — one definition of "up", not two.
-
-- [ ] **Step 9: Write `nginx.conf`**
-
-```nginx
-server {
-  listen 80;
-  root /usr/share/nginx/html;
-  index index.html;
-
-  # Pixel art must never be re-encoded or transformed in transit.
-  location /assets/ {
-    add_header Cache-Control "public, max-age=3600";
-    try_files $uri =404;
-  }
-
-  # A baked sheet that is not there yet is not an error — AppearanceResolver
-  # falls back to a default sheet (spec §8.3). Keep 404s cheap and quiet.
-  location /assets/baked/ {
-    add_header Cache-Control "public, max-age=86400, immutable";
-    access_log off;
-    try_files $uri =404;
-  }
-
-  # SPA fallback, matching vercel.json's rewrite so both hosts behave alike.
-  location / {
-    try_files $uri $uri/ /index.html;
-  }
-}
-```
-
-- [ ] **Step 10: Write `docker-compose.yml`**
-
-One file. The art fork is `PACK` / `SRC_ROOT`, the same two knobs the Dockerfile takes — a second compose file would be a second description of the same decision, and the two would drift.
-
-```yaml
-# BotVille — local parity and self-hosting.
-#
-# Production is Vercel (client) + Railway (server); see DEPLOY.md. This file
-# is for running the pair locally and for self-hosters.
-#
-# ART: PACK defaults to `fixture`, so `docker compose build` with no
-# environment produces images containing no licensed pixel (I-12). Set
-# BOTVILLE_PACK=limezu and BOTVILLE_SRC_ROOT=assets-src to build with the real
-# art — and then treat the images as private.
-
-services:
-  client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
-      args:
-        PACK: ${BOTVILLE_PACK:-fixture}
-        SRC_ROOT: ${BOTVILLE_SRC_ROOT:-test/fixtures/pack-src}
-    ports:
-      - "8080:80"
-    volumes:
-      - botville-baked:/usr/share/nginx/html/assets/baked:ro
-    depends_on:
-      - server
-
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile.server
-    ports:
-      - "3001:3001"
-    environment:
-      NODE_ENV: production
-      PORT: 3001
-    env_file:
-      # Long syntax deliberately: the file is gitignored and absent on a
-      # fresh clone, and without `required: false` `docker compose up`
-      # hard-fails before a single container starts.
-      - path: packages/server/.env
-        required: false
-    volumes:
-      - botville-data:/app/data
-
-  # Batch agent bake. Runs to completion and exits; safe to re-run, and safe
-  # to run concurrently with the event path (I-6). Writes to the SAME volume
-  # the client serves read-only.
-  agent-bake:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
-      target: build
-    profiles: ["bake"]
-    command: >
-      node scripts/agent-bake.mjs
-      --pack ${BOTVILLE_PACK:-fixture}
-      --src ${BOTVILLE_SRC_ROOT:-test/fixtures/pack-src}
-      --roster /roster/roster.json
-      --out /baked
-    volumes:
-      - botville-baked:/baked
-      - ./roster:/roster:ro
-
-  # ── FUTURE INTEGRATION SEAM (spec R-6) ────────────────────────────────
-  # BotVille's server has no Postgres client and reading the platform DB is
-  # UNBUILT and out of scope. This stanza marks where that connection will
-  # attach, so the seam is visible rather than discovered later.
-  #
-  #   BOTVILLE_PLATFORM_DB_URL: postgres://user:pass@host:5432/ai_social_network
-  #
-  # Until it exists, packages/server/src/world/agentLife.ts still owns the
-  # world and the client polls GET /api/agents/locations.
-
-volumes:
-  botville-baked:
-  botville-data:
-```
-
-- [ ] **Step 11: Verify all three paths**
-
-Docker:
+Docker, unchanged from before this rewrite — this is still the one thing that has to actually work:
 
 ```bash
 mkdir -p roster && echo '[{"spriteSeed":"aisha_khan","gender":"female"},{"spriteSeed":"the_skeptic","gender":"male"}]' > roster/roster.json
@@ -1015,64 +702,30 @@ curl -sS http://localhost:8080/assets/venues.json | head -5
 
 Expected: `200`, a healthy server, the venues array, and http://localhost:8080 rendering the city with the fixture pack.
 
-Then confirm I-12 on the image itself:
+Confirm I-12 on the image itself:
 
 ```bash
 docker run --rm --entrypoint sh botville-client -c 'ls /usr/share/nginx/html/assets/sprites/pack | head'
 ```
 
-Expected: fixture-derived props. With the default `PACK`, no licensed pixel is present.
+Expected: fixture-derived props only — no licensed pixel with the default `PACK`.
 
-Vercel, the art-free path — simulate what a Git build does. First, one-time: the Vercel CLI is not in `devDependencies`, so add it — `npm install --save-dev vercel` — and commit the `package.json`/`package-lock.json` change in Step 12; that pins the version `npx vercel` resolves here and covers the bare `vercel` calls in `deploy:client` (Step 4) instead of prompting an unpinned network install.
-
-```bash
-# Set aside tracked + untracked changes, TAGGED — the stash stack is shared
-# state, so restore your own entry by tag; never bare `git stash` / `pop`,
-# which grab whatever happens to be on top.
-git stash push -u -m "task35-vercel-sim"
-npm ci && npx vercel build
-ls .vercel/output/static/assets/tilemaps
-git stash apply "$(git rev-parse 'stash^{/task35-vercel-sim}')"
-# once the tree looks right: git stash drop the task35-vercel-sim entry
-```
-
-Note what the stash does **not** do: ignored files — `assets-src/` included — are not stashed and stay on disk, so this is not a byte-clean clone. It does not need to be: the claim under test is that the Git-build command never *reads* the licensed art, and it cannot — `buildCommand`'s bare `bake:world` defaults to the fixture pack, and a real Git build has no `assets-src/` at all.
-
-Expected: the build succeeds without touching `assets-src/`, and the tilemaps are there. **This is the check that matters most in this task** — it proves a public deploy renders a city without shipping a licensed pixel.
-
-Railway, the server path:
+Where the retired Vercel-simulation step used to prove a Git build ships generated `.tmj` tilemaps, prove the same claim about what now actually ships — the artifact the container serves:
 
 ```bash
-npm install --include=dev && npx turbo build --filter=@botville/server
-node packages/server/dist/index.js &
-curl -sS localhost:3001/health && kill %1
+docker run --rm --entrypoint sh botville-client -c 'ls /usr/share/nginx/html/assets/tilemaps'
 ```
 
-Expected: the exact `railway.toml` build command succeeds locally and the health endpoint answers.
+Expected: the `.tmj` set (district plus every interior). **This is the check that matters most in this task** — it proves the self-hosted deployment renders a complete city without shipping a licensed pixel, the same claim the retired Vercel check used to make.
 
-- [ ] **Step 12: Document and commit**
-
-Rewrite `DEPLOY.md`'s **Art** paragraph, which currently says a clean checkout "renders missing-texture placeholders". That stopped being true in Plan 1:
-
-```markdown
-**Art.** A build with no licensed packs is no longer broken — it bakes the
-synthetic fixture pack and renders a complete city in flat colours. That is
-what a Vercel Git build produces, and it is deliberately art-free (I-12).
-
-To deploy the real art, run `npm run deploy:client` from a machine that has
-`assets-src/`: it bakes with the licensed pack and uploads the built output
-with `vercel deploy --prebuilt`. The packs never enter the repo or a Git build.
-```
-
-Add a `Docker` section to `README.md` covering the single compose file, the `BOTVILLE_PACK` knob, and the `roster/roster.json` shape — framed as local parity, not as the deployment.
+- [ ] **Step 5: Document and commit**
 
 ```bash
-git add Dockerfile.client Dockerfile.server docker-compose.yml nginx.conf .dockerignore vercel.json package.json package-lock.json scripts/deploy-server.mjs README.md DEPLOY.md test/deploy-config.test.mjs roster/.gitkeep
-git commit -m "feat(deploy): bake the world in the Vercel and deploy:client pipelines; Docker for local parity"
+git add Dockerfile.client Dockerfile.server docker-compose.yml nginx.conf .dockerignore package.json package-lock.json README.md DEPLOY.md test/deploy-config.test.mjs roster/.gitkeep
+git commit -m "feat(deploy): retire Vercel/Railway, self-host via Docker Compose (D-20)"
 ```
 
 ---
-
 ## Task 38b: The LimeZu credit link — a licence obligation, not decoration
 
 The Modern Interiors and Modern UI licences **require** credit; the addendum

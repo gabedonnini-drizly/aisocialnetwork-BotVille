@@ -75,6 +75,6 @@ re-dispatch). Standing rules:
   checkout into the worktree. (Task 3b then deletes the QA symlinks inside
   the real `assets-src/` — intentional.)
 - Human-eye steps (localhost render checks, curation review, hero render)
-  and real Vercel/Railway deploys go to the owner — agents never
-  self-certify them.
+  and the real self-hosted Docker deploy (D-20, 2026-07-30 — Vercel/Railway
+  retired) go to the owner — agents never self-certify them.
 - The filesystem wins over any doc, including this one.

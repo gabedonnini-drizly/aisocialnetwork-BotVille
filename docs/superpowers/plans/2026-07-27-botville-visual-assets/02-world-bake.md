@@ -8,7 +8,7 @@
 
 **Architecture:** `AtlasBuilder` packs ordered tiles into a ground atlas (order defines GID). `PropBaker` emits one trimmed PNG per contract name and records its true size. `VenueBaker` turns a descriptor into a `.tmj`, reading object sizes from the baked bitmaps and deriving collision from furniture footprints. `districtGround.cityGrid` is the seeded outdoor generator, with its PRNG consumption order preserved exactly. `scripts/world-bake.mjs` runs all of it and publishes `venues.json`.
 
-**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (local parity only — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
+**Tech Stack:** Node ≥24 (ESM), TypeScript 5.7, Phaser ^3.88.2 declared / 3.90.0 installed, Vite 6, npm workspaces + Turbo, `node:test` (no new test dependency), the existing `scripts/png-lib.mjs` PNG codec, Postgres (`aisocialnetwork-api` only), Docker Compose (the self-hosted deployment packaging, D-20 — created by Plan 6 Task 35; no Docker artifact exists in the repo today).
 
 **Depends on:** Plan 1 — the contract, the adapter, the reader and the fixture pack.
 
@@ -34,7 +34,7 @@ Every task's requirements implicitly include this section.
 - **Library functions never write to the source tree.** `worldBake()` takes `outDir` and `generatedDir` as *required* arguments; only the CLI wrapper supplies the repo defaults. `npm test` must leave `git status --porcelain` empty — `test:all`'s trailing shell check (Task 1) is the authoritative gate, and Task 18's in-suite guard gives the early warning.
 - **No absolute path to a sibling repo, anywhere.** Cross-repo lookups go through `test/helpers/siblingRepo.mjs` (BotVille) / `tests/helpers/siblingRepo.js` (api). The two helpers implement **different** resolution chains — BotVille's: `$BOTVILLE_<NAME>_REPO` (e.g. `BOTVILLE_API_REPO`) → `$BOTVILLE_REPOS_ROOT/<name>` → sibling of the repo root; the api's: `$BOTVILLE_REPO` → `$BOTVILLE_REPOS_ROOT/<name>` → sibling. Either way the final fallback is an explicit skip with a reason. A hardcoded `/Users/home/...` is a review failure.
 - **Test expectations are derived, never transcribed.** No test may hardcode a count that the contract, a descriptor or a generator parameter already determines. Assert `bakeProps(...).size === Object.keys(contract.props.district).length`, not `=== 32`. Golden *pixels* are the one exception — those are snapshots by definition.
-- **Deployment is Vercel (client) + Railway (server), not Docker.** `vercel.json`, `railway.toml` and `scripts/deploy-server.mjs` are the production paths and must keep working. Docker is local-parity and self-host only. See Task 35.
+- **Deployment is self-hosted (D-20), like the BotTown api and frontend.** Local dev servers for development; production is the owner's own server, Docker-packaged for convenience. `vercel.json`, `railway.toml` and the `deploy:*` scripts are retired legacy. No raw sheets or `assets-src/` in any image pushed anywhere (I-12); real-art bakes happen on the host, never in a committed image. See Task 35.
 - **Invariants I-1 … I-13 (spec §11) are binding.** Each is asserted by a named test in this plan.
 - **Scope bar (owner, binding):** art-driven changes only. Do not repoint `packages/client/src/lib/api.ts`, do not delete or modify `packages/server/src/world/agentLife.ts`, do not replace SQLite, do not touch the key vault / model picker / heartbeat / MCP registry. This is not the integration work.
 
@@ -2639,12 +2639,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
 - [ ] **Step 5: Follow the two callers**
 
-`package.json`'s `deploy:client` calls `node scripts/sync-assets.mjs` with no
-arguments; it now needs the pack, matching the bake beside it. **Do not write
-the full value here** — Plan 6 Task 35 Step 4 owns the `deploy:client` key and
-defines it once, in full. The only change this task makes is that the
-`sync-assets.mjs` invocation inside it gains the arguments `limezu assets-src`;
-everything else in the value stays exactly as it stands.
+**(retired, D-20)** `package.json` no longer carries a `deploy:client` script — Vercel and Railway are retired, and BotVille self-hosts via Docker Compose (Plan 6 Task 35). The caller that needs the explicit pack arguments is now the host-side real-art bake command Task 35 documents in `README.md`/`DEPLOY.md`: `node scripts/sync-assets.mjs limezu assets-src`, run before `bake:world`. This task's only concern is unchanged — that invocation must name the pack explicitly, never call `sync-assets.mjs` bare, or it silently copies the *fixture* character sheets next to real tiles.
 
 `scripts/capture-golden-baseline.mjs` (Plan 6 Task 3) runs it as part of
 reproducing the legacy pipeline. That call is against `limezu`/`assets-src`
