@@ -5,13 +5,14 @@
  * Defaults to the fixture pack so it runs with no licensed art present.
  */
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { isAbsolute, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContract } from './lib/assetContract.mjs';
 import { loadAdapter } from './lib/sourceAdapter.mjs';
 import { validate } from './lib/contractValidator.mjs';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
+const abs = p => (isAbsolute(p) ? p : join(ROOT, p));
 const pack = process.argv[2] ?? 'fixture';
 const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');
 
@@ -27,7 +28,7 @@ const venues = existsSync(venuesDir)
       .map(id => JSON.parse(readFileSync(join(venuesDir, id, 'venue.json'), 'utf8')))
   : [];
 
-const checkPixels = existsSync(join(ROOT, srcRoot));
+const checkPixels = existsSync(abs(srcRoot));
 if (!checkPixels) console.warn(`! ${srcRoot} not present — running name resolution only`);
 
 // Pins live on the adapter's rects (the `pin` field, Task 9). Only meaningful
