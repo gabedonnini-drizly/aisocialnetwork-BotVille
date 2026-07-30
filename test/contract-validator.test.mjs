@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadContract } from '../scripts/lib/assetContract.mjs';
@@ -39,6 +39,32 @@ test('a venue prop absent from the contract is an error', () => {
   const venues = [{ id: 'v', furniture: [{ name: 'not_a_prop', at: [0, 0] }], seats: [], animated: [], doors: [], glows: [], spawns: [] }];
   const { errors } = validate(c, fixture(), { checkPixels: false, venues });
   assert.ok(errors.some(e => /not_a_prop/.test(e)), errors.join('\n'));
+});
+
+test('a typo\'d ground floor name is an error, not a silent gid[undefined]', () => {
+  const venues = [{
+    id: 'v', groundAtlas: 'interiors_ground', ground: { wallA: 'wallCafeA', wallB: 'wallCafeB', floor: 'floorCaef' },
+    furniture: [], seats: [], animated: [], doors: [], glows: [], spawns: [],
+  }];
+  const { errors } = validate(c, fixture(), { checkPixels: false, venues });
+  assert.ok(errors.some(e => /ground\.floor/.test(e) && /floorCaef/.test(e)), errors.join('\n'));
+});
+
+test('a typo\'d scatter.crops.alternate entry is an error, not a phantom object', () => {
+  const venues = [{
+    id: 'v', groundAtlas: 'district_ground', scatter: { crops: { alternate: ['crop_cabbage', 'crop_berrry'] } },
+    furniture: [], seats: [], animated: [], doors: [], glows: [], spawns: [],
+  }];
+  const { errors } = validate(c, fixture(), { checkPixels: false, venues });
+  assert.ok(errors.some(e => /scatter\.crops\.alternate/.test(e) && /crop_berrry/.test(e)), errors.join('\n'));
+});
+
+test('all real authored venues stay clean under the ground/scatter checks', () => {
+  const venues = readdirSync('venues')
+    .filter(id => !id.startsWith('_') && !id.startsWith('.'))
+    .map(id => JSON.parse(readFileSync(join('venues', id, 'venue.json'), 'utf8')));
+  const { errors } = validate(c, fixture(), { checkPixels: false, venues });
+  assert.deepEqual(errors, []);
 });
 
 test('layered char sheets must share one whole-frame canvas (4b)', () => {

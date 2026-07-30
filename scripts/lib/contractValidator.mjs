@@ -36,6 +36,29 @@ export function validate(contract, adapter, { checkPixels = true, venues = [], p
     if (v.groundAtlas && !contract.groundAtlases[v.groundAtlas]) {
       errors.push(`venue ${v.id}: unknown groundAtlas "${v.groundAtlas}"`);
     }
+    // Interior ground tiles (wallA/wallB/floor) must be real tiles of the
+    // venue's own atlas — a typo here silently bakes `gid[undefined]`.
+    const atlas = v.groundAtlas && contract.groundAtlases[v.groundAtlas];
+    if (v.ground && atlas) {
+      for (const [part, tile] of Object.entries(v.ground)) {
+        if (!atlas.tiles.includes(tile)) {
+          errors.push(`venue ${v.id}: ground.${part} "${tile}" is not a tile in groundAtlas "${v.groundAtlas}"`);
+        }
+      }
+    }
+    // Scatter picks and the implicit soil parts must resolve as contract
+    // props — a typo bakes a phantom object with no matching texture (I-2).
+    for (const name of v.scatter?.bushes?.pick ?? []) {
+      if (!knownProps.has(name)) errors.push(`venue ${v.id}: scatter.bushes.pick "${name}" is not in the contract`);
+    }
+    if (v.scatter?.crops) {
+      for (const name of v.scatter.crops.alternate ?? []) {
+        if (!knownProps.has(name)) errors.push(`venue ${v.id}: scatter.crops.alternate "${name}" is not in the contract`);
+      }
+      for (const part of ['soil_left', 'soil_mid', 'soil_right']) {
+        if (!knownProps.has(part)) errors.push(`venue ${v.id}: implicit soil part "${part}" is not in the contract`);
+      }
+    }
   }
 
   if (!checkPixels) return { errors, warnings };

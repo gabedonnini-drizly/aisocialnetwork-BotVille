@@ -99,7 +99,16 @@ node scripts/sync-assets.mjs limezu assets-src   # copy the licensed source file
 npm run bake:world -- limezu assets-src
 ```
 
-That copies only the files actually used into
-`packages/client/public/assets/{tilesets,sprites,ui}/limezu/`. Both `assets-src/`
-and those folders are git-ignored — do not commit them. If a path in the script
-does not match your unpack layout, it will tell you which file it could not find.
+`sync-assets` copies only the sheets actually used into
+`packages/client/public/assets/sprites/pack/`; `bake:world` derives its own
+tilesets and prop sprites into `packages/client/public/assets/{tilesets,sprites}/pack/`
+straight from `assets-src/`. Both `assets-src/` and those `pack/` folders are
+git-ignored — do not commit them. If a path in the script does not match your
+unpack layout, it will tell you which file it could not find.
+
+Running `bake:world -- limezu assets-src` also rewrites the 18 tracked `.tmj`
+maps under `packages/client/public/assets/tilemaps/` with real-pack geometry —
+the committed maps are the art-free fixture bake by default (see the artifact
+policy finalized in Plan 6 Task 35), so run
+`git restore packages/client/public/assets/tilemaps` afterwards if you're not
+deploying.
