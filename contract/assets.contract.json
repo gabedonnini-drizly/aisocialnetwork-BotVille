@@ -3,7 +3,11 @@
   "tileSize": 16,
   "runtimeSheets": [
     "char_body", "char_eyes", "char_hair", "char_outfit", "char_accessory",
-    "emote_sheet", "ui_sheet"
+    "emote_sheet", "ui_sheet",
+    "premade_01", "premade_02", "premade_04", "premade_06",
+    "premade_07", "premade_08", "premade_09", "premade_10",
+    "premade_14", "premade_15", "premade_18", "premade_19",
+    "animal_cow", "animal_pig", "animal_dog", "animal_chicken"
   ],
   "groundAtlases": {
     "district_ground": {

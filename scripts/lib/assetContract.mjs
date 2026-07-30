@@ -27,8 +27,11 @@ export function loadContract(path = join(ROOT, 'contract', 'assets.contract.json
       for (const atlas of Object.values(raw.groundAtlases)) names.push(...atlas.tiles);
       for (const group of Object.values(raw.props)) names.push(...Object.keys(group));
       names.push(...Object.keys(raw.animatedObjects));
-      names.push('emote_sheet', 'ui_sheet');
-      for (const part of raw.characters.parts) names.push(`char_${part}`);
+      // Every sheet the runtime loads whole (composer layers, emote/UI
+      // sheets, and — interim, Task 23 rider B — the premade character and
+      // animal avatar sheets). Generic over the contract, not enumerated
+      // here by hand, so adding a runtime sheet never means editing this file.
+      names.push(...raw.runtimeSheets);
       return names;
     },
     /** gid for a tile name in a given atlas. gid = index + 1, per the .tmj convention. */

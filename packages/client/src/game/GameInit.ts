@@ -4,10 +4,8 @@ import { GameTime } from './time.js';
 import './navigation.js'; // TZ-16: agent:goto — jump to an agent from the HUD
 import { PreloaderScene } from './scenes/PreloaderScene.js';
 import { DistrictScene } from './scenes/DistrictScene.js';
-import { OfficeScene } from './scenes/OfficeScene.js';
-import { CafeScene } from './scenes/CafeScene.js';
-import { DormScene } from './scenes/DormScene.js';
-import { LibraryScene } from './scenes/LibraryScene.js';
+import { VenueScene } from './scenes/InteriorScene.js';
+import { venueRegistry } from './venueRegistry.js';
 
 let game: Phaser.Game | null = null;
 
@@ -26,7 +24,12 @@ export function initGame(): Phaser.Game {
       mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
-    scene: [PreloaderScene, DistrictScene, OfficeScene, CafeScene, DormScene, LibraryScene],
+    // Scenes are enumerated from the venue registry — adding a venue needs no code
+    scene: [
+      PreloaderScene,
+      DistrictScene,
+      ...venueRegistry.indoor().map(v => new VenueScene(v)),
+    ],
   });
 
   // Game clock -> React (HUD): once per real second (= one game minute)

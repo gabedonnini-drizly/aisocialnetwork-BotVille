@@ -106,6 +106,18 @@ for (const part of c.characters.parts) {
   write(`characters/${part}.png`, block(`char_${part}`, 16 * 56, 32 * 8));
 }
 
+// Any other runtime sheet without bespoke geometry above — interim, Task 23
+// rider B: the premade character and animal avatar sheets. Only existence
+// (and a stable pin) matters for these in the fixture pack; a small generic
+// block is enough.
+for (const name of c.runtimeSheets) {
+  if (rects[name]) continue;
+  const alias = `rs_${name}`;
+  files[alias] = `runtime/${name}.png`;
+  rects[name] = { file: alias };
+  write(`runtime/${name}.png`, block(name, 64, 64));
+}
+
 writeFileSync(join(ROOT, 'sources', 'fixture.json'), JSON.stringify({
   pack: 'fixture',
   capabilities: { characterLayers: true },

@@ -152,7 +152,12 @@ export const INTERIOR_TILESET = 'interiors_ground';
 /** Interior camera: a 20x15 tile room. */
 export const INTERIOR_CAMERA_ZOOM = 2.4;
 
-/** Furniture image keys: name = file assets/sprites/limezu/interior/<name>.png */
+/**
+ * Furniture image keys: name = file assets/sprites/pack/interior/<name>.png
+ * @deprecated superseded by INTERIOR_PROPS in assets.generated.ts (Task 23);
+ * kept only until Task 24 deletes it (this array feeds the legacy-names
+ * golden snapshot, scripts/snapshot-legacy-names.mjs).
+ */
 export const INTERIOR_IMAGES = [
   'bed_green', 'bed_blue', 'bed_teal', 'nightstand', 'rug_pink',
   'chair_blue_r', 'chair_blue_l', 'chair_red_r', 'chair_red_l',
@@ -165,7 +170,12 @@ export const INTERIOR_IMAGES = [
   'whiteboard', 'printer', 'workstation_single', 'workstation_double', 'coffee_machine',
 ] as const;
 
-/** District image keys: name = file assets/sprites/limezu/district/<name>.png */
+/**
+ * District image keys: name = file assets/sprites/pack/district/<name>.png
+ * @deprecated superseded by DISTRICT_PROPS in assets.generated.ts (Task 23);
+ * kept only until Task 24 deletes it (this array feeds the legacy-names
+ * golden snapshot, scripts/snapshot-legacy-names.mjs).
+ */
 export const DISTRICT_IMAGES = [
   'office_building', 'cafe_building', 'villa_building', 'library_building', 'barn',
   'tree_oak_big', 'tree_oak_med', 'tree_birch',

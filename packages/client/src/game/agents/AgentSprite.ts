@@ -11,6 +11,7 @@ import {
   animKey,
   getVariant,
 } from '../assetManifest.js';
+import { EMOTE_FRAMES } from '../assets.generated.js';
 import type { AgentStatus } from '@botville/shared';
 
 /** A scene that can answer walkability questions (DistrictScene and interiors). */
@@ -272,7 +273,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   private showIcon(status: string) {
-    const pair = EMOTES.icons.byStatus[status];
+    const pair = EMOTE_FRAMES[status];
     if (!pair) { this.hideEmote(); return; }
     this.hideEmote();
     this.emote.setTexture(EMOTES.icons.textureKey, pair[0]);

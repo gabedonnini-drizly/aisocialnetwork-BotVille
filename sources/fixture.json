@@ -145,7 +145,23 @@
     "c_eyes": "characters/eyes.png",
     "c_hair": "characters/hair.png",
     "c_outfit": "characters/outfit.png",
-    "c_accessory": "characters/accessory.png"
+    "c_accessory": "characters/accessory.png",
+    "rs_premade_01": "runtime/premade_01.png",
+    "rs_premade_02": "runtime/premade_02.png",
+    "rs_premade_04": "runtime/premade_04.png",
+    "rs_premade_06": "runtime/premade_06.png",
+    "rs_premade_07": "runtime/premade_07.png",
+    "rs_premade_08": "runtime/premade_08.png",
+    "rs_premade_09": "runtime/premade_09.png",
+    "rs_premade_10": "runtime/premade_10.png",
+    "rs_premade_14": "runtime/premade_14.png",
+    "rs_premade_15": "runtime/premade_15.png",
+    "rs_premade_18": "runtime/premade_18.png",
+    "rs_premade_19": "runtime/premade_19.png",
+    "rs_animal_cow": "runtime/animal_cow.png",
+    "rs_animal_pig": "runtime/animal_pig.png",
+    "rs_animal_dog": "runtime/animal_dog.png",
+    "rs_animal_chicken": "runtime/animal_chicken.png"
   },
   "rects": {
     "grass": {
@@ -891,6 +907,70 @@
     "char_accessory": {
       "file": "c_accessory",
       "pin": "c25084fc3b2e483fb710c27f58bfa4470195f1ebcf0679be0213fbc6606d8fc1"
+    },
+    "premade_01": {
+      "file": "rs_premade_01",
+      "pin": "765a21a55d203e6522400641a60a8ad8e4ffeb590ceb8aebdb27ad419c6ae1e2"
+    },
+    "premade_02": {
+      "file": "rs_premade_02",
+      "pin": "844e7c31d2f6d65cc0c30f9f3dad97018a5f66b37a0af812f0daf98a78ffde09"
+    },
+    "premade_04": {
+      "file": "rs_premade_04",
+      "pin": "122d42d5af444da47f9c2494e355eaec4736a189c914467621355706a147bb8e"
+    },
+    "premade_06": {
+      "file": "rs_premade_06",
+      "pin": "6a7d72815c2aeebe5d1d20ed3d232f5b6bc581239d2d55c5075e334063c0fb39"
+    },
+    "premade_07": {
+      "file": "rs_premade_07",
+      "pin": "71f2b3e034fabd77f82b8492c2ecf4a04cb7b36a0711013f0556a38ae505ffb8"
+    },
+    "premade_08": {
+      "file": "rs_premade_08",
+      "pin": "a64205137d150806ea102cefef5e9e297bd57926f309b7d37e91af83bcb7e0f5"
+    },
+    "premade_09": {
+      "file": "rs_premade_09",
+      "pin": "0fde20e2ca5b75b0365840dd7ced040b6cb50e5130c7b7717af149109be5e057"
+    },
+    "premade_10": {
+      "file": "rs_premade_10",
+      "pin": "3ad98ade1cbc5f21800752bf1ad9dbc6b73737c08a7204f4184434bf949e98a5"
+    },
+    "premade_14": {
+      "file": "rs_premade_14",
+      "pin": "d7ef9350c2dbd1fe76d3513a8cd64ac8e0596de36154915988c56765c46da0b3"
+    },
+    "premade_15": {
+      "file": "rs_premade_15",
+      "pin": "cf7cba8633e38749a711cfcff56f0a5d0564e6d58599a350c18ea5fabad55c37"
+    },
+    "premade_18": {
+      "file": "rs_premade_18",
+      "pin": "d9b92860a601aa36c1b704f939128e083b7faf8e484df6a9051ce9e39d38378c"
+    },
+    "premade_19": {
+      "file": "rs_premade_19",
+      "pin": "80a87dae2a0ea41feb636378398a647c477dfaccb0fb0ef989da2cedf2e197b5"
+    },
+    "animal_cow": {
+      "file": "rs_animal_cow",
+      "pin": "65b3683d010d7a4c243061f265149aa3faa6a9f90bea1fa992a0f91cfbef0970"
+    },
+    "animal_pig": {
+      "file": "rs_animal_pig",
+      "pin": "0ee32ea18749d7c17f5ec44b1d29bc824318c9a84b3318210d4932bc8212c9a9"
+    },
+    "animal_dog": {
+      "file": "rs_animal_dog",
+      "pin": "2ba917d2b66143b39af6fc7d60bdadf3020c4d4ed740c633c0feedf766e399f8"
+    },
+    "animal_chicken": {
+      "file": "rs_animal_chicken",
+      "pin": "6d2a1b09629c477aa984814ee2dcfff9d2c7bc3f00ad13bdd9bc101b4a919b2d"
     }
   }
 }

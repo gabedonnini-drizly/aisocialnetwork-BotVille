@@ -64,7 +64,23 @@
     "char_eyes_sheet": "interiors/2_Characters/Character_Generator/Eyes/16x16/Eyes_01.png",
     "char_hair_sheet": "interiors/2_Characters/Character_Generator/Hairstyles/16x16/Hairstyle_01_01.png",
     "char_outfit_sheet": "interiors/2_Characters/Character_Generator/Outfits/16x16/Outfit_01_01.png",
-    "char_accessory_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_01_Ladybug_01.png"
+    "char_accessory_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_01_Ladybug_01.png",
+    "premade_char_01": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_01.png",
+    "premade_char_02": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_02.png",
+    "premade_char_04": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_04.png",
+    "premade_char_06": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_06.png",
+    "premade_char_07": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_07.png",
+    "premade_char_08": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_08.png",
+    "premade_char_09": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_09.png",
+    "premade_char_10": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_10.png",
+    "premade_char_14": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_14.png",
+    "premade_char_15": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_15.png",
+    "premade_char_18": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_18.png",
+    "premade_char_19": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_19.png",
+    "animal_cow_sheet": "farm/16x16/Animals_16x16/Cows/Cow_16x16.png",
+    "animal_pig_sheet": "farm/16x16/Animals_16x16/Pigs/Pig_Pink_16x16.png",
+    "animal_dog_sheet": "farm/16x16/Animals_16x16/Dogs/Dog_Labrador_Brown_16x16.png",
+    "animal_chicken_sheet": "farm/16x16/Animals_16x16/Chickens_and_Roosters/Chicken_White_16x16.png"
   },
   "rects": {
     "grass": {
@@ -847,6 +863,86 @@
     "char_accessory": {
       "file": "char_accessory_sheet",
       "pin": "c02e96bb95195ea1ecd461763a02f85af4a97668b0aa25dcbbbcd84e715dd438"
+    },
+    "premade_01": {
+      "file": "premade_char_01",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "f328627665a281556da7cbd2ee82d594325c5c59ef6b61f63cf42147af93547f"
+    },
+    "premade_02": {
+      "file": "premade_char_02",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "d9acec1f5bd8c9eef9bd89424bc044461adb5fa4691c0cbe211e1313b2fe3636"
+    },
+    "premade_04": {
+      "file": "premade_char_04",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "708722d1c9c31ce7e6208b0f29ccc10363200cafb4f244475b894549b2de442f"
+    },
+    "premade_06": {
+      "file": "premade_char_06",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "8d143d6a0ac8bb81bb4a6d99a377935ff843d460f1894cb2927d53b44e183852"
+    },
+    "premade_07": {
+      "file": "premade_char_07",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "fd41e463b493f896e3d5543a0288bd0428678d8f14de45f79bdd155a2b6c284d"
+    },
+    "premade_08": {
+      "file": "premade_char_08",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "a502a17e35a91a26578de3a8526093f10fd41a656293f56a738fe23acb2c5283"
+    },
+    "premade_09": {
+      "file": "premade_char_09",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "00abb7b02dac90f4b8a6d8502aa4131b08b40eb310eb758211734c5fd218aee8"
+    },
+    "premade_10": {
+      "file": "premade_char_10",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "47c5a32b6c30a5198c374be02752175a73c8a8a97e9b4a32670f35fb64bd6b4d"
+    },
+    "premade_14": {
+      "file": "premade_char_14",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "c161af5b4bfc827e1d35b9a7027622ef8c01926ca00eae109a6ea747bbdfaaf1"
+    },
+    "premade_15": {
+      "file": "premade_char_15",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "37c3b60df7560e4196147f3d9eb9fdd98026d0e542394f77b9eebb7ed79bc9c7"
+    },
+    "premade_18": {
+      "file": "premade_char_18",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "1c0c40714f63f1c534889e41342d0cb013a96b8a28861f6a592f50cd1125ecb2"
+    },
+    "premade_19": {
+      "file": "premade_char_19",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "14c41710525068dd07a7b6646523ede3df9a1042ae5ce6bc13ec9368238fa701"
+    },
+    "animal_cow": {
+      "file": "animal_cow_sheet",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "dce33b074b63ee8a5822c8a0eca436602ddbdb0c48e038c2f069d678ab06a94f"
+    },
+    "animal_pig": {
+      "file": "animal_pig_sheet",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "86a752caf33e5205dea123c8862b4f45df14256e1f9357262fe2f8878d4dc2ba"
+    },
+    "animal_dog": {
+      "file": "animal_dog_sheet",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "55aae106aeb4aaed974d8c58b3b9c56202b4f30016750aad7f589b2e68048726"
+    },
+    "animal_chicken": {
+      "file": "animal_chicken_sheet",
+      "note": "interim delivery until Plan 4's composer retires premade variants",
+      "pin": "fea3d0bc019de48bcf2486d1111a7253240c23b2aa73b8ed4a87a6140390da85"
     }
   },
   "emoteFrames": {
