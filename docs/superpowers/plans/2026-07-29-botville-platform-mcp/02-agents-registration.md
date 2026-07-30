@@ -281,7 +281,7 @@ def test_l1_schema_residue_is_still_21():
   `.venv/bin/python -m pytest tests/heartbeat/unit/test_tool_exclusion.py tests/heartbeat/unit/test_invariants.py -q`
   Expect: `test_botville_tools_are_excluded_from_l1` fails with `AssertionError: BotVille tool 'get-city-map' must not reach L1`; `test_l1_schema_residue_is_still_21` fails (residue contains the six); `test_botville_pending_set_is_exactly_the_three_acts` fails with `ImportError: cannot import name 'BOTVILLE_PENDING_L1_TOOLS'`.
 
-- [ ] **Implement: `EXCLUDED_TOOLS`.** In `heartbeat/infra/adapters/crew/unified_runner.py`, the list currently ends (lines 245–249):
+- [ ] **Implement: `EXCLUDED_TOOLS`.** In `heartbeat/infra/adapters/crew/unified_runner.py`, the list currently ends (lines 246–250; re-anchored 2026-07-30):
 
 ```python
     # Q-23: born L2, never L1 — the composed request must stay byte-identical
@@ -332,7 +332,7 @@ BOTVILLE_PENDING_L1_TOOLS: frozenset[str] = frozenset({
 })
 ```
 
-- [ ] **Implement: researcher coverage for the three reads.** In `configs/subagents/researcher.yaml`, the `tools:` list currently ends:
+- [ ] **Implement: researcher coverage for the three reads.** In `configs/subagents/researcher.yaml`, the `tools:` list currently ends as below (the file's final line, `timeout_seconds: 120`, follows `max_iter: 8` and stays untouched):
 
 ```yaml
   - get-my-recent-content
@@ -412,10 +412,10 @@ def test_excluded_tools_block_states_the_code_derived_split():
 ```
 
   2. Regenerate the block: `.venv/bin/python -m scripts.docs.gen_blocks --write docs/layers/04-directives-and-run.md`, then `.venv/bin/python -m scripts.docs.gen_blocks --check` — expect exit 0.
-  3. `docs/facts.yaml`: append a new derived fact (verify `M-042` is the next free id — last is `M-041` as of this plan; bump if taken) and retract `M-037`, mirroring the M-015→M-037 precedent:
+  3. `docs/facts.yaml`: append a new derived fact (verify `M-048` is the next free id — last is `M-047` as of 2026-07-30; bump if taken) and retract `M-037`, mirroring the M-015→M-037 precedent:
 
 ```yaml
-  - id: M-042
+  - id: M-048
     state: derived
     statement: "EXCLUDED_TOOLS has 28 entries, splitting 7 L3 (infrastructure-
                 only) / 21 L2 (subagent-accessible). The 21 L2 include the six
@@ -431,8 +431,8 @@ def test_excluded_tools_block_states_the_code_derived_split():
     superseded_by: null
 ```
 
-  On `M-037` itself: set `state: retracted`, set `superseded_by: docs/layers/04-directives-and-run.md`, and append to its comment: `# RETRACTED 2026-07-29: correct when derived, stale after the BotVille registration added six entries (Q-23 default disposition). See M-042.`
-  4. `docs/layers/04-directives-and-run.md` hand prose: change the bracket citation `[M-037] is the registered, code-anchored answer` to `[M-042] is the registered, code-anchored answer` (G2 fails on live docs citing retracted claims); add `M-042` to the frontmatter `claims:` list (keep `M-037` — frontmatter-only mentions of retracted claims are allowed); in the "L2 — subagent-accessible" bullet, append one sentence: `The six BotVille tools (Q-23 default disposition, 2026-07-29) are born excluded pending the owner's L1-promotion decision: the three reads are researcher-delegable; the three acts are parked in BOTVILLE_PENDING_L1_TOOLS with no delegation path.`
+  On `M-037` itself: set `state: retracted`, set `superseded_by: docs/layers/04-directives-and-run.md`, and append to its comment: `# RETRACTED: correct when derived, stale after the BotVille registration added six entries (Q-23 default disposition). See M-048.`
+  4. `docs/layers/04-directives-and-run.md` hand prose: change the bracket citation `[M-037] is the registered, code-anchored answer` to `[M-048] is the registered, code-anchored answer` (G2 fails on live docs citing retracted claims); add `M-048` to the frontmatter `claims:` list (keep `M-037` — frontmatter-only mentions of retracted claims are allowed); in the "L2 — subagent-accessible" bullet, append one sentence: `The six BotVille tools (Q-23 default disposition, 2026-07-29) are born excluded pending the owner's L1-promotion decision: the three reads are researcher-delegable; the three acts are parked in BOTVILLE_PENDING_L1_TOOLS with no delegation path.`
   5. `docs/operations.md` line ~585: update the stale figures — `22 tools are excluded` → `28 tools are excluded`, `**7 L3 + 15 L2**` → `**7 L3 + 21 L2**`, and after the `get-my-recent-content` sentence append: `The six BotVille tools (Q-23 default disposition, 2026-07-29) are likewise born excluded pending the owner's L1-promotion decision.`
 
 - [ ] **Run the docs gate and the full unit suite.**
@@ -455,7 +455,7 @@ def test_excluded_tools_block_states_the_code_derived_split():
 
 ### Steps
 
-- [ ] **Write the failing tests.** Append to `tests/heartbeat/unit/test_prompt_builder.py` (it already imports `build_l1_tool_catalog` and `_categorize_tool` at module top):
+- [ ] **Write the failing tests.** Append to `tests/heartbeat/unit/test_prompt_builder.py` (it already imports `build_l1_tool_catalog` and `_categorize_tool` in its "Tool Catalog Tests" section, line ~180 — appending after that import is fine):
 
 ```python
 class TestBotvilleCategorizationRules:
@@ -655,7 +655,7 @@ class TestBotvilleExtraction:
   `.venv/bin/python -m pytest tests/heartbeat/unit/test_exposure_log.py::TestBotvilleExtraction -q`
   Expect: the three happy-path tests fail with `AssertionError: assert [] == ['The Rusty Kettle', 'library']` etc. (no extractor registered → `extract_and_record` is a no-op); the fail-open and witness tests pass vacuously.
 
-- [ ] **Implement.** In `heartbeat/infra/adapters/crew/exposure_log.py`, insert after `_extract_story_comments` (line ~338) and before the `_EXTRACTORS` dict:
+- [ ] **Implement.** In `heartbeat/infra/adapters/crew/exposure_log.py`, insert after `_extract_story_comments` (line 313) and before the `_EXTRACTORS` dict (line 341):
 
 ```python
 # BotVille reads (world-addendum spec Part II.3): NO ack refs ever. The
@@ -749,7 +749,7 @@ _EXTRACTORS: Dict[str, Callable[[dict, str], None]] = {
 2. `tests/heartbeat/unit/test_invariants.py` — remove the exemption and the pin test added in Task 2.
 3. `tests/heartbeat/unit/test_tool_exclusion.py` — invert `test_botville_tools_are_excluded_from_l1` (six now L1) and rewrite `test_l1_schema_residue_is_still_21` → residue becomes 26 MCP tools + `delegate-tasks` = **27 schemas**.
 4. `configs/subagents/researcher.yaml` — owner choice: keep the three reads (L1 + delegable, like nothing else in the repo) or remove them (pure L1). Removing preserves the "L1 tools are not also delegable" symmetry.
-5. Docs cascade (same shape as Task 2's): regenerate the `excluded-tools` block (back to 22 entries, 7 L3 / 15 L2), update `tests/docs/test_gen_blocks.py` pins, register a new fact superseding M-042 and update M-006 (the "21 schemas" fact — now false), update `docs/layers/04-directives-and-run.md` prose and `docs/operations.md`.
+5. Docs cascade (same shape as Task 2's): regenerate the `excluded-tools` block (back to 22 entries, 7 L3 / 15 L2), update `tests/docs/test_gen_blocks.py` pins, register a new fact superseding M-048 and update M-006 (the "21 schemas" fact — now false), update `docs/layers/04-directives-and-run.md` prose and `docs/operations.md`.
 6. Catalog delivery becomes live automatically: Task 3's metadata renders the six under `BotVille (your home town):` with Observe/Act sub-categories — no further code.
 
 **What it costs (the reason this is gated):**

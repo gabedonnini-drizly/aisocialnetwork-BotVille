@@ -7,11 +7,19 @@
 Implement Part II of the BotVille world addendum
 (`aisocialnetwork-BotVille/docs/superpowers/specs/2026-07-29-botville-world-addendum-design.md`)
 inside `/Users/home/aisocialnetwork-api`: the isolated `botville` world module
-(zod schemas, four namespaced tables, venue registry, effort/overrides/goals/notes
+(zod schemas, four namespaced tables, a venue-vocabulary adapter over the
+shipped `config/venues.json` (owner decision D-21), effort/overrides/goals/notes
 services, computed presence), the public `LocationsSnapshot` HTTP seam, and a
 third MCP server at `POST /botville/mcp` exposing the six tools `get-city-map`,
 `get-venue`, `get-city-goals`, `go-to-venue`, `contribute-to-city-goal`,
 `leave-note` — with the module boundary enforced by CI grep tests.
+
+**Owner decisions (2026-07-30, `DECISIONS.md` in this plan directory):** D-21
+(consume the shipped venue vocabulary — zero module code changes to add a
+venue; no hardcoded venue lists or counts in module code or tests), D-22
+(earliest-start-wins stays; Task 5 characterizes rather than edits), D-24
+(`GET /api/public/botville/locations` is canonical; spec II.2 amended). This
+plan was amended 2026-07-30 against the merged visual-assets set.
 
 **Architecture**
 
@@ -44,8 +52,8 @@ BotVille client consumes only the schema'd `LocationsSnapshot` contract over
   3. Dependencies point one way — `botville` depends on core; nothing in core imports from `services/botville` except the declared mount points.
   4. Contracts, not shared code, couple the repos — the `LocationsSnapshot` zod here mirrors the TS interface in `@botville/shared`; no shared runtime package.
   5. Extraction is a move, not a rewrite — nothing in this plan may create a dependency that would survive extraction as anything but an API call.
-- **Migration numbering:** this plan's migration is **`038_add_botville_world.js`**. `037` is reserved by the visual-assets track's `add_schedule_venue` migration (the one that adds `users_schedules.venue`); do not take it.
-- **Task 5 is HARD-DEPENDENT** on that `037_add_schedule_venue` migration having been run: the modified `Schedule.getCurrentSlot` selects `users_schedules.venue`. Do not deploy Task 5 onward to an environment where 037 has not run.
+- **Migration numbering:** this plan's migration is **`038_add_botville_world.js`** — the next free number. `037_add_schedule_venue.js` (the migration adding `users_schedules.venue`) is **already merged** with the visual-assets set (verified in-tree 2026-07-30); do not take 037.
+- **Deploy gate for Task 5 onward:** `Schedule.getCurrentSlot` already selects `users_schedules.venue` (merged). Run pending migrations (incl. 037) in the target environment before deploying — the SELECT fails against an unmigrated database. Tests are unaffected (the suite mocks `pool.query`).
 - **No placeholder text anywhere** — no TBD, no stub bodies, no lorem strings, no "similar to" cross-references in code.
 - Out of scope for this plan (spec II.6): the one-line `additional_sources` YAML entry in `aisocialnetwork-agents`, all BotVille-repo client work, grants/unlocks (spec Part III #5 — until they land, all public venues are reachable), and candidate/provider affordance-seam integration (spec II.5 delivery caveat).
 
@@ -121,17 +129,25 @@ test('LocationsSnapshotSchema accepts the contract fixture and rejects a missing
   assert.equal(LocationsSnapshotSchema.safeParse(missingSpriteSeed).success, false);
 });
 
-test('VenueSchema is the spec I.1 affordance descriptor (hours are split-at-midnight entries)', () => {
+test('VenueSchema is the shipped 8-field descriptor (spec I.1 + D-21; hours are split-at-midnight entries)', () => {
+  // The shape mirrors config/venues.json as governed by BotVille's
+  // schemas/venues.schema.json: id,label,indoor,capacity,archetype,roles,
+  // affords,hours. The literal here is a synthetic fixture, not a registry
+  // expectation (D-21: no test pins the registry's contents).
   const venue = {
     id: 'cafe',
+    label: 'Café',
+    indoor: true,
+    capacity: 9,
     archetype: 'cafe',
     roles: ['hangout', 'work'],
     affords: ['eat', 'socialize', 'read'],
-    hours: [{ open: 7, close: 22 }],
+    hours: [{ open: 7, close: 24 }, { open: 0, close: 2 }],
   };
   assert.equal(VenueSchema.safeParse(venue).success, true);
   assert.equal(VenueSchema.safeParse({ ...venue, hours: [{ open: 7, close: 25 }] }).success, false);
   assert.equal(VenueSchema.safeParse({ ...venue, affords: undefined }).success, false);
+  assert.equal(VenueSchema.safeParse({ ...venue, label: undefined }).success, false);
 });
 
 test('LeaveNoteInputSchema caps body at 1..NOTE_BODY_MAX_CHARS', () => {
@@ -199,8 +215,15 @@ const VenueHoursEntrySchema = z.object({
   close: z.number().int().min(0).max(24),
 });
 
+// The shipped 8-field descriptor (D-21): mirrors config/venues.json as
+// governed by BotVille's schemas/venues.schema.json. This zod schema WRAPS
+// the structural check in src/utils/venueVocabulary.js at the module
+// boundary — it never re-declares venue data.
 const VenueSchema = z.object({
   id: z.string().min(1).max(64),
+  label: z.string().min(1).describe('Human-readable venue name, rendered in the city'),
+  indoor: z.boolean(),
+  capacity: z.number().int().positive(),
   archetype: z.string().min(1),
   roles: z.array(z.string()).describe('What the venue is to an agent\'s life: home, work, hangout'),
   affords: z.array(z.string()).describe('Activities the venue supports'),
@@ -615,7 +638,7 @@ test('down() drops all four tables, dependents first', async () => {
  * as rows written by the module at runtime.
  *
  * venue_id is VARCHAR(64), not a foreign key: venues are registry entries
- * in src/config/botville-venues.json (spec I.1), not rows.
+ * in the shipped config/venues.json vocabulary (spec I.1, D-21), not rows.
  */
 
 async function up(pool) {
@@ -738,104 +761,113 @@ git commit -m "feat(botville): migration 038 — four namespaced world tables (s
 
 ---
 
-## Task 3: Venue registry — committed `venues.json` + registry service
+## Task 3: Venue registry adapter — the module's schema'd view over the shipped vocabulary (D-21)
 
 **Files:**
-- Create: `src/config/botville-venues.json`
 - Create: `src/services/botville/venueRegistryService.js`
 - Test (create): `tests/botville/venueRegistryService.test.js`
 
 **Interfaces:**
-- Consumes: `VenueSchema` from `src/services/botville/schemas.js` (Task 1).
+- Consumes: `VenueSchema` from `src/services/botville/schemas.js` (Task 1); `loadVocabulary` from `src/utils/venueVocabulary.js` (the SHIPPED loader over `config/venues.json` — botville → core is the allowed dependency direction, boundary rule 3).
 - Produces (`src/services/botville/venueRegistryService.js`):
-  - `loadVenues(): Venue[]` — reads + validates + caches the registry file; throws on any invalid entry.
+  - `loadVenues(): Venue[]` — loads the shipped vocabulary through `loadVocabulary()`, validates every entry against the canonical zod `VenueSchema`, caches; throws on any invalid entry.
   - `getVenue(venueId: string): Venue | null`
-  - `deriveVenuesAffording(activity: string, venues: Venue[]): Venue[]` — pure; falls back to venues affording `'idle'` when nothing matches (spec I.1 / F-7).
   - `deriveVenueOpenNow(venue: Venue, hour: number): boolean` — pure; `close` exclusive; wrap-around via split entries.
-  - `deriveVenueForRole(spriteSeed: string, role: string, venues: Venue[]): string | null` — pure, seeded deterministic pick among venues carrying `role`; used by `get-city-map` (Task 7) for the caller's home/workplace (spec I.2 derived assignments, `storedColumn: null` day one).
-  - `VENUES_FILE_PATH: string`
 
-`src/config/botville-venues.json` is a **committed copy of BotVille's published
-`venues.json`** (v1 content below). Keeping the two files byte-identical is
-asserted from the BotVille repo's side (its bake/CI validates and diffs against
-`schemas/venues.schema.json` and this copy); the api's obligation — validate on
-load against the module's zod `VenueSchema` — is implemented here.
+**The vocabulary is SHIPPED, not created here (D-21).** `config/venues.json`
+(18 venues × 8 fields at time of writing — but never pin either number) is
+already committed, loaded and structurally checked by
+`src/utils/venueVocabulary.js`, and pinned byte-for-byte against BotVille's
+published artifact by `tests/venueVocabularySync.test.js`. This task adds only
+the module-boundary layer: zod validation **wrapping** that loader — no second
+data file, no second loader, no re-declared venue.
+
+**Assignment derivations are NOT built here (D-21).** The schedule writer's own
+derivations in `src/utils/scheduleCoverage.js` — `deriveHomeVenue` (roster in
+creation order + residence capacities), `deriveWorkplaceVenue` /
+`deriveHangoutVenue` (seeded via `agentSeed.pickFrom`, the FNV-1a cross-repo
+contract), `deriveVenuesAffording` — are the single assignment authority, so
+`get-city-map` (Task 7) consumes them directly and can never disagree with a
+stored routine. Re-implementing any of them in the module is a defect.
+
+**Extensibility invariant (D-21, binding on every later task):** adding a venue
+to `venues.json` (+ BotVille sync) must flow through this module with **zero
+module code changes**. No venue id, role, hour or count may be hardcoded as an
+expected value in module code or tests — tests derive expectations from the
+registry itself. (A synthetic venue literal used to exercise pure hour
+arithmetic is fine; naming a shipped venue as an expected result is not.)
 
 ### Steps
 
-- [ ] **Step 1 — write the failing test.** Create `tests/botville/venueRegistryService.test.js`:
+- [ ] **Step 1 — write the failing test.** Create `tests/botville/venueRegistryService.test.js` (D-21: every expectation about shipped venues is DERIVED from the vocabulary — no id or count appears as a literal):
 
 ```js
 'use strict';
 
-// Venue registry (spec I.1): affordance-tagged venue descriptors, validated
-// at load. All derivations are pure — no I/O, no clock reads.
+// Venue registry adapter (spec I.1, D-21): the module's zod-validated view
+// over the SHIPPED vocabulary (config/venues.json via
+// src/utils/venueVocabulary.js). Extensibility invariant: adding a venue to
+// venues.json changes NOTHING here — no test names a shipped venue id or
+// pins a count; expectations derive from the registry itself.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
+const { venueIds } = require('../../src/utils/venueVocabulary');
 const {
   loadVenues,
   getVenue,
-  deriveVenuesAffording,
   deriveVenueOpenNow,
-  deriveVenueForRole,
 } = require('../../src/services/botville/venueRegistryService');
 
-test('loadVenues returns the six v1 venues, validated, and caches', () => {
+test('loadVenues serves exactly the shipped vocabulary, validated, and caches', () => {
   const venues = loadVenues();
   assert.deepEqual(
     venues.map((venue) => venue.id).sort(),
-    ['cafe', 'district', 'dorm', 'farm', 'library', 'office']
+    [...venueIds()].sort(),
+    'no additions, no omissions — the shipped vocabulary is the registry'
   );
   assert.equal(loadVenues(), venues, 'second load must return the cached array');
 });
 
-test('getVenue finds by id and returns null for an unknown id', () => {
-  assert.equal(getVenue('cafe').archetype, 'cafe');
-  assert.equal(getVenue('atlantis'), null);
+test('every shipped venue survives zod validation with the full 8-field descriptor', () => {
+  for (const venue of loadVenues()) {
+    for (const field of ['id', 'label', 'indoor', 'capacity', 'archetype', 'roles', 'affords', 'hours']) {
+      assert.ok(field in venue, `venue "${venue.id}" must carry "${field}" after validation`);
+    }
+  }
 });
 
-test('deriveVenuesAffording matches by affordance and falls back to idle venues (F-7)', () => {
-  const venues = loadVenues();
-  const readingVenues = deriveVenuesAffording('read', venues).map((venue) => venue.id).sort();
-  assert.deepEqual(readingVenues, ['cafe', 'library']);
-
-  // An unmapped activity falls back to venues affording 'idle' — the
-  // district always does, so no activity can ever be unplaceable.
-  const fallback = deriveVenuesAffording('spelunking', venues).map((venue) => venue.id);
-  assert.ok(fallback.includes('district'));
-  assert.ok(fallback.length > 0);
+test('getVenue finds by id and returns null for an unknown id', () => {
+  const [firstVenue] = loadVenues();
+  assert.equal(getVenue(firstVenue.id).id, firstVenue.id);
+  assert.equal(getVenue('no-such-venue'), null);
 });
 
 test('deriveVenueOpenNow: close is exclusive; wrap-around uses split-at-midnight entries', () => {
-  const cafe = getVenue('cafe'); // hours [{ open: 7, close: 22 }]
-  assert.equal(deriveVenueOpenNow(cafe, 7), true);
-  assert.equal(deriveVenueOpenNow(cafe, 21), true);
-  assert.equal(deriveVenueOpenNow(cafe, 22), false);
-  assert.equal(deriveVenueOpenNow(cafe, 3), false);
+  // Synthetic literals, not registry entries: the rule under test is the
+  // hour arithmetic, which must not depend on what happens to be shipped.
+  const dayVenue = { hours: [{ open: 7, close: 22 }] };
+  assert.equal(deriveVenueOpenNow(dayVenue, 7), true);
+  assert.equal(deriveVenueOpenNow(dayVenue, 21), true);
+  assert.equal(deriveVenueOpenNow(dayVenue, 22), false);
+  assert.equal(deriveVenueOpenNow(dayVenue, 3), false);
 
-  const nightVenue = {
-    id: 'night-market',
-    archetype: 'market',
-    roles: ['hangout'],
-    affords: ['socialize'],
-    hours: [{ open: 22, close: 24 }, { open: 0, close: 2 }],
-  };
+  const nightVenue = { hours: [{ open: 22, close: 24 }, { open: 0, close: 2 }] };
   assert.equal(deriveVenueOpenNow(nightVenue, 23), true);
   assert.equal(deriveVenueOpenNow(nightVenue, 1), true);
   assert.equal(deriveVenueOpenNow(nightVenue, 3), false);
 });
 
-test('deriveVenueForRole is deterministic per seed, lands on a venue with the role, null when no venue has it', () => {
-  const venues = loadVenues();
-  const first = deriveVenueForRole('ada', 'work', venues);
-  const second = deriveVenueForRole('ada', 'work', venues);
-  assert.equal(first, second, 'same seed must always pick the same venue');
-  assert.ok(getVenue(first).roles.includes('work'));
-
-  assert.equal(deriveVenueForRole('ada', 'home', venues), 'dorm', 'dorm is the only home-role venue in v1');
-  assert.equal(deriveVenueForRole('ada', 'mayor', venues), null);
+test('every shipped hours entry obeys the split-at-midnight convention', () => {
+  for (const venue of loadVenues()) {
+    for (const entry of venue.hours) {
+      assert.ok(
+        entry.open >= 0 && entry.close <= 24 && entry.open < entry.close,
+        `venue "${venue.id}" hours must be split-at-midnight entries (open < close, both 0..24)`
+      );
+    }
+  }
 });
 ```
 
@@ -843,98 +875,44 @@ test('deriveVenueForRole is deterministic per seed, lands on a venue with the ro
   `cd /Users/home/aisocialnetwork-api && node --test tests/botville/venueRegistryService.test.js`
   Expected failure: `Cannot find module '../../src/services/botville/venueRegistryService'`.
 
-- [ ] **Step 3 — implement the registry file.** Create `src/config/botville-venues.json` (v1: the six venues in the spec I.1 descriptor format; the district affords `idle` and never closes, so the F-7 fallback is always placeable):
-
-```json
-[
-  {
-    "id": "district",
-    "archetype": "district",
-    "roles": ["hangout"],
-    "affords": ["idle", "socialize", "walk"],
-    "hours": [{ "open": 0, "close": 24 }]
-  },
-  {
-    "id": "cafe",
-    "archetype": "cafe",
-    "roles": ["hangout", "work"],
-    "affords": ["eat", "socialize", "read"],
-    "hours": [{ "open": 7, "close": 22 }]
-  },
-  {
-    "id": "library",
-    "archetype": "library",
-    "roles": ["work", "hangout"],
-    "affords": ["read", "study", "work"],
-    "hours": [{ "open": 9, "close": 20 }]
-  },
-  {
-    "id": "office",
-    "archetype": "office",
-    "roles": ["work"],
-    "affords": ["work", "meet"],
-    "hours": [{ "open": 8, "close": 18 }]
-  },
-  {
-    "id": "dorm",
-    "archetype": "dorm",
-    "roles": ["home"],
-    "affords": ["sleep", "rest", "idle"],
-    "hours": [{ "open": 0, "close": 24 }]
-  },
-  {
-    "id": "farm",
-    "archetype": "farm",
-    "roles": ["work"],
-    "affords": ["work", "tend", "harvest"],
-    "hours": [{ "open": 6, "close": 19 }]
-  }
-]
-```
-
-- [ ] **Step 4 — implement the service.** Create `src/services/botville/venueRegistryService.js`:
+- [ ] **Step 3 — implement the service.** Create `src/services/botville/venueRegistryService.js`:
 
 ```js
 'use strict';
 
 /**
- * BotVille venue registry (spec I.1).
+ * BotVille venue registry adapter (spec I.1, owner decision D-21).
  *
- * src/config/botville-venues.json is a committed copy of BotVille's
- * published venues.json; the BotVille repo's CI asserts the two stay in
- * sync. This side's obligation is validate-on-load: every entry must parse
- * against the canonical VenueSchema or the process refuses to serve a world
- * it cannot vouch for.
+ * The vocabulary is SHIPPED: config/venues.json, loaded and structurally
+ * checked by src/utils/venueVocabulary.js. BotVille's published artifact is
+ * the source of truth (I-8: places exist because art exists for them);
+ * tests/venueVocabularySync.test.js pins this copy byte-for-byte. This
+ * module WRAPS that loader with the canonical zod VenueSchema — the
+ * module-boundary validation — and never re-declares venue data.
  *
- * Every derive* function here is pure, total and deterministic — no I/O,
- * no clock reads (the caller passes the hour).
+ * Extensibility invariant (D-21): adding a venue to venues.json (+ BotVille
+ * sync) flows through here with ZERO code changes. No venue id, role, hour
+ * or count is hardcoded in this module.
+ *
+ * Venue↔agent assignments are deliberately NOT here: the schedule writer's
+ * own derivations (src/utils/scheduleCoverage.js — deriveHomeVenue,
+ * deriveWorkplaceVenue, seeded via agentSeed.pickFrom) are the single
+ * assignment authority, so get-city-map always agrees with stored routines.
  */
 
-const fs = require('node:fs');
-const path = require('node:path');
+const { loadVocabulary } = require('../../utils/venueVocabulary');
 const { VenueSchema } = require('./schemas');
-
-const VENUES_FILE_PATH = path.join(__dirname, '..', '..', 'config', 'botville-venues.json');
-
-// The affordance every unmapped activity falls back to (spec I.1 / F-7):
-// the district affords 'idle' and never closes, so the fallback is total.
-const IDLE_FALLBACK_AFFORDANCE = 'idle';
 
 let venuesCache = null;
 
 function loadVenues() {
   if (venuesCache) return venuesCache;
 
-  const raw = JSON.parse(fs.readFileSync(VENUES_FILE_PATH, 'utf8'));
-  if (!Array.isArray(raw)) {
-    throw new Error(`botville-venues.json must be an array of venue descriptors, got ${typeof raw}`);
-  }
-
-  venuesCache = raw.map((entry) => {
+  venuesCache = loadVocabulary().map((entry) => {
     const parsed = VenueSchema.safeParse(entry);
     if (!parsed.success) {
       const entryId = entry && typeof entry === 'object' ? entry.id : String(entry);
-      throw new Error(`Invalid venue descriptor in botville-venues.json (id: ${entryId}): ${parsed.error.message}`);
+      throw new Error(`Invalid venue descriptor in config/venues.json (id: ${entryId}): ${parsed.error.message}`);
     }
     return parsed.data;
   });
@@ -946,53 +924,30 @@ function getVenue(venueId) {
   return loadVenues().find((venue) => venue.id === venueId) || null;
 }
 
-function deriveVenuesAffording(activity, venues) {
-  const matches = venues.filter((venue) => venue.affords.includes(activity));
-  if (matches.length > 0) return matches;
-  return venues.filter((venue) => venue.affords.includes(IDLE_FALLBACK_AFFORDANCE));
-}
-
+/** Pure — no I/O, no clock reads (the caller passes the hour). `close` is
+ *  exclusive; wrap-around is expressed as split-at-midnight entries. */
 function deriveVenueOpenNow(venue, hour) {
   return venue.hours.some((entry) => entry.open <= hour && hour < entry.close);
 }
 
-/**
- * Seeded deterministic pick among the venues carrying `role` — the day-one
- * derive function of the spec I.2 assignment registry (storedColumn: null).
- * Stable for a given (seed, role, registry): an agent's home/workplace never
- * wobbles between calls.
- */
-function deriveVenueForRole(spriteSeed, role, venues) {
-  const candidates = venues.filter((venue) => venue.roles.includes(role));
-  if (candidates.length === 0) return null;
-
-  const seed = String(spriteSeed);
-  let hash = 0;
-  for (let index = 0; index < seed.length; index++) {
-    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
-  }
-  return candidates[hash % candidates.length].id;
-}
-
 module.exports = {
-  VENUES_FILE_PATH,
   loadVenues,
   getVenue,
-  deriveVenuesAffording,
   deriveVenueOpenNow,
-  deriveVenueForRole,
 };
 ```
 
-- [ ] **Step 5 — run, expect pass.**
-  `cd /Users/home/aisocialnetwork-api && node --test tests/botville/venueRegistryService.test.js` — expected: 5 tests pass.
+- [ ] **Step 4 — run, expect pass.**
+  `cd /Users/home/aisocialnetwork-api && node --test tests/botville/venueRegistryService.test.js` — expected: 5 tests pass against the live `config/venues.json`.
+
+- [ ] **Step 5 — sanity-check the extensibility invariant (no commit).** Temporarily append a synthetic venue (`{"id":"test-annex","label":"Test Annex","indoor":true,"capacity":4,"archetype":"office","roles":["work"],"affords":["work"],"hours":[{"open":9,"close":17}]}`) to `config/venues.json`, re-run the test file, confirm **all 5 tests still pass with zero code changes** (the derived expectations absorb the new venue), then `git checkout -- config/venues.json` to revert. NOTE: `tests/venueVocabularySync.test.js` WILL fail while the synthetic venue is present — that is its job (the copy must match BotVille's artifact); do not run the full suite mid-check, and verify the revert with `git status`.
 
 - [ ] **Step 6 — commit.**
 
 ```bash
 cd /Users/home/aisocialnetwork-api
-git add src/config/botville-venues.json src/services/botville/venueRegistryService.js tests/botville/venueRegistryService.test.js
-git commit -m "feat(botville): venue registry — committed venues.json, validate-on-load, pure derivations (spec I.1)" -m "Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+git add src/services/botville/venueRegistryService.js tests/botville/venueRegistryService.test.js
+git commit -m "feat(botville): venue registry adapter over the shipped vocabulary (spec I.1, D-21)" -m "Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -1648,20 +1603,26 @@ git commit -m "feat(botville): effort, overrides, goals and notes services (spec
 
 ---
 
-## Task 5: Presence — deterministic `getCurrentSlot` + `presenceService`
+## Task 5: Presence — characterize the merged `getCurrentSlot` + build `presenceService`
 
-> **HARD DEPENDENCY:** the modified `Schedule.getCurrentSlot` selects
-> `users_schedules.venue`, the column added by the OTHER plan's migration
-> `037_add_schedule_venue.js`. Do not deploy this task to any environment where
-> 037 has not run — the SELECT would fail for every getCurrentSlot caller,
-> including the core `get-current-schedule` tool. (Tests are unaffected: the
-> suite mocks `pool.query`.)
+> **RE-SCOPED 2026-07-30 (D-22).** The visual-assets set already merged every
+> `Schedule.js` edit this task once planned: `getCurrentSlot` selects
+> `users_schedules.venue` (src/models/Schedule.js:41), the overlap tie-break is
+> pinned as `ORDER BY users_schedules.start LIMIT 1` — **ascending,
+> earliest-start-wins** (:50-51) — and `formatScheduleSlot` carries
+> `venue: row.venue ?? null` (:172). Per D-22 the merged ASC rule STANDS (the
+> deterministic writer guarantees non-overlap — SC-1 — so the tie-break is a
+> degenerate-case guard only; any future override layering must be an explicit
+> priority mechanism, never an `ORDER BY` accident). This task therefore
+> CHARACTERIZES the merged behaviour instead of editing it, then builds the
+> presence service on top. **Deploy gate:** run pending migrations (incl. 037)
+> in the target environment before deploying — the SELECT fails against an
+> unmigrated database. (Tests are unaffected: the suite mocks `pool.query`.)
 
 **Files:**
-- Modify: `src/models/Schedule.js` (getCurrentSlot: `ORDER BY` + `venue` column; formatScheduleSlot: `venue` field)
 - Modify: `src/models/User.js` (add `listAll()` — the interface-mediated read model the module is required to use instead of raw SQL, per boundary rule 2)
 - Create: `src/services/botville/presenceService.js`
-- Test (create): `tests/botville/scheduleCurrentSlotDeterminism.test.js`
+- Test (create): `tests/botville/scheduleCurrentSlotDeterminism.test.js` (characterization — expected green on first run)
 - Test (create): `tests/botville/presenceService.test.js`
 
 **Interfaces:**
@@ -1672,29 +1633,36 @@ git commit -m "feat(botville): effort, overrides, goals and notes services (spec
   - `async resolvePresence(user: {id, timezone}, activeOverridesByUserId: Map<string, {userId, venueId}>, venuesById: Map<string, Venue>): { venueId: string|null, activity: string|undefined }`
   - `async listLocations(townId: string): LocationsSnapshot` — validated with `LocationsSnapshotSchema.parse` before it crosses the boundary
 - Produces (core model additions):
-  - `User.listAll(): Promise<FormattedUser[]>`
-  - `Schedule.formatScheduleSlot` rows now carry `venue: string | null`
+  - `User.listAll(): Promise<FormattedUser[]>` — `SELECT * FROM users ORDER BY created_at`, the same creation order the schedule writer's roster uses (`populateSchedulesDeterministic.js:27`), so Task 7's home derivation agrees with the writer's.
+  - (`Schedule.formatScheduleSlot` already carries `venue: string | null` — merged, nothing to add.)
 
 **The presence function is total (spec II.2):** fixed rule on overlap
-(latest-starting slot wins), `null` on gaps, override ⊕ routine ⊕ hours; a
-closed or unrecognised venue falls back to the `venueId: null` (absent)
-handling. Out of scope here (recorded, not forgotten): the
-`CHECK (start < end_hour)` wrap-around defect named in spec II.2 lives in
-`users_schedules`' DDL and belongs to the schedule-venue migration track (037),
-not this module's migration set.
+(earliest-starting slot wins — the merged rule, kept by D-22 as a
+degenerate-case guard; the writer guarantees non-overlap per SC-1), `null` on
+gaps, override ⊕ routine ⊕ hours; a closed or unrecognised venue falls back to
+the `venueId: null` (absent) handling. Note: the merged writer only stores
+venues whose hours contain the whole slot span (D-12 containment), so a closed
+routine venue at read time can only arise from town-vs-agent timezone skew or
+an override — the re-check here is belt and braces, not the primary guard. Out
+of scope (recorded, not forgotten): the `CHECK (start < end_hour)` wrap-around
+defect named in spec II.2 lives in `users_schedules`' DDL and belongs to the
+schedule-venue track's follow-ups, not this module's migration set.
 
 ### Steps
 
-- [ ] **Step 1 — write the failing determinism test.** Create `tests/botville/scheduleCurrentSlotDeterminism.test.js`:
+- [ ] **Step 1 — write the characterization test.** Create `tests/botville/scheduleCurrentSlotDeterminism.test.js`. This is NOT a failing-first test: the behaviour it pins merged with the visual-assets set (D-22). It is written and run first anyway so the pin is verified green before anything builds on it — if it fails, STOP: the merged contract is not what this plan assumes.
 
 ```js
 'use strict';
 
-// Spec II.2: Schedule.getCurrentSlot had `LIMIT 1` with no ORDER BY — on
-// overlapping slots the winner was whatever the planner returned first.
-// The fixed rule: the LATEST-STARTING slot wins. The slot also carries the
-// users_schedules.venue column (added by migration 037_add_schedule_venue)
-// so presence can read it.
+// Characterization (spec II.2 + D-22): the visual-assets set already fixed
+// Schedule.getCurrentSlot — it selects users_schedules.venue and pins the
+// overlap tie-break as ORDER BY users_schedules.start (ASC): the
+// EARLIEST-STARTING slot wins. D-22 keeps that rule: the deterministic
+// writer guarantees non-overlap (SC-1), so the tie-break is a
+// degenerate-case guard only. Any future override layering must be an
+// explicit priority mechanism, never an ORDER BY accident — this test
+// exists so a silent change to the rule fails loudly.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -1702,7 +1670,7 @@ const assert = require('node:assert/strict');
 const pool = require('../../src/config/database');
 const Schedule = require('../../src/models/Schedule');
 
-test('getCurrentSlot orders overlapping slots deterministically (latest start wins) and selects venue', async (t) => {
+test('getCurrentSlot pins the merged overlap rule (earliest start wins) and selects venue', async (t) => {
   let capturedSql = null;
   t.mock.method(pool, 'query', async (sql) => {
     capturedSql = sql;
@@ -1718,8 +1686,10 @@ test('getCurrentSlot orders overlapping slots deterministically (latest start wi
 
   const slot = await Schedule.getCurrentSlot('user-1', 'UTC');
 
-  assert.match(capturedSql, /ORDER BY users_schedules\.start DESC\s+LIMIT 1/,
-    'overlap rule must be pinned in SQL: latest-starting slot wins');
+  assert.match(capturedSql, /ORDER BY users_schedules\.start\s+LIMIT 1/,
+    'overlap tie-break must stay pinned in SQL: earliest-starting slot wins (D-22)');
+  assert.doesNotMatch(capturedSql, /ORDER BY users_schedules\.start\s+DESC/,
+    'D-22: the rule is ASC; a DESC flip is an owner decision, not a drive-by');
   assert.match(capturedSql, /users_schedules\.venue/, 'the slot must carry its venue column');
   assert.equal(slot.venue, 'office');
   assert.equal(slot.activity, 'deep work');
@@ -1735,82 +1705,11 @@ test('formatScheduleSlot normalises a missing venue to null', () => {
 });
 ```
 
-- [ ] **Step 2 — run it, expect failure.**
+- [ ] **Step 2 — run it, expect pass (characterization of merged behaviour).**
   `cd /Users/home/aisocialnetwork-api && node --test tests/botville/scheduleCurrentSlotDeterminism.test.js`
-  Expected failure: the first test fails on the `ORDER BY` assertion (`capturedSql` has bare `LIMIT 1`), the second on `slot.venue` being `undefined`.
+  Expected: 2 tests pass against the merged `src/models/Schedule.js` with no edits. If either fails, stop and re-read `Schedule.js` — the contract this plan builds on has moved.
 
-- [ ] **Step 3 — modify `src/models/Schedule.js`.** Two exact edits inside `getCurrentSlot`'s query template plus one in `formatScheduleSlot`.
-
-  Edit A — add the venue column to the SELECT list. Before (lines 32-42 of the current file):
-
-```sql
-      SELECT
-        users_schedules.id,
-        users_schedules.user_id,
-        users_schedules.day_type,
-        users_schedules.activity,
-        users_schedules.start,
-        users_schedules.end_hour,
-        users_schedules.online_probability,
-        users_schedules.posting_probability,
-        day_type_calc.current_hour,
-        day_type_calc.local_now
-```
-
-  After:
-
-```sql
-      SELECT
-        users_schedules.id,
-        users_schedules.user_id,
-        users_schedules.day_type,
-        users_schedules.activity,
-        users_schedules.venue,
-        users_schedules.start,
-        users_schedules.end_hour,
-        users_schedules.online_probability,
-        users_schedules.posting_probability,
-        day_type_calc.current_hour,
-        day_type_calc.local_now
-```
-
-  Edit B — the deterministic overlap rule. Before (lines 43-50):
-
-```sql
-      FROM users_schedules
-      CROSS JOIN day_type_calc
-      WHERE users_schedules.user_id = $1
-        AND users_schedules.day_type = day_type_calc.day_type
-        AND users_schedules.start <= day_type_calc.current_hour
-        AND users_schedules.end_hour > day_type_calc.current_hour
-      LIMIT 1
-```
-
-  After:
-
-```sql
-      FROM users_schedules
-      CROSS JOIN day_type_calc
-      WHERE users_schedules.user_id = $1
-        AND users_schedules.day_type = day_type_calc.day_type
-        AND users_schedules.start <= day_type_calc.current_hour
-        AND users_schedules.end_hour > day_type_calc.current_hour
-      ORDER BY users_schedules.start DESC
-      LIMIT 1
-```
-
-  Edit C — in `formatScheduleSlot`, after the line `activity: row.activity,` add:
-
-```js
-      venue: row.venue === undefined ? null : row.venue,
-```
-
-  (`getByUserId`/`getNextSlot` use `SELECT *`, so their rows pick the column up through the same formatter with no further change.)
-
-- [ ] **Step 4 — run, expect pass.**
-  `cd /Users/home/aisocialnetwork-api && node --test tests/botville/scheduleCurrentSlotDeterminism.test.js` — expected: 2 tests pass.
-
-- [ ] **Step 5 — add `User.listAll()`.** In `src/models/User.js`, after the `findByUsername` method, add:
+- [ ] **Step 3 — add `User.listAll()`.** In `src/models/User.js`, after the `findByUsername` method, add:
 
 ```js
   /**
@@ -1825,7 +1724,7 @@ test('formatScheduleSlot normalises a missing venue to null', () => {
   }
 ```
 
-- [ ] **Step 6 — write the failing presence test.** Create `tests/botville/presenceService.test.js`. Determinism note: fixtures use only venues that are open at every hour (`district`, `dorm`) so no assertion depends on the wall clock; the closed-venue path is exercised with an explicit never-open venue:
+- [ ] **Step 4 — write the failing presence test.** Create `tests/botville/presenceService.test.js`. Determinism note: fixtures use only venues that are open at every hour (`district`, `dorm`) so no assertion depends on the wall clock; the closed-venue path is exercised with an explicit never-open venue:
 
 ```js
 'use strict';
@@ -1930,11 +1829,11 @@ test('listLocations returns a schemaVersion-2 LocationsSnapshot with spriteSeed 
 });
 ```
 
-- [ ] **Step 7 — run it, expect failure.**
+- [ ] **Step 5 — run it, expect failure.**
   `cd /Users/home/aisocialnetwork-api && node --test tests/botville/presenceService.test.js`
   Expected failure: `Cannot find module '../../src/services/botville/presenceService'`.
 
-- [ ] **Step 8 — implement presenceService.** Create `src/services/botville/presenceService.js`:
+- [ ] **Step 6 — implement presenceService.** Create `src/services/botville/presenceService.js`:
 
 ```js
 'use strict';
@@ -1947,9 +1846,9 @@ test('listLocations returns a schemaVersion-2 LocationsSnapshot with spriteSeed 
  * - Computed per request from users_schedules (via the Schedule model,
  *   boundary rule 2) plus the module's own active overrides. Nothing ever
  *   writes a location.
- * - Total: fixed overlap rule (latest-starting slot wins, pinned in
- *   Schedule.getCurrentSlot), null on gaps, closed/unrecognised venue →
- *   the null (absent) handling.
+ * - Total: fixed overlap rule (earliest-starting slot wins — the merged
+ *   rule, kept by D-22 and pinned in Schedule.getCurrentSlot), null on
+ *   gaps, closed/unrecognised venue → the null (absent) handling.
  * - The slot lookup runs in the AGENT's own timezone (the platform's
  *   existing schedule semantics); gameHour and venue opening hours run on
  *   the TOWN clock (BOTVILLE_TOWN_TIMEZONE) — venues live in the town.
@@ -2038,16 +1937,16 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 9 — run, expect pass, and check for regressions.**
+- [ ] **Step 7 — run, expect pass, and check for regressions.**
   `cd /Users/home/aisocialnetwork-api && node --test tests/botville/presenceService.test.js` — expected: 4 tests pass.
-  Then `npm test` — expected: full suite green (the `Schedule`/`User` edits are additive; any existing test that pins `getCurrentSlot`'s SQL or `formatScheduleSlot`'s field list would surface here and must be reconciled to the new deterministic SQL, not the other way round).
+  Then `npm test` — expected: full suite green (the only core edit is the additive `User.listAll`; `Schedule.js` is untouched by this task).
 
-- [ ] **Step 10 — commit.**
+- [ ] **Step 8 — commit.**
 
 ```bash
 cd /Users/home/aisocialnetwork-api
-git add src/models/Schedule.js src/models/User.js src/services/botville/presenceService.js tests/botville/scheduleCurrentSlotDeterminism.test.js tests/botville/presenceService.test.js
-git commit -m "feat(botville): total presence function; deterministic getCurrentSlot overlap rule (spec II.2)" -m "Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
+git add src/models/User.js src/services/botville/presenceService.js tests/botville/scheduleCurrentSlotDeterminism.test.js tests/botville/presenceService.test.js
+git commit -m "feat(botville): total presence function; characterize merged getCurrentSlot rule (spec II.2, D-22)" -m "Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 ```
 
 ---
@@ -2062,7 +1961,7 @@ git commit -m "feat(botville): total presence function; deterministic getCurrent
 **Interfaces:**
 - Consumes: `presenceService.listLocations(townId)`, `notesService.listNotesForVenue(venueId)`, `TOWN_ID_DEFAULT` (schemas.js).
 - Produces:
-  - `GET /api/public/botville/locations` → the `LocationsSnapshot` **unwrapped** (the body IS the spec I.4 contract shape — no `{success, data}` envelope, matching what BotVille's `api.ts` will parse against `@botville/shared`).
+  - `GET /api/public/botville/locations` → the `LocationsSnapshot` **unwrapped** (the body IS the spec I.4 contract shape — no `{success, data}` envelope, matching what BotVille's `api.ts` will parse against `@botville/shared`). This path is canonical per owner decision D-24; spec II.2 was amended 2026-07-30 to match.
   - `GET /api/public/botville/venues/:venueId/notes` → `{ success: true, venueId, notes: VenueNote[] }`
   - Controller exports: `getLocations(req, res)`, `getVenueNotes(req, res)`.
 
@@ -2243,8 +2142,8 @@ git commit -m "feat(botville): public locations + venue-notes endpoints (spec II
 - Test (create): `tests/botville/botvilleMcpReadTools.test.js`
 
 **Interfaces:**
-- Consumes: `@modelcontextprotocol/sdk` `McpServer`, `User.findByApiKey`/`User.touchLastSeen`, Task 1 schemas, Task 3 `venueRegistryService`, Task 4 `goalsService`/`notesService`/`effortService`, Task 5 `presenceService`.
-- Produces: `createBotVilleMCPServer(): McpServer` (name `'botville'`, version `'1.0.0'`) registering `get-city-map`, `get-venue`, `get-city-goals`. Each handler returns `{ content: [{ type: 'text', text: JSON.stringify(output, null, 2) }], structuredContent: output }` in both success and error branches, like the model tool (`get-current-schedule`, `src/mcp/mcp-server.js:1599`).
+- Consumes: `@modelcontextprotocol/sdk` `McpServer`, `User.findByApiKey`/`User.touchLastSeen`/`User.listAll` (Task 5), Task 1 schemas, Task 3 `venueRegistryService`, Task 4 `goalsService`/`notesService`/`effortService`, Task 5 `presenceService`, and — per D-21 — the schedule writer's own assignment derivations `deriveHomeVenue`/`deriveWorkplaceVenue`/`deriveResidenceVenues` from `src/utils/scheduleCoverage.js` (the single assignment authority; botville → core is the allowed direction).
+- Produces: `createBotVilleMCPServer(): McpServer` (name `'botville'`, version `'1.0.0'`) registering `get-city-map`, `get-venue`, `get-city-goals`. Each handler returns `{ content: [{ type: 'text', text: JSON.stringify(output, null, 2) }], structuredContent: output }` in both success and error branches, like the model tool (`get-current-schedule`, `src/mcp/mcp-server.js:1600`).
 
 The file copies `src/mcp/agentwire-mcp-server.js`'s shape exactly: its own
 `authenticatedServiceCall` copy reading `server._getSession(server._currentSessionId)`
@@ -2272,8 +2171,17 @@ const goalsService = require('../../src/services/botville/goalsService');
 const notesService = require('../../src/services/botville/notesService');
 const effortService = require('../../src/services/botville/effortService');
 const presenceService = require('../../src/services/botville/presenceService');
+const venueRegistryService = require('../../src/services/botville/venueRegistryService');
+const { deriveHomeVenue, deriveWorkplaceVenue, deriveResidenceVenues } = require('../../src/utils/scheduleCoverage');
 
 const USER = { id: 'user-1', username: 'ada', displayName: 'Ada', timezone: 'America/New_York', apiKey: 'token-1' };
+
+// D-21: no shipped venue id appears as a literal — probe venues are DERIVED
+// from the live registry so tests survive any vocabulary change unchanged.
+const ALL_HOURS = Array.from({ length: 24 }, (_, hour) => hour);
+const alwaysOpenVenue = venueRegistryService.loadVenues()
+  .find((venue) => ALL_HOURS.every((hour) => venueRegistryService.deriveVenueOpenNow(venue, hour)));
+assert.ok(alwaysOpenVenue, 'registry must contain at least one always-open venue for clock-independent tests');
 
 const GOAL = {
   id: 'goal-1', townId: 'town-1', kind: 'harvest', title: 'Stock the winter granary',
@@ -2297,13 +2205,15 @@ test('the three read tools are registered on a server named botville', () => {
   }
 });
 
-test('get-city-map: venues with openNow, derived caller home/workplace, active goal ids', async (t) => {
+test('get-city-map: venues with openNow, writer-derived caller home/workplace, active goal ids', async (t) => {
   const server = buildAuthenticatedServer(t);
   t.mock.method(goalsService, 'listGoals', async (townId, callerUserId) => {
     assert.equal(townId, 'town-1');
     assert.equal(callerUserId, USER.id);
     return [GOAL];
   });
+  // Roster for the home derivation (creation order, same as the writer's).
+  t.mock.method(User, 'listAll', async () => [USER]);
 
   const result = await server._registeredTools['get-city-map'].callback({});
   const payload = JSON.parse(result.content[0].text);
@@ -2311,40 +2221,59 @@ test('get-city-map: venues with openNow, derived caller home/workplace, active g
   assert.equal(payload.success, true);
   assert.equal(payload.townId, 'town-1');
   assert.ok(Number.isInteger(payload.gameHour));
+
+  // D-21: every expectation below is DERIVED from the live registry — no id
+  // or count literal, so a vocabulary change never touches this test.
+  const venues = venueRegistryService.loadVenues();
   assert.deepEqual(
     payload.venues.map((venue) => venue.id).sort(),
-    ['cafe', 'district', 'dorm', 'farm', 'library', 'office']
+    venues.map((venue) => venue.id).sort(),
+    'the map serves exactly the shipped vocabulary'
   );
-  const district = payload.venues.find((venue) => venue.id === 'district');
-  assert.equal(district.openNow, true, 'the district never closes');
-  assert.equal(payload.callerHomeVenueId, 'dorm', 'dorm is the only home-role venue in v1');
-  assert.ok(['cafe', 'library', 'office', 'farm'].includes(payload.callerWorkplaceVenueId));
+  for (const wireVenue of payload.venues) {
+    const descriptor = venues.find((venue) => venue.id === wireVenue.id);
+    assert.equal(
+      wireVenue.openNow,
+      venueRegistryService.deriveVenueOpenNow(descriptor, payload.gameHour),
+      `openNow for "${wireVenue.id}" must derive from its own hours at gameHour`
+    );
+  }
+
+  // D-21/I.2: assignments come from the schedule writer's own derivations —
+  // the map can never disagree with a stored routine.
+  const roster = [USER.username];
+  assert.equal(payload.callerHomeVenueId, deriveHomeVenue(USER.username, roster, deriveResidenceVenues(venues)));
+  assert.equal(payload.callerWorkplaceVenueId, deriveWorkplaceVenue(USER.username, venues));
+
   assert.deepEqual(payload.activeGoalIds, ['goal-1']);
   assert.deepEqual(result.structuredContent, payload);
 });
 
 test('get-venue: computed co-presence at the venue plus recent notes', async (t) => {
+  // Probe venue derived from the registry (D-21) and always open, so the
+  // openNow assertion is clock-independent.
+  const probeVenueId = alwaysOpenVenue.id;
   const server = buildAuthenticatedServer(t);
   t.mock.method(presenceService, 'listLocations', async () => ({
     schemaVersion: 2,
     gameHour: 12,
     locations: [
-      { id: 'user-1', displayName: 'Ada', spriteSeed: 'ada', venueId: 'district', activity: 'socializing' },
-      { id: 'user-2', displayName: 'Sam', spriteSeed: 'sam', venueId: 'district' },
+      { id: 'user-1', displayName: 'Ada', spriteSeed: 'ada', venueId: probeVenueId, activity: 'socializing' },
+      { id: 'user-2', displayName: 'Sam', spriteSeed: 'sam', venueId: probeVenueId },
       { id: 'user-3', displayName: 'Kit', spriteSeed: 'kit', venueId: null },
     ],
   }));
   const notes = [
-    { id: 'note-1', venueId: 'district', authorDisplayName: 'Sam', body: 'town meeting at dusk', createdAt: '2026-07-29T09:00:00.000Z' },
+    { id: 'note-1', venueId: probeVenueId, authorDisplayName: 'Sam', body: 'town meeting at dusk', createdAt: '2026-07-29T09:00:00.000Z' },
   ];
   t.mock.method(notesService, 'listNotesForVenue', async () => notes);
 
-  const result = await server._registeredTools['get-venue'].callback({ venueId: 'district' });
+  const result = await server._registeredTools['get-venue'].callback({ venueId: probeVenueId });
   const payload = JSON.parse(result.content[0].text);
 
   assert.equal(payload.success, true);
-  assert.equal(payload.venue.id, 'district');
-  assert.equal(payload.venue.openNow, true);
+  assert.equal(payload.venue.id, probeVenueId);
+  assert.equal(payload.venue.openNow, true, 'derived probe venue is open at every hour');
   assert.deepEqual(payload.agentsPresent, [
     { id: 'user-1', displayName: 'Ada', activity: 'socializing' },
     { id: 'user-2', displayName: 'Sam' },
@@ -2406,6 +2335,11 @@ const goalsService = require('../services/botville/goalsService');
 const notesService = require('../services/botville/notesService');
 const effortService = require('../services/botville/effortService');
 const overridesService = require('../services/botville/overridesService');
+
+// D-21: the schedule writer's own assignment derivations are the single
+// authority on home/workplace — get-city-map must never disagree with a
+// stored routine. botville → core is the allowed dependency direction.
+const { deriveHomeVenue, deriveWorkplaceVenue, deriveResidenceVenues } = require('../utils/scheduleCoverage');
 
 const {
   TOWN_ID_DEFAULT,
@@ -2501,6 +2435,9 @@ function createBotVilleMCPServer() {
           const venues = venueRegistryService.loadVenues();
           const gameHour = presenceService.deriveGameHour(new Date(), presenceService.BOTVILLE_TOWN_TIMEZONE);
           const goals = await goalsService.listGoals(TOWN_ID_DEFAULT, user.id);
+          // D-21/I.2: same derivations, same roster order (created_at) as the
+          // schedule writer — the map always agrees with stored routines.
+          const roster = (await User.listAll()).map((rosterUser) => rosterUser.username);
           return {
             success: true,
             townId: TOWN_ID_DEFAULT,
@@ -2509,8 +2446,8 @@ function createBotVilleMCPServer() {
               ...venue,
               openNow: venueRegistryService.deriveVenueOpenNow(venue, gameHour),
             })),
-            callerHomeVenueId: venueRegistryService.deriveVenueForRole(user.username, 'home', venues),
-            callerWorkplaceVenueId: venueRegistryService.deriveVenueForRole(user.username, 'work', venues),
+            callerHomeVenueId: deriveHomeVenue(user.username, roster, deriveResidenceVenues(venues)),
+            callerWorkplaceVenueId: deriveWorkplaceVenue(user.username, venues),
             activeGoalIds: goals.map((goal) => goal.id),
           };
         });
@@ -2671,6 +2608,14 @@ const EXHAUSTED_OUTPUT = {
   message: 'You are out of energy for today — rest and come back tomorrow.',
 };
 
+// D-21: no shipped venue id as a literal — derive an always-open probe venue
+// from the live registry so open-venue assertions are clock-independent.
+const ALL_HOURS = Array.from({ length: 24 }, (_, hour) => hour);
+const alwaysOpenVenue = venueRegistryService.loadVenues()
+  .find((venue) => ALL_HOURS.every((hour) => venueRegistryService.deriveVenueOpenNow(venue, hour)));
+assert.ok(alwaysOpenVenue, 'registry must contain at least one always-open venue for clock-independent tests');
+const OPEN_VENUE_ID = alwaysOpenVenue.id;
+
 function buildAuthenticatedServer(t) {
   const server = createBotVilleMCPServer();
   server._getSession = () => ({ authToken: USER.apiKey });
@@ -2696,15 +2641,15 @@ test('go-to-venue: creates the current-slot override for an open venue', async (
     return { id: 'override-1', venueId, slotKey: 'weekday:9-12', expiresAt: '2026-07-29T16:00:00.000Z' };
   });
 
-  // district is open at every hour, so the assertion is clock-independent.
-  const result = await server._registeredTools['go-to-venue'].callback({ venueId: 'district' });
+  // The derived probe venue is open at every hour (D-21) — clock-independent.
+  const result = await server._registeredTools['go-to-venue'].callback({ venueId: OPEN_VENUE_ID });
   const payload = JSON.parse(result.content[0].text);
 
   assert.equal(payload.success, true);
-  assert.deepEqual(calledWith, { userId: 'user-1', venueId: 'district' });
-  assert.equal(payload.venueId, 'district');
+  assert.deepEqual(calledWith, { userId: 'user-1', venueId: OPEN_VENUE_ID });
+  assert.equal(payload.venueId, OPEN_VENUE_ID);
   assert.equal(payload.expiresAt, '2026-07-29T16:00:00.000Z');
-  assert.ok(payload.message.includes('district'));
+  assert.ok(payload.message.includes(OPEN_VENUE_ID));
 });
 
 test('go-to-venue: unknown venue fails cleanly; closed venue is an in-fiction refusal', async (t) => {
@@ -2733,7 +2678,7 @@ test('go-to-venue: no current slot surfaces the overridesService rejection', asy
   t.mock.method(overridesService, 'createOverrideForCurrentSlot', async () => {
     throw new Error('No current schedule slot - there is nothing to override right now');
   });
-  const payload = JSON.parse((await server._registeredTools['go-to-venue'].callback({ venueId: 'district' })).content[0].text);
+  const payload = JSON.parse((await server._registeredTools['go-to-venue'].callback({ venueId: OPEN_VENUE_ID })).content[0].text);
   assert.equal(payload.success, false);
   assert.match(payload.error, /No current schedule slot/);
 });
@@ -2780,7 +2725,7 @@ test('leave-note: exhausted effort returns the in-fiction refusal and never writ
     throw new Error('must not write a note when exhausted');
   });
 
-  const payload = JSON.parse((await server._registeredTools['leave-note'].callback({ venueId: 'district', body: 'hello' })).content[0].text);
+  const payload = JSON.parse((await server._registeredTools['leave-note'].callback({ venueId: OPEN_VENUE_ID, body: 'hello' })).content[0].text);
   assert.deepEqual(payload, EXHAUSTED_OUTPUT);
   assert.equal(createNoteMock.mock.callCount(), 0);
 });
@@ -2789,7 +2734,7 @@ test('leave-note: with effort remaining, creates the note; an oversized body is 
   const server = buildAuthenticatedServer(t);
   t.mock.method(effortService, 'deriveEffortRemaining', async () => 1);
   const note = {
-    id: 'note-1', venueId: 'district', authorDisplayName: 'Ada',
+    id: 'note-1', venueId: OPEN_VENUE_ID, authorDisplayName: 'Ada',
     body: 'town meeting at dusk', createdAt: '2026-07-29T09:00:00.000Z',
   };
   t.mock.method(notesService, 'createNote', async (user, venueId, body) => {
@@ -2797,14 +2742,14 @@ test('leave-note: with effort remaining, creates the note; an oversized body is 
     return note;
   });
 
-  const ok = JSON.parse((await server._registeredTools['leave-note'].callback({ venueId: 'district', body: 'town meeting at dusk' })).content[0].text);
+  const ok = JSON.parse((await server._registeredTools['leave-note'].callback({ venueId: OPEN_VENUE_ID, body: 'town meeting at dusk' })).content[0].text);
   assert.equal(ok.success, true);
   assert.deepEqual(ok.note, note);
   assert.equal(ok.effortRemainingPoints, 0);
 
   // The direct-callback seam bypasses SDK input validation, so the
   // service-level 280 guard must hold on its own.
-  const oversized = JSON.parse((await server._registeredTools['leave-note'].callback({ venueId: 'district', body: 'a'.repeat(281) })).content[0].text);
+  const oversized = JSON.parse((await server._registeredTools['leave-note'].callback({ venueId: OPEN_VENUE_ID, body: 'a'.repeat(281) })).content[0].text);
   assert.equal(oversized.success, false);
   assert.match(oversized.error, /1-280/);
 });
@@ -3053,8 +2998,9 @@ npx @modelcontextprotocol/inspector --url http://localhost:9321/botville/mcp
   In the Inspector UI: transport "Streamable HTTP", URL as above, and set an
   `Authorization: Bearer <users.api_key value>` header. Verify: connect
   succeeds; List Tools shows all six; call `get-city-map` and confirm
-  `structuredContent.venues` has the six registry venues; call `go-to-venue`
-  with `{"venueId":"district"}` and confirm `success: true` with an
+  `structuredContent.venues` mirrors `config/venues.json` (every shipped
+  venue, 8 fields each — do not pin a count); call `go-to-venue` with
+  `{"venueId":"district"}` and confirm `success: true` with an
   `expiresAt`; call it with `{"venueId":"atlantis"}` and confirm the clean
   `Unknown venue` failure.
 
@@ -3073,9 +3019,9 @@ git commit -m "feat(botville): mount /botville/mcp and advertise it (spec II.1 m
 | Spec item | Where |
 |---|---|
 | II.1 module isolation + five boundary rules | Task 1 (CI tests), honored throughout |
-| II.2 locations endpoint, total presence function, `getCurrentSlot` ORDER BY fix | Tasks 5, 6 (`CHECK (start < end_hour)` recorded as 037-track territory in Task 5) |
+| II.2 locations endpoint, total presence function, `getCurrentSlot` determinism | Tasks 5, 6 — the ORDER BY fix merged with the visual-assets set; Task 5 characterizes it (earliest-start-wins, D-22); `CHECK (start < end_hour)` recorded as schedule-track territory in Task 5 |
 | II.3 six tools, auth pattern, refusal/constraints | Tasks 7, 8 (YAML registration in `aisocialnetwork-agents` explicitly out of scope) |
 | II.4 four tables + effort budget | Tasks 2, 4 |
 | I.1 venue descriptors / affordances / hours | Tasks 1, 3 |
-| I.2 derived assignments (home/workplace, `storedColumn: null`) | Task 3 `deriveVenueForRole`, Task 7 `get-city-map` |
+| I.2 derived assignments (home/workplace, `storedColumn: null`) | Shipped in core `scheduleCoverage.js` (visual-assets set); consumed unduplicated by Task 7 `get-city-map` (D-21) |
 | I.4 `LocationsSnapshot` v2 | Tasks 1, 5, 6 |

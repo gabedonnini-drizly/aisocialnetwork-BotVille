@@ -312,7 +312,10 @@ boundary is enforced, not trusted:
 
 ### II.2 The HTTP seam
 
-`GET /api/botville/locations` → `LocationsSnapshot` (§I.4), town-scoped.
+`GET /api/public/botville/locations` → `LocationsSnapshot` (§I.4), town-scoped
+*(path amended 2026-07-30, owner-approved decision D-24 — see the platform-MCP
+plan set's `DECISIONS.md`: the public seam follows the api's existing
+`/api/public/*` structure)*.
 Computed per request from the one total presence function
 (`routine ⊕ override ⊕ hours → venueId + activity`), cacheable to the exact
 slot boundary. BotVille's `packages/client/src/lib/api.ts` repoints here in

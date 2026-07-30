@@ -8,17 +8,25 @@
 
 ## Goal
 
-Give the BotVille client the minimal integration seam to the platform: a schema-versioned `LocationsSnapshot`/`AgentPresence` type pair in `@botville/shared` (spec I.4, exact field names), a build-time fixture/integrated mode switch with a tolerant platform-snapshot parser in the client, a coarse `activity` label on agent sprites, and a minimal venue-notes overlay in integrated mode. Fixture mode (the current `agentLife.ts` + `GET /api/agents/locations` path) stays byte-for-byte behaviourally unchanged and fully self-contained.
+Give the BotVille client the minimal integration seam to the platform: the shipped `AgentPresence` gains its optional `activity` field **in place** plus the versioned `LocationsSnapshot` type (Assets.ts, spec I.4, owner decision D-23), a build-time fixture/integrated mode switch with a tolerant platform-snapshot parser that feeds the shipped F-3 `PresenceModel` pipeline, a coarse `activity` label on agent sprites, seed-derived appearances for platform agents (D-25), a minimal venue-notes overlay in integrated mode, and D-20 fallback-URL hygiene. Fixture mode (the current `agentLife.ts` + `GET /api/agents/locations` path) stays byte-for-byte behaviourally unchanged and fully self-contained.
+
+**Owner decisions (2026-07-30, `DECISIONS.md` in this plan directory):** D-23
+(`activity?` added in place to the shipped `AgentPresence` — single definition,
+no barrel breakage; existing tests/scripts integrated with, never overwritten),
+D-24 (`GET /api/public/botville/locations` canonical), D-25 (platform agents
+render as seed-derived premade humans via `spriteSeed` → `AppearanceResolver`),
+plus D-20 hygiene (retire the Railway fallback URL). This plan was amended
+2026-07-30 against the merged visual-assets set.
 
 ## Architecture
 
-The platform api owns world truth in integrated mode; BotVille is presentation only, and the client polls the platform's `LocationsSnapshot` endpoint instead of its own server — same seam, indistinguishable to the scenes (spec II.1). The mode is picked once at client module scope from `VITE_PLATFORM_LOCATIONS_URL`; an invalid platform snapshot (missing/`< 2` `schemaVersion`) degrades to fixture mode for the session with exactly one warning. Presence maps to the client's existing `SyncedAgent` pipeline: known `venueId` → the existing six-location render path, `venueId: null` → absent, unrecognised `venueId` → `unknown` → rendered absent with one `console.warn` per venue id (the spec's three presence states).
+The platform api owns world truth in integrated mode; BotVille is presentation only, and the client polls the platform's `LocationsSnapshot` endpoint instead of its own server — same seam, indistinguishable to the scenes (spec II.1). The mode is picked once at client module scope from `VITE_PLATFORM_LOCATIONS_URL`; an invalid platform snapshot (missing/`< 2` `schemaVersion`) degrades to fixture mode for the session with exactly one warning. **Presence flows through the shipped F-3 pipeline unchanged:** `presenceModel.partition` over the live venue registry (+farm) is the single authority on somewhere/absent/unknown (`packages/client/src/game/presence.ts`), and `warnUnknown` logs one compact warning per unplaceable agent id. Integrated mode only swaps the roster *source* — the platform snapshot instead of the fixture store — never the authority. The parser validates row **shape** only; it never judges venue-knownness.
 
 ## Tech Stack
 
 - TypeScript 5.7, ESM everywhere, npm workspaces + turbo.
-- `packages/shared` — plain TS types (`main`/`types` point at `src/index.ts`); new tests via `node --test` with native type stripping + `tsc --noEmit` for compile-time assertions.
-- `packages/client` — Vite 6 + React 18 + Zustand + Phaser 3.88; new tests via **vitest** (added by this plan — the client has no test runner today, only `tsc --noEmit` typecheck).
+- `packages/shared` — plain TS types (`main`/`types` point at `src/index.ts`); type assertions join the **existing** root `node --test` suite (`test/shared-types.test.ts` — the visual set shipped it along with `test/presence-model.test.ts`, `test/presence-wiring.test.ts` and the bake suites).
+- `packages/client` — Vite 6 + React 18 + Zustand + Phaser 3.88; new tests via **vitest** (added by this plan — the client workspace has no test runner today, only `tsc --noEmit` typecheck).
 - `packages/server` — Express + SQLite; **not modified** except a doc comment in `world/agentLife.ts`.
 
 ## Global Constraints
@@ -26,50 +34,27 @@ The platform api owns world truth in integrated mode; BotVille is presentation o
 - **Node >= 24, ESM only** (`engines` in root `package.json`). Dev machines on Node >= 22.18 still run `node --test` on `.ts` files (type stripping is default-on from 22.18); do not add a transpile step for tests.
 - **Spec Conventions (binding):** one canonical schema per boundary shape and nothing parses what it can validate; declarative naming (`derive<Thing>` for pure derivations, `SCREAMING_SNAKE` constants with the unit/meaning in the name, no abbreviations); a field carries the same name across every layer (`venueId` stays `venueId`). Any drift from spec I.4's exact field names is a defect.
 - **Restated I-11:** "the client renders nothing the platform did not assert." Required `AgentPresence` fields are exactly `id`, `displayName`, `spriteSeed`, `venueId`; everything beyond them is optional-and-ignorable.
-- **Visual-assets territory is off limits:** do not touch anything under `docs/superpowers/plans/2026-07-27-botville-visual-assets/`, no art/asset work, no venue registry or archetype/instancing code, no changes to the `AGENT_LOCATIONS` six-venue vocabulary in `packages/shared/src/types/Agent.ts`. Those plans reference a future `packages/shared/src/types/Assets.ts` with an "exactly four fields" `AgentPresence` invariant; the addendum I.4 supersedes that invariant (four **required** fields, additions optional). This plan claims the canonical location `packages/shared/src/types/LocationsSnapshot.ts`; whichever plan executes second must import/re-export from it rather than redefine — recorded here, not by editing their files.
-- **Fixture path unchanged:** `fetchAgentLocations()`, `GET /api/agents/locations` (legacy shape, no `schemaVersion`), `applyLocations`, and `agentLife.ts` behaviour are not modified.
+- **The visual-assets set has EXECUTED and merged.** The canonical `AgentPresence` (four required fields) and `PresenceState` ship in `packages/shared/src/types/Assets.ts:17-31`, exported through the barrel's existing `export * from './types/Assets.js'`. Addendum I.4 supersedes that file's pre-addendum "Do not extend this interface" comment, and this plan amends the interface **in place** (D-23) — a second `AgentPresence` declaration or a second colliding `export *` breaks every consumer (`PresenceModel.ts`, `presence.ts`, `useGameSync.ts`) and is forbidden. Still off limits: anything under `docs/superpowers/plans/2026-07-27-botville-visual-assets/`, art/asset work, the venue registry and archetype/instancing code, and `AGENT_LOCATIONS` in `packages/shared/src/types/Agent.ts` (the legacy fixture vocabulary — F-3 retired it as a runtime authority; it stays untouched).
+- **Fixture path unchanged:** `fetchAgentLocations()`, `GET /api/agents/locations` (legacy shape, no `schemaVersion`), `applyLocations`, and `agentLife.ts` behaviour are not modified. (The retired `normalizeLocation` clamp no longer exists anywhere — do not reintroduce it.)
 - **Do not commit on `main`;** work happens on the executing session's feature branch. Each task ends in its own commit.
 
 ---
 
-## Task 1 — Shared types: `LocationsSnapshot` v2 (spec I.4, exact names)
+## Task 1 — Shared types: `activity?` in place + `LocationsSnapshot` (spec I.4, D-23)
 
 **Files:**
-- Create `/Users/home/aisocialnetwork-BotVille/packages/shared/src/types/LocationsSnapshot.ts`
-- Edit `/Users/home/aisocialnetwork-BotVille/packages/shared/src/index.ts`
-- Create `/Users/home/aisocialnetwork-BotVille/packages/shared/test/locations-snapshot.test.ts`
-- Create `/Users/home/aisocialnetwork-BotVille/packages/shared/tsconfig.test.json`
-- Edit `/Users/home/aisocialnetwork-BotVille/packages/shared/package.json` (add `test` script)
-- Edit `/Users/home/aisocialnetwork-BotVille/turbo.json` + `/Users/home/aisocialnetwork-BotVille/package.json` (root) — wire a `test` task
+- Edit `/Users/home/aisocialnetwork-BotVille/packages/shared/src/types/Assets.ts` (the shipped canonical location — D-23)
+- Edit `/Users/home/aisocialnetwork-BotVille/test/shared-types.test.ts` (the existing restated-I-11 test, shipped by the visual set)
+- Edit `/Users/home/aisocialnetwork-BotVille/package.json` (root — append the workspace test runner to the EXISTING `test` script)
+- Edit `/Users/home/aisocialnetwork-BotVille/turbo.json` (add a `test` task; only workspaces that define a `test` script run — today none, Task 2 adds the client's)
 
 **Interfaces:**
-- `interface AgentPresence { id: string; displayName: string; spriteSeed: string; venueId: string | null; activity?: string }`
-- `interface LocationsSnapshot { schemaVersion: number; gameHour: number; locations: AgentPresence[] }`
-- `const LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION = 2`
+- `AgentPresence` gains `activity?: string` **in place** (Assets.ts:17 — single definition; the barrel's existing `export * from './types/Assets.js'` carries it; no new file, no new index line).
+- `const LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION = 2` and `interface LocationsSnapshot { schemaVersion: number; gameHour: number; locations: AgentPresence[] }` — added to Assets.ts beside `AgentPresence`.
 
-Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/src/lib/api.ts`, `{ gameHour, locations: [{id, location}] }`) is **not** touched — the current server keeps serving it and the client keeps parsing it. No shared-types test exists in the repo today (verified 2026-07-29: zero `*.test.*` files anywhere), so this task creates the restated-I-11 test fresh; there is nothing to reconcile against yet.
+Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/src/lib/api.ts:119`, `{ gameHour, locations: [{id, location}] }`) is **not** touched — the current server keeps serving it and the client keeps parsing it. The restated-I-11 test ALREADY EXISTS (`test/shared-types.test.ts:43` — "AgentPresence requires the four boundary fields; any additions are optional") and stays byte-identical; this task only APPENDS the activity/LocationsSnapshot assertions to it (D-23: integrate, never overwrite).
 
 **Steps:**
-
-- [ ] Create `/Users/home/aisocialnetwork-BotVille/packages/shared/tsconfig.test.json`:
-
-  ```json
-  {
-    "extends": "../../tsconfig.base.json",
-    "compilerOptions": {
-      "noEmit": true,
-      "allowImportingTsExtensions": true,
-      "types": ["node"]
-    },
-    "include": ["src/**/*", "test/**/*"]
-  }
-  ```
-
-- [ ] In `/Users/home/aisocialnetwork-BotVille/packages/shared/package.json`, add to `"scripts"`:
-
-  ```json
-  "test": "tsc -p tsconfig.test.json && node --test \"test/*.test.ts\""
-  ```
 
 - [ ] In `/Users/home/aisocialnetwork-BotVille/turbo.json`, add to `"tasks"`:
 
@@ -79,99 +64,97 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
   }
   ```
 
-  and in root `/Users/home/aisocialnetwork-BotVille/package.json` add to `"scripts"`: `"test": "turbo test"`. (If a `test` task already exists by execution time — another plan landed first — reuse it as-is; do not duplicate.)
+  and in root `/Users/home/aisocialnetwork-BotVille/package.json` **append** `&& turbo run test` to the existing `test` script — the shipped root suite (bake/appearance/presence/shared-types tests + `golden:names`) MUST keep running; replacing the script orphans it (D-23). The script becomes:
 
-- [ ] Write the failing test, `/Users/home/aisocialnetwork-BotVille/packages/shared/test/locations-snapshot.test.ts` — FULL code:
+  ```json
+  "test": "node --import ./test/ts-resolve.mjs --test --test-concurrency=4 --test-reporter=spec \"test/*.test.mjs\" \"test/*.test.ts\" && npm run golden:names && turbo run test"
+  ```
+
+  (Until Task 2 adds the client's `test` script, `turbo run test` matches zero workspaces and is a fast no-op.)
+
+- [ ] Write the failing additions. In `/Users/home/aisocialnetwork-BotVille/test/shared-types.test.ts`, extend the type-only import at the top of the file with `LocationsSnapshot` and the value import with `LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION`:
 
   ```ts
-  // Addendum I.4: LocationsSnapshot / AgentPresence — the versioned seam payload.
-  // Runtime half runs under `node --test` (native type stripping); the
-  // @ts-expect-error half is enforced by `tsc -p tsconfig.test.json`.
-  // Restated I-11: the four original fields are required and unrenamed;
-  // every addition beyond them is optional-and-ignorable.
-  import { test } from 'node:test';
-  import assert from 'node:assert/strict';
-  import type { AgentPresence, LocationsSnapshot } from '../src/index.ts';
-  import { LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION } from '../src/index.ts';
+  import { SCHEMA_VERSION, LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION } from '../packages/shared/src/types/Assets.ts';
+  import type { AgentPresence, PresenceState, VenueDescriptor, LocationsSnapshot } from '../packages/shared/src/types/Assets.ts';
+  ```
 
-  const presence: AgentPresence = {
-    id: '3f2b6c1e-0000-4000-8000-000000000001',
-    displayName: 'Ada',
-    spriteSeed: 'ada_lovelace',
-    venueId: 'cafe',
-  };
+  (replacing the existing two import lines from `Assets.ts`), then APPEND these tests after the existing `'AgentPresence requires the four boundary fields; any additions are optional'` test — which stays byte-identical:
 
-  test('AgentPresence: the four original fields are required and exactly named', () => {
-    assert.deepEqual(
-      Object.keys(presence).sort(),
-      ['displayName', 'id', 'spriteSeed', 'venueId'],
-    );
-    // @ts-expect-error venueId is required (null means absent; missing is illegal)
-    const missingVenue: AgentPresence = { id: 'x', displayName: 'X', spriteSeed: 'x' };
-    void missingVenue;
-  });
-
-  test('AgentPresence: additions beyond the four are optional-and-ignorable', () => {
-    const withActivity: AgentPresence = { ...presence, activity: 'working' };
+  ```ts
+  test('AgentPresence: activity is the first optional addition (addendum I.4, D-23)', () => {
+    const base: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a', venueId: 'cafe' };
+    const withActivity: AgentPresence = { ...base, activity: 'working' };
     assert.equal(withActivity.activity, 'working');
-    const withoutActivity: AgentPresence = presence; // compiles with no activity
-    assert.equal(withoutActivity.activity, undefined);
-  });
-
-  test('AgentPresence: venueId null (absent) is legal', () => {
-    const absent: AgentPresence = { ...presence, venueId: null };
-    assert.equal(absent.venueId, null);
+    assert.equal(base.activity, undefined); // compiles with no activity — optional-and-ignorable
   });
 
   test('LocationsSnapshot: schemaVersion is required; platform snapshots start at 2', () => {
     const snapshot: LocationsSnapshot = {
       schemaVersion: LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION,
       gameHour: 13.5,
-      locations: [presence],
+      locations: [{ id: 'a', displayName: 'A', spriteSeed: 'a', venueId: null }],
     };
     assert.equal(snapshot.schemaVersion, 2);
     assert.equal(snapshot.locations.length, 1);
-    // @ts-expect-error schemaVersion is required on the v2 snapshot
+    // @ts-expect-error schemaVersion is required on the platform snapshot
     const unversioned: LocationsSnapshot = { gameHour: 0, locations: [] };
     void unversioned;
   });
   ```
 
-- [ ] Run: `npm run test --workspace=packages/shared` — **expected FAIL**: `tsc` errors with `TS2305: Module '"../src/index.ts"' has no exported member 'AgentPresence'` (and `LocationsSnapshot`, `LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION`).
+- [ ] Run: `npm test` (root) — **expected FAIL**: the value import of `LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION` errors at load (`SyntaxError: The requested module ... does not provide an export named 'LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION'`) — a real runtime red even under type stripping.
 
-- [ ] Implement `/Users/home/aisocialnetwork-BotVille/packages/shared/src/types/LocationsSnapshot.ts` — FULL code:
+- [ ] Implement — edit `/Users/home/aisocialnetwork-BotVille/packages/shared/src/types/Assets.ts` **in place**. Replace the boundary comment + interface (currently lines 13-25):
 
   ```ts
-  /**
-   * World addendum I.4 (2026-07-29): the versioned locations payload the
-   * platform serves in integrated mode (`GET /api/botville/locations`, spec
-   * II.2). This interface is the CANONICAL schema for the HTTP seam
-   * (Conventions table); the platform api mirrors it with a zod validator.
-   *
-   * Restated I-11: the four original AgentPresence fields are required and
-   * unrenamed forever; anything beyond them is optional-and-ignorable — the
-   * client renders nothing the platform did not assert.
-   *
-   * The legacy fixture snapshot ({ gameHour, locations: [{ id, location }] },
-   * served by this repo's own server) is a separate, unversioned shape and is
-   * deliberately NOT defined here.
-   */
-
-  /** Platform snapshots carry schemaVersion >= 2; below that the client falls back to fixture mode. */
-  export const LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION = 2;
+  // ── The immutable platform↔city boundary (spec §3.1) ────────────────────
+  // Four fields. They do not change when a venue is added, a pack is
+  // swapped, or the roster grows. Do not extend this interface.
 
   export interface AgentPresence {
-    /** Platform agent uuid. */
+    /** platform agent uuid */
     id: string;
     displayName: string;
-    /** Stable and unique — the platform username; seeds the client-side avatar pick. */
+    /** stable, unique — the username. The only seed appearance derives from. */
     spriteSeed: string;
-    /** null = absent; a value the client does not recognise = unknown (rendered absent). */
+    /** null = absent; an id absent from the registry = unknown */
     venueId: string | null;
-    /** Coarse label from the routine slot ("sleeping", "working"). Optional-and-ignorable. */
+  }
+  ```
+
+  with:
+
+  ```ts
+  // ── The platform↔city boundary (spec §3.1; addendum §I.4, D-23) ─────────
+  // The four ORIGINAL fields are required and unrenamed forever. Anything
+  // beyond them is optional-and-ignorable — restated I-11: the client
+  // renders nothing the platform did not assert. Additions land HERE, in
+  // this one definition, never in a second declaration.
+
+  export interface AgentPresence {
+    /** platform agent uuid */
+    id: string;
+    displayName: string;
+    /** stable, unique — the username. The only seed appearance derives from. */
+    spriteSeed: string;
+    /** null = absent; an id absent from the registry = unknown */
+    venueId: string | null;
+    /** Coarse label from the routine slot ("sleeping", "working"). Optional-and-ignorable (I.4). */
     activity?: string;
   }
 
+  /** Platform snapshots carry schemaVersion >= 2; below that the client falls back to fixture mode (II.2). */
+  export const LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION = 2;
+
+  /**
+   * The versioned locations payload the platform serves in integrated mode
+   * (`GET /api/public/botville/locations` — spec II.2 as amended by D-24).
+   * Canonical schema for the HTTP seam (Conventions table); the platform api
+   * mirrors it with a zod validator. The legacy fixture snapshot
+   * ({ gameHour, locations: [{ id, location }] }, served by this repo's own
+   * server) is a separate, unversioned shape and is deliberately NOT here.
+   */
   export interface LocationsSnapshot {
     /** Bumps on any breaking change to this payload. */
     schemaVersion: number;
@@ -180,25 +163,19 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
   }
   ```
 
-- [ ] In `/Users/home/aisocialnetwork-BotVille/packages/shared/src/index.ts`, add the export line (after the existing five):
+- [ ] Run: `npm test` (root) — **expected PASS**: the whole shipped suite plus the two new tests (the untouched `'AgentPresence requires the four boundary fields...'` test proves the four-field literal still type-checks — additions really are optional).
 
-  ```ts
-  export * from './types/LocationsSnapshot.js';
-  ```
+- [ ] Run: `npm run typecheck` (root, turbo) — **expected PASS** (the field is optional and the two new exports are additive; every consumer of `AgentPresence` compiles unchanged).
 
-- [ ] Run: `npm run test --workspace=packages/shared` — **expected PASS**: `tsc` clean, then `node --test` reports `# pass 4`, `# fail 0` (an `ExperimentalWarning: Type Stripping` line on Node 22 is fine).
-
-- [ ] Run: `npm run typecheck` (root, turbo) — **expected PASS** (no consumer breaks; the new file is additive).
-
-- [ ] Commit: `feat(shared): LocationsSnapshot v2 + AgentPresence per addendum I.4, with restated-I-11 type test`
+- [ ] Commit: `feat(shared): AgentPresence.activity? in place + LocationsSnapshot per addendum I.4 (D-23)`
 
 ---
 
-## Task 2 — Tolerant client parser + fixture/integrated mode switch
+## Task 2 — Tolerant client parser + fixture/integrated mode switch (preserving the F-3 authority)
 
 **Files:**
-- Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.ts` (additive block; `fetchAgentLocations` untouched)
-- Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/hooks/useGameSync.ts` (full rewrite below)
+- Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.ts` (additive block + D-20 fallback hygiene; `fetchAgentLocations` untouched)
+- Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/hooks/useGameSync.ts` (**surgical edits below — NOT a rewrite**: the shipped F-3 `presenceModel.partition` / `warnUnknown` / `flattenSomewhere` pipeline stays the presence authority; integrated mode only swaps the roster source)
 - Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.test.ts`
 - Edit `/Users/home/aisocialnetwork-BotVille/packages/client/package.json` (vitest + `test` script)
 - Edit `/Users/home/aisocialnetwork-BotVille/turbo.json` (declare the two new `VITE_` env vars for build caching)
@@ -207,11 +184,10 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
 - `type PresenceMode = 'fixture' | 'integrated'`
 - `const PRESENCE_MODE: PresenceMode` — picked once at module scope; `'integrated'` iff `VITE_PLATFORM_LOCATIONS_URL` is non-empty
 - `const PLATFORM_API_BASE: string` — from `VITE_PLATFORM_API_BASE` (used by Task 4)
-- `interface PresenceAgent { id: string; name: string; avatarVariant: number; location: AgentLocation; activity?: string }` — structurally the scenes' `SyncedAgent`
-- `interface PlatformSnapshot { gameHour: number; agents: PresenceAgent[] }`
-- `type PlatformLocationsResult = { ok: true; snapshot: PlatformSnapshot } | { ok: false; reason: 'network' | 'invalid-schema' }`
-- `function deriveAvatarVariant(spriteSeed: string): number` — pure, deterministic (FNV-1a), range `[0, ANIMAL_VARIANT_MIN)` so platform agents always render as humans
+- `type PlatformLocationsResult = { ok: true; gameHour: number; roster: AgentPresence[] } | { ok: false; reason: 'network' | 'invalid-schema' }` — the parser returns the raw `AgentPresence` roster; it validates row **shape** only. Venue-knownness, absent and unknown are `presenceModel`'s job (`game/presence.ts`, F-3) — NOT this parser's, and NOT `AGENT_LOCATIONS`'s (retired as a runtime authority; the live registry includes all 17 interiors + district + farm).
 - `async function fetchPlatformLocations(): Promise<PlatformLocationsResult>`
+- `SyncedAgent` (in `useGameSync.ts`) gains `activity?: string` and `spriteSeed?: string` — the latter so scenes can forward platform identity to `AgentSprite` (D-25, wired in Task 3).
+- (No `deriveAvatarVariant` — removed per D-25: platform agents render as seed-derived premade humans via the shipped `spriteSeed` → `AppearanceResolver` path, not a hash-picked legacy variant. The shared `hashString` in `packages/shared/src/hash.mjs` already owns cross-repo seeded hashing if any is ever needed.)
 
 **Steps:**
 
@@ -226,16 +202,17 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
 - [ ] Write the failing test, `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.test.ts` — FULL code:
 
   ```ts
-  // Addendum II.1/II.2: the client half of the presence seam — mode pick,
-  // tolerant LocationsSnapshot parsing, and the three presence states
-  // (somewhere / absent / unknown). Module state (once-per-warn sets) is reset
-  // between tests via vi.resetModules() + dynamic import.
+  // Addendum II.1/II.2: the client half of the presence seam — mode pick and
+  // tolerant LocationsSnapshot parsing. Venue-knownness is deliberately NOT
+  // tested here: presenceModel (game/presence.ts, F-3) is the shipped
+  // authority on somewhere/absent/unknown; this parser only validates row
+  // SHAPE and passes venueId through untouched. Module state (the
+  // once-per-warn flag) is reset between tests via vi.resetModules().
   import { afterEach, describe, expect, it, vi } from 'vitest';
-  import { ANIMAL_VARIANT_MIN } from '@botville/shared';
 
   type ApiModule = typeof import('./api.js');
 
-  const PLATFORM_URL = 'https://platform.test/api/botville/locations';
+  const PLATFORM_URL = 'https://platform.test/api/public/botville/locations';
 
   async function importApi(env: Record<string, string>): Promise<ApiModule> {
     vi.resetModules();
@@ -278,48 +255,20 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
     });
   });
 
-  describe('deriveAvatarVariant', () => {
-    it('is deterministic and stays inside the human variant range', async () => {
-      const api = await importApi({});
-      for (const seed of ['ada', 'bob', 'a-very-long-username-seed', '']) {
-        const variant = api.deriveAvatarVariant(seed);
-        expect(variant).toBe(api.deriveAvatarVariant(seed));
-        expect(variant).toBeGreaterThanOrEqual(0);
-        expect(variant).toBeLessThan(ANIMAL_VARIANT_MIN);
-      }
-    });
-  });
-
   describe('fetchPlatformLocations', () => {
-    it('maps AgentPresence to the SyncedAgent inputs', async () => {
+    it('passes every well-formed row through unfiltered (presenceModel decides placement)', async () => {
       const api = await importApi({ VITE_PLATFORM_LOCATIONS_URL: PLATFORM_URL });
       vi.stubGlobal('fetch', vi.fn(async () => jsonResponse(validSnapshot)));
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const result = await api.fetchPlatformLocations();
       expect(result.ok).toBe(true);
       if (!result.ok) return;
-      expect(result.snapshot.gameHour).toBe(13.5);
-      expect(result.snapshot.agents).toEqual([
-        {
-          id: 'uuid-1',
-          name: 'Ada',
-          avatarVariant: api.deriveAvatarVariant('ada'),
-          location: 'cafe',
-          activity: 'reading',
-        },
-      ]);
-      // uuid-2: venueId null -> absent, no warn. uuid-3: unknown venue -> absent + one warn.
-      expect(warn).toHaveBeenCalledTimes(1);
-      expect(String(warn.mock.calls[0][0])).toContain('observatory');
-    });
-
-    it('warns once per unknown venueId across polls', async () => {
-      const api = await importApi({ VITE_PLATFORM_LOCATIONS_URL: PLATFORM_URL });
-      vi.stubGlobal('fetch', vi.fn(async () => jsonResponse(validSnapshot)));
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      await api.fetchPlatformLocations();
-      await api.fetchPlatformLocations();
-      expect(warn).toHaveBeenCalledTimes(1);
+      expect(result.gameHour).toBe(13.5);
+      // All three rows survive — venueId null AND the unknown 'observatory'
+      // included: absent/unknown handling belongs to presenceModel (F-3),
+      // never to this parser, and the parser itself never warns about them.
+      expect(result.roster).toEqual(validSnapshot.locations);
+      expect(warn).not.toHaveBeenCalled();
     });
 
     it('rejects schemaVersion < 2 with exactly one warning (fixture-fallback signal)', async () => {
@@ -339,7 +288,7 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
       expect(warn).not.toHaveBeenCalled();
     });
 
-    it('skips malformed rows instead of failing the poll', async () => {
+    it('skips malformed rows instead of failing the poll, and drops undeclared activity', async () => {
       const api = await importApi({ VITE_PLATFORM_LOCATIONS_URL: PLATFORM_URL });
       vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({
         schemaVersion: 2,
@@ -347,34 +296,32 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
         locations: [
           { id: 42 },
           null,
-          { id: 'ok', displayName: 'Ok', spriteSeed: 'ok', venueId: 'office' },
+          { id: 'ok', displayName: 'Ok', spriteSeed: 'ok', venueId: 'office', activity: 7 },
         ],
       })));
       const result = await api.fetchPlatformLocations();
       expect(result.ok).toBe(true);
       if (!result.ok) return;
-      expect(result.snapshot.agents.map(a => a.id)).toEqual(['ok']);
+      expect(result.roster).toEqual([
+        { id: 'ok', displayName: 'Ok', spriteSeed: 'ok', venueId: 'office' },
+      ]);
     });
   });
   ```
 
-- [ ] Run: `npm run test --workspace=packages/client` — **expected FAIL**: every test errors at runtime because `./api.js` does not yet export `PRESENCE_MODE`, `deriveAvatarVariant`, `fetchPlatformLocations` (`undefined is not a function` / `.toBe('fixture')` on `undefined`).
+- [ ] Run: `npm run test --workspace=packages/client` — **expected FAIL**: every test errors at runtime because `./api.js` does not yet export `PRESENCE_MODE` / `fetchPlatformLocations` (`.toBe('fixture')` on `undefined` / `undefined is not a function`).
 
-- [ ] Implement the `api.ts` additions. In `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.ts`, replace the first import line
+- [ ] Implement the `api.ts` additions. In `/Users/home/aisocialnetwork-BotVille/packages/client/src/lib/api.ts`, replace the first import line (as it reads today — `AgentLocation` is no longer imported there)
 
   ```ts
-  import type { AgentLocation, CatalogModel, LLMProviderType, UserKeyStatus } from '@botville/shared';
+  import type { CatalogModel, LLMProviderType, UserKeyStatus } from '@botville/shared';
   ```
 
   with
 
   ```ts
-  import type { AgentLocation, AgentPresence, CatalogModel, LLMProviderType, LocationsSnapshot, UserKeyStatus } from '@botville/shared';
-  import {
-    AGENT_LOCATIONS,
-    ANIMAL_VARIANT_MIN,
-    LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION,
-  } from '@botville/shared';
+  import type { AgentPresence, CatalogModel, LLMProviderType, LocationsSnapshot, UserKeyStatus } from '@botville/shared';
+  import { LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION } from '@botville/shared';
   ```
 
   then append this block at the end of the "Agent locations (TZ-16)" section, directly after `fetchAgentLocations` (which stays exactly as it is — it IS the fixture-mode path) — FULL code of the added block:
@@ -383,7 +330,9 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
   // ── Integrated mode (world addendum II.1/II.2): the platform presence seam ──
   // The platform api owns presence; this client renders nothing the platform
   // did not assert (restated I-11). fetchAgentLocations() above stays the
-  // fixture-mode path, untouched.
+  // fixture-mode path, untouched. This parser validates row SHAPE only —
+  // somewhere/absent/unknown is presenceModel's job (game/presence.ts, F-3),
+  // so venueId passes through untouched, null and unknown ids included.
 
   export type PresenceMode = 'fixture' | 'integrated';
 
@@ -397,51 +346,19 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
   /** Picked once at module scope: integrated iff the platform URL is configured at build time. */
   export const PRESENCE_MODE: PresenceMode = PLATFORM_LOCATIONS_URL ? 'integrated' : 'fixture';
 
-  /** What a scene needs to render one platform agent — structurally the scenes' SyncedAgent. */
-  export interface PresenceAgent {
-    id: string;
-    name: string;
-    avatarVariant: number;
-    location: AgentLocation;
-    activity?: string;
-  }
-
-  export interface PlatformSnapshot {
-    gameHour: number;
-    agents: PresenceAgent[];
-  }
-
   export type PlatformLocationsResult =
-    | { ok: true; snapshot: PlatformSnapshot }
+    | { ok: true; gameHour: number; roster: AgentPresence[] }
     | { ok: false; reason: 'network' | 'invalid-schema' };
-
-  /**
-   * FNV-1a over spriteSeed → stable avatar pick in [0, ANIMAL_VARIANT_MIN):
-   * platform agents always render as humans; the seed is the platform username,
-   * so the pick survives reloads and is identical for every viewer.
-   */
-  export function deriveAvatarVariant(spriteSeed: string): number {
-    let hash = 0x811c9dc5;
-    for (let i = 0; i < spriteSeed.length; i++) {
-      hash ^= spriteSeed.charCodeAt(i);
-      hash = Math.imul(hash, 0x01000193);
-    }
-    return (hash >>> 0) % ANIMAL_VARIANT_MIN;
-  }
 
   // Once-per-session warn state (module scope; tests reset via vi.resetModules).
   let warnedInvalidSchema = false;
-  const warnedUnknownVenueIds = new Set<string>();
-
-  function isKnownLocation(venueId: string): venueId is AgentLocation {
-    return (AGENT_LOCATIONS as readonly string[]).includes(venueId);
-  }
 
   /**
-   * Poll the platform LocationsSnapshot endpoint (addendum II.2) and map it to
-   * SyncedAgent inputs. Tolerant by construction: a malformed row is skipped,
-   * an unknown venueId renders the agent absent (one warn per venue id), and a
+   * Poll the platform LocationsSnapshot endpoint (addendum II.2, path per
+   * D-24). Tolerant by construction: a malformed row is skipped, and a
    * snapshot without schemaVersion >= 2 signals fixture fallback (one warn).
+   * The well-formed roster is returned as-is — presenceModel decides
+   * placement (F-3), never this parser.
    */
   export async function fetchPlatformLocations(): Promise<PlatformLocationsResult> {
     let body: unknown;
@@ -468,7 +385,7 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
       return { ok: false, reason: 'invalid-schema' };
     }
 
-    const agents: PresenceAgent[] = [];
+    const roster: AgentPresence[] = [];
     for (const entry of snap.locations as Array<Partial<AgentPresence> | null>) {
       if (
         typeof entry?.id !== 'string' ||
@@ -478,166 +395,162 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
       ) {
         continue; // tolerant: one malformed row never breaks the poll
       }
-      if (entry.venueId === null) continue; // absent — render nothing
-      if (!isKnownLocation(entry.venueId)) {
-        if (!warnedUnknownVenueIds.has(entry.venueId)) {
-          warnedUnknownVenueIds.add(entry.venueId);
-          console.warn(
-            `[presence] unknown venueId "${entry.venueId}" — rendering its agents as absent`,
-          );
-        }
-        continue; // unknown — the third presence state, rendered absent
-      }
-      agents.push({
+      const presence: AgentPresence = {
         id: entry.id,
-        name: entry.displayName,
-        avatarVariant: deriveAvatarVariant(entry.spriteSeed),
-        location: entry.venueId,
-        ...(typeof entry.activity === 'string' ? { activity: entry.activity } : {}),
-      });
+        displayName: entry.displayName,
+        spriteSeed: entry.spriteSeed,
+        venueId: entry.venueId,
+      };
+      if (typeof entry.activity === 'string') presence.activity = entry.activity;
+      roster.push(presence);
     }
-    return { ok: true, snapshot: { gameHour: snap.gameHour, agents } };
+    return { ok: true, gameHour: snap.gameHour, roster };
   }
   ```
 
-- [ ] Rewrite `/Users/home/aisocialnetwork-BotVille/packages/client/src/hooks/useGameSync.ts` — FULL file:
+- [ ] D-20 hygiene (same file, separate concern): retire the dead Vercel/Railway fallback. Replace the block at the top of `api.ts` (currently lines 3-12)
 
   ```ts
-  import { useEffect, useRef, useCallback } from 'react';
-  import { useAgentStore, useUIStore } from '../store/agentStore.js';
-  import { sceneRegistry } from '../game/SceneRegistry.js';
-  import { GameBridge } from '../game/GameBridge.js';
-  import { GameTime } from '../game/time.js';
-  import {
-    fetchAgentLocations,
-    fetchPlatformLocations,
-    PRESENCE_MODE,
-    type PresenceAgent,
-    type PresenceMode,
-  } from '../lib/api.js';
-  import { LOCATION_POLL_MS } from '../game/config.js';
-  import type { Agent, AgentLocation } from '@botville/shared';
-
-  /** What a scene knows about an agent; location decides whether to draw it here (TZ-16). */
-  export interface SyncedAgent {
-    id: string;
-    name: string;
-    avatarVariant: number;
-    location: AgentLocation;
-    /** Addendum O-2 #1 «where + what»: coarse activity label; integrated mode only. */
-    activity?: string;
-  }
-
-  /** Scenes the agent list is synced into (the district and all interiors). */
-  interface AgentSyncScene extends Phaser.Scene {
-    syncAgents(list: SyncedAgent[]): void;
-  }
-
-  function isSyncable(scene: Phaser.Scene | undefined): scene is AgentSyncScene {
-    return !!scene && typeof (scene as Partial<AgentSyncScene>).syncAgents === 'function';
-  }
-
-  // Addendum II.1: the mode is picked ONCE at module scope from the build-time
-  // env (PRESENCE_MODE). The only runtime transition is integrated → fixture
-  // when the platform serves an invalid snapshot (one warn, in api.ts).
-  let presenceMode: PresenceMode = PRESENCE_MODE;
-  /** Latest platform roster; scene sync reads it instead of the store in integrated mode. */
-  let platformAgents: PresenceAgent[] = [];
-
-  export function useGameSync() {
-    const { agents, fetchAgents } = useAgentStore();
-    const { setScene } = useUIStore();
-    const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const agentsRef = useRef<Agent[]>(agents);
-    const sceneKeyRef = useRef('DistrictScene');
-
-    // Keep ref current
-    useEffect(() => { agentsRef.current = agents; }, [agents]);
-
-    // Fetch on mount (HUD roster — the user's own agents, both modes)
-    useEffect(() => {
-      fetchAgents();
-    }, [fetchAgents]);
-
-    // Sync into the active scene; retries until it registers
-    const syncToScene = useCallback((retries = 30) => {
-      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-      const scene = sceneRegistry.get(sceneKeyRef.current);
-      if (isSyncable(scene)) {
-        const list: SyncedAgent[] = presenceMode === 'integrated'
-          ? platformAgents
-          : agentsRef.current.map(a => ({
-              id: a.id,
-              name: a.name,
-              avatarVariant: a.avatarVariant,
-              location: a.location,
-            }));
-        scene.syncAgents(list);
-      } else if (retries > 0) {
-        syncTimeoutRef.current = setTimeout(() => syncToScene(retries - 1), 400);
-      }
-    }, []);
-
-    // TZ-16 + addendum II.2: "who is where" polling + game hour. Integrated —
-    // the platform; fixture — this repo's own server. Whichever server it is,
-    // it is the source of truth for location; the client only renders.
-    useEffect(() => {
-      let stopped = false;
-      const poll = async () => {
-        if (presenceMode === 'integrated') {
-          const result = await fetchPlatformLocations();
-          if (stopped) return;
-          if (result.ok) {
-            GameTime.syncFrom(result.snapshot.gameHour);
-            platformAgents = result.snapshot.agents;
-            syncToScene();
-            return;
-          }
-          if (result.reason === 'network') return; // keep last roster; retry next tick
-          presenceMode = 'fixture'; // invalid schema — warned once in api.ts
-        }
-        const snap = await fetchAgentLocations();
-        if (!snap || stopped) return;
-        GameTime.syncFrom(snap.gameHour);
-        useAgentStore.getState().applyLocations(snap.locations);
-      };
-      void poll();
-      const interval = setInterval(() => { void poll(); }, LOCATION_POLL_MS);
-      return () => { stopped = true; clearInterval(interval); };
-    }, [syncToScene]);
-
-    // Sync whenever agents list changes (fixture pipeline; harmless when integrated)
-    useEffect(() => {
-      agentsRef.current = agents;
-      syncToScene();
-      return () => {
-        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
-      };
-    }, [agents, syncToScene]);
-
-    // Scene change — sync agents into the new scene
-    useEffect(() => {
-      const handler = ({ scene }: { scene: string }) => {
-        setScene(scene);
-        sceneKeyRef.current = scene;
-        // a short pause so Phaser finishes registering the new scene
-        setTimeout(() => syncToScene(), 100);
-      };
-      GameBridge.on('scene:changed', handler);
-      return () => { GameBridge.off('scene:changed', handler); };
-    }, [setScene, syncToScene]);
-  }
+  // In dev, Vite proxy handles /api → localhost:3001 (API_BASE = '').
+  // In prod, VITE_API_URL wins if set at build time; otherwise fall back to the
+  // known Railway server URL (public, not a secret). Fallback added 2026-07-16:
+  // env-injection through vercel build proved unreliable on this setup.
+  // NB: `||` (not `??`) — vercel pull returns Sensitive variables as an empty
+  // string, and it must not clobber the fallback.
+  const PROD_API_FALLBACK = 'https://botvilleserver-production.up.railway.app';
+  const envUrl = import.meta.env.VITE_API_URL;
+  export const API_BASE =
+    envUrl || (import.meta.env.PROD ? PROD_API_FALLBACK : '');
   ```
 
-- [ ] Run: `npm run test --workspace=packages/client` — **expected PASS**: 8 tests pass in `api.test.ts`.
+  with
 
-- [ ] Run: `npm run typecheck --workspace=packages/client` — **expected PASS** (no scene touches yet; `SyncedAgent.activity` is optional, so `syncAgents` consumers compile unchanged).
+  ```ts
+  // In dev, Vite proxy handles /api → localhost:3001 (API_BASE = '').
+  // In prod, VITE_API_URL is set at build time; the default is '' — same
+  // origin, which is how the self-hosted Docker deployment fronts client and
+  // server (D-20; see README ## Docker). The old Vercel/Railway fallback URL
+  // is retired with those platforms (D-20). `||` (not `??`) so an
+  // empty-string env value cannot clobber the same-origin default.
+  const envUrl = import.meta.env.VITE_API_URL;
+  export const API_BASE = envUrl || '';
+  ```
 
-- [ ] Commit: `feat(client): fixture/integrated presence mode switch + tolerant platform LocationsSnapshot parser (addendum II.1/II.2)`
+  If the deployment ever splits client and api across origins, `VITE_API_URL` must be set at build time — document nothing new; the README env table (Task 5) already covers build-time vars.
+
+- [ ] Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/hooks/useGameSync.ts` — **four surgical edits on the merged F-3 file** (NOT a rewrite; `presenceModel.partition` / `warnUnknown` / `flattenSomewhere` stay the single presence authority):
+
+  1. Replace the api import line
+
+     ```ts
+     import { fetchAgentLocations } from '../lib/api.js';
+     ```
+
+     with
+
+     ```ts
+     import { fetchAgentLocations, fetchPlatformLocations, PRESENCE_MODE, type PresenceMode } from '../lib/api.js';
+     ```
+
+  2. Extend `SyncedAgent` — after the existing `location: string;` field add:
+
+     ```ts
+     /** Addendum O-2 #1 «where + what»: coarse activity label; integrated mode only. */
+     activity?: string;
+     /** Platform identity for derived appearance (D-25); fixture agents omit it. */
+     spriteSeed?: string;
+     ```
+
+  3. After the `isSyncable(...)` function, add the module-scope mode state:
+
+     ```ts
+     // Addendum II.1: the mode is picked ONCE at module scope from the
+     // build-time env (PRESENCE_MODE). The only runtime transition is
+     // integrated → fixture when the platform serves an invalid snapshot
+     // (one warn, in api.ts).
+     let presenceMode: PresenceMode = PRESENCE_MODE;
+     /** Latest platform roster; syncToScene partitions it instead of the store in integrated mode. */
+     let platformRoster: AgentPresence[] = [];
+     ```
+
+  4. Two body edits, roster source and poll:
+
+     a. In `syncToScene`, replace the roster construction + scene call (the block from `const roster: AgentPresence[] = agentsRef.current.map(...)` through `scene.syncAgents(...)`) with a mode-aware source **feeding the same partition**:
+
+     ```ts
+     // F-3: PresenceModel is the runtime authority on "who is where" — BOTH
+     // modes route through it. Unknown/absent agents never reach a scene,
+     // and unknown ids get warnUnknown's single compact warning per id.
+     const roster: AgentPresence[] = presenceMode === 'integrated'
+       ? platformRoster
+       : agentsRef.current.map(a => ({
+           id: a.id, displayName: a.name, spriteSeed: a.id, venueId: a.location,
+         }));
+     const { somewhere, unknown } = presenceModel.partition(roster);
+     warnUnknown(unknown);
+     const visible = flattenSomewhere(somewhere);
+     const list: SyncedAgent[] = presenceMode === 'integrated'
+       ? platformRoster
+           .filter(p => visible.has(p.id) && p.venueId !== null)
+           .map(p => ({
+             id: p.id,
+             name: p.displayName,
+             avatarVariant: 0, // dead field for platform agents — identity drives appearance (D-25)
+             spriteSeed: p.spriteSeed,
+             location: p.venueId as string,
+             ...(p.activity !== undefined ? { activity: p.activity } : {}),
+           }))
+       : agentsRef.current
+           .filter(a => visible.has(a.id))
+           .map(a => ({
+             id: a.id,
+             name: a.name,
+             avatarVariant: a.avatarVariant,
+             location: a.location,
+           }));
+     scene.syncAgents(list);
+     ```
+
+     b. Replace the poll body (currently the four-line `fetchAgentLocations` sequence inside `const poll = async () => { ... }`) with the mode branch — the fixture path stays byte-identical as the fall-through:
+
+     ```ts
+     const poll = async () => {
+       if (presenceMode === 'integrated') {
+         const result = await fetchPlatformLocations();
+         if (stopped) return;
+         if (result.ok) {
+           GameTime.syncFrom(result.gameHour);
+           platformRoster = result.roster;
+           syncToScene();
+           return;
+         }
+         if (result.reason === 'network') return; // keep last roster; retry next tick
+         presenceMode = 'fixture'; // invalid schema — warned once in api.ts
+       }
+       const snap = await fetchAgentLocations();
+       if (!snap || stopped) return;
+       GameTime.syncFrom(snap.gameHour);
+       useAgentStore.getState().applyLocations(snap.locations);
+     };
+     ```
+
+     Keep that effect's dependency array as `[]`: in the merged file the poll
+     effect sits ABOVE the `const syncToScene = useCallback(...)` declaration,
+     so naming `syncToScene` in the dep array would evaluate it during render
+     before initialization (TDZ crash); calling it inside the callback is safe
+     because effects run after the component body completes, and
+     `syncToScene` is a stable `useCallback([])` anyway. Nothing else in the
+     file changes.
+
+- [ ] Run: `npm run test --workspace=packages/client` — **expected PASS**: 6 tests pass in `api.test.ts`.
+
+- [ ] Run: `npm run typecheck --workspace=packages/client` — **expected PASS** (no scene touches yet; `SyncedAgent.activity`/`spriteSeed` are optional, so `syncAgents` consumers compile unchanged).
+
+- [ ] Commit: `feat(client): fixture/integrated presence mode switch + tolerant platform parser feeding PresenceModel (addendum II.1/II.2, D-20 fallback hygiene)`
 
 ---
 
-## Task 3 — Activity label on the agent sprite
+## Task 3 — Activity label on the agent sprite + platform identity forwarding (D-25)
 
 **Files:**
 - Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/game/agents/activityLabel.ts`
@@ -650,8 +563,9 @@ Note: the legacy fixture snapshot (`AgentLocationsSnapshot` in `packages/client/
 - `const ACTIVITY_LABEL_MAX_CHARS = 24`
 - `function formatActivityLabel(activity: string | undefined): string | null` — pure; `null` when there is nothing to render
 - `AgentSprite.setActivity(activity?: string): void` — creates/updates/removes a small text under the sprite, styled like the existing `nameLabel`
+- D-25 wiring: both scenes' `syncAgents` forward `SyncedAgent.spriteSeed` (present only for platform agents, Task 2) as `AgentSprite`'s existing optional `identity` constructor arg — platform agents render as seed-derived premade humans via the shipped `AppearanceResolver` path; fixture agents pass `undefined` and keep the legacy variant path, byte-identically.
 
-The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` outside the container's own transform, repositioned in `update()`, `NAME_LABEL_DEPTH`, monospace + `UI.ink900` stroke). It sits just below the feet, is absent when `activity` is `undefined` (the client renders nothing the platform did not assert), and is capped at 24 characters. Phaser itself is not unit-tested (it needs a browser canvas); the pure formatter is, and the sprite/scene wiring is verified by typecheck.
+The label follows the `nameLabel` pattern (a `Phaser.GameObjects.Text` outside the container's own transform, repositioned in `update()`, `NAME_LABEL_DEPTH`, monospace + `UI.ink900` stroke — `UI` comes from `../palette.js`, AgentSprite.ts:6). It sits just below the feet, is absent when `activity` is `undefined` (the client renders nothing the platform did not assert), and is capped at 24 characters. Note (re-anchored 2026-07-30): the merged sprite NEVER hides the name label — there is no `hideInside()`; the sleep path is `sleepOutside()`/`wakeUp()` (AgentSprite.ts:247-263) and neither touches label visibility — so the activity plate needs no visibility mirroring, only position tracking. Phaser itself is not unit-tested (it needs a browser canvas); the pure formatter is, and the sprite/scene wiring is verified by typecheck.
 
 **Steps:**
 
@@ -711,7 +625,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   }
   ```
 
-- [ ] Run: `npm run test --workspace=packages/client` — **expected PASS** (12 tests total).
+- [ ] Run: `npm run test --workspace=packages/client` — **expected PASS** (10 tests total).
 
 - [ ] Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/game/agents/AgentSprite.ts` — five surgical changes, exact code:
 
@@ -741,6 +655,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
        }
        if (!this.activityLabel) {
          // Same recipe as nameLabel: outside the container, above props-above.
+         // No visibility mirroring: the merged sprite never hides nameLabel.
          this.activityLabel = this.scene.add.text(this.x, this.y + 3, text, {
            fontSize: '6px',
            color: UI.textOnDark,
@@ -748,26 +663,25 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
            stroke: UI.ink900,
            strokeThickness: 2,
          }).setOrigin(0.5, 0).setDepth(NAME_LABEL_DEPTH).setAlpha(0.85);
-         this.activityLabel.setVisible(this.nameLabel.visible);
        } else {
          this.activityLabel.setText(text);
        }
      }
      ```
 
-  4. Track visibility and position with the name plate — in `hideInside()` add after `this.nameLabel.setVisible(false);`:
+  4. Track position with the name plate (re-anchored 2026-07-30: there is no
+     `hideInside()` and nothing ever calls `nameLabel.setVisible`, so there
+     is NO visibility edit) — in `update()`, directly after the existing
+     multi-line call
 
      ```ts
-     this.activityLabel?.setVisible(false);
+     this.nameLabel.setPosition(
+       this.x,
+       this.y - this.variantDef.frameHeight * this.variantDef.scale - 6,
+     );
      ```
 
-     in `wakeUp()` add after `this.nameLabel.setVisible(true);`:
-
-     ```ts
-     this.activityLabel?.setVisible(true);
-     ```
-
-     and in `update()` add directly after the existing `this.nameLabel.setPosition(...)` call:
+     add:
 
      ```ts
      this.activityLabel?.setPosition(this.x, this.y + 3);
@@ -793,38 +707,51 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
      sprite.setActivity(activityOf.get(id));
      ```
 
-  3. In the `present.forEach((a) => { ... })` creation block, directly after `const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y);` add:
+  3. In the `present.forEach((a) => { ... })` creation block, replace the constructor call
 
      ```ts
+     const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y);
+     ```
+
+     with (D-25: platform agents carry `spriteSeed` → derived appearance; fixture agents pass `undefined` and keep the legacy variant path):
+
+     ```ts
+     const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y,
+       a.spriteSeed !== undefined ? { spriteSeed: a.spriteSeed, gender: '' } : undefined);
      sprite.setActivity(a.activity);
      ```
 
-- [ ] Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/game/scenes/InteriorScene.ts` `syncAgents` — replace the start of the creation loop
+     (`gender: ''` is honest: the platform payload carries no gender — spec I.4 — and the appearance normaliser maps unrecognised input to the neutral build, never branching on raw values.)
+
+- [ ] Edit `/Users/home/aisocialnetwork-BotVille/packages/client/src/game/scenes/InteriorScene.ts` `syncAgents` (re-anchored 2026-07-30 — the merged loop is slot-based, `agentList.forEach(a => { ... })` with a `let sprite = this.agentSprites.get(a.id); if (!sprite) { ... }` create-if-missing block, InteriorScene.ts:286-292; there is no early-return for existing sprites). Replace
 
   ```ts
-  agentList.forEach((a, i) => {
-    if (this.agentSprites.has(a.id)) return;
+      let sprite = this.agentSprites.get(a.id);
+      if (!sprite) {
+        sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, this.spawnPoint.x, this.spawnPoint.y);
+        this.agentSprites.set(a.id, sprite);
+      }
   ```
 
   with
 
   ```ts
-  agentList.forEach((a, i) => {
-    const existing = this.agentSprites.get(a.id);
-    if (existing) { existing.setActivity(a.activity); return; }
+      let sprite = this.agentSprites.get(a.id);
+      if (!sprite) {
+        sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, this.spawnPoint.x, this.spawnPoint.y,
+          a.spriteSeed !== undefined ? { spriteSeed: a.spriteSeed, gender: '' } : undefined);
+        this.agentSprites.set(a.id, sprite);
+      }
+      sprite.setActivity(a.activity);
   ```
 
-  and directly after `const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y);` add:
+  — one edit covers both branches: newly created and already-present sprites get the current label.
 
-  ```ts
-  sprite.setActivity(a.activity);
-  ```
+- [ ] Run: `npm run typecheck --workspace=packages/client` — **expected PASS**. Run: `npm run test --workspace=packages/client` — **expected PASS** (still 10).
 
-- [ ] Run: `npm run typecheck --workspace=packages/client` — **expected PASS**. Run: `npm run test --workspace=packages/client` — **expected PASS** (still 12).
+- [ ] Manual smoke (fixture mode, no env vars): `npm run dev` from the repo root, open http://localhost:5173 — agents render exactly as before (legacy variants, no derived appearances: fixture `SyncedAgent`s carry no `spriteSeed`), and **no** activity labels appear (fixture presence has no `activity`). This is the "renders nothing not asserted" check.
 
-- [ ] Manual smoke (fixture mode, no env vars): `npm run dev` from the repo root, open http://localhost:5173 — agents render exactly as before, **no** activity labels appear (fixture presence has no `activity`). This is the "renders nothing not asserted" check.
-
-- [ ] Commit: `feat(client): activity label under agent sprites (addendum O-2 #1), absent unless asserted`
+- [ ] Commit: `feat(client): activity label under agent sprites (addendum O-2 #1) + platform identity forwarding (D-25)`
 
 ---
 
@@ -842,7 +769,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 - `interface VenueNote { id: string; body: string; createdAt: string }` — `createdAt` is an ISO-8601 string, exactly what the platform's `VenueNoteSchema` serialises (Plan 01 Task 1)
 - `const VENUE_NOTES_MAX_SHOWN = 10`
 - `async function fetchVenueNotes(venueId: string): Promise<VenueNote[]>` — GET `${PLATFORM_API_BASE}/api/public/botville/venues/:venueId/notes`, tolerant parse of the platform controller's `{ success, venueId, notes: [...] }` shape (Plan 01 Task 6 — no `data` envelope), newest first, max 10, `[]` on any failure
-- `function VenueNotesPanel(): JSX.Element | null` — DOM overlay, follows the existing `ui/` panel pattern (CSS module + `theme.css` tokens + `useT()` i18n); scene → venueId comes from the existing `INTERIORS` map in `game/config.ts` (its map keys `office`/`cafe`/`dorm`/`library` are exactly the venue ids)
+- `function VenueNotesPanel(): JSX.Element | null` — DOM overlay, follows the existing `ui/` panel pattern (CSS module + `theme.css` tokens + `useT()` i18n); scene → venueId is parsed from the scene key (re-anchored 2026-07-30: `INTERIORS` no longer exists — `game/config.ts:13` points to the venue registry; interiors register under `sceneKeyFor(venue.id)` = `` `VenueScene:${venueId}` ``, `game/venueRegistry.ts:50-52`), which covers ALL interiors — café, library, office, dorm and the 13 houses — with zero hardcoded venue ids
 
 **Steps:**
 
@@ -941,7 +868,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   }
   ```
 
-- [ ] Run: `npm run test --workspace=packages/client` — **expected PASS** (15 tests).
+- [ ] Run: `npm run test --workspace=packages/client` — **expected PASS** (13 tests).
 
 - [ ] Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/ui/VenueNotes/VenueNotesPanel.tsx` — FULL code:
 
@@ -949,16 +876,19 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   import { useEffect, useState } from 'react';
   import { useUIStore } from '../../store/agentStore.js';
   import { fetchVenueNotes, type VenueNote } from '../../lib/api.js';
-  import { INTERIORS } from '../../game/config.js';
   import { useT } from '../../i18n/index.js';
   import styles from './VenueNotesPanel.module.css';
 
   // Addendum II.6 "render notes": a minimal venue-notes overlay.
   // Mounted from App.tsx ONLY in integrated mode; in fixture mode it does not exist at all.
-  // Scene → venueId: the map keys in INTERIORS are exactly the interiors' venueIds.
+  // Scene → venueId: interiors register under sceneKeyFor(venue.id) =
+  // `VenueScene:<venueId>` (game/venueRegistry.ts), so the id is parsed from
+  // the scene key — every interior, houses included, no hardcoded list.
+
+  const VENUE_SCENE_PREFIX = 'VenueScene:';
 
   function venueIdOf(scene: string): string | null {
-    return (INTERIORS as Record<string, string>)[scene] ?? null;
+    return scene.startsWith(VENUE_SCENE_PREFIX) ? scene.slice(VENUE_SCENE_PREFIX.length) : null;
   }
 
   export function VenueNotesPanel() {
@@ -993,7 +923,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
   }
   ```
 
-- [ ] Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/ui/VenueNotes/VenueNotesPanel.module.css` — FULL code (tokens from `ui/theme.css`, same family as `KeysPanel.module.css`):
+- [ ] Create `/Users/home/aisocialnetwork-BotVille/packages/client/src/ui/VenueNotes/VenueNotesPanel.module.css` — FULL code (tokens from `ui/theme.css`, same family as the existing `HUD` module CSS):
 
   ```css
   /* Addendum II.6: floating venue-notes card (integrated mode). */
@@ -1038,7 +968,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 
   Fixture mode skips the component entirely — it is never mounted, no fetches, no DOM.
 
-- [ ] Run: `npm run typecheck --workspace=packages/client` — **expected PASS**. Run: `npm run test --workspace=packages/client` — **expected PASS** (15).
+- [ ] Run: `npm run typecheck --workspace=packages/client` — **expected PASS**. Run: `npm run test --workspace=packages/client` — **expected PASS** (13).
 
 - [ ] Manual smoke (fixture mode): `npm run dev`, enter the café — no notes panel exists in the DOM.
 
@@ -1085,7 +1015,7 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 
   | Env var (client build time) | Meaning |
   |---|---|
-  | `VITE_PLATFORM_LOCATIONS_URL` | Full URL of the platform locations endpoint (e.g. `https://<platform-host>/api/botville/locations`). Setting it switches the client to integrated mode. |
+  | `VITE_PLATFORM_LOCATIONS_URL` | Full URL of the platform locations endpoint (e.g. `https://<platform-host>/api/public/botville/locations` — canonical path per D-24). Setting it switches the client to integrated mode. |
   | `VITE_PLATFORM_API_BASE` | Base URL of the platform api, used for public venue reads (the venue-notes overlay). Integrated mode only. |
 
   If the platform responds with a snapshot whose `schemaVersion` is missing or
@@ -1101,7 +1031,8 @@ The label follows the `nameLabel` pattern exactly (a `Phaser.GameObjects.Text` o
 
 ## Done means
 
-- `npm run test` (root, turbo) runs shared + client suites green: 4 `node --test` assertions in shared, 15 vitest tests in client.
+- `npm test` (root) runs the whole shipped suite green PLUS this plan's additions: the two new shared-type tests in `test/shared-types.test.ts` and — via the appended `turbo run test` — 13 vitest tests in the client.
 - `npm run typecheck` green across the workspace.
-- Fixture mode is visually indistinguishable from before this plan (no labels, no notes panel, same polling).
-- Nothing under `docs/superpowers/plans/2026-07-27-botville-visual-assets/` was modified, and `AGENT_LOCATIONS` still lists exactly the original six venues.
+- Fixture mode is visually indistinguishable from before this plan (no labels, no notes panel, legacy avatar variants, same polling), and the F-3 `presenceModel` pipeline is still the single presence authority in both modes.
+- Nothing under `docs/superpowers/plans/2026-07-27-botville-visual-assets/` was modified; `AGENT_LOCATIONS` in `packages/shared/src/types/Agent.ts` still lists exactly the original six venues; the pre-existing test at `test/shared-types.test.ts:43` is byte-identical.
+- `packages/client/src/lib/api.ts` no longer mentions Railway or Vercel (D-20).
