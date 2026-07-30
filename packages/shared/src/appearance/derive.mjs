@@ -18,15 +18,6 @@
  * does, and that exists solely inside `node --test`. Importing the constant
  * from the .ts file would make this module load in tests and nowhere else.
  * test/harness-no-hook.test.mjs is the guard.
- *
- * OWNER-PICK NOTE (2026-07-30): HAIR_STYLES and OUTFIT_COLORS name the axis
- * SLOTS (12 and 8 respectively), not the concrete art-pack sheets that will
- * fill them — which pack sheet becomes "buzz" or which outfit sheet renders
- * as '#c0392b' is an owner curation decision still in flight for the sprite
- * bake (Tasks 29-30). Nothing here depends on that mapping: the derivation
- * only ever produces these slot identifiers, never a sheet path. When the
- * concrete pick lands, it is a lookup keyed by these same strings — this file
- * does not change.
  */
 import { SCHEMA_VERSION } from '../schemaVersion.mjs';
 
@@ -37,8 +28,49 @@ import { SCHEMA_VERSION } from '../schemaVersion.mjs';
 import { hashString } from '../hash.mjs';
 export { hashString };
 
+/**
+ * (D-19, 2026-07-30) COMMITTED GENERATED DATA — never hand-transcribed.
+ * `scripts/gen-variant-manifest.mjs` (which calls the pure
+ * `buildVariantManifest` in `scripts/lib/variantManifest.mjs`) derives these
+ * from the pack's own file names (Task 26 Step 3a) and writes them to
+ * `sources/<pack>.variants.json` / `.variants.outfit.json`. Task 27 Step 0
+ * regenerates the real pack's copy with any coverage-failing hair variant
+ * automatically excluded. `derive.mjs` imports the SHIPPING pack's
+ * manifest — swapping the import is how a pack change re-rolls every
+ * derived appearance (owner-accepted, D-19).
+ *
+ * Shape: `{ styles: string[], variantsByStyle: Record<string, string[]> }` —
+ * both `styles` and every value in `variantsByStyle` are sorted.
+ *
+ * No art on disk required to import THESE (Task 26 stays "no art needed" for
+ * every consumer of derive.mjs): they are grouped from the FILENAME index the
+ * art-pack QA pass already captured 2026-07-29, not from the pixels
+ * themselves. Task 27 Step 0 later regenerates them WITH coverage-based
+ * exclusion, which does need the real pixels — that reopening is
+ * real-pack-gated, this initial commit is not.
+ */
+import HAIR_MANIFEST from '../../../../sources/limezu.variants.json' with { type: 'json' };
+import OUTFIT_MANIFEST from '../../../../sources/limezu.variants.outfit.json' with { type: 'json' };
+export { HAIR_MANIFEST, OUTFIT_MANIFEST };
+
 export function pickFrom(list, seed, salt) {
   return list[hashString(seed, salt) % list.length];
+}
+
+/**
+ * (D-19, 2026-07-30) The two-stage pack-derived pick shared by hair and
+ * outfit: a style, then that style's OWN built-in variant — never a flat
+ * pick over every file (that would weight styles with more variants more
+ * heavily) and never an algorithmic recolor (there is no hex axis here at
+ * all any more). `manifest` is a committed, generated
+ * `{ styles: string[], variantsByStyle: Record<string, string[]> }` — see
+ * `scripts/lib/variantManifest.mjs` and Task 27 Step 0 for how a variant
+ * can be dropped from it automatically.
+ */
+export function pickStyleAndVariant(manifest, seed, styleSalt, variantSalt) {
+  const style = pickFrom(manifest.styles, seed, styleSalt);
+  const variant = pickFrom(manifest.variantsByStyle[style], seed, variantSalt);
+  return { style, variant };
 }
 
 // ── palettes ────────────────────────────────────────────────────────────
@@ -46,24 +78,16 @@ export function pickFrom(list, seed, salt) {
 // colour must stay distinguishable under the night tint (DAY_TINT_KEYS
 // reaches alpha 0.45) and for colour-vision deficiency. Name labels remain
 // the authoritative identifier; colour is an aid, never the only channel.
+//
+// (D-19, 2026-07-30) Hair and outfit are NOT here any more. There is no
+// HAIR_STYLES name list, no HAIR_COLORS hex array and no OUTFIT_COLORS hex
+// array — style comes from the pack's own distinct hairstyle/outfit
+// directories and colour comes from the pack's own sibling variant file.
+// The only axes still spelled out as an in-repo array are the ones D-19
+// leaves untouched: skin tone (a body-layer tint), eyes (a sheet-selection
+// axis with no tint at all) and accessories (silhouette, not colour).
 
 export const SKIN_TONES = ['#5c3317', '#8d5524', '#c68642', '#e0ac69', '#f1c27d', '#ffdbac'];
-
-/** Silhouette carries more at 16px than hue does — styles differ in volume. */
-export const HAIR_STYLES = [
-  'buzz', 'short_crop', 'side_part', 'bob', 'long_straight', 'ponytail',
-  'bun', 'curly_short', 'curly_long', 'afro', 'mohawk', 'braids',
-];
-
-export const HAIR_COLORS = [
-  '#1a1a1a', '#4a2c19', '#8b5a2b', '#c98a3b', '#e8c547',
-  '#f2f2f2', '#8c8c8c', '#a33b2a', '#d2691e', '#3f5fa8',
-];
-
-export const OUTFIT_COLORS = [
-  '#c0392b', '#2980b9', '#27ae60', '#f1c40f',
-  '#8e44ad', '#e67e22', '#ecf0f1', '#34495e',
-];
 
 /**
  * Eyes are a SHEET-SELECTION axis, not a colour: the pack ships one full
@@ -94,22 +118,25 @@ export function normalizeGender(raw) {
 /**
  * @param {string} spriteSeed stable, unique — the username
  * @param {unknown} gender free text from users.gender
- * @returns {{build:string, skinTone:string, eyes:string, hairStyle:string, hairColor:string, outfit:string, accessory:string}}
+ * @returns {{build:string, skinTone:string, eyes:string, hairStyle:string, hairVariant:string, outfit:string, outfitVariant:string, accessory:string}}
  */
 export function appearanceRecord(spriteSeed, gender) {
+  const hair = pickStyleAndVariant(HAIR_MANIFEST, spriteSeed, 'sprite:hairStyle', 'sprite:hairVariant');
+  const outfit = pickStyleAndVariant(OUTFIT_MANIFEST, spriteSeed, 'sprite:outfitStyle', 'sprite:outfitVariant');
   return {
-    build:     normalizeGender(gender),                          // not hashed
-    skinTone:  pickFrom(SKIN_TONES,     spriteSeed, 'sprite:skin'),
-    eyes:      pickFrom(EYE_VARIANTS,   spriteSeed, 'sprite:eyes'),
-    hairStyle: pickFrom(HAIR_STYLES,    spriteSeed, 'sprite:hairStyle'),
-    hairColor: pickFrom(HAIR_COLORS,    spriteSeed, 'sprite:hairColor'),
-    outfit:    pickFrom(OUTFIT_COLORS,  spriteSeed, 'sprite:outfit'),
-    accessory: pickFrom(ACCESSORIES,    spriteSeed, 'sprite:accessory'),
+    build:         normalizeGender(gender),                       // not hashed
+    skinTone:      pickFrom(SKIN_TONES,   spriteSeed, 'sprite:skin'),
+    eyes:          pickFrom(EYE_VARIANTS, spriteSeed, 'sprite:eyes'),
+    hairStyle:     hair.style,
+    hairVariant:   hair.variant,     // (D-19) the pack's own colour variant — not a hex value
+    outfit:        outfit.style,
+    outfitVariant: outfit.variant,   // (D-19) new field: outfit is two-stage now, same as hair
+    accessory:     pickFrom(ACCESSORIES, spriteSeed, 'sprite:accessory'),
   };
 }
 
 /** Key order is fixed so JSON.stringify is stable across engines. */
-const KEYS = ['build', 'skinTone', 'eyes', 'hairStyle', 'hairColor', 'outfit', 'accessory'];
+const KEYS = ['build', 'skinTone', 'eyes', 'hairStyle', 'hairVariant', 'outfit', 'outfitVariant', 'accessory'];
 const canonical = record => JSON.stringify(KEYS.map(k => record[k]));
 
 /**
@@ -124,7 +151,14 @@ export function appearanceHash(record) {
   return appearanceHashAt(record, SCHEMA_VERSION);
 }
 
+/**
+ * (D-19, 2026-07-30) Hair/outfit counts come from the manifests' own
+ * `.length` — never a hardcoded product — so this number tracks whatever
+ * the committed manifest says today, including any automatic exclusions
+ * from Task 27 Step 0.
+ */
 export function appearanceSpaceSize() {
-  return BUILDS.length * SKIN_TONES.length * EYE_VARIANTS.length * HAIR_STYLES.length
-    * HAIR_COLORS.length * OUTFIT_COLORS.length * ACCESSORIES.length;
+  const hairCount = Object.values(HAIR_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  const outfitCount = Object.values(OUTFIT_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  return BUILDS.length * SKIN_TONES.length * EYE_VARIANTS.length * hairCount * outfitCount * ACCESSORIES.length;
 }

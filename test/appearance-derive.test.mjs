@@ -3,9 +3,12 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import {
   normalizeGender, appearanceRecord, appearanceHash,
-  appearanceSpaceSize, SKIN_TONES, EYE_VARIANTS, HAIR_STYLES, HAIR_COLORS,
-  OUTFIT_COLORS, ACCESSORIES,
+  appearanceSpaceSize, SKIN_TONES, EYE_VARIANTS, ACCESSORIES, BUILDS,
+  HAIR_MANIFEST, OUTFIT_MANIFEST,
 } from '../packages/shared/src/appearance/derive.mjs';
+// HAIR_STYLES / HAIR_COLORS / OUTFIT_COLORS are gone (D-19, 2026-07-30):
+// hair and outfit are pack-derived two-stage picks over HAIR_MANIFEST /
+// OUTFIT_MANIFEST — committed generated data, not a hardcoded hex palette.
 
 // The hashString unit and cross-repo contract tests live in
 // test/shared-types.test.ts (Plan 1 Task 2), beside hash.mjs itself.
@@ -41,22 +44,33 @@ test('every axis is seed-derived — no dimension is gated on gender', () => {
   const m = appearanceRecord('aisha_khan', 'male');
   const f = appearanceRecord('aisha_khan', 'female');
   assert.notEqual(m.build, f.build);
-  for (const k of ['skinTone', 'eyes', 'hairStyle', 'hairColor', 'outfit', 'accessory'])
+  for (const k of ['skinTone', 'eyes', 'hairStyle', 'hairVariant', 'outfit', 'outfitVariant', 'accessory'])
     assert.equal(m[k], f[k], `${k} must not depend on build`);
 });
 
-test('every derived value comes from its declared palette', () => {
+test('every derived value comes from its declared palette or pack manifest', () => {
   const r = appearanceRecord('the_skeptic', 'male');
   assert.ok(SKIN_TONES.includes(r.skinTone));
   assert.ok(EYE_VARIANTS.includes(r.eyes));
-  assert.ok(HAIR_STYLES.includes(r.hairStyle));
-  assert.ok(HAIR_COLORS.includes(r.hairColor));
-  assert.ok(OUTFIT_COLORS.includes(r.outfit));
+  // Hair and outfit are two-stage pack picks (D-19, 2026-07-30): the style
+  // must be one of the manifest's sorted distinct styles, and the variant
+  // must belong to THAT style's own sorted variant list — proving the pick
+  // is not just "any file", but style-then-variant-within-style.
+  assert.ok(HAIR_MANIFEST.styles.includes(r.hairStyle));
+  assert.ok(HAIR_MANIFEST.variantsByStyle[r.hairStyle].includes(r.hairVariant));
+  assert.ok(OUTFIT_MANIFEST.styles.includes(r.outfit));
+  assert.ok(OUTFIT_MANIFEST.variantsByStyle[r.outfit].includes(r.outfitVariant));
   assert.ok(ACCESSORIES.includes(r.accessory));
 });
 
 test('the space is at least 10^4 as G-D requires', () => {
-  assert.equal(appearanceSpaceSize(), 3 * 6 * 7 * 12 * 10 * 8 * 5);
+  // Derived from the manifests' own counts, never a hardcoded product
+  // (Global Constraint: "test expectations are derived, never transcribed";
+  // D-19, 2026-07-30, sharpens this for hair/outfit specifically).
+  const hairCount = Object.values(HAIR_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  const outfitCount = Object.values(OUTFIT_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  assert.equal(appearanceSpaceSize(),
+    BUILDS.length * SKIN_TONES.length * EYE_VARIANTS.length * hairCount * outfitCount * ACCESSORIES.length);
   assert.ok(appearanceSpaceSize() >= 1e4);
 });
 

@@ -41,9 +41,12 @@ export interface AppearanceRecord {
   /** Sheet-selection axis: '01'..'07' — each Eyes_NN.png sheet IS the colour. */
   eyes: string;
   hairStyle: string;
-  hairColor: string;
+  /** The style's own colour-variant file id (D-19): a pack variant, not a tint. */
+  hairVariant: string;
   /** One whole-garment axis; replaces the earlier separate top/bottom pair. */
   outfit: string;
+  /** The outfit style's own colour-variant file id (D-19). */
+  outfitVariant: string;
   accessory: string;
 }
 
