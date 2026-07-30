@@ -392,6 +392,10 @@ The obvious gate — hash every output, compare to a recorded hash — is wrong 
 | `targetScene` → `targetVenue` door property | Task 15 | **No** — a property name changed |
 | Collision **derived** from footprints instead of hand-authored | Task 15 | **No, and deliberately so** |
 | A doormat added at every interior doorway | Task 15 | **No** — one extra object per interior |
+| `grassA`/`grassB` ground tiles: legacy rect sat in a transparent gap (invisible tiles shipped); corrected one row down | Plan 1 Task 9 fix (pin catch) | **No** — the baseline has blank tiles where the bake has grass (Amended 2026-07-30: the frozen legacy scripts predate no fix here — they carry the ORIGINAL bug; the capture recorded it; the gate must expect grass-vs-blank on exactly these two tiles) |
+| `plant_small`/`plant_pot`: legacy shipped untrimmed 32×48 sprites exceeding the contract envelope; now `trim: true` | Plan 1 Task 10 fix (validator catch) | **No** — baked props are content-bboxed where the baseline's are raw (Amended 2026-07-30) |
+
+(`car_down_2` is NOT a divergence: its retarget to `Car_Down_19` landed in both `sources/limezu.json` and `sync-assets.mjs` before the legacy scripts were frozen, so baseline and bake agree.) The four data-fix divergences above are also recorded in prose in `docs/ASSETS.md` (Task 3); Task 20's per-name comparison carries them as a small committed known-diffs list (e.g. `test/golden/known-diffs.json`, entries `{name, reason, plan-ref}`) consumed by the gate — the gate stays zero-tolerance for every name NOT in that list, and the list may only ever shrink. (Amended 2026-07-30 during execution: Task 3's capture surfaced that the gate as originally written had no exception path for these.)
 
 A gate that fails on all four teaches people to ignore it. A gate loosened until it passes proves nothing. So this one is **tiered**, and it gates exactly the two things that have no legitimate reason to differ:
 
