@@ -15,8 +15,8 @@ import { isSleepTime, nightIntensity, tintAt } from '../dayNight.js';
 import { ensureGlowTexture } from '../glowTexture.js';
 import { useUIStore } from '../../store/agentStore.js';
 import { consumePendingFocus } from '../navigation.js';
+import { hasGroundArt } from '../tilesetGuard.js';
 import type { SyncedAgent } from '../../hooks/useGameSync.js';
-import type { AgentLocation } from '@botville/shared';
 
 /**
  * An agent's night phase in the district. Since TZ-16 — ONLY animal cosmetics (the pen, Z icon,
@@ -62,8 +62,9 @@ export class DistrictScene extends Phaser.Scene {
   private nightStates: Map<string, NightState> = new Map();
   /** Agents walking to a building door before disappearing (TZ-16). */
   private leaving: Map<string, LeavingState> = new Map();
-  /** Last known location of each agent — used to spawn them at the right door. */
-  private lastLoc: Map<string, AgentLocation> = new Map();
+  /** Last known location of each agent — used to spawn them at the right door.
+   *  F-3: a venue id (string); see game/presence.ts for the "known" authority. */
+  private lastLoc: Map<string, string> = new Map();
   private nightAcc = 0;
   private transitioning = false;
   private cars: { obj: Phaser.GameObjects.Container; vx: number; vy: number; glows: Phaser.GameObjects.Image[]; h: number }[] = [];
@@ -78,9 +79,13 @@ export class DistrictScene extends Phaser.Scene {
     this.cameras.main.fadeIn(SCENE_FADE_MS, 0, 0, 0);
 
     const map = this.make.tilemap({ key: DISTRICT.mapKey });
-    const tileset = map.addTilesetImage(DISTRICT.tilesetName, DISTRICT.tilesetName)!;
-    map.createLayer('ground', tileset, 0, 0)!.setDepth(0);
-    map.createLayer('roads', tileset, 0, 0)!.setDepth(1);
+    // I-12: an art-free clone has no tileset texture (the pack dirs are gitignored) —
+    // render the layout without ground art rather than crash on createLayer(null).
+    const tileset = map.addTilesetImage(DISTRICT.tilesetName, DISTRICT.tilesetName);
+    if (hasGroundArt(tileset)) {
+      map.createLayer('ground', tileset, 0, 0)?.setDepth(0);
+      map.createLayer('roads', tileset, 0, 0)?.setDepth(1);
+    }
 
     // --- decal objects beneath agents (garden beds, crops)
     for (const o of map.getObjectLayer('props-below')?.objects ?? []) {
@@ -174,7 +179,7 @@ export class DistrictScene extends Phaser.Scene {
     // clicking an agent in the HUD — the camera smoothly pans onto them
     const onFocusAgent = ({ agentId }: { agentId: string }) => {
       const sprite = this.agentSprites.get(agentId);
-      if (!sprite || sprite.isHiddenInside) return;
+      if (!sprite) return;
       cam.pan(sprite.x, sprite.y, CAMERA_FOCUS.panMs, 'Sine.easeInOut');
       if (cam.zoom < CAMERA_FOCUS.zoom) cam.zoomTo(CAMERA_FOCUS.zoom, CAMERA_FOCUS.panMs);
     };
@@ -424,13 +429,13 @@ export class DistrictScene extends Phaser.Scene {
       // cosmetics: went into a building — walk to its door and "enter" (incl. at night
       // to the dorm — that is exactly the old going-to-bed visual)
       const door = newLoc !== 'farm' ? this.doorPoints.get(sceneKeyFor(newLoc)) : undefined;
-      if (door && !sprite.isAsleep && !sprite.isHiddenInside) {
+      if (door && !sprite.isAsleep) {
         const st = this.nightStates.get(id);
         if (st) this.releaseNightState(id, st);
         this.leaving.set(id, { x: door.x, y: door.y, deadline: this.time.now + LEAVE_WALK_TIMEOUT_MS });
         sprite.walkTo(door.x, door.y);
       } else {
-        this.removeSprite(id); // asleep/hidden or no door found — no walk-out
+        this.removeSprite(id); // asleep or no door found (incl. an unknown/absent new location) — no walk-out
       }
     });
 

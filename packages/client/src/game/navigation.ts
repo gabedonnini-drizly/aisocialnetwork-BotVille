@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import { GameBridge } from './GameBridge.js';
 import { sceneRegistry } from './SceneRegistry.js';
 import { sceneKeyFor } from './venueRegistry.js';
-import type { AgentLocation } from '@botville/shared';
 
 /**
  * TZ-16: clicking an agent in the HUD takes you to them.
@@ -28,7 +27,7 @@ GameBridge.on('scene:changed', ({ scene }) => { currentSceneKey = scene; });
 
 GameBridge.on('agent:goto', ({ agentId, location }) => {
   // the farm is drawn on the district map; it has no venue of its own
-  const sceneFor = (loc: AgentLocation) => (loc === 'farm' ? 'DistrictScene' : sceneKeyFor(loc));
+  const sceneFor = (loc: string) => (loc === 'farm' ? 'DistrictScene' : sceneKeyFor(loc));
   const targetScene = sceneFor(location);
   if (targetScene === currentSceneKey) {
     pendingFocusId = null;

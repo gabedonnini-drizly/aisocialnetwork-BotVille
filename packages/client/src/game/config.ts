@@ -2,7 +2,6 @@
  * Config constants for the game side. No magic numbers in scenes —
  * map sizes, speeds and the camera are tuned here.
  */
-import type { AgentLocation } from '@botville/shared';
 
 export const TILE_SIZE = 16;
 

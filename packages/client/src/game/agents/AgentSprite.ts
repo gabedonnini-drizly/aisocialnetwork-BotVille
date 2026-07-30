@@ -47,8 +47,6 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   private seatDepthBoost = 0;
   /** Sleeping outdoors at night (animals in the pen). */
   private asleep = false;
-  /** The agent is "inside a building" (night in the dorm): sprite hidden, logic paused. */
-  private hiddenInside = false;
   /** Heading to a goal (e.g. a seat) — the state machine is paused. */
   private goalLock = false;
   public agentId: string;
@@ -231,32 +229,17 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.showIcon('rest');
   }
 
-  /** Hide the agent "inside a building" (overnighting in the dorm, seen from the street). */
-  hideInside() {
-    this.hiddenInside = true;
-    this.cancelGoal();
-    this.setVisible(false);
-    this.nameLabel.setVisible(false);
-  }
-
-  /** Wake up / come outside: clears both sleep and "inside a building". */
+  /** Wake up / come outside: clears night sleep. */
   wakeUp() {
     if (this.asleep) {
       this.asleep = false;
       this.hideEmote();
       this.playAnim('idle', 'down');
     }
-    if (this.hiddenInside) {
-      this.hiddenInside = false;
-      this.setVisible(true);
-      this.nameLabel.setVisible(true);
-    }
     this.cancelGoal();
   }
 
   get isAsleep() { return this.asleep; }
-
-  get isHiddenInside() { return this.hiddenInside; }
 
   // ---------------------------------------------------------------- emotes
 
@@ -302,7 +285,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   // ---------------------------------------------------------------- update
 
   update(dt: number) {
-    if (!this.seatLock && !this.asleep && !this.hiddenInside) {
+    if (!this.seatLock && !this.asleep) {
       if (this.goalLock) {
         this.moveAlongPath(dt);
         if (!this.path.length) this.goalLock = false;

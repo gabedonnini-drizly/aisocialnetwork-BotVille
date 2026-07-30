@@ -1,13 +1,11 @@
 import Phaser from 'phaser';
 
-// Typed event map
-import type { AgentLocation } from '@botville/shared';
-
 export interface GameEvents {
   'agent:clicked': { agentId: string };
   'agent:focus': { agentId: string };
-  /** TZ-16: the HUD click "take me to the agent" — with a transition between scenes. */
-  'agent:goto': { agentId: string; location: AgentLocation };
+  /** TZ-16: the HUD click "take me to the agent" — with a transition between scenes.
+   *  F-3: a venue id (string), not the retired six-string AGENT_LOCATIONS union. */
+  'agent:goto': { agentId: string; location: string };
   'agent:moved': { agentId: string; x: number; y: number };
   'task:started': { agentId: string };
   'task:done': { agentId: string };

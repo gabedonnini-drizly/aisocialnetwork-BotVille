@@ -10,6 +10,7 @@ import { ANIMATED_OBJECTS, getVariant } from '../assetManifest.js';
 import { GameTime } from '../time.js';
 import { isSleepTime } from '../dayNight.js';
 import { consumePendingFocus } from '../navigation.js';
+import { hasGroundArt } from '../tilesetGuard.js';
 import { assignSlots, displacedSlot, isOverCapacity } from '../venueSlots.js';
 import type { FootprintRect, Slot } from '../venueSlots.js';
 import type { SyncedAgent } from '../../hooks/useGameSync.js';
@@ -89,8 +90,10 @@ export class VenueScene extends Phaser.Scene {
     this.cameras.main.fadeIn(SCENE_FADE_MS, 0, 0, 0);
 
     const map = this.make.tilemap({ key: this.mapKey });
-    const tileset = map.addTilesetImage(INTERIOR_TILESET, INTERIOR_TILESET)!;
-    map.createLayer('ground', tileset, 0, 0)!.setDepth(0);
+    // I-12: an art-free clone has no tileset texture (the pack dirs are gitignored) —
+    // render the layout without ground art rather than crash on createLayer(null).
+    const tileset = map.addTilesetImage(INTERIOR_TILESET, INTERIOR_TILESET);
+    if (hasGroundArt(tileset)) map.createLayer('ground', tileset, 0, 0)?.setDepth(0);
     this.roomW = map.widthInPixels;
     this.roomH = map.heightInPixels;
 
@@ -248,11 +251,11 @@ export class VenueScene extends Phaser.Scene {
   syncAgents(fullList: SyncedAgent[]) {
     // THE KEY FIX of TZ-16: draw only those who per the server are actually in this
     // building — not all of the user's agents at the entry point, as before.
-    // TZ-16 + spec §8.1: venue id == server location. Today, an unknown id never
-    // reaches this point because agentStore's normalizeLocation (the legacy gate)
-    // clamps it to 'district' upstream. PresenceModel (Task 34) is the intended
-    // owner of that filtering, but it is not yet wired into the live store — that
-    // wiring is carried as integration work, not done by this file.
+    // TZ-16 + spec §8.1: venue id == server location. F-3: an unknown/absent id never
+    // reaches this point at all — useGameSync partitions the roster through
+    // PresenceModel (game/presence.ts) before any scene sees it, so `fullList` here
+    // is already everyone PresenceModel placed "somewhere" (any venue, or farm). This
+    // filter picks out just this venue's occupants from that already-honest set.
     const agentList = fullList.filter(a => a.location === this.locationId);
     const incoming = new Set(agentList.map(a => a.id));
     this.agentSprites.forEach((sprite, id) => {
