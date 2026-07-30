@@ -4,13 +4,14 @@ import { GameBridge } from '../GameBridge.js';
 import { sceneRegistry } from '../SceneRegistry.js';
 import { Pathfinder } from '../Pathfinder.js';
 import { CAMERA_FOCUS, INTERIOR_CAMERA_ZOOM, INTERIOR_TILESET, NIGHT_SCHEDULE, SCENE_FADE_MS } from '../config.js';
+import { sceneKeyFor } from '../venueRegistry.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
 import { ANIMATED_OBJECTS, getVariant } from '../assetManifest.js';
 import { GameTime } from '../time.js';
 import { isSleepTime } from '../dayNight.js';
 import { consumePendingFocus } from '../navigation.js';
 import type { SyncedAgent } from '../../hooks/useGameSync.js';
-import type { AgentLocation } from '@botville/shared';
+import type { VenueDescriptor } from '@botville/shared';
 
 interface Seat {
   x: number;
@@ -38,7 +39,7 @@ function propsOf(o: Phaser.Types.Tilemaps.TiledObject): TiledProps {
  * TZ-16: the scene draws ONLY agents whose server-side location is this building.
  * An empty room is fine. The player entering no longer affects agents.
  */
-export class InteriorScene extends Phaser.Scene {
+export class VenueScene extends Phaser.Scene {
   protected agentSprites: Map<string, AgentSprite> = new Map();
   private seats: Seat[] = [];
   private pathfinder!: Pathfinder;
@@ -51,14 +52,24 @@ export class InteriorScene extends Phaser.Scene {
   private roomH = 240;
   private transitioning = false;
 
-  constructor(
-    private sceneKey: string,
-    private mapKey: string,
-    /** This building's location in server terms (TZ-16): whoever is here is who we draw. */
-    private locationId: AgentLocation,
-  ) {
-    super({ key: sceneKey });
+  /**
+   * An explicit field, not a parameter property: `node --test` strips types
+   * but cannot generate the assignment (ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX).
+   * There is no Phaser and no node testing here — but this constructor is
+   * what gets copied from.
+   */
+  private readonly venue: VenueDescriptor;
+
+  constructor(venue: VenueDescriptor) {
+    super({ key: sceneKeyFor(venue.id) });
+    this.venue = venue;
   }
+
+  /** Map key = venue id; the .tmj is baked by scripts/world-bake.mjs. */
+  private get mapKey() { return this.venue.id; }
+  /** This venue's location in server terms: whoever is here is whom we draw. */
+  private get locationId() { return this.venue.id; }
+  private get sceneKey() { return sceneKeyFor(this.venue.id); }
 
   create() {
     sceneRegistry.register(this.sceneKey, this);
@@ -102,8 +113,8 @@ export class InteriorScene extends Phaser.Scene {
     // exit: a zone over the doormat, hover highlights the doormat
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
-      if (typeof p.targetScene !== 'string') continue;
-      const target = p.targetScene;
+      if (typeof p.targetVenue !== 'string') continue;
+      const target = sceneKeyFor(p.targetVenue);
       const zone = this.add.zone(o.x! + o.width! / 2, o.y! + o.height! / 2, o.width!, o.height!)
         .setInteractive({ useHandCursor: true });
       zone.on('pointerover', () => doormat?.setTint(0xaaffaa));
@@ -219,6 +230,8 @@ export class InteriorScene extends Phaser.Scene {
   syncAgents(fullList: SyncedAgent[]) {
     // THE KEY FIX of TZ-16: draw only those who per the server are actually in this
     // building — not all of the user's agents at the entry point, as before.
+    // TZ-16 + spec §8.1: venue id == server location. An unknown id simply
+    // never reaches this point — PresenceModel filters it out (Task 34).
     const agentList = fullList.filter(a => a.location === this.locationId);
     const incoming = new Set(agentList.map(a => a.id));
     this.agentSprites.forEach((sprite, id) => {
@@ -259,3 +272,6 @@ export class InteriorScene extends Phaser.Scene {
     if (seat) seat.occupiedBy = null;
   }
 }
+
+/** @deprecated name kept for the duration of the migration; removed in Task 24. */
+export const InteriorScene = VenueScene;
