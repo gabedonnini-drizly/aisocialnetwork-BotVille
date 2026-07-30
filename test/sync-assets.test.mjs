@@ -7,6 +7,7 @@ import { loadContract } from '../scripts/lib/assetContract.mjs';
 import { syncAssets } from '../scripts/sync-assets.mjs';
 
 const c = loadContract();
+const animatedNames = Object.keys(c.animatedObjects);
 const run = () => syncAssets({
   pack: 'fixture', srcRoot: 'test/fixtures/pack-src',
   outDir: mkdtempSync(join(tmpdir(), 'sync-')),
@@ -29,7 +30,18 @@ test('the contract declares which sheets the runtime loads whole', () => {
 test('exactly the declared sheets are copied — nothing more', () => {
   const { copied, missing } = run();
   assert.deepEqual(missing, []);
-  assert.equal(copied.length, c.runtimeSheets.length);
+  // runtimeSheets AND animatedObjects: the bake never emits animated interior
+  // objects (they're whole-file animation strips, not baked props), so this
+  // script is their only route into public/assets/.
+  assert.equal(copied.length, c.runtimeSheets.length + animatedNames.length);
+  for (const n of animatedNames) assert.ok(copied.includes(n), `${n} was not copied`);
+});
+
+test('animated objects land under their contract name, not the source filename', () => {
+  const out = mkdtempSync(join(tmpdir(), 'sync-anim-'));
+  syncAssets({ pack: 'fixture', srcRoot: 'test/fixtures/pack-src', outDir: out });
+  const files = new Set(readdirSync(join(out, 'sprites', 'pack')));
+  for (const n of animatedNames) assert.ok(files.has(`${n}.png`), `expected sprites/pack/${n}.png`);
 });
 
 test('copying is idempotent and byte-preserving', () => {
