@@ -38,6 +38,9 @@ test('grass matches build-district.mjs ATLAS_TILES (TERR tile 1,12)', () => {
 });
 
 test('border matches build-interiors.mjs ATLAS_TILES (RB tile 1,44)', () => {
-  const { pin, ...rest } = src.rects.border;
+  // pin is Task 9/10 tooling metadata and note is the carried legacy
+  // per-tile description (Task 19 pickup) — neither is part of the
+  // geometry this test asserts, so strip both before comparing.
+  const { pin, note, ...rest } = src.rects.border;
   assert.deepEqual(rest, { file: 'room_builder', x: 16, y: 704, w: 16, h: 16 });
 });
