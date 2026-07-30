@@ -45,3 +45,20 @@ test('baking is deterministic', () => {
   const y = bakeProps(c, a(), 'interior').get('counter_wide');
   assert.deepEqual([...x.canvas.data], [...y.canvas.data]);
 });
+
+test('a whole-file rect with a nonzero x/y offset is never byte-copied', () => {
+  // Defensive guard (review finding, Task 20): the byte-copy fast path is
+  // only correct when "whole file" truly means the WHOLE file — x:0,y:0.
+  // No current pack rect declares a nonzero offset with w/h null (there is
+  // no crop to offset), but this stub adapter simulates one so the guard is
+  // proven, not just true-by-current-data.
+  const fakeContract = { props: { fake: { thing: { maxSize: [999, 999] } } } };
+  const fakeAdapter = {
+    resolve: name => ({
+      absPath: 'test/fixtures/pack-src/props/office_building.png',
+      x: 5, y: 3, w: null, h: null, trim: false, generated: null,
+    }),
+  };
+  const baked = bakeProps(fakeContract, fakeAdapter, 'fake').get('thing');
+  assert.equal(baked.raw, undefined, 'a nonzero offset must fall through to the canvas path, never raw-copy the whole file');
+});

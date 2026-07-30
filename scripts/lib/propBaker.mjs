@@ -63,7 +63,7 @@ export function bakeProps(contract, adapter, group) {
       if (!fn) throw new Error(`prop ${name} names unknown generator: ${r.generated}`);
       const canvas = fn(s.canvas);
       out.set(name, { canvas, w: canvas.w, h: canvas.h });
-    } else if (r.w == null && r.h == null && !r.trim) {
+    } else if (r.w == null && r.h == null && !r.trim && r.x === 0 && r.y === 0) {
       // Whole file, no crop, no trim: the pixels are the source file's
       // pixels, untouched. Re-encoding them through png-lib's canvas
       // round-trip is lossless per-PIXEL but NOT per-byte (a different PNG
@@ -73,6 +73,15 @@ export function bakeProps(contract, adapter, group) {
       // raw `copyFileSync`. A crop or a trim genuinely changes the pixels
       // and must go through the canvas; a bare pass-through must not touch
       // the bytes at all.
+      //
+      // The `x === 0 && y === 0` conjunct is a defensive guard, not a live
+      // case: no current rect declares a nonzero offset without a `w`/`h`
+      // (a `w`/`h` of null means "whole file," so an offset would be
+      // meaningless — there is no crop to offset). If a future pack entry
+      // ever did, raw-copying the whole file would silently ignore that
+      // offset and ship the wrong pixels; falling through to the canvas
+      // path below at least reads `r.x`/`r.y` (via readSprite) instead of
+      // discarding them.
       out.set(name, { canvas: s.canvas, w: s.w, h: s.h, raw: r.absPath });
     } else {
       out.set(name, { canvas: s.canvas, w: s.w, h: s.h });

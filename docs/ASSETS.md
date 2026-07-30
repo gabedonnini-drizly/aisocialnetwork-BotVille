@@ -388,20 +388,25 @@ byte for byte (derived collision is *supposed* to differ — see the plan's
 Task 20 table); Plan 2's structural tests pin walkability going forward.
 This is the one migration-specific human look the plan calls for: baked with
 `npm run bake:world -- limezu assets-src` and dumped each venue's `collision`
-layer boxes (legacy vs. baked) side by side. Every venue kept the SAME
-object count (no box dropped, none merged/swallowed); the only differences
-are position/size shifts at doorway openings and building footprints —
-exactly what deriving collision from footprints instead of hand-authored
-boxes, plus the new doormat at every interior doorway, would produce.
+layer boxes (legacy vs. baked), sorted and paired position-by-position, so
+"changed" below means a genuine box-for-box diff, not an eyeball guess.
+Every venue kept the SAME object count (no box dropped, none
+merged/swallowed); every change is a narrower or repositioned box, never a
+disappeared one — consistent with deriving collision from footprints
+instead of hand-authored boxes, plus the new doormat at every interior
+doorway. (This table was corrected during review: the first pass
+undercounted the `house_*` changes as 2 and misstated the `cafe`/`dorm`
+doorway width as 28→10; both errors are fixed below against a fresh,
+position-paired re-diff.)
 
-| Venue | Boxes (legacy = baked) | Outcome |
-|---|---|---|
-| cafe | 13 = 13 | walls/furniture unchanged; doorway box narrowed (28→10 wide, doormat), still open |
-| district | 104 = 104 | walls/fences/props unchanged; one residence footprint 12px narrower (152→140) |
-| dorm | 16 = 16 | walls/furniture unchanged; doorway box narrowed (28→10 wide), still open |
-| house_1 .. house_13 (all 13) | 15 = 15 each | identical pattern: one furniture box repositioned (137,148,44,18→137,141,30,18) and the doorway box narrowed (28→10), both consistent with derived collision + doormat; doorway still open in every instance |
-| library | 18 = 18 | walls/furniture unchanged; doorway box narrowed (30→10 wide), still open |
-| office | 15 = 15 | walls/furniture unchanged; doorway box narrowed (30→14 wide) and one shelf box narrowed (30→10), still open |
+| Venue | Boxes (legacy = baked) | Boxes changed | Outcome |
+|---|---|---|---|
+| cafe | 13 = 13 | 1 | doorway box narrowed 30→10 wide (y 222→200, doormat), still open |
+| district | 104 = 104 | 1 | one residence footprint narrowed 152→140 wide, same position |
+| dorm | 16 = 16 | 1 | doorway box narrowed 30→10 wide (y 222→200), still open |
+| house_1 .. house_13 (all 13) | 15 = 15 each | 10 | identical pattern in every house: doorway box narrowed 28→10 wide; one wall/window box narrowed 44→30 (repositioned y 148→141); four wall/window boxes narrowed 44→24 (shifted up ~22px); two boxes narrowed 28→14; one box narrowed 28→20; one box narrowed 20→15 — all ten are the same box narrower or nudged, none missing; doorway still open in every instance |
+| library | 18 = 18 | 1 | doorway box narrowed 30→10 wide (y 222→200), still open |
+| office | 15 = 15 | 2 | doorway box narrowed 30→14 wide (y 222→192); one shelf/wall box narrowed 30→10 wide (y 110→88) |
 
 No wall, border, or colliding furniture piece lost coverage in any venue;
 every doorway gap that was open in the legacy maps is still open in the
