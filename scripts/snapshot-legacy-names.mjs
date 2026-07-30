@@ -39,13 +39,44 @@ const districtScript = find('test/golden/legacy/build-district.mjs', 'scripts/bu
 const interiorsScript = find('test/golden/legacy/build-interiors.mjs', 'scripts/build-interiors.mjs');
 const configTs = find('packages/client/src/game/config.ts');
 
-if (!districtScript || !interiorsScript || !configTs) {
+// Debug: print values
+if (process.env.DEBUG_SNAPSHOT) {
+  console.log('ROOT:', ROOT);
+  console.log('OUT:', OUT, '(exists:', existsSync(OUT), ')');
+  console.log('districtScript:', districtScript);
+  console.log('interiorsScript:', interiorsScript);
+  console.log('configTs:', configTs);
+}
+
+// Task 24: if the build scripts are gone, the config lists have been deleted
+// The snapshot outlives its sources, so skip if it already exists
+if (!districtScript || !interiorsScript) {
+  if (existsSync(OUT)) { console.log('legacy sources gone; snapshot already recorded — nothing to do'); process.exit(0); }
+  console.error('error: legacy sources are gone and no snapshot exists');
+  process.exit(1);
+}
+
+if (!configTs) {
   if (existsSync(OUT)) { console.log('legacy sources gone; snapshot already recorded — nothing to do'); process.exit(0); }
   console.error('error: legacy sources are gone and no snapshot exists');
   process.exit(1);
 }
 
 const config = readFileSync(configTs, 'utf8');
+
+// Task 24: if the config lists have been deleted, snapshot is already recorded
+// Just skip verification since the snapshot is the source of truth
+const hasDistrictImages = /const DISTRICT_IMAGES\s*=/.test(config);
+const hasInteriorImages = /const INTERIOR_IMAGES\s*=/.test(config);
+if (!hasDistrictImages || !hasInteriorImages) {
+  if (existsSync(OUT)) {
+    console.log('legacy constants deleted; snapshot already recorded — nothing to do');
+    process.exit(0);
+  }
+  console.error('error: legacy constants are deleted and no snapshot exists');
+  process.exit(1);
+}
+
 const snapshot = {
   source: {
     district_ground: districtScript.replace(`${ROOT}/`, ''),

@@ -272,6 +272,3 @@ export class VenueScene extends Phaser.Scene {
     if (seat) seat.occupiedBy = null;
   }
 }
-
-/** @deprecated name kept for the duration of the migration; removed in Task 24. */
-export const InteriorScene = VenueScene;

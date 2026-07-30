@@ -5,10 +5,11 @@ import { sceneRegistry } from '../SceneRegistry.js';
 import { Pathfinder } from '../Pathfinder.js';
 import {
   AMBIENT_CAR, CAMERA, CAMERA_FOCUS, DISTRICT, GLOW_DEPTH, GLOW_KINDS,
-  GLOW_TEXTURE, LEAVE_WALK_TIMEOUT_MS, LOCATION_SCENES, NIGHT_SCHEDULE,
+  GLOW_TEXTURE, LEAVE_WALK_TIMEOUT_MS, NIGHT_SCHEDULE,
   SCENE_FADE_MS, TINT_OVERLAY_DEPTH, WANDER_RADIUS, type GlowKind,
 } from '../config.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
+import { sceneKeyFor } from '../venueRegistry.js';
 import { GameTime } from '../time.js';
 import { isSleepTime, nightIntensity, tintAt } from '../dayNight.js';
 import { ensureGlowTexture } from '../glowTexture.js';
@@ -92,8 +93,8 @@ export class DistrictScene extends Phaser.Scene {
       const img = this.add.image(o.x!, o.y!, o.name).setOrigin(0, 0);
       img.setDepth(o.y! + (o.height ?? img.height));
       this.buildingImages.set(o.name, img);
-      if (typeof p.targetScene === 'string') {
-        const target = p.targetScene;
+      if (typeof p.targetVenue === 'string') {
+        const target = sceneKeyFor(p.targetVenue);
         img.setData('targetScene', target);
         img.setInteractive({ useHandCursor: true });
         img.on('pointerover', () => img.setTint(0xbbccff));
@@ -111,8 +112,8 @@ export class DistrictScene extends Phaser.Scene {
     // --- doors: click zones (duplicate clicking the facade)
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
-      if (typeof p.targetScene !== 'string') continue;
-      const target = p.targetScene;
+      if (typeof p.targetVenue !== 'string') continue;
+      const target = sceneKeyFor(p.targetVenue);
       const zone = this.add.zone(o.x! + o.width! / 2, o.y! + o.height! / 2, o.width!, o.height!)
         .setInteractive({ useHandCursor: true });
       const building = [...this.buildingImages.values()].find(b =>
@@ -422,7 +423,7 @@ export class DistrictScene extends Phaser.Scene {
       if (this.leaving.has(id)) return; // already walking to the door
       // cosmetics: went into a building — walk to its door and "enter" (incl. at night
       // to the dorm — that is exactly the old going-to-bed visual)
-      const door = this.doorPoints.get(LOCATION_SCENES[newLoc]);
+      const door = newLoc !== 'farm' ? this.doorPoints.get(sceneKeyFor(newLoc)) : undefined;
       if (door && !sprite.isAsleep && !sprite.isHiddenInside) {
         const st = this.nightStates.get(id);
         if (st) this.releaseNightState(id, st);
@@ -437,8 +438,8 @@ export class DistrictScene extends Phaser.Scene {
       if (this.agentSprites.has(a.id)) return;
       // came out of a building — appears at its door; otherwise at a spawn point
       const from = this.lastLoc.get(a.id);
-      const door = from && LOCATION_SCENES[from] !== 'DistrictScene'
-        ? this.doorPoints.get(LOCATION_SCENES[from])
+      const door = from && from !== 'district' && from !== 'farm'
+        ? this.doorPoints.get(sceneKeyFor(from))
         : undefined;
       const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
       const x = base.x + (Math.random() - 0.5) * 16;
