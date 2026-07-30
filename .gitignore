@@ -25,6 +25,15 @@ packages/client/public/assets/tilesets/pack/
 packages/client/public/assets/sprites/pack/
 packages/client/public/assets/ui/pack/
 packages/client/public/assets/baked/
+# ...and the vendor-named equivalents the FROZEN legacy pipeline
+# (test/golden/legacy/, driven by scripts/capture-golden-baseline.mjs) still
+# writes real licensed pixels to — these lost their ignore coverage in the
+# limezu->pack rename (the new sync-assets.mjs/world-bake write only to the
+# pack/ paths above) but the frozen scripts never got the memo, since
+# freezing them is the point (Task 19).
+packages/client/public/assets/tilesets/limezu/
+packages/client/public/assets/sprites/limezu/
+packages/client/public/assets/ui/limezu/
 
 # Deploy remote config (written by scripts/deploy-server.mjs)
 .deploy-server.json

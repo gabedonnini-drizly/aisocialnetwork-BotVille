@@ -214,6 +214,15 @@ Crop coordinates throughout were verified with `scripts/inspect-assets.mjs`,
 
 ## Character-sheet row map (Task 27 Step 0, D-19 2026-07-30)
 
+**Provenance:** `docs/ASSETS.md` itself was created by Plan 6 Task 27
+(commit `80c2485`, amended by `359cb9e`) to record this section — Task 27 ran
+before Task 3 and needed the file to exist. Task 3 (this task) added "The four
+packs" section above on top of it; everything from this heading to
+end-of-file predates Task 3 and isn't part of its own capture — kept here
+rather than duplicated or dropped, since it's already pixel-verified and this
+is the one file both `assetManifest.ts` and the build scripts have always
+cited.
+
 Every separable character layer (Bodies, Eyes, Hairstyles, Outfits,
 Accessories) ships as a sheet 656px tall — 20.5 rows of 32px, the half row
 empty. The six populated rows, by pixel measurement:

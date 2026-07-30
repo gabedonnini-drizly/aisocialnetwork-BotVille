@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { indexPack, cellSignature } from '../../scripts/index-pack.mjs';
+import { indexPack, cellSignature, scopeToReferenced } from '../../scripts/index-pack.mjs';
 import { decodePng } from '../../scripts/png-lib.mjs';
 import { loadContract } from '../../scripts/lib/assetContract.mjs';
 
@@ -69,4 +69,40 @@ test('the index reports candidates as well as sheets', () => {
   const total = Object.values(cells).reduce((n, list) => n + list.length, 0);
   assert.ok(total >= Object.keys(run().sheets).length,
     'every non-empty sheet should yield at least one candidate');
+});
+
+// The COMMITTED sheets manifest (sources/<pack>.sheets.json) is scoped to
+// only the sheets a pack manifest's `files` block names — an unscoped
+// full-pack manifest measured 9.7MB / 41,488 rows against the real four
+// packs and was rejected (see index-pack.mjs's header comment on
+// scopeToReferenced). This is the regression tripwire for that filter:
+// derived from the fixture pack's own real sheet paths, not hand-typed
+// strings, so a real path-matching bug (not just a toy example) would fail
+// it too.
+test('scopeToReferenced keeps exactly the manifest-referenced sheets, nothing else', () => {
+  const { sheets } = run();
+  const allPaths = Object.keys(sheets);
+  assert.ok(allPaths.length >= 2, 'need at least two sheets for scoping to actually exclude one');
+
+  const referencedPaths = allPaths.slice(0, Math.ceil(allPaths.length / 2));
+  const manifest = { files: Object.fromEntries(referencedPaths.map((p, i) => [`alias${i}`, p])) };
+  const scoped = scopeToReferenced(sheets, manifest);
+
+  const referencedSet = new Set(referencedPaths);
+  // manifest keys are a subset of the adapter-referenced sheet set
+  for (const key of Object.keys(scoped)) assert.ok(referencedSet.has(key), `${key} should not be scoped in`);
+  // count matches exactly — every referenced path exists in sheets here
+  assert.equal(Object.keys(scoped).length, referencedPaths.length);
+  // a pack file nothing references does NOT appear
+  const unreferenced = allPaths.find(p => !referencedSet.has(p));
+  assert.ok(unreferenced, 'fixture pack should have at least one sheet nothing references, to test against');
+  assert.equal(unreferenced in scoped, false, `${unreferenced} leaked through unscoped`);
+});
+
+test('scopeToReferenced passes every sheet through when there is no manifest yet', () => {
+  // A brand-new pack has no sources/<pack>.json to scope against — nothing
+  // to filter, so indexing it for the first time must not silently drop
+  // every sheet.
+  const sheets = { 'a.png': { w: 1, h: 1, sha256: '0'.repeat(64) } };
+  assert.deepEqual(scopeToReferenced(sheets, null), sheets);
 });

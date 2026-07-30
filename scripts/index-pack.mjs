@@ -114,6 +114,28 @@ export function cellSignature(img, x, y, w, h) {
   };
 }
 
+/**
+ * Filters a full sheets map down to just the paths a pack manifest's `files`
+ * block actually names. Exported so the scoping decision itself is
+ * unit-testable without a real (or even the fixture) pack on disk: given any
+ * `sheets` map and any `manifest` shape, the result must (1) only contain
+ * keys the manifest's `files` values name, (2) contain exactly that many —
+ * not fewer, if every named file is present in `sheets` — and (3) never
+ * contain a `sheets` key the manifest doesn't name. `manifest == null` (no
+ * `sources/<pack>.json` yet, e.g. indexing a brand-new pack for the first
+ * time) means nothing to scope against, so everything passes through.
+ *
+ * This is the fix for the rejected full-pack manifest design (measured at
+ * 41,488 sheets / 9.7MB against the real four packs): the COMMITTED manifest
+ * exists so a pack update's diff names exactly which sheets moved, which is
+ * only ever true for a sheet a crop actually reads.
+ */
+export function scopeToReferenced(sheets, manifest) {
+  if (!manifest) return sheets;
+  const referenced = new Set(Object.values(manifest.files ?? {}));
+  return Object.fromEntries(Object.entries(sheets).filter(([p]) => referenced.has(p)));
+}
+
 export function indexPack({ srcRoot, tileSize = 16, out }) {
   const root = resolve(ROOT, srcRoot);
   const sheets = {};
@@ -170,14 +192,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   // fire on pack noise no crop depends on. The gitignored per-cell index
   // stays full-pack — it is the browsing aid for CHOOSING a crop in the
   // first place, which is exactly the job a scoped-to-already-chosen list
-  // cannot do.
+  // cannot do. See scopeToReferenced() above (unit-tested independently of
+  // any pack) for the filter itself.
   const manifestPath = join(ROOT, 'sources', `${pack}.json`);
-  const referenced = existsSync(manifestPath)
-    ? new Set(Object.values(JSON.parse(readFileSync(manifestPath, 'utf8')).files ?? {}))
-    : null;
-  const scopedSheets = referenced
-    ? Object.fromEntries(Object.entries(sheets).filter(([p]) => referenced.has(p)))
-    : sheets;
+  const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : null;
+  const scopedSheets = scopeToReferenced(sheets, manifest);
   writeFileSync(join(ROOT, 'sources', `${pack}.sheets.json`), JSON.stringify(scopedSheets, null, 2) + '\n');
   writeJsonMapSync(join(ROOT, 'sources', `${pack}.index.json`), cells);
 
