@@ -1,0 +1,42 @@
+{
+  "id": "library",
+  "label": "Library",
+  "indoor": true,
+  "sizeTiles": [20, 15],
+  "groundAtlas": "interiors_ground",
+  "capacity": 4,
+  "roles": ["work", "hangout"],
+  "affords": ["read", "work", "idle"],
+  "hours": [{ "open": 8, "close": 22 }],
+  "ground": { "wallA": "wallLibA", "wallB": "wallLibB", "floor": "floorLib" },
+  "furniture": [
+    { "name": "bookshelf_a", "at": [1, 0.7] },
+    { "name": "bookshelf_b", "at": [4, 0.7] },
+    { "name": "bookshelf_a", "at": [7, 0.7] },
+    { "name": "bookshelf_narrow", "at": [10, 0.4] },
+    { "name": "bookshelf_b", "at": [11.5, 0.7] },
+    { "name": "bookshelf_a", "at": [14.5, 0.7] },
+    { "name": "chalkboard", "at": [17.6, 0.4], "collide": false },
+    { "name": "lectern", "at": [9.4, 4] },
+    { "name": "globe", "at": [1.4, 5] },
+    { "name": "lamp_red", "at": [18, 4.6] },
+    { "name": "table_plain", "at": [4, 7.5] },
+    { "name": "chair_yellow_r", "at": [2.4, 7.8], "collide": false },
+    { "name": "chair_yellow_l", "at": [7.2, 7.8], "collide": false },
+    { "name": "table_plain", "at": [13, 7.5] },
+    { "name": "chair_blue_r", "at": [11.4, 7.8], "collide": false },
+    { "name": "chair_blue_l", "at": [16.2, 7.8], "collide": false },
+    { "name": "plant_palm", "at": [1.2, 10.5] },
+    { "name": "plant_pot", "at": [18, 12] }
+  ],
+  "seats": [
+    { "at": [3.2, 9.6],  "side": "right", "kind": "chair" },
+    { "at": [8, 9.6],    "side": "left",  "kind": "chair" },
+    { "at": [12.2, 9.6], "side": "right", "kind": "chair" },
+    { "at": [17, 9.6],   "side": "left",  "kind": "chair" }
+  ],
+  "animated": [{ "name": "cuckoo_clock", "at": [13, 0.3] }],
+  "spawns": [[9.8, 12.8]],
+  "doors": [{ "name": "exit", "at": [9.5, 14], "targetVenue": "district" }],
+  "glows": []
+}
