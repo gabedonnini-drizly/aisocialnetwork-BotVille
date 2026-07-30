@@ -482,6 +482,10 @@
     "c_outfit_Outfit_33_02.png": "characters/Outfit_33_02.png",
     "c_outfit_Outfit_33_03.png": "characters/Outfit_33_03.png",
     "c_accessory": "characters/accessory.png",
+    "c_accessory_cap": "characters/accessory_cap.png",
+    "c_accessory_beanie": "characters/accessory_beanie.png",
+    "c_accessory_backpack": "characters/accessory_backpack.png",
+    "c_accessory_satchel": "characters/accessory_satchel.png",
     "rs_premade_01": "runtime/premade_01.png",
     "rs_premade_02": "runtime/premade_02.png",
     "rs_premade_04": "runtime/premade_04.png",
@@ -1243,6 +1247,22 @@
     "char_accessory": {
       "file": "c_accessory",
       "pin": "e782bca32f2308b78dcb1ae085efbed71f33320618c537a90e10b98d0d5ea259"
+    },
+    "char_accessory_cap": {
+      "file": "c_accessory_cap",
+      "pin": "7217cc91912aef2dfda3e361c9974ea3994ff4107b071a7a40b951dc4556a253"
+    },
+    "char_accessory_beanie": {
+      "file": "c_accessory_beanie",
+      "pin": "b38f2d75495304496ff3afdedb15b9df1deead79fc6c4483a2fbfb753dbd9247"
+    },
+    "char_accessory_backpack": {
+      "file": "c_accessory_backpack",
+      "pin": "082d2bf9db25e51a448603eb381caec1cb8781b771538e39963ac2188e1667e2"
+    },
+    "char_accessory_satchel": {
+      "file": "c_accessory_satchel",
+      "pin": "8085a03f38b844c7a61a4f109b8ae4d7eaa7914bf1a1dd6c018917c05452a46a"
     },
     "premade_01": {
       "file": "rs_premade_01",

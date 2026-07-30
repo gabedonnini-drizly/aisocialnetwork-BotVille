@@ -90,9 +90,11 @@ export function pickStyleAndVariant(manifest, seed, styleSalt, variantSalt) {
 // (Task 38, 2026-07-30) '#f1c27d' nudged to '#f1cf7b' (G 194->207, B 125->123):
 // it sat only dE 8.0 from '#e0ac69' in daylight (dE 4.8 under the night tint,
 // spec §10.2's alpha-0.45-over-#0a0a2e overlay) — below the 12/7 perceptual
-// separation floor test/palette-separation.test.mjs asserts. The nudge is
-// the smallest RGB perturbation found that clears daylight/night/CVD margins
-// for every pair in the ramp; every other adjacent pair already cleared them.
+// separation floor test/palette-separation.test.mjs asserts. This nudge was
+// chosen because it clears the daylight/night/CVD margins for every pair in
+// the ramp with the smallest change tried; other perturbations may also
+// clear the same margins and were not exhaustively searched. Every other
+// adjacent pair already cleared them without a nudge.
 export const SKIN_TONES = ['#5c3317', '#8d5524', '#c68642', '#e0ac69', '#f1cf7b', '#ffdbac'];
 
 /**

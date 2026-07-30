@@ -83,7 +83,6 @@ export class PreloaderScene extends Phaser.Scene {
 
   create() {
     const baked = (this.cache.json.get('baked-manifest') as { hashes?: string[] } | undefined)?.hashes ?? [];
-    this.registerAgentAnimations(baked);
 
     for (const hash of baked) {
       this.load.spritesheet(`agent-${hash}`, `assets/baked/${hash}.png`, {
@@ -91,7 +90,20 @@ export class PreloaderScene extends Phaser.Scene {
         frameHeight: AVATAR_VARIANTS[0].frameHeight,
       });
     }
-    this.load.once(Phaser.Loader.Events.COMPLETE, () => this.scene.start('DistrictScene'));
+    // Critical (final review, PreloaderScene.ts): registerAgentAnimations
+    // MUST run after this.load.start() resolves the baked spritesheets
+    // queued just above, never before. Phaser 3.90 resolves animation
+    // frames EAGERLY (Animation.getFrames -> TextureManager.getFrame) the
+    // instant anims.create() runs, so registering a baked-hash animation
+    // against a texture key that has not finished loading yet creates it
+    // with zero frames, permanently (mk()'s anims.exists guard blocks any
+    // later re-creation). Attaching this as the loader's COMPLETE handler —
+    // rather than calling it eagerly here in create() — is what makes the
+    // baked textures exist in the cache by the time anims.create() runs.
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => {
+      this.registerAgentAnimations(baked);
+      this.scene.start('DistrictScene');
+    });
     this.load.start();
   }
 

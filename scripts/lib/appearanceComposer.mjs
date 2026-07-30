@@ -101,6 +101,34 @@ const FALLBACK_TINTS = ['#4a2c19', '#8b5a2b', '#c98a3b', '#2c3e50', '#8e44ad', '
 const fallbackTint = key => FALLBACK_TINTS[hashString(key, 'composer:fallbackTint') % FALLBACK_TINTS.length];
 
 /**
+ * (Final review Finding 2 fix, 2026-07-30) Maps each non-'none' ACCESSORIES
+ * token (derive.mjs) to its OWN adapter rect name. Before this fix every
+ * record read the adapter's single `char_accessory` alias regardless of
+ * `record.accessory` — the shipping pack's alias happens to be a ladybug
+ * antenna sheet, so every accessorized agent rendered as a ladybug no
+ * matter which of the five ACCESSORIES values its hash picked.
+ *
+ * Unlike hair/outfit/eyes, accessory tokens are not a pack-file-derived
+ * two-stage id (`resolveVariantFile`'s numeric-suffix substitution doesn't
+ * apply — the pack's accessory filenames carry a family NAME between two
+ * numbers, e.g. `Accessory_11_Beanie_01.png`, not just `_NN_MM`). So this is
+ * adapter DATA, the same pattern as hair/outfit/eyes but one level up: each
+ * token names a dedicated rect (`sources/limezu.json`'s
+ * `char_accessory_<token>`, each with its own file alias and a `note`
+ * documenting the pack filename it was matched from) rather than a sibling
+ * the record's variant substitutes into. A pack (or the fixture) that has
+ * not been given these rects yet safely falls back to the single
+ * `char_accessory` alias — composing never throws for a name the adapter
+ * doesn't have.
+ */
+const ACCESSORY_RECT = {
+  cap: 'char_accessory_cap',
+  beanie: 'char_accessory_beanie',
+  backpack: 'char_accessory_backpack',
+  satchel: 'char_accessory_satchel',
+};
+
+/**
  * Which record field colours which part. `build` selects the body sheet
  * variant rather than a colour. Eyes, hair and outfit are all
  * SHEET-SELECTION axes now, never a tint (D-19, 2026-07-30): each concrete
@@ -148,17 +176,27 @@ export function composeSheet(contract, adapter, record) {
   // concrete sibling sheet via resolveVariantFile above. The fixture pack
   // ships real per-variant sheets for exactly these three (Task 27
   // dependency flag #2), so resolution is exercised for real there too, not
-  // just on the real pack.
+  // just on the real pack. Accessory (final review Finding 2 fix) resolves
+  // by a different mechanism — ACCESSORY_RECT, a token -> dedicated-rect
+  // map, not a sibling substitution — because its four non-'none' tokens
+  // are enum values, not a pack-file-derived style/variant pair.
   //
   // Sleep row (r3): on the real pack, outfit and eye sheets have NO art in
   // that row (Step 0) — a composed sleep frame is body+hair by pack design,
   // and that is the shipped decision (the bed's blanket covers the body).
   // Do not special-case it here: blitting an empty row is the correct
-  // behavior, not a bug. The Math.min blit clamp below also harmlessly clips
-  // the padding columns of the four 927px-wide party-cone accessory sheets.
+  // behavior, not a bug. Several accessory families (backpack included) are
+  // ALSO sleep-empty for the same D-17-accepted reason — that is unrelated
+  // to, and unaffected by, which accessory FILE this fix now picks; it still
+  // vanishes at bedtime exactly as before. The Math.min blit clamp below
+  // also harmlessly clips the padding columns of the four 927px-wide
+  // party-cone accessory sheets.
   for (const part of parts) {
     if (part === 'accessory' && record.accessory === 'none') continue;
-    const key = `char_${part}`;
+    const accessoryRect = ACCESSORY_RECT[record.accessory];
+    const key = part === 'accessory' && accessoryRect && adapter.has(accessoryRect)
+      ? accessoryRect
+      : `char_${part}`;
     const file = part === 'hair' ? resolveVariantFile(adapter, key, record.hairStyle, record.hairVariant)
                : part === 'outfit' ? resolveVariantFile(adapter, key, record.outfit, record.outfitVariant)
                : part === 'eyes' ? resolveVariantFile(adapter, key, null, record.eyes)

@@ -22,10 +22,15 @@
  *     that is expected, not a per-variant defect, so r3 is not a gate for
  *     outfits.
  *   - bodies / eyes / accessories have no generated variant manifest to
- *     exclude FROM (body and eyes are not yet per-record-variant selected;
- *     accessory is a small fixed enum, not pack-file-derived) — they are
- *     measured and reported for docs/ASSETS.md only, per D-17's "vanish at
- *     bedtime, accepted" decision for the no-sleep-art accessory families.
+ *     exclude FROM (body is not yet per-record-variant selected — the
+ *     composer always reads the pack's single aliased default body sheet;
+ *     eyes ARE per-record-variant selected, via resolveVariantFile, same as
+ *     hair/outfit, but from a fixed 7-entry enum rather than a generated
+ *     manifest, so there is nothing to exclude a failing eye sheet FROM;
+ *     accessory is likewise a small fixed enum, not pack-file-derived) —
+ *     they are measured and reported for docs/ASSETS.md only, per D-17's
+ *     "vanish at bedtime, accepted" decision for the no-sleep-art accessory
+ *     families.
  *
  * Usage: node scripts/gen-row-coverage.mjs [assetsRoot=assets-src] [--json]
  */

@@ -65,6 +65,10 @@
     "char_hair_sheet": "interiors/2_Characters/Character_Generator/Hairstyles/16x16/Hairstyle_01_01.png",
     "char_outfit_sheet": "interiors/2_Characters/Character_Generator/Outfits/16x16/Outfit_01_01.png",
     "char_accessory_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_01_Ladybug_01.png",
+    "char_accessory_cap_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_04_Snapback_01.png",
+    "char_accessory_beanie_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_11_Beanie_01.png",
+    "char_accessory_backpack_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_03_Backpack_01.png",
+    "char_accessory_satchel_sheet": "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_03_Backpack_02.png",
     "premade_char_01": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_01.png",
     "premade_char_02": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_02.png",
     "premade_char_04": "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_04.png",
@@ -863,6 +867,26 @@
     "char_accessory": {
       "file": "char_accessory_sheet",
       "pin": "c02e96bb95195ea1ecd461763a02f85af4a97668b0aa25dcbbbcd84e715dd438"
+    },
+    "char_accessory_cap": {
+      "file": "char_accessory_cap_sheet",
+      "note": "final review Finding 2 fix, 2026-07-30 — ACCESSORIES token 'cap'. The pack ships no family literally named 'Cap'; Accessory_04_Snapback is the closest cap-shaped headwear family (verified existing on disk, assets-src/interiors/2_Characters/Character_Generator/Accessories/16x16/).",
+      "pin": "dfb72cbb29962dec792a16aaa328a8bb75c60fd16505b44f59231000148c0fc2"
+    },
+    "char_accessory_beanie": {
+      "file": "char_accessory_beanie_sheet",
+      "note": "final review Finding 2 fix, 2026-07-30 — ACCESSORIES token 'beanie', exact name match: Accessory_11_Beanie (verified existing on disk).",
+      "pin": "716c946178e61589bc48f9a6fa07ba2410b8f193b5183474078eb191f6dee498"
+    },
+    "char_accessory_backpack": {
+      "file": "char_accessory_backpack_sheet",
+      "note": "final review Finding 2 fix, 2026-07-30 — ACCESSORIES token 'backpack', exact name match: Accessory_03_Backpack (verified existing on disk).",
+      "pin": "badada412e8a98d0414da15f5c3be58133f6f1f0c56513ac2738c21f0dcae70a"
+    },
+    "char_accessory_satchel": {
+      "file": "char_accessory_satchel_sheet",
+      "note": "final review Finding 2 fix, 2026-07-30 — ACCESSORIES token 'satchel'. The pack ships no separate bag/satchel family; nearest bag-like art is a second Backpack variant (Accessory_03_Backpack_02, verified existing on disk), deliberately a different file from the 'backpack' token's own Accessory_03_Backpack_01 so the two tokens stay pixel-distinct.",
+      "pin": "5c5d69b61b9b0d00174295413269cc35030ceb7d341b7de5d84a809468e9f74f"
     },
     "premade_01": {
       "file": "premade_char_01",

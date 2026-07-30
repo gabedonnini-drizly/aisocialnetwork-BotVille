@@ -17,8 +17,18 @@ empty. The six populated rows, by pixel measurement:
 | r1 | idle |
 | r2 | walk |
 | r3 | **sleep** |
-| r4 | sit-right |
-| r5 | sit-left |
+| r4 | sit (right: cols 0–5, left: cols 6–11) |
+| r5 | sit (same layout as r4 — pixel-measured to carry both halves too) |
+
+Both r4 and r5 carry a full sit-right-then-sit-left pair of six-frame halves
+(pixel-measured, not eyeballed) — the pack ships the row twice. The runtime
+only ever plays **r4**: `HUMAN_SHEET.rows.sit = 4` and `sitFrames()`
+(`packages/client/src/game/assetManifest.ts`) read sit-right from r4 cols
+0–5 and sit-left from r4 cols 6–11; r5 is never referenced by any texture
+key baked or resolved by this plan. `scripts/gen-row-coverage.mjs` still
+measures both rows for every layer (a pack update could, in principle, drop
+art from one row and not the other), but only r4's coverage is load-bearing
+for what actually renders today.
 
 Bodies (and the four `Accessory_19_Party_Cone_*` sheets) ship 927px wide;
 every other layer ships 896px wide — 56 whole 16px frames, where 927 is not

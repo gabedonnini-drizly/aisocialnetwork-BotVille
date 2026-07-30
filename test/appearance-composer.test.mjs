@@ -119,3 +119,36 @@ test('changing only eyes selects a different eyes sheet', () => {
   const other = { ...base, eyes: base.eyes === '01' ? '02' : '01' };
   assert.notDeepEqual([...composeSheet(c, a, base).data], [...composeSheet(c, a, other).data]);
 });
+
+// ── final review Finding 2 fix: accessory tokens resolve distinct files ──
+// Before this fix, `accessory` never went through resolveVariantFile (or
+// any equivalent): composeSheet always read the adapter's single
+// `char_accessory` alias no matter what `record.accessory` said, so every
+// accessorized agent on the real pack rendered as the same ladybug. The
+// fixture pack now ships one distinct file per non-'none' ACCESSORIES
+// token (gen-fixture-pack.mjs), so this is checkable with no licensed
+// pixels on disk.
+test('every non-none accessory token resolves a distinct rect', () => {
+  for (const token of ['cap', 'beanie', 'backpack', 'satchel']) {
+    assert.ok(a.has(`char_accessory_${token}`), `adapter is missing a dedicated rect for accessory token '${token}'`);
+  }
+});
+
+test('distinct accessory tokens compose distinct pixels, holding every other field fixed', () => {
+  const base = rec('aisha_khan');
+  const tokens = ['cap', 'beanie', 'backpack', 'satchel'];
+  const sheets = tokens.map(token => [...composeSheet(c, a, { ...base, accessory: token }).data]);
+  for (let i = 0; i < tokens.length; i++) {
+    for (let j = i + 1; j < tokens.length; j++) {
+      assert.notDeepEqual(sheets[i], sheets[j],
+        `accessory '${tokens[i]}' and '${tokens[j]}' composed byte-identical sheets — the accessory axis is not resolving distinct files`);
+    }
+  }
+});
+
+test("accessory 'none' omits the accessory layer entirely (unchanged behavior)", () => {
+  const base = rec('aisha_khan');
+  const none = composeSheet(c, a, { ...base, accessory: 'none' });
+  const cap = composeSheet(c, a, { ...base, accessory: 'cap' });
+  assert.notDeepEqual([...none.data], [...cap.data]);
+});

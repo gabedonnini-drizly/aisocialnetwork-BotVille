@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createCanvas, encodePng } from './png-lib.mjs';
 import { loadContract } from './lib/assetContract.mjs';
-import { EYE_VARIANTS, HAIR_MANIFEST, OUTFIT_MANIFEST } from '../packages/shared/src/appearance/derive.mjs';
+import { ACCESSORIES, EYE_VARIANTS, HAIR_MANIFEST, OUTFIT_MANIFEST } from '../packages/shared/src/appearance/derive.mjs';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
 const OUT = join(ROOT, 'test', 'fixtures', 'pack-src');
@@ -185,6 +185,23 @@ const VARIANT_LAYER_FILES = {
   outfit: siblingFilenames('Outfit', OUTFIT_MANIFEST),
   eyes: EYE_VARIANTS.map(v => `Eyes_${v}.png`),
 };
+
+/**
+ * (Final review Finding 2 fix, 2026-07-30) Accessory is NOT a
+ * VARIANT_LAYER_FILES entry: its tokens are enum values
+ * (derive.mjs's ACCESSORIES), not a pack-derived style/variant pair
+ * `resolveVariantFile` substitutes into a shared filename shape — the real
+ * pack maps each token to its OWN dedicated rect (`char_accessory_<token>`,
+ * `sources/limezu.json`, ACCESSORY_RECT in appearanceComposer.mjs) instead.
+ * One distinct fixture file per non-'none' token, generated the same
+ * deterministic way as every other fixture sprite, lets
+ * `test/appearance-composer.test.mjs` assert "distinct accessory tokens
+ * compose distinct pixels" with no licensed pixels on disk at all — the
+ * base `char_accessory` alias below still exists too, for `record.accessory`
+ * values a pack has not been given a dedicated rect for.
+ */
+const ACCESSORY_TOKENS = ACCESSORIES.filter(a => a !== 'none');
+
 for (const part of c.characters.parts) {
   const band = CHARACTER_BANDS[part] ?? [0, 32];
   const variantFiles = VARIANT_LAYER_FILES[part];
@@ -201,6 +218,14 @@ for (const part of c.characters.parts) {
   files[alias] = `characters/${part}.png`;
   rects[`char_${part}`] = { file: alias };
   write(`characters/${part}.png`, characterLayerBlock(`char_${part}`, 16 * 56, 32 * 8, 32, band));
+  if (part === 'accessory') {
+    for (const token of ACCESSORY_TOKENS) {
+      const tokenAlias = `c_${part}_${token}`;
+      files[tokenAlias] = `characters/${part}_${token}.png`;
+      rects[`char_${part}_${token}`] = { file: tokenAlias };
+      write(`characters/${part}_${token}.png`, characterLayerBlock(`char_${part}:${token}`, 16 * 56, 32 * 8, 32, band));
+    }
+  }
 }
 
 // Any other runtime sheet without bespoke geometry above — interim, Task 23
