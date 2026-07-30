@@ -763,6 +763,20 @@ function splitMidnight(b) {
     .filter(x => x.start < x.end);
 }
 
+// AMENDED IN EXECUTION (2026-07-30, controller adjudication after review round 1;
+// owner informed): venue openness is gated on FULL-SPAN containment (a venue is
+// a candidate only if one hours window contains the whole block — the plain
+// D-12 reading; gating on any single sampled hour stores agents at closed
+// venues). Because containment concentrates early-waking cohorts on the
+// always-open venues (F-12 crowding), multi-hour blocks are additionally SPLIT
+// at each in-span venue-opening boundary before assignment —
+// `deriveSplitPoints`/`splitAtOpenings` in the shipped `scheduleCoverage.js` —
+// generalising this same midnight-split convention. Split points derive purely
+// from published venue hours; each sub-block gets an independent seeded pick
+// (salt from sub-block start hour). Sleep blocks and degenerate spans are
+// exempt. Shipped with a D-12 whole-span invariant test (every stored block
+// fully inside its venue's hours) and an unweakened F-12 crowding test.
+
 /**
  * Sort, split at midnight, clip overlaps, fill gaps. Returns blocks that
  * tile [0,24) exactly and satisfy every DB constraint.
