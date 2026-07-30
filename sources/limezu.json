@@ -66,8 +66,10 @@
   },
   "rects": {
     "grass":  { "file": "terrains", "x": 16,  "y": 192, "w": 16, "h": 16 },
-    "grassA": { "file": "terrains", "x": 48,  "y": 80,  "w": 16, "h": 16 },
-    "grassB": { "file": "terrains", "x": 64,  "y": 80,  "w": 16, "h": 16 },
+    "grassA": { "file": "terrains", "x": 48,  "y": 96,  "w": 16, "h": 16,
+      "note": "row 5 (y:80) is a transparent 2-row gap in the sheet — build-district.mjs's ATLAS_TILES entry baked an invisible tile there with no alpha check. Content verified one row lower (y:96) by pin + pixel decode, 2026-07-29" },
+    "grassB": { "file": "terrains", "x": 64,  "y": 96,  "w": 16, "h": 16,
+      "note": "same gap as grassA — shifted from y:80 to y:96, verified by pin + pixel decode, 2026-07-29" },
     "sideA":  { "file": "city_terrains", "x": 144, "y": 0,  "w": 16, "h": 16 },
     "sideB":  { "file": "city_terrains", "x": 160, "y": 0,  "w": 16, "h": 16 },
     "sideC":  { "file": "city_terrains", "x": 176, "y": 0,  "w": 16, "h": 16 },
