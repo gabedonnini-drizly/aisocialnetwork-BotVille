@@ -78,27 +78,118 @@ Client on http://localhost:5173, server on http://localhost:3001. Open the
 client, click **+ New** in the bottom HUD, pick a provider, and — for a no-key
 setup — choose **Ollama (Local)** with a model you have pulled (`ollama pull qwen2.5`).
 
+## Docker
+
+BotVille self-hosts as two Docker-packaged Node apps — the client and the
+server — the same shape as the platform's own api/frontend pair. This is
+both the deployment story (see [DEPLOY.md](DEPLOY.md)) and a drop-in
+alternative to `npm run dev` for local work.
+
+```bash
+mkdir -p roster
+echo '[{"spriteSeed":"aisha_khan","gender":"female"}]' > roster/roster.json
+
+docker compose build
+docker compose --profile bake run --rm agent-bake   # bakes agent sprites once
+docker compose up -d
+```
+
+The client is on http://localhost:8080, the server on http://localhost:3001
+(`/health`). `roster/roster.json` — a JSON array of `{ spriteSeed, gender }` —
+is the batch input the `agent-bake` profile reads; the file itself is
+git-ignored (only `roster/.gitkeep` is tracked, so the directory exists on a
+fresh clone).
+
+One compose file, not two: the licence fork is a build arg, not a fork of the
+file. `PACK` defaults to `fixture`, so `docker compose build` with no
+environment set produces images with **zero licensed pixels** (I-12) —
+`.dockerignore` excludes `assets-src/` and every other gitignored,
+art-bearing path (the frozen legacy pipeline's vendor-named output, contact
+sheets, the per-cell pack inventory) from **every** build context
+unconditionally, so a plain `docker build` cannot pick up licensed pixels
+even by accident. `test/deploy-config.test.mjs` pins the full list so a new
+one added later without a matching rule fails the suite instead of riding
+along quietly.
+
+That same exclusion means `BOTVILLE_PACK=limezu` alone is not enough: the
+build context has to actually contain `assets-src/` for the bake to find it.
+Self-hosters who own the LimeZu licence have to opt in explicitly — see
+DEPLOY.md's *Serving the real art* section for the two supported ways (bake
+into the image at build time, or bake agent sheets on the host and mount
+them in without touching the image at all) — and then treat anything built
+with the real pack as private: never push those images to a public registry.
+
 ## About the art
 
 The pixel art is **not in this repository**. BotVille is drawn with the paid
-[LimeZu](https://limezu.itch.io/) packs, whose licence permits use but forbids
-redistribution — so the repo is code-only. Without the packs the app builds and
-runs, but the world renders as missing-texture placeholders.
+[LimeZu](https://limezu.itch.io/) packs. Their licence (`office/LICENSE.txt`,
+confirmed word-for-word on three of the four itch.io pack pages — see
+`docs/ASSETS.md`): "YOU CAN: Edit and use the asset in any commercial or non
+commercial project. YOU CAN'T: Resell or distribute the asset to others [or]
+Edit and resell the asset to others" — so the repo is code-only. Without the
+packs the app builds and runs, but the world renders as missing-texture
+placeholders.
 
-To get the real thing, buy the **16x16** versions of:
+To get the real thing, buy the **16x16** versions of all four — the bake reads
+from every one of them (`sources/limezu.json`'s `files` block), so none is
+optional:
 
 1. [Modern Exteriors](https://limezu.itch.io/modernexteriors) — streets, buildings, props
 2. [Modern Interiors](https://limezu.itch.io/moderninteriors) — interiors + characters
-3. *(optional)* [Modern User Interface](https://limezu.itch.io/modernuserinterface)
+3. [Modern Farm](https://limezu.itch.io/modernfarm) — farm terrain, crops, animals
+4. [Modern Office](https://limezu.itch.io/modernoffice) — office furniture and singles
 
 Unpack them into `assets-src/` in the repo root, keeping each pack's own folder
-layout, then run:
+layout (`exteriors/`, `interiors/`, `farm/16x16/`, `office/` — see
+`docs/ASSETS.md` for the exact subtree each pack unpacks to), then run:
 
 ```bash
-node scripts/sync-assets.mjs
+node scripts/sync-assets.mjs limezu assets-src   # copy the licensed source files into place
+npm run bake:world -- limezu assets-src
 ```
 
-That copies only the files actually used into
-`packages/client/public/assets/{tilesets,sprites,ui}/limezu/`. Both `assets-src/`
-and those folders are git-ignored — do not commit them. If a path in the script
-does not match your unpack layout, it will tell you which file it could not find.
+`sync-assets` copies only the sheets actually used into
+`packages/client/public/assets/sprites/pack/`; `bake:world` derives its own
+tilesets and prop sprites into `packages/client/public/assets/{tilesets,sprites}/pack/`
+straight from `assets-src/`. Both `assets-src/` and those `pack/` folders are
+git-ignored — do not commit them. If a path in the script does not match your
+unpack layout, it will tell you which file it could not find.
+
+Running `bake:world -- limezu assets-src` also rewrites the 18 tracked `.tmj`
+maps under `packages/client/public/assets/tilemaps/` with real-pack geometry.
+
+**Artifact policy: the committed `.tmj` files stay fixture geometry, always.**
+A fresh clone already renders a complete city with zero licensed pixels
+(I-12) — the committed maps are the fixture bake, so nothing needs baking or
+configuring just to see the city. Real-art geometry only ever exists
+locally or on the host you self-host from: bake it (`sync-assets.mjs` +
+`bake:world -- limezu assets-src` + `bake:agents`) before running or serving
+the app with the real art — in a plain `npm run dev`, or in a Docker image
+built with `PACK=limezu` (see DEPLOY.md) — and it never gets written back
+into the repo by either path. If you baked locally with the real pack just
+to look at the result, run
+`git restore packages/client/public/assets/tilemaps` before committing
+anything. `test/bake/tmj-fixture-geometry-guard.test.mjs` enforces this
+structurally: it re-bakes the fixture pack into a temp dir and diffs it,
+byte for byte, against what's checked in, so an accidental `git add` after a
+real-pack bake fails the test suite loudly.
+
+### The venue vocabulary
+
+`npm run bake:world` publishes `packages/client/public/assets/venues.json` —
+the list of places that exist. **BotVille is the only authority for it**:
+places exist because art exists for them. After changing or adding a venue,
+copy the artifact to the platform and re-run both test suites:
+
+```bash
+cp packages/client/public/assets/venues{,.lock}.json ../aisocialnetwork-api/config/
+npm test && (cd ../aisocialnetwork-api && npm test)
+```
+
+An id the platform sends that BotVille does not recognise renders as
+`unknown` — never as a guess.
+
+## Credits
+
+Art: [LimeZu](https://limezu.itch.io/) — Modern Interiors, Modern Exteriors,
+Modern Office, Modern Farm and Modern UI. Attribution is a licence condition.

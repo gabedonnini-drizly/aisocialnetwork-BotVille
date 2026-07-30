@@ -11,7 +11,9 @@ import {
   animKey,
   getVariant,
 } from '../assetManifest.js';
+import { EMOTE_FRAMES } from '../assets.generated.js';
 import type { AgentStatus } from '@botville/shared';
+import { AppearanceResolver, resolvedAnimDef } from './AppearanceResolver.js';
 
 /** A scene that can answer walkability questions (DistrictScene and interiors). */
 interface WalkableHost {
@@ -46,13 +48,21 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   private seatDepthBoost = 0;
   /** Sleeping outdoors at night (animals in the pen). */
   private asleep = false;
-  /** The agent is "inside a building" (night in the dorm): sprite hidden, logic paused. */
-  private hiddenInside = false;
   /** Heading to a goal (e.g. a seat) — the state machine is paused. */
   private goalLock = false;
   public agentId: string;
   public currentStatus: AgentStatus = 'idle';
   private variantDef: AvatarVariantDef;
+  /**
+   * The def whose animKey()s are actually registered against the texture
+   * on screen: `variantDef` itself when there's no `identity` (legacy path,
+   * unchanged), or a human-shaped clone of the resolved texture key when
+   * there is (Task 30 review Finding 1 fix — see the constructor and
+   * AppearanceResolver.resolvedAnimDef). `variantDef` keeps driving geometry
+   * (footGaps, frame size for the shadow/name-label/emote) per the brief's
+   * documented "known geometry caveat" — only ANIMATION SELECTION moves.
+   */
+  private animDef: AvatarVariantDef;
 
   constructor(
     scene: Phaser.Scene,
@@ -61,6 +71,8 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     avatarVariant: number,
     pixelX: number,
     pixelY: number,
+    /** TZ-BotVille: the identity for a derived appearance. Absent — the old path. */
+    identity?: { spriteSeed: string; gender: string },
   ) {
     super(scene, pixelX, pixelY);
     this.agentId = agentId;
@@ -75,8 +87,17 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.shadow = scene.add.ellipse(0, 0, Math.max(10, spriteW * 0.7), Math.max(4, spriteW * 0.22), 0x000000, 0.3);
     this.shadow.setOrigin(0.5, 0.5);
 
+    // Derived appearance (spec §6): a baked sheet or the fallback human.
+    const textureKey = identity
+      ? new AppearanceResolver(scene.textures).textureFor(identity.spriteSeed, identity.gender)
+      : vd.textureKey;
+    // Animations must target whatever texture is ACTUALLY on screen, not
+    // vd — otherwise Phaser's sprite.play() switches straight back to the
+    // legacy sheet the moment any animation starts (review Finding 1).
+    this.animDef = identity ? resolvedAnimDef(textureKey) : vd;
+
     // Sprite: origin at the feet
-    this.sprite = scene.add.sprite(0, 0, vd.textureKey, 0);
+    this.sprite = scene.add.sprite(0, 0, textureKey, 0);
     this.sprite.setOrigin(0.5, 1);
     this.sprite.setScale(vd.scale);
     this.sprite.setInteractive({ useHandCursor: true });
@@ -149,7 +170,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   };
 
   private playAnim(type: 'idle' | 'walk', dir: Direction) {
-    this.sprite.play(animKey(this.variantDef, type, dir), true);
+    this.sprite.play(animKey(this.animDef, type, dir), true);
     // feet on the ground: in animals' side views the frame bottom doesn't match the feet
     this.targetFootY = (this.variantDef.footGaps?.[dir] ?? 0) * this.variantDef.scale;
   }
@@ -162,10 +183,10 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   sit(side: 'right' | 'left' = 'right', kind: 'chair' | 'stool' | 'bed' = 'chair') {
     this.sitting = true;
     this.path = [];
-    if (kind === 'bed' && this.variantDef.rows.sleep !== undefined) {
-      this.sprite.play(animKey(this.variantDef, 'sleep'), true);
-    } else if (kind !== 'bed' && this.variantDef.rows.sit !== undefined) {
-      this.sprite.play(animKey(this.variantDef, side === 'right' ? 'sit-right' : 'sit-left'), true);
+    if (kind === 'bed' && this.animDef.rows.sleep !== undefined) {
+      this.sprite.play(animKey(this.animDef, 'sleep'), true);
+    } else if (kind !== 'bed' && this.animDef.rows.sit !== undefined) {
+      this.sprite.play(animKey(this.animDef, side === 'right' ? 'sit-right' : 'sit-left'), true);
     } else {
       this.playAnim('idle', side === 'right' ? 'right' : 'left');
     }
@@ -230,32 +251,17 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.showIcon('rest');
   }
 
-  /** Hide the agent "inside a building" (overnighting in the dorm, seen from the street). */
-  hideInside() {
-    this.hiddenInside = true;
-    this.cancelGoal();
-    this.setVisible(false);
-    this.nameLabel.setVisible(false);
-  }
-
-  /** Wake up / come outside: clears both sleep and "inside a building". */
+  /** Wake up / come outside: clears night sleep. */
   wakeUp() {
     if (this.asleep) {
       this.asleep = false;
       this.hideEmote();
       this.playAnim('idle', 'down');
     }
-    if (this.hiddenInside) {
-      this.hiddenInside = false;
-      this.setVisible(true);
-      this.nameLabel.setVisible(true);
-    }
     this.cancelGoal();
   }
 
   get isAsleep() { return this.asleep; }
-
-  get isHiddenInside() { return this.hiddenInside; }
 
   // ---------------------------------------------------------------- emotes
 
@@ -272,7 +278,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   private showIcon(status: string) {
-    const pair = EMOTES.icons.byStatus[status];
+    const pair = EMOTE_FRAMES[status];
     if (!pair) { this.hideEmote(); return; }
     this.hideEmote();
     this.emote.setTexture(EMOTES.icons.textureKey, pair[0]);
@@ -301,7 +307,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   // ---------------------------------------------------------------- update
 
   update(dt: number) {
-    if (!this.seatLock && !this.asleep && !this.hiddenInside) {
+    if (!this.seatLock && !this.asleep) {
       if (this.goalLock) {
         this.moveAlongPath(dt);
         if (!this.path.length) this.goalLock = false;

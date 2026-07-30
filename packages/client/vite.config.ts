@@ -8,9 +8,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      '@botville/shared': path.resolve(__dirname, '../shared/src/index.ts'),
-    },
+    alias: [
+      // Exact match -> the package barrel.
+      { find: /^@botville\/shared$/, replacement: path.resolve(__dirname, '../shared/src/index.ts') },
+      // Subpath -> a file in src/. A string alias breaks here: rollup
+      // matches by prefix and glues the path THROUGH index.ts (ENOTDIR).
+      { find: /^@botville\/shared\//, replacement: path.resolve(__dirname, '../shared/src') + '/' },
+    ],
   },
   server: {
     port: 5173,

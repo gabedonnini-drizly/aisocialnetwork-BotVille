@@ -1,0 +1,582 @@
+{
+  "animated/cake_fridge.png": {
+    "w": 448,
+    "h": 48,
+    "sha256": "7aed536074d770b95d4d7f8d5a6c28a71703f2cf6c163773fa8b871443dcff4c"
+  },
+  "animated/coffee_steam.png": {
+    "w": 96,
+    "h": 32,
+    "sha256": "289570e381272b5a5d872c875299a409217512c473898d8eb2118b164971e95f"
+  },
+  "animated/cuckoo_clock.png": {
+    "w": 160,
+    "h": 32,
+    "sha256": "05ae48eeff8fbd7e44dfd4e613df7c5f0029a6bc6400c7ca8e2a350be194a50f"
+  },
+  "animated/office_screen.png": {
+    "w": 192,
+    "h": 32,
+    "sha256": "b6234225db95314c4fe7f6ad5fd3fd3168f92d9d67ddebb8809e3131d073c2d8"
+  },
+  "animated/tv_news.png": {
+    "w": 1152,
+    "h": 32,
+    "sha256": "9839bad79bec4f89ee89b37a420b05940c6996f603a56ccada95ae2c3cc15489"
+  },
+  "characters/accessory.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b89f743ff120650baca4670ada0a11ff313ab5bde4335f48376113f771a78bff"
+  },
+  "characters/body.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "35fbe3e3b11f7e291fe7b692f71688c1300cc6f98e4e4ae2e79e498c8876a1a2"
+  },
+  "characters/eyes.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9494586636fb46d5302f560824a51b9aa76f242afa65c6ed586acafd4d13e5f1"
+  },
+  "characters/hair.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "61cb2a9d912dbfbe33c73c1633d81fc49d71bef7590a080bb5839832b3c95f80"
+  },
+  "characters/outfit.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9c0cae79900ee2042e2692240657eafa69d8ae7be87e59c6ca50f4d0d2b840cb"
+  },
+  "props/armchair_blue_l.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "b871fd783128d1fa8a71a24d580efbdd8046eeb1b67552e915dc26401964f3ad"
+  },
+  "props/armchair_blue_r.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "68d45a69496fe80b418aad00dfeade06d16f372c25004a0c793b11612bdd38b2"
+  },
+  "props/armchair_grey_l.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "c4aebdb6046735310629be828aca86558914339f7127dc0a7a1ca9223c2085d7"
+  },
+  "props/armchair_grey_r.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "0ddac8a1d7ffce1f7978f873bf093cc3b9d3f897905fb50b214ae573647de3cd"
+  },
+  "props/barn.png": {
+    "w": 144,
+    "h": 176,
+    "sha256": "9ef5e67e4bc53d759c2af1b0662edaee94dcbcd5dd05f95fa144250ed059a2a6"
+  },
+  "props/bed_blue.png": {
+    "w": 48,
+    "h": 64,
+    "sha256": "708e7117b7003affea059e590c14b01c17eb3bf34d969bae0e70321f7d92a774"
+  },
+  "props/bed_green.png": {
+    "w": 48,
+    "h": 64,
+    "sha256": "d99186560b5081819ac4f27d250ecaa3e880be80c373530e3839604b978974d3"
+  },
+  "props/bed_teal.png": {
+    "w": 48,
+    "h": 64,
+    "sha256": "2fb981d65e02fd276387706730755875a77200548236771e72696a7c90c8b44b"
+  },
+  "props/bench.png": {
+    "w": 48,
+    "h": 48,
+    "sha256": "f98661e0933dd0618a7fc0bd113ff822e92593b383d6dd7037bbd4c600169125"
+  },
+  "props/bookshelf_a.png": {
+    "w": 48,
+    "h": 64,
+    "sha256": "901bd7e32934fa0f9ec250b2b6429cd2c78e0738eaf1d7482e98d7c732f8b380"
+  },
+  "props/bookshelf_b.png": {
+    "w": 48,
+    "h": 64,
+    "sha256": "94e292f87a8ddcd263f9a73f9a1cf6502e584675e540c1618e7a925e6cd25c7b"
+  },
+  "props/bookshelf_narrow.png": {
+    "w": 16,
+    "h": 64,
+    "sha256": "432b68d96206cee6e659488b41bd88b97eb5b9bdeb4c3b851d479843f84398c2"
+  },
+  "props/bush_1.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "2225671fac424db8cee6ccc754c8f2b6b88b7f767f84fae81c0f01d41eca8ea8"
+  },
+  "props/bush_2.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "a8a0ebcae6c77248fa0decb1396e70b0d671bc6045f326556a339f284b8fcfee"
+  },
+  "props/cafe_building.png": {
+    "w": 128,
+    "h": 208,
+    "sha256": "19643b7f81b8585f755ec39246f81ecfe6e8cce90f8ff606509292198f3cd98b"
+  },
+  "props/car_down_1.png": {
+    "w": 80,
+    "h": 64,
+    "sha256": "e2585a7c6295fe23a42d08720622ef2911199dde8c55fd21e745f0fe2ce968f7"
+  },
+  "props/car_down_2.png": {
+    "w": 80,
+    "h": 64,
+    "sha256": "f0fd21c601c9c20a5daff2cfe229c833e5d4f512b3e080d657b186c54c60a09a"
+  },
+  "props/car_left_1.png": {
+    "w": 80,
+    "h": 64,
+    "sha256": "ed590f9b02e61626ef81e4f370a9b718f422044fd48898c245c08ce0df7ba93c"
+  },
+  "props/car_right_1.png": {
+    "w": 80,
+    "h": 64,
+    "sha256": "1aa8de54640524e3895e7fefcad331c41a24d342d3a2cf45f7a28a22d0a03f70"
+  },
+  "props/car_right_2.png": {
+    "w": 80,
+    "h": 64,
+    "sha256": "61f445f3bab13016df6997480ee0c5e88405a1b81f6f0479369aae66417dafe3"
+  },
+  "props/chair_blue_l.png": {
+    "w": 24,
+    "h": 40,
+    "sha256": "ab02616ac2b5c215ee92b97a3e3484794bac4477c0dac5451992d7b05eba9582"
+  },
+  "props/chair_blue_r.png": {
+    "w": 24,
+    "h": 40,
+    "sha256": "6207063f01a836eab54507e184b0a27b938635190cef9d2f13022c6f1dcf7d36"
+  },
+  "props/chair_red_l.png": {
+    "w": 24,
+    "h": 40,
+    "sha256": "dc4547a891cfe6243e5878386172894002f2b808390496d0d8dbeab6ed7a1e5b"
+  },
+  "props/chair_red_r.png": {
+    "w": 24,
+    "h": 40,
+    "sha256": "9597ae70ec21067156957453a9acb9cbf97be497cb6586a272a8d624607b4081"
+  },
+  "props/chair_yellow_l.png": {
+    "w": 24,
+    "h": 40,
+    "sha256": "0ea26bda4f649f7658b0afcc0f7e88d011e1313e92d93504950eb80f8bc696dd"
+  },
+  "props/chair_yellow_r.png": {
+    "w": 24,
+    "h": 40,
+    "sha256": "3f23b4bb72975c2b9372eedf829f438ba23adddb1aa6df5cb430b1a490591d4c"
+  },
+  "props/chalkboard.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "a5a74539c9ddc0c009fcb7599d00d98ee78ff30f43eb2578be09497cdb519ddc"
+  },
+  "props/coffee_machine.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "6771f310a0c12069c2f16d4a7bd146c1f675cce44eb6b4cd54a0027f93fb8e4c"
+  },
+  "props/counter_wide.png": {
+    "w": 64,
+    "h": 32,
+    "sha256": "ee7f7bd4f4c302c262345bf0897c63638ba90ed08a1dc55d9dd6403e2fde4b4b"
+  },
+  "props/crop_berry.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "ee90d838b189dd8025ef17d0c5d29ca5007f5703dd79d636fa9c265b28cf679a"
+  },
+  "props/crop_cabbage.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "cd7896463a23ca1212d0c3e6c6b29d742d084a3b91226c94482c160bef2e4a6b"
+  },
+  "props/doormat.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "70d7cc046fcc24beaafebb66c182ee4f89e0647d56aae0d4de137bf2efdba4df"
+  },
+  "props/fence_bottom_left.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "bf471b030a462b257dd3af28c899805090c200a664198239b0b5b2cecdb47aac"
+  },
+  "props/fence_bottom_middle.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "8afe3c9a6734932a01b7095fac1080fdda29be516d422e9cf29a2548805bf8c9"
+  },
+  "props/fence_bottom_right.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "25510976f5e2c06b741334c4ba4aec82e6eb2b1e6fa5a82fb06dd0ccb36e0a97"
+  },
+  "props/fence_middle_left.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "ece19c4bfc2df5697c30487eb05ce2af05b80e048dc81700e578d6394e725d92"
+  },
+  "props/fence_middle_right.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "4d2438a58c42e31aa94dc46e78c0336d87882f5391e4804cc8cdc64981e2fbf2"
+  },
+  "props/fence_top_left.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "a2dd1b41027e6ad26b3901c32cb9340e38e370141a623d3e5f69c57e8a0f25c1"
+  },
+  "props/fence_top_middle.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "78b931c3e22937096ff1289049063cf5448bd26bd4e79be1b1f4f67c4396dc4c"
+  },
+  "props/fence_top_right.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "7ee4860eee4d8da9ac30aa89edbfe30abf23a9f8a3254caf75cd280e399a4044"
+  },
+  "props/globe.png": {
+    "w": 16,
+    "h": 32,
+    "sha256": "abf310b7ce8d879708f24b0e1bfbbb5556503a8d4f03cb8e93596e007dac8ad5"
+  },
+  "props/hydrant.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "d49e28b5b3d3eddc03a7aae20cf93a518c2e08f703cba402731107f9398b452c"
+  },
+  "props/lamp_red.png": {
+    "w": 24,
+    "h": 48,
+    "sha256": "af86c8626ed6857d8b7fddb43bf6686b69a4777ae4a6952ff591d268f0e17b9b"
+  },
+  "props/lectern.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "e3ca472dafe1f1069edc95382d2a699181e13332967df562979646e9d586383d"
+  },
+  "props/library_building.png": {
+    "w": 144,
+    "h": 160,
+    "sha256": "ca29b4c3c17228a389c2e4ba2e5881647025257c2de063c49ee939a3aadd0a50"
+  },
+  "props/nightstand.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "75da480bf71c987e337ae2496cad6e74cab260c0e5fe7a608ed880beb3867565"
+  },
+  "props/office_building.png": {
+    "w": 208,
+    "h": 320,
+    "sha256": "9f7181140b668e7c8f921d9edaf2a04b501146c5e5871077391f0eb164017b7b"
+  },
+  "props/office_chair_left.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "1e5d694373f8e085cf1967d6e338d48a9d2a45736cef629fc49b85261e5f0920"
+  },
+  "props/office_chair_right.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "72339b1e2d676a88e2dabff361c6210a03eb4b0d3502ac2cecf8382369c16dd3"
+  },
+  "props/plant_palm.png": {
+    "w": 32,
+    "h": 64,
+    "sha256": "aca42e16806d324620c462f3826d53917622150bc415ecefac5dcce452a2d1a0"
+  },
+  "props/plant_pot.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "bc7f67cc517d722dceb3bf89653edaeb47c1e10c259be0ca8b8695175804b10d"
+  },
+  "props/plant_small.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "a37b0a393118f78b15f849fcb5ef63e741e8ea2dd7d13f8c5f19e7d1d28ad0e9"
+  },
+  "props/printer.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "e1c7f0f01bf7859bd490845c1fa379271671e4deaeda3163bf77964c764a5c7f"
+  },
+  "props/rug_pink.png": {
+    "w": 48,
+    "h": 48,
+    "sha256": "4bd4694c8ab7f7131d24737833a6d6300ad1dc1f012d7907c782b9d411f02d0a"
+  },
+  "props/soil_left.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "1045dca36e1bfec7c5283dbcb9904002e3d6f36a28573d1593d561daad072c7a"
+  },
+  "props/soil_mid.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "4f2f398cb0a7f3d08ee8d7e80f2bb31d3b0c56ee843e0de1f4215a33c071239b"
+  },
+  "props/soil_right.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "2497917d2909d1da9ac7b4c9fa93e27fb5cb9912328e981d1a8fe7476008f67d"
+  },
+  "props/stool.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2cb07f05270359e08e4ef47ef41816ca24f9e6d6aadcfefa21a36fa28bff8cd9"
+  },
+  "props/street_lamp.png": {
+    "w": 48,
+    "h": 80,
+    "sha256": "7ae45ee0903b31d2c14e1f5357c6c7b5c535369049d867dcbc924389832af642"
+  },
+  "props/table_plain.png": {
+    "w": 48,
+    "h": 48,
+    "sha256": "65615f1cb0ccd4b1c816759df0bceac29b30f8066c9cddf5295ed5b166ec6177"
+  },
+  "props/trash_can.png": {
+    "w": 48,
+    "h": 48,
+    "sha256": "77713f698052fe53f1fcc6dd3e04867e41e8667a342cc85b964429ece35cd023"
+  },
+  "props/tree_birch.png": {
+    "w": 64,
+    "h": 80,
+    "sha256": "938df1230f125e3475b45efd0d8c88db1aea0f7c8d0c01c5719457f52a41df1e"
+  },
+  "props/tree_oak_big.png": {
+    "w": 96,
+    "h": 112,
+    "sha256": "389bba6cf0dc0b14a77df577352cf7e5ad7202d1d63ad09274338da834fc8911"
+  },
+  "props/tree_oak_med.png": {
+    "w": 80,
+    "h": 96,
+    "sha256": "c24e58067f01c8e6f5f803c99badda1b45c008c40294eb337b1a66b5aa3c93d6"
+  },
+  "props/villa_building.png": {
+    "w": 168,
+    "h": 240,
+    "sha256": "69de2bbe709c0ce08f3dc11b8b84b2e2e3b171873c5a3b7205cad070f60774d7"
+  },
+  "props/whiteboard.png": {
+    "w": 48,
+    "h": 48,
+    "sha256": "f51953b0f064a3be68f7bc5f0f1b3485070e3cfc68a678ad49d72f662ccd615c"
+  },
+  "props/workstation_double.png": {
+    "w": 80,
+    "h": 48,
+    "sha256": "ffbbc7dac87cbb3ec55b4be827b1db521376dd8daad8f050054ff5c0749475d7"
+  },
+  "props/workstation_single.png": {
+    "w": 48,
+    "h": 48,
+    "sha256": "b89a1f46602d1564cd1889e6c56aa8aa9ac5aaf6b0011034554db9f138355ea8"
+  },
+  "tiles/asphA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "a6fa4714e0386598366be50ccac5d506efa10fefc240c614717ee1e7c08b0c77"
+  },
+  "tiles/asphB.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "90cca23853a12267b7ec6802699969cd8df64eee56bb5ead223f3d7e9c78ac29"
+  },
+  "tiles/asphC.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "9273e6d260760fcda7147d940834bb74084b1208142c023599637aede2af777d"
+  },
+  "tiles/asphD.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "68d8bd98d09298db2ae3dc17f5a8159d08c65279cbfcbba8edf1dba5adeec74e"
+  },
+  "tiles/border.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "5bacce85a8e819ccc9cf8efe684721c0a7a35fb203c57bd993d60ade7983a072"
+  },
+  "tiles/dashH.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2fa8f628f5b35af342e690cb1e38d9c07beee3ab6e1cea46cb5b22e7910d1c69"
+  },
+  "tiles/dashV.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "188a479d4c365efaefa3b66bd92911925ededeb37f5d52f6594be7d38af6f4a7"
+  },
+  "tiles/dirt.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "d686aa7de220469deef7110423c4d9b93f2326f619e59ac27dc3c07d4404d002"
+  },
+  "tiles/dirtA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "ad4133fa0b3f7e87c755905a92d34e0f4ec8cc726e08e1e10d74f8b09c1098b8"
+  },
+  "tiles/floorCafe.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "33cdee20052fb3adc30eb167c9f9c9e79ebb33ba408f90ce5cfa58c6b184febc"
+  },
+  "tiles/floorDorm.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "e595ee425ff18620f0224c15402e6977db30e33577d245dabc1d004ccc2f5241"
+  },
+  "tiles/floorLib.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "3dc6f3e484dc9875681bdda61491ddd08c9c0879e98b98eed42f78fea41fdce3"
+  },
+  "tiles/floorOffice.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "86723f34327ecbcdacb3460d7fba2f270904c15a2820dfe462e2809a84bdfedc"
+  },
+  "tiles/grass.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "a7bdb942a0f0437098980d3b7dd11b7f0ee31607eb6e1c1d51b55d55dad3e1d2"
+  },
+  "tiles/grassA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "f1be228a2badc3634a5e9f13a8135f8bd9fe39d49f4f444d714e78071199f4aa"
+  },
+  "tiles/grassB.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2bad27f1498a9ae4ee5604806f24b7c58d0ef20dc0a0ba88e1c305e767658c43"
+  },
+  "tiles/sideA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "aa6834ce8e0ba6b3c546f81517bc8d41c91f83189d8bf6f2b581c844b6ab8971"
+  },
+  "tiles/sideB.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "406c788135cca72dfed9c826af4dfcf309efecaed3ff5dfda542cf682e41d083"
+  },
+  "tiles/sideC.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "edc7e5599d45228349e4da2a64b754f27ee56b11c4ddd04e2a59ab3aae718609"
+  },
+  "tiles/sideD.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "1bf2ff64cc523c3105d2d734c6b9fc6d0f9484cc68a075566f2c3e7afca58ae4"
+  },
+  "tiles/wallCafeA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "a54a5e1a8afbcc445ea54078104f45edf139b07ad45c0812284ae622986eaa20"
+  },
+  "tiles/wallCafeB.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2ca979621b3f1f0308d2714e97869ec307601caaa5f3727b6c060b01a1d1f87d"
+  },
+  "tiles/wallDormA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "34237b862be3842044720c9fbadaee0e173f6257efd7d2af34216fd5231ff742"
+  },
+  "tiles/wallDormB.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "b8874efde6db3dd3a1a6bcd2fdaadafd70a49f50baaec831d9802e66dbb33d2b"
+  },
+  "tiles/wallLibA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "32d151d17a1504169aaca1dc636281cd1ebe403041317523247b98f96543c489"
+  },
+  "tiles/wallLibB.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "016fdfc37c3cd2f85ba4738dd75a444bc3c741b4f2987870d4637f390fc3deb9"
+  },
+  "tiles/wallOfficeA.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "edcca3f4878f0552ef7ebc0d30ed16618a389ff4841b3677bf7a224461983ec3"
+  },
+  "tiles/wallOfficeB.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "a229f19052b6b8d4668e7c524d17232830a610804056f7ea77a49edbdeb23484"
+  },
+  "tiles/zebHa1.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2e66bc9da0c72a7bcdb93bc6a0d520138ae96d04252daed65e76f5da9ec4f53a"
+  },
+  "tiles/zebHa2.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "07f6627343c7af530ddc876e81bad75207b24fd4b93ca905da901302b9f298cd"
+  },
+  "tiles/zebHb1.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "e173c4347a85bfa583548114bc47cd56c287b16e0667e559a05ce4a8d510ce15"
+  },
+  "tiles/zebHb2.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "f125f0aee66a7848892ec2716dd422a7034bdc51aa9853439853eda5f52c8746"
+  },
+  "tiles/zebVa1.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "589aaae463fddd7bb67590d607e0c42e9603346e94b18d4bf273131216632fd4"
+  },
+  "tiles/zebVa2.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "e971abcdf61169dc9bae5c052678412ef89bc95ceb03029e93bd51370baabc23"
+  },
+  "tiles/zebVb1.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "d6573f0a8d6a7396c5f4ab21b37e2c41c82121960868c85ccc3b84aaff4c9626"
+  },
+  "tiles/zebVb2.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2528816585db39755f9d4021b8673d641234cd4977e40355341a32a4b71ed887"
+  },
+  "ui/emotes.png": {
+    "w": 160,
+    "h": 160,
+    "sha256": "230926ad2926c7ab5ca0b5617b70d12cc4efc968d0c336938e9b8a51fb74dc0e"
+  },
+  "ui/ui.png": {
+    "w": 160,
+    "h": 160,
+    "sha256": "fe06188d9d307e90c3749d222b776a190d562896daf95955cdf1f2e877af7152"
+  }
+}

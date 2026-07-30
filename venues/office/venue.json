@@ -1,0 +1,42 @@
+{
+  "id": "office",
+  "label": "Office",
+  "indoor": true,
+  "sizeTiles": [20, 15],
+  "groundAtlas": "interiors_ground",
+  "capacity": 4,
+  "roles": ["work"],
+  "affords": ["work"],
+  "hours": [{ "open": 8, "close": 20 }],
+  "ground": { "wallA": "wallOfficeA", "wallB": "wallOfficeB", "floor": "floorOffice" },
+  "furniture": [
+    { "name": "workstation_single", "at": [2, 1.2] },
+    { "name": "workstation_double", "at": [6.5, 1.2] },
+    { "name": "workstation_single", "at": [12, 1.2] },
+    { "name": "whiteboard", "at": [15.5, 0.2], "collide": false },
+    { "name": "printer", "at": [17.5, 1.6] },
+    { "name": "coffee_machine", "at": [1.2, 5.5] },
+    { "name": "plant_pot", "at": [18, 5] },
+    { "name": "plant_small", "at": [1.2, 12] },
+    { "name": "table_plain", "at": [7, 6.5] },
+    { "name": "table_plain", "at": [10, 6.5] },
+    { "name": "chair_blue_r", "at": [5.4, 6.8], "collide": false },
+    { "name": "chair_blue_r", "at": [5.4, 8.3], "collide": false },
+    { "name": "chair_blue_l", "at": [13.2, 6.8], "collide": false },
+    { "name": "chair_blue_l", "at": [13.2, 8.3], "collide": false },
+    { "name": "plant_palm", "at": [17.5, 10.5] }
+  ],
+  "seats": [
+    { "at": [6.2, 8.6],  "side": "right", "kind": "chair" },
+    { "at": [6.2, 10.1], "side": "right", "kind": "chair" },
+    { "at": [14, 8.6],   "side": "left",  "kind": "chair" },
+    { "at": [14, 10.1],  "side": "left",  "kind": "chair" }
+  ],
+  "animated": [
+    { "name": "office_screen", "at": [4.5, 0.3] },
+    { "name": "coffee_steam", "at": [1.5, 4.6] }
+  ],
+  "spawns": [[9.8, 12.5]],
+  "doors": [{ "name": "exit", "at": [9.5, 14], "targetVenue": "district" }],
+  "glows": []
+}

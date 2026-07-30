@@ -4,6 +4,7 @@ import { useGameEvents } from './hooks/useGameEvents.js';
 import { useGameSync } from './hooks/useGameSync.js';
 import { useUIStore } from './store/agentStore.js';
 import { AgentProfile } from './ui/AgentProfile/AgentProfile.js';
+import { ArtCredit } from './ui/ArtCredit.js';
 import { ChatWindow } from './ui/Chat/ChatWindow.js';
 import { HUD } from './ui/HUD/HUD.js';
 import { MeetingWindow } from './ui/Meeting/MeetingWindow.js';
@@ -28,6 +29,7 @@ export function App() {
       {profileOpen && <AgentProfile />}
       {chatOpen && <ChatWindow />}
       {meetingOpen && <MeetingWindow />}
+      <ArtCredit />
     </div>
   );
 }

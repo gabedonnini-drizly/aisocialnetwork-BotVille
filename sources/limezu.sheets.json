@@ -1,0 +1,407 @@
+{
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_1.png": {
+    "w": 32,
+    "h": 64,
+    "sha256": "4686862ff37d8458cce76b2b49aaa8885e3143c94605cd1bbc037b4cdcc4dab2"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Down_19.png": {
+    "w": 48,
+    "h": 64,
+    "sha256": "a9476abeb45f20b9b35973a0ca4a177328a382797318ad524f5827b20be1a0b5"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Left_5.png": {
+    "w": 64,
+    "h": 48,
+    "sha256": "e297006376d2a66917cae80601eaddde1258aef68719ee5a5a6a9f61fda0fd47"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_1.png": {
+    "w": 64,
+    "h": 48,
+    "sha256": "7eafcbe4434999180ba3ba52fbea8175ab890f5f655e76458d35e84ab2ddb4e3"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/10_Vehicles_Singles_16x16/ME_Singles_Vehicles_16x16_Car_Right_12.png": {
+    "w": 80,
+    "h": 48,
+    "sha256": "6649ee116d5268496bbdfac3a4bb556d93d68381ba722a8941c02bb1da250965"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/16_Office_Singles_16x16/ME_Singles_Office_16x16_Example_1.png": {
+    "w": 192,
+    "h": 304,
+    "sha256": "3ab80d8c5396e92cf7b5e235c04ef3454136a6a4a457a9da46f176574c76a664"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_1.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "eb997449e2425b768e4b0fecf4977a7abcc2ec775fb52ec663ea804c3f8facf6"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_4.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "05b81dc39805904d67a1f10f03f3f282d8f11b3ade6fc5895a79b7f8b9849e55"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/1_Terrains_and_Fences_16x16.png": {
+    "w": 512,
+    "h": 1184,
+    "sha256": "4ecbac5514f7de3eb67ce8eedf85d51dc2b110c72e7192f7600c7ce82ba909e3"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Left_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2fd61a07a91b2356c5f0f0ac55ae87510d4d853a6bfd084c42509f2a2743b6d8"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Middle_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "2b654506ec7ce7fcb987237f862b4550a358011c551d9a7553c8ce2e053b4328"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Bottom_Right_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "68710aa976047e89365ad45d685a0a475388e3536e814c1291ee60dafa088883"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Middle_Left_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "9e8c1131e6582901c3233c3110a094e664cf2ae55f2733368fd64da89d48d068"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Middle_Right_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "29c9f114e6add4193f71829d63b228c25e9577e48d4db032105cdf1ff26a83c1"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Left_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "9dfa834da14b663a90f3f5ce3172c13fa72764d726d956585cd34a89477f509f"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Middle_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "e1169391333d8c98ea07cd4c79127fb776640895744fc5d8bc5e730520f25def"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Fence_1_Top_Right_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "b32c4b531c0558b52a643fabd370dee4f49fdaeac4af10f0cd70d64d937d6ebf"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/2_City_Terrains_16x16.png": {
+    "w": 944,
+    "h": 1648,
+    "sha256": "7f6c2cedef6ba574c20a9edcd7e30e5712c0ed3cb3e885322c93b380a9192d25"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Bench_1.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "51b219abee134542e2deff9fc2f8fce028712d1fe132f7fd4f727486446b2fa5"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Black_Closed_Trash_Can.png": {
+    "w": 32,
+    "h": 32,
+    "sha256": "549f853b734026a7b60c0522099e0c12d597c13ec75bd60d853f500c65ed4d32"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Hydrant_1.png": {
+    "w": 16,
+    "h": 32,
+    "sha256": "9446952b799c8ca7a4f90aa9b0e754dace1c69ed9b0845436510dcdce5d4ee85"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Street_Lamp_1.png": {
+    "w": 32,
+    "h": 64,
+    "sha256": "6a37cc1ecc8ef36ecee892dea48ac0636c3bca800af81ec5fcaa56ae9a248801"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Hardware_Store.png": {
+    "w": 128,
+    "h": 144,
+    "sha256": "8dae2291042815b06b70c4238be6c0fbbd29f39869ef0ce748f34737b20f6678"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_16x16.png": {
+    "w": 512,
+    "h": 912,
+    "sha256": "5ac374b6d6adb2d02947262025af89c82b5499ad97f39c1fb94476bfd3247d57"
+  },
+  "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_1.png": {
+    "w": 112,
+    "h": 192,
+    "sha256": "29a57796ac58328a0861e4a0c60bcad8db59885f3ba0f7f3be67d0250b9bcde2"
+  },
+  "farm/16x16/1_Terrains_16x16.png": {
+    "w": 512,
+    "h": 368,
+    "sha256": "90902a9c2432798c852b44c9fa48e71733c42b7662243bd9117e5943f9a003e5"
+  },
+  "farm/16x16/Animals_16x16/Chickens_and_Roosters/Chicken_White_16x16.png": {
+    "w": 384,
+    "h": 64,
+    "sha256": "57e2bb8fd05c263dacf838f1c9dd6a7ee60bccfb073b0b38d9f1e9ad45ac64dd"
+  },
+  "farm/16x16/Animals_16x16/Cows/Cow_16x16.png": {
+    "w": 1152,
+    "h": 192,
+    "sha256": "1d9272e6d644831345b6181b616ded7a2b3864eb6d5b1ade4c04e6fc7bfa9dc1"
+  },
+  "farm/16x16/Animals_16x16/Dogs/Dog_Labrador_Brown_16x16.png": {
+    "w": 1152,
+    "h": 416,
+    "sha256": "6507ac087987840ad27e279263cd976f062e611f4574ffaff3545c4d4969b46d"
+  },
+  "farm/16x16/Animals_16x16/Pigs/Pig_Pink_16x16.png": {
+    "w": 768,
+    "h": 128,
+    "sha256": "6fe0e11cc49c37848269d89e77f04704ed04550c05517cc27e6e1f63706e94df"
+  },
+  "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Berry_Ripe_16x16.png": {
+    "w": 16,
+    "h": 32,
+    "sha256": "c7fa02670d03d425a683b37277221250e99c46f42f04f71b1f2c63ee9c5bf166"
+  },
+  "farm/16x16/Single_Files_16x16/Crops_16x16/Crop_Cabbage_Ripe_16x16.png": {
+    "w": 16,
+    "h": 16,
+    "sha256": "4af850c6a803d70bba751e44be0b5cd44f1ffacf9506ac32d1e72ef16c775c60"
+  },
+  "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Left_16x16.png": {
+    "w": 16,
+    "h": 32,
+    "sha256": "6caa1d8200479fc0220e08bc3ac570c64061343688caeaf2198e5a104365e7a1"
+  },
+  "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Middle_16x16.png": {
+    "w": 16,
+    "h": 32,
+    "sha256": "7b355a4bd1121f317496ae9f7a44f9b6b91fa01f15873e6931eddd7c3f58b40a"
+  },
+  "farm/16x16/Single_Files_16x16/Fences_16x16/Topsoil_Arable_Small_Horizontal_Modular_Right_16x16.png": {
+    "w": 16,
+    "h": 32,
+    "sha256": "2e1e0cae7e6d1c88f3c54e359d8fb0663d3b50f2a3382840c894af6547cb1918"
+  },
+  "farm/16x16/Single_Files_16x16/Props_and_Buildings_16x16/Barn_Small_16x16.png": {
+    "w": 128,
+    "h": 160,
+    "sha256": "217af58d2ae5e2be4a72d966614c1086c3610890d0325e19b629d16fc5479efd"
+  },
+  "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Birch_Green_Medium_16x16.png": {
+    "w": 48,
+    "h": 64,
+    "sha256": "e64b9fb4842079fd9f8fd81123a712f1893aa44f448cfdd2df5d8e4686a848c7"
+  },
+  "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Big_16x16.png": {
+    "w": 80,
+    "h": 96,
+    "sha256": "34b936168189525cefa1a49363024dccc2033ebb8391eb246979e98c43d2e131"
+  },
+  "farm/16x16/Single_Files_16x16/Trees_16x16/Tree_Oak_Green_Medium_16x16.png": {
+    "w": 64,
+    "h": 80,
+    "sha256": "84da9560cee3a07afb7cf47f24879e5433f2b8cec13827380164024f4440f4eb"
+  },
+  "interiors/1_Interiors/16x16/Room_Builder_16x16.png": {
+    "w": 1216,
+    "h": 1808,
+    "sha256": "f53d7cd04f275dfa4b3e1f410569d491275105e2710a0f86ec46edeff3ab576f"
+  },
+  "interiors/1_Interiors/16x16/Theme_Sorter/12_Kitchen_16x16.png": {
+    "w": 256,
+    "h": 784,
+    "sha256": "ce2efce161ccaa313b54b22aeb47a39e6402970defa7c0204c7acaf7b4390e1a"
+  },
+  "interiors/1_Interiors/16x16/Theme_Sorter/2_LivingRoom_16x16.png": {
+    "w": 256,
+    "h": 720,
+    "sha256": "6362268ea4bbfc4f5dba8eb746f003f4f70ec81ab396d7883dbc848aa06733e9"
+  },
+  "interiors/1_Interiors/16x16/Theme_Sorter/4_Bedroom_16x16.png": {
+    "w": 256,
+    "h": 1712,
+    "sha256": "33d61ecc64367d21f1d198b64d9ecc21c23d492b2fe9d12bfa4676ba9def7b6e"
+  },
+  "interiors/1_Interiors/16x16/Theme_Sorter/5_Classroom_and_library_16x16.png": {
+    "w": 256,
+    "h": 544,
+    "sha256": "b3bc8dbdd0f72421a73b40be1ae09323aab5396a0cb9f81cb9172b634191e18b"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "cc9ea332c0a7074d126b10e1c12a3c309dead3b3da76504823a744cc013fdac3"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_02.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "7f754171e260651f1736b57e0d0e69cd87d43885d9ff791d506554d13b16e58a"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_04.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "ae36f44b2145d5dacf6f582069654c75be9df65c592343e67ded394ba856970b"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_06.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "36da6b393942a1acd94381371e95dc7b3ef01b7cf3ee78ef152ee50fe7379400"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_07.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "c6c2c4aa48fe299b8fadc59e4cfe1314e0056d6c2500657fea0420dacc3aa33b"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_08.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "063f6a693034ab6a401d8af4d459e72ae6fc70e8553d00c3a5261e9932bd09df"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_09.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "795a5a2751ca5276269e0fb64f4020add69363c93b2cdb66d0e7a63ad6fda046"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_10.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "107b2e8e86907714371e888e0ef012d6ba8e4bccaaea2658517d7ab5045f0dcf"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_14.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "3ba3af22d90ee0a2cab1622613896bde7f7466902ab1c8342ec8000ef4870a30"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_15.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "d38f53679d1eb9ac1486ac0df39343d68da08e1aa2eeaff3677ecf88d2bbd8b5"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_18.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "2d2d43cfabf49298352977338a9267bbd4ee60bd01063c316d846bd6f30aca35"
+  },
+  "interiors/2_Characters/Character_Generator/0_Premade_Characters/16x16/Premade_Character_19.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "373004e23de833bd63155c496d7ba77b1076b1ef019b1c0cdd86d93a674d9b9a"
+  },
+  "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_01_Ladybug_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "05ce8eed5d8ad0ffd01748b928d6f246cb9528d5d7e34540247659f2af2928c0"
+  },
+  "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_03_Backpack_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "21dfb2a1ca442f6031bead07f22d31cc33334f948b39db423bc75f72fc88d93b"
+  },
+  "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_03_Backpack_02.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "e0d7af7aea59541200e953b9f5dcd25fd0c2aaf1beb9b76a784c7fad7740e136"
+  },
+  "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_04_Snapback_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "a03758af2b6215a8faa3ad760fb2099c014887290bf8136a087292c20ad7768b"
+  },
+  "interiors/2_Characters/Character_Generator/Accessories/16x16/Accessory_11_Beanie_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "74dfbacb3ab5b10074702a3e690e9a6f37dd83e5cde58eb5b42a0d924b0578be"
+  },
+  "interiors/2_Characters/Character_Generator/Bodies/16x16/Body_01.png": {
+    "w": 927,
+    "h": 656,
+    "sha256": "c4ff454a7af50f039cc56a49e4754349d7578b8f4f8200905087e8a608c66f13"
+  },
+  "interiors/2_Characters/Character_Generator/Eyes/16x16/Eyes_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "0c61efd695c8b06fe88227d838042c18f81004f0d1cdd90d1a17a44bc4e9c2c0"
+  },
+  "interiors/2_Characters/Character_Generator/Hairstyles/16x16/Hairstyle_01_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "aa39cfb796e407f9dbf23a9b5526b41c3bafff22aa76a0ac772d249d51005d83"
+  },
+  "interiors/2_Characters/Character_Generator/Outfits/16x16/Outfit_01_01.png": {
+    "w": 896,
+    "h": 656,
+    "sha256": "b2eb3cd5093a50b3e5c40cfeeb4b4846d77d34ee72e59fa2572b7d86e438a4bc"
+  },
+  "interiors/3_Animated_objects/16x16/spritesheets/animated_TV_reportage.png": {
+    "w": 1152,
+    "h": 32,
+    "sha256": "558ec753c7feb5f496b1a3e3d8ec682f28203ceb7e520e50ce872003ac9bdf4e"
+  },
+  "interiors/3_Animated_objects/16x16/spritesheets/animated_canteen_big_fridge_cake_16x16.png": {
+    "w": 448,
+    "h": 48,
+    "sha256": "b58aefd3a9ef42f120e84bf3fa362e39807fb89f9e560760ff674d459b9ed25f"
+  },
+  "interiors/3_Animated_objects/16x16/spritesheets/animated_coffee.png": {
+    "w": 96,
+    "h": 32,
+    "sha256": "4c04087045b9ec8a556dd34d63788705431615280ba494e5433bfd3a31152400"
+  },
+  "interiors/3_Animated_objects/16x16/spritesheets/animated_control_room_facebook_scrolling.png": {
+    "w": 192,
+    "h": 32,
+    "sha256": "0519e6e752ab75bee6719c64d7e9f577a656eb116823cbd0430b46cfa2711fdd"
+  },
+  "interiors/3_Animated_objects/16x16/spritesheets/animated_cuckoo_clock.png": {
+    "w": 160,
+    "h": 32,
+    "sha256": "05e384d97da08394bf5a24ab3eb9bc34832460a198665408b32a98961e2e9523"
+  },
+  "interiors/4_User_Interface_Elements/UI_16x16.png": {
+    "w": 288,
+    "h": 256,
+    "sha256": "eb4f1cd5c2dbd272931748c69bec660f37653d7a4209bea1fae656002063e075"
+  },
+  "interiors/4_User_Interface_Elements/UI_thinking_emotes_animation_16x16.png": {
+    "w": 160,
+    "h": 160,
+    "sha256": "82883022ac8cf653698b802b8336d03d86220e05c0317fa6faf626ee001d66ed"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_100.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "ec7a25c80653b34d1d856c7fe85f7de65c793c74db6f5477d02b8535996ec6dd"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_103.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "2dbe1c04e3808d0c82a078666cc59b7dd6cc82a9ab0fb461b8959ad2b140ed1c"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_104.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "54d0b3c96223aa420cf8dd65fc06cc75656492114bb1d84ec995a646b07271a4"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_116.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "660bd4d657998f995dceb4732ad4e2aa6bf0a0751877e876e7181e53e08d3932"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_156.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "9ad97d569e163a82bc2e39b08af01f444720831ea2da3da68d43d262efe3e51f"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_225.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "6d648a139050b4594640df3ebf92c76dd1e41c73c275411df12d2fa17446117a"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_227.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "5d08344f9475b814b64ae96b4343405063d305ed30968b91477676efa189a59b"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_323.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "bb0d1eea58f74994685187fbfaa5aadeed8d1d4bb6fd7055ce28d541c9fe4cb8"
+  },
+  "office/4_Modern_Office_singles/16x16/Modern_Office_Singles_99.png": {
+    "w": 32,
+    "h": 48,
+    "sha256": "e0401e70e649f691fe20f620af9eb5b694c47c174bf1398666466c5de10d5339"
+  }
+}

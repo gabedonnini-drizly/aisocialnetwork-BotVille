@@ -5,14 +5,17 @@ import { GameBridge } from '../game/GameBridge.js';
 import { GameTime } from '../game/time.js';
 import { fetchAgentLocations } from '../lib/api.js';
 import { LOCATION_POLL_MS } from '../game/config.js';
-import type { Agent, AgentLocation } from '@botville/shared';
+import { flattenSomewhere, presenceModel, warnUnknown } from '../game/presence.js';
+import type { Agent, AgentPresence } from '@botville/shared';
 
-/** What a scene knows about an agent; location decides whether to draw it here (TZ-16). */
+/** What a scene knows about an agent; location decides whether to draw it here (TZ-16).
+ *  F-3: a venue id (string) — the runtime authority on "known" is PresenceModel over
+ *  the venue registry (game/presence.ts), not a closed AGENT_LOCATIONS vocabulary. */
 export interface SyncedAgent {
   id: string;
   name: string;
   avatarVariant: number;
-  location: AgentLocation;
+  location: string;
 }
 
 /** Scenes the agent list is synced into (the district and all interiors). */
@@ -60,12 +63,23 @@ export function useGameSync() {
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
     const scene = sceneRegistry.get(sceneKeyRef.current);
     if (isSyncable(scene)) {
-      scene.syncAgents(agentsRef.current.map(a => ({
-        id: a.id,
-        name: a.name,
-        avatarVariant: a.avatarVariant,
-        location: a.location,
-      })));
+      // F-3: PresenceModel is the runtime authority on "who is where". Unknown/absent
+      // agents never reach a scene — not even mid-transit — and unknown ids get a
+      // single compact warning instead of the retired clamp's silent district fallback.
+      const roster: AgentPresence[] = agentsRef.current.map(a => ({
+        id: a.id, displayName: a.name, spriteSeed: a.id, venueId: a.location,
+      }));
+      const { somewhere, unknown } = presenceModel.partition(roster);
+      warnUnknown(unknown);
+      const visible = flattenSomewhere(somewhere);
+      scene.syncAgents(agentsRef.current
+        .filter(a => visible.has(a.id))
+        .map(a => ({
+          id: a.id,
+          name: a.name,
+          avatarVariant: a.avatarVariant,
+          location: a.location,
+        })));
     } else if (retries > 0) {
       syncTimeoutRef.current = setTimeout(() => syncToScene(retries - 1), 400);
     }

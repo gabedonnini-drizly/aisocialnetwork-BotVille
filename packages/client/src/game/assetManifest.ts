@@ -4,9 +4,9 @@
  * The layout has been verified by scripts/inspect-assets.mjs and
  * scripts/png-grid.mjs (see docs/ASSETS.md) — do NOT change numbers by eye.
  *
- * Pipeline: scripts/sync-assets.mjs copies the needed PNGs from assets-src/
- * into public/assets/{sprites,tilesets}/limezu/ — the paths below are
- * relative to public/.
+ * Pipeline: scripts/sync-assets.mjs and scripts/world-bake.mjs copy/bake the
+ * needed PNGs from assets-src/ into public/assets/{sprites,tilesets}/pack/ —
+ * the paths below are relative to public/.
  */
 
 export type Direction = 'right' | 'up' | 'left' | 'down';
@@ -68,7 +68,7 @@ function human(id: number, n: number, label: string): AvatarVariantDef {
     kind: 'human',
     label,
     textureKey: `char-premade-${nn}`,
-    file: `assets/sprites/limezu/Premade_Character_${nn}.png`,
+    file: `assets/sprites/pack/Premade_Character_${nn}.png`,
     ...HUMAN_SHEET,
     rows: { ...HUMAN_SHEET.rows },
   };
@@ -97,7 +97,7 @@ function animal(
     kind: 'animal',
     label,
     textureKey: key,
-    file: `assets/sprites/limezu/${file}`,
+    file: `assets/sprites/pack/${file}`,
     frameWidth: layout.frameWidth,
     frameHeight: layout.frameHeight,
     sheetColumns: 24,
@@ -192,7 +192,7 @@ export function animKey(
  *    of icon frames (two-frame pulsing).
  */
 export const EMOTES = {
-  file: 'assets/sprites/limezu/UI_thinking_emotes_animation_16x16.png',
+  file: 'assets/sprites/pack/UI_thinking_emotes_animation_16x16.png',
   think: {
     textureKey: 'emote-think',
     frameWidth: 16,
@@ -207,22 +207,17 @@ export const EMOTES = {
     textureKey: 'emote-icons',
     frameWidth: 16,
     frameHeight: 16,
-    /** Frame pairs per agent status (row*10+col). */
-    byStatus: {
-      work: [44, 45], // pickaxe
-      task_running: [40, 41], // "!"
-      task_done: [64, 65], // star
-      chat_npc: [66, 67], // musical note
-      rest: [56, 57], // Z-z-z
-      error: [50, 51], // red "!"
-    } as Record<string, [number, number]>,
+    /**
+     * The frame pairs per agent status are PACK-specific and live in
+     * sources/<pack>.json (I-1). They are read from assets.generated.ts.
+     */
     frameRate: 2,
   },
 } as const;
 
 /** Pixel-art UI elements (frames, buttons) — for a future React overlay. */
 export const UI_SHEET = {
-  file: 'assets/sprites/limezu/UI_16x16.png',
+  file: 'assets/sprites/pack/UI_16x16.png',
   frameWidth: 16,
   frameHeight: 16,
 } as const;
@@ -239,10 +234,12 @@ export interface AnimatedObjectDef {
   frameRate: number;
 }
 
+// sync-assets.mjs copies these under their CONTRACT name, not the (legacy,
+// vendor-specific) source filename — see scripts/sync-assets.mjs.
 export const ANIMATED_OBJECTS: Record<string, AnimatedObjectDef> = {
-  coffee_steam: { file: 'assets/sprites/limezu/animated_coffee.png', frameWidth: 16, frameHeight: 32, frames: 6, frameRate: 4 },
-  cake_fridge: { file: 'assets/sprites/limezu/animated_cake_fridge.png', frameWidth: 32, frameHeight: 48, frames: 14, frameRate: 3 },
-  tv_news: { file: 'assets/sprites/limezu/animated_TV_reportage.png', frameWidth: 32, frameHeight: 32, frames: 36, frameRate: 5 },
-  office_screen: { file: 'assets/sprites/limezu/animated_office_screen.png', frameWidth: 32, frameHeight: 32, frames: 6, frameRate: 3 },
-  cuckoo_clock: { file: 'assets/sprites/limezu/animated_cuckoo_clock.png', frameWidth: 16, frameHeight: 32, frames: 10, frameRate: 4 },
+  coffee_steam: { file: 'assets/sprites/pack/coffee_steam.png', frameWidth: 16, frameHeight: 32, frames: 6, frameRate: 4 },
+  cake_fridge: { file: 'assets/sprites/pack/cake_fridge.png', frameWidth: 32, frameHeight: 48, frames: 14, frameRate: 3 },
+  tv_news: { file: 'assets/sprites/pack/tv_news.png', frameWidth: 32, frameHeight: 32, frames: 36, frameRate: 5 },
+  office_screen: { file: 'assets/sprites/pack/office_screen.png', frameWidth: 32, frameHeight: 32, frames: 6, frameRate: 3 },
+  cuckoo_clock: { file: 'assets/sprites/pack/cuckoo_clock.png', frameWidth: 16, frameHeight: 32, frames: 10, frameRate: 4 },
 };

@@ -1,0 +1,50 @@
+{
+  "id": "cafe",
+  "label": "Café",
+  "indoor": true,
+  "sizeTiles": [20, 15],
+  "groundAtlas": "interiors_ground",
+  "capacity": 9,
+  "roles": ["hangout", "work"],
+  "affords": ["eat", "socialize", "read"],
+  "hours": [{ "open": 7, "close": 24 }, { "open": 0, "close": 2 }],
+  "ground": { "wallA": "wallCafeA", "wallB": "wallCafeB", "floor": "floorCafe" },
+  "furniture": [
+    { "name": "counter_wide", "at": [2, 3.6] },
+    { "name": "counter_wide", "at": [5.25, 3.6] },
+    { "name": "coffee_machine", "at": [2.4, 2] },
+    { "name": "stool", "at": [3, 5.6], "collide": false },
+    { "name": "stool", "at": [5, 5.6], "collide": false },
+    { "name": "stool", "at": [7, 5.6], "collide": false },
+    { "name": "table_plain", "at": [3, 8.5] },
+    { "name": "chair_red_r", "at": [1.4, 8.8], "collide": false },
+    { "name": "chair_red_l", "at": [6.2, 8.8], "collide": false },
+    { "name": "table_plain", "at": [13, 8.5] },
+    { "name": "chair_red_r", "at": [11.4, 8.8], "collide": false },
+    { "name": "chair_red_l", "at": [16.2, 8.8], "collide": false },
+    { "name": "table_plain", "at": [4.5, 11],
+      "note": "lower table sits left of the doorway: the mat (x145-175) and the entry stay clear. Offset is exactly 3.5 tiles — any less and the left chair (+3.2 tiles) lands on the mat (owner note after TZ-09)" },
+    { "name": "chair_yellow_r", "at": [2.9, 11.3], "collide": false },
+    { "name": "chair_yellow_l", "at": [7.7, 11.3], "collide": false },
+    { "name": "plant_palm", "at": [17.5, 1.4] },
+    { "name": "plant_pot", "at": [1.2, 12] }
+  ],
+  "seats": [
+    { "at": [3.5, 6.6],  "side": "right", "kind": "stool" },
+    { "at": [5.5, 6.6],  "side": "left",  "kind": "stool" },
+    { "at": [7.5, 6.6],  "side": "right", "kind": "stool" },
+    { "at": [2.2, 10.6], "side": "right", "kind": "chair" },
+    { "at": [7, 10.6],   "side": "left",  "kind": "chair" },
+    { "at": [12.2, 10.6],"side": "right", "kind": "chair" },
+    { "at": [17, 10.6],  "side": "left",  "kind": "chair" },
+    { "at": [3.7, 13.1], "side": "right", "kind": "chair" },
+    { "at": [8.5, 13.1], "side": "left",  "kind": "chair" }
+  ],
+  "animated": [
+    { "name": "cake_fridge", "at": [10.5, 1.6] },
+    { "name": "coffee_steam", "at": [4.8, 2.6] }
+  ],
+  "spawns": [[9.8, 12.8]],
+  "doors": [{ "name": "exit", "at": [9.5, 14], "targetVenue": "district" }],
+  "glows": []
+}

@@ -1,0 +1,31 @@
+# BotVille server — deployment packaging (D-20: self-hosted, Docker-packaged,
+# same shape as the platform's own api/frontend pair). Builds from the repo
+# root with turbo, same as local dev, so a green container is evidence the
+# server actually runs.
+#
+# SQLite stays. Replacing it is integration work and out of scope (spec §13).
+FROM node:24-alpine AS build
+WORKDIR /app
+
+COPY package.json package-lock.json turbo.json tsconfig.base.json ./
+COPY packages/shared/package.json packages/shared/
+COPY packages/server/package.json packages/server/
+COPY packages/client/package.json packages/client/
+RUN npm ci
+
+COPY packages/shared packages/shared
+COPY packages/server packages/server
+RUN npx turbo build --filter=@botville/server
+
+FROM node:24-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=build /app/node_modules node_modules
+COPY --from=build /app/packages/shared/dist packages/shared/dist
+COPY --from=build /app/packages/shared/package.json packages/shared/
+COPY --from=build /app/packages/server/dist packages/server/dist
+COPY --from=build /app/packages/server/package.json packages/server/
+VOLUME ["/app/data"]
+EXPOSE 3001
+HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost:3001/health || exit 1
+CMD ["node", "packages/server/dist/index.js"]

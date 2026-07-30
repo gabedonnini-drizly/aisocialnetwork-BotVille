@@ -4,6 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
+    "allowJs": true,
     "types": ["node"],
     "paths": {
       "@botville/shared": ["../shared/src/index.ts"],

@@ -1,0 +1,1332 @@
+{
+  "pack": "fixture",
+  "capabilities": {
+    "characterLayers": true
+  },
+  "emoteFrames": {
+    "work": [
+      40,
+      41
+    ],
+    "task_running": [
+      42,
+      43
+    ],
+    "task_done": [
+      44,
+      45
+    ],
+    "chat_npc": [
+      46,
+      47
+    ],
+    "rest": [
+      48,
+      49
+    ],
+    "error": [
+      50,
+      51
+    ]
+  },
+  "files": {
+    "t_grass": "tiles/grass.png",
+    "t_grassA": "tiles/grassA.png",
+    "t_grassB": "tiles/grassB.png",
+    "t_sideA": "tiles/sideA.png",
+    "t_sideB": "tiles/sideB.png",
+    "t_sideC": "tiles/sideC.png",
+    "t_sideD": "tiles/sideD.png",
+    "t_asphA": "tiles/asphA.png",
+    "t_asphB": "tiles/asphB.png",
+    "t_asphC": "tiles/asphC.png",
+    "t_asphD": "tiles/asphD.png",
+    "t_dashH": "tiles/dashH.png",
+    "t_dashV": "tiles/dashV.png",
+    "t_zebHa1": "tiles/zebHa1.png",
+    "t_zebHb1": "tiles/zebHb1.png",
+    "t_zebHa2": "tiles/zebHa2.png",
+    "t_zebHb2": "tiles/zebHb2.png",
+    "t_zebVa1": "tiles/zebVa1.png",
+    "t_zebVb1": "tiles/zebVb1.png",
+    "t_zebVa2": "tiles/zebVa2.png",
+    "t_zebVb2": "tiles/zebVb2.png",
+    "t_dirt": "tiles/dirt.png",
+    "t_dirtA": "tiles/dirtA.png",
+    "t_border": "tiles/border.png",
+    "t_wallOfficeA": "tiles/wallOfficeA.png",
+    "t_wallOfficeB": "tiles/wallOfficeB.png",
+    "t_wallCafeA": "tiles/wallCafeA.png",
+    "t_wallCafeB": "tiles/wallCafeB.png",
+    "t_wallDormA": "tiles/wallDormA.png",
+    "t_wallDormB": "tiles/wallDormB.png",
+    "t_wallLibA": "tiles/wallLibA.png",
+    "t_wallLibB": "tiles/wallLibB.png",
+    "t_floorOffice": "tiles/floorOffice.png",
+    "t_floorCafe": "tiles/floorCafe.png",
+    "t_floorDorm": "tiles/floorDorm.png",
+    "t_floorLib": "tiles/floorLib.png",
+    "p_office_building": "props/office_building.png",
+    "p_cafe_building": "props/cafe_building.png",
+    "p_villa_building": "props/villa_building.png",
+    "p_library_building": "props/library_building.png",
+    "p_barn": "props/barn.png",
+    "p_tree_oak_big": "props/tree_oak_big.png",
+    "p_tree_oak_med": "props/tree_oak_med.png",
+    "p_tree_birch": "props/tree_birch.png",
+    "p_street_lamp": "props/street_lamp.png",
+    "p_bench": "props/bench.png",
+    "p_trash_can": "props/trash_can.png",
+    "p_hydrant": "props/hydrant.png",
+    "p_car_right_1": "props/car_right_1.png",
+    "p_car_left_1": "props/car_left_1.png",
+    "p_car_right_2": "props/car_right_2.png",
+    "p_car_down_1": "props/car_down_1.png",
+    "p_car_down_2": "props/car_down_2.png",
+    "p_bush_1": "props/bush_1.png",
+    "p_bush_2": "props/bush_2.png",
+    "p_crop_cabbage": "props/crop_cabbage.png",
+    "p_crop_berry": "props/crop_berry.png",
+    "p_soil_left": "props/soil_left.png",
+    "p_soil_mid": "props/soil_mid.png",
+    "p_soil_right": "props/soil_right.png",
+    "p_fence_top_left": "props/fence_top_left.png",
+    "p_fence_top_middle": "props/fence_top_middle.png",
+    "p_fence_top_right": "props/fence_top_right.png",
+    "p_fence_middle_left": "props/fence_middle_left.png",
+    "p_fence_middle_right": "props/fence_middle_right.png",
+    "p_fence_bottom_left": "props/fence_bottom_left.png",
+    "p_fence_bottom_middle": "props/fence_bottom_middle.png",
+    "p_fence_bottom_right": "props/fence_bottom_right.png",
+    "p_bed_green": "props/bed_green.png",
+    "p_bed_blue": "props/bed_blue.png",
+    "p_bed_teal": "props/bed_teal.png",
+    "p_nightstand": "props/nightstand.png",
+    "p_rug_pink": "props/rug_pink.png",
+    "p_chair_blue_r": "props/chair_blue_r.png",
+    "p_chair_blue_l": "props/chair_blue_l.png",
+    "p_chair_red_r": "props/chair_red_r.png",
+    "p_chair_red_l": "props/chair_red_l.png",
+    "p_chair_yellow_r": "props/chair_yellow_r.png",
+    "p_chair_yellow_l": "props/chair_yellow_l.png",
+    "p_table_plain": "props/table_plain.png",
+    "p_armchair_grey_r": "props/armchair_grey_r.png",
+    "p_armchair_grey_l": "props/armchair_grey_l.png",
+    "p_armchair_blue_r": "props/armchair_blue_r.png",
+    "p_armchair_blue_l": "props/armchair_blue_l.png",
+    "p_lamp_red": "props/lamp_red.png",
+    "p_plant_palm": "props/plant_palm.png",
+    "p_bookshelf_a": "props/bookshelf_a.png",
+    "p_bookshelf_b": "props/bookshelf_b.png",
+    "p_bookshelf_narrow": "props/bookshelf_narrow.png",
+    "p_lectern": "props/lectern.png",
+    "p_globe": "props/globe.png",
+    "p_chalkboard": "props/chalkboard.png",
+    "p_counter_wide": "props/counter_wide.png",
+    "p_stool": "props/stool.png",
+    "p_doormat": "props/doormat.png",
+    "p_plant_small": "props/plant_small.png",
+    "p_plant_pot": "props/plant_pot.png",
+    "p_office_chair_right": "props/office_chair_right.png",
+    "p_office_chair_left": "props/office_chair_left.png",
+    "p_whiteboard": "props/whiteboard.png",
+    "p_printer": "props/printer.png",
+    "p_workstation_single": "props/workstation_single.png",
+    "p_workstation_double": "props/workstation_double.png",
+    "p_coffee_machine": "props/coffee_machine.png",
+    "a_coffee_steam": "animated/coffee_steam.png",
+    "a_cake_fridge": "animated/cake_fridge.png",
+    "a_tv_news": "animated/tv_news.png",
+    "a_office_screen": "animated/office_screen.png",
+    "a_cuckoo_clock": "animated/cuckoo_clock.png",
+    "emotes": "ui/emotes.png",
+    "ui": "ui/ui.png",
+    "c_body": "characters/body.png",
+    "c_eyes_Eyes_01.png": "characters/Eyes_01.png",
+    "c_eyes_Eyes_02.png": "characters/Eyes_02.png",
+    "c_eyes_Eyes_03.png": "characters/Eyes_03.png",
+    "c_eyes_Eyes_04.png": "characters/Eyes_04.png",
+    "c_eyes_Eyes_05.png": "characters/Eyes_05.png",
+    "c_eyes_Eyes_06.png": "characters/Eyes_06.png",
+    "c_eyes_Eyes_07.png": "characters/Eyes_07.png",
+    "c_hair_Hairstyle_01_01.png": "characters/Hairstyle_01_01.png",
+    "c_hair_Hairstyle_01_02.png": "characters/Hairstyle_01_02.png",
+    "c_hair_Hairstyle_01_03.png": "characters/Hairstyle_01_03.png",
+    "c_hair_Hairstyle_01_04.png": "characters/Hairstyle_01_04.png",
+    "c_hair_Hairstyle_01_05.png": "characters/Hairstyle_01_05.png",
+    "c_hair_Hairstyle_01_06.png": "characters/Hairstyle_01_06.png",
+    "c_hair_Hairstyle_01_07.png": "characters/Hairstyle_01_07.png",
+    "c_hair_Hairstyle_02_01.png": "characters/Hairstyle_02_01.png",
+    "c_hair_Hairstyle_02_02.png": "characters/Hairstyle_02_02.png",
+    "c_hair_Hairstyle_02_03.png": "characters/Hairstyle_02_03.png",
+    "c_hair_Hairstyle_02_04.png": "characters/Hairstyle_02_04.png",
+    "c_hair_Hairstyle_02_05.png": "characters/Hairstyle_02_05.png",
+    "c_hair_Hairstyle_02_06.png": "characters/Hairstyle_02_06.png",
+    "c_hair_Hairstyle_02_07.png": "characters/Hairstyle_02_07.png",
+    "c_hair_Hairstyle_03_01.png": "characters/Hairstyle_03_01.png",
+    "c_hair_Hairstyle_03_02.png": "characters/Hairstyle_03_02.png",
+    "c_hair_Hairstyle_03_03.png": "characters/Hairstyle_03_03.png",
+    "c_hair_Hairstyle_03_04.png": "characters/Hairstyle_03_04.png",
+    "c_hair_Hairstyle_03_05.png": "characters/Hairstyle_03_05.png",
+    "c_hair_Hairstyle_03_06.png": "characters/Hairstyle_03_06.png",
+    "c_hair_Hairstyle_03_07.png": "characters/Hairstyle_03_07.png",
+    "c_hair_Hairstyle_04_01.png": "characters/Hairstyle_04_01.png",
+    "c_hair_Hairstyle_04_02.png": "characters/Hairstyle_04_02.png",
+    "c_hair_Hairstyle_04_03.png": "characters/Hairstyle_04_03.png",
+    "c_hair_Hairstyle_04_04.png": "characters/Hairstyle_04_04.png",
+    "c_hair_Hairstyle_04_05.png": "characters/Hairstyle_04_05.png",
+    "c_hair_Hairstyle_04_06.png": "characters/Hairstyle_04_06.png",
+    "c_hair_Hairstyle_04_07.png": "characters/Hairstyle_04_07.png",
+    "c_hair_Hairstyle_05_01.png": "characters/Hairstyle_05_01.png",
+    "c_hair_Hairstyle_05_02.png": "characters/Hairstyle_05_02.png",
+    "c_hair_Hairstyle_05_03.png": "characters/Hairstyle_05_03.png",
+    "c_hair_Hairstyle_05_04.png": "characters/Hairstyle_05_04.png",
+    "c_hair_Hairstyle_05_05.png": "characters/Hairstyle_05_05.png",
+    "c_hair_Hairstyle_05_06.png": "characters/Hairstyle_05_06.png",
+    "c_hair_Hairstyle_05_07.png": "characters/Hairstyle_05_07.png",
+    "c_hair_Hairstyle_06_01.png": "characters/Hairstyle_06_01.png",
+    "c_hair_Hairstyle_06_02.png": "characters/Hairstyle_06_02.png",
+    "c_hair_Hairstyle_06_03.png": "characters/Hairstyle_06_03.png",
+    "c_hair_Hairstyle_06_04.png": "characters/Hairstyle_06_04.png",
+    "c_hair_Hairstyle_06_05.png": "characters/Hairstyle_06_05.png",
+    "c_hair_Hairstyle_06_06.png": "characters/Hairstyle_06_06.png",
+    "c_hair_Hairstyle_06_07.png": "characters/Hairstyle_06_07.png",
+    "c_hair_Hairstyle_07_01.png": "characters/Hairstyle_07_01.png",
+    "c_hair_Hairstyle_07_02.png": "characters/Hairstyle_07_02.png",
+    "c_hair_Hairstyle_07_03.png": "characters/Hairstyle_07_03.png",
+    "c_hair_Hairstyle_07_04.png": "characters/Hairstyle_07_04.png",
+    "c_hair_Hairstyle_07_05.png": "characters/Hairstyle_07_05.png",
+    "c_hair_Hairstyle_07_06.png": "characters/Hairstyle_07_06.png",
+    "c_hair_Hairstyle_07_07.png": "characters/Hairstyle_07_07.png",
+    "c_hair_Hairstyle_08_01.png": "characters/Hairstyle_08_01.png",
+    "c_hair_Hairstyle_08_02.png": "characters/Hairstyle_08_02.png",
+    "c_hair_Hairstyle_08_03.png": "characters/Hairstyle_08_03.png",
+    "c_hair_Hairstyle_08_04.png": "characters/Hairstyle_08_04.png",
+    "c_hair_Hairstyle_08_05.png": "characters/Hairstyle_08_05.png",
+    "c_hair_Hairstyle_08_06.png": "characters/Hairstyle_08_06.png",
+    "c_hair_Hairstyle_08_07.png": "characters/Hairstyle_08_07.png",
+    "c_hair_Hairstyle_09_01.png": "characters/Hairstyle_09_01.png",
+    "c_hair_Hairstyle_09_02.png": "characters/Hairstyle_09_02.png",
+    "c_hair_Hairstyle_09_03.png": "characters/Hairstyle_09_03.png",
+    "c_hair_Hairstyle_09_04.png": "characters/Hairstyle_09_04.png",
+    "c_hair_Hairstyle_09_05.png": "characters/Hairstyle_09_05.png",
+    "c_hair_Hairstyle_09_06.png": "characters/Hairstyle_09_06.png",
+    "c_hair_Hairstyle_09_07.png": "characters/Hairstyle_09_07.png",
+    "c_hair_Hairstyle_10_01.png": "characters/Hairstyle_10_01.png",
+    "c_hair_Hairstyle_10_02.png": "characters/Hairstyle_10_02.png",
+    "c_hair_Hairstyle_10_03.png": "characters/Hairstyle_10_03.png",
+    "c_hair_Hairstyle_10_04.png": "characters/Hairstyle_10_04.png",
+    "c_hair_Hairstyle_10_05.png": "characters/Hairstyle_10_05.png",
+    "c_hair_Hairstyle_10_06.png": "characters/Hairstyle_10_06.png",
+    "c_hair_Hairstyle_10_07.png": "characters/Hairstyle_10_07.png",
+    "c_hair_Hairstyle_11_01.png": "characters/Hairstyle_11_01.png",
+    "c_hair_Hairstyle_11_02.png": "characters/Hairstyle_11_02.png",
+    "c_hair_Hairstyle_11_03.png": "characters/Hairstyle_11_03.png",
+    "c_hair_Hairstyle_11_04.png": "characters/Hairstyle_11_04.png",
+    "c_hair_Hairstyle_11_05.png": "characters/Hairstyle_11_05.png",
+    "c_hair_Hairstyle_11_06.png": "characters/Hairstyle_11_06.png",
+    "c_hair_Hairstyle_11_07.png": "characters/Hairstyle_11_07.png",
+    "c_hair_Hairstyle_12_01.png": "characters/Hairstyle_12_01.png",
+    "c_hair_Hairstyle_12_02.png": "characters/Hairstyle_12_02.png",
+    "c_hair_Hairstyle_12_03.png": "characters/Hairstyle_12_03.png",
+    "c_hair_Hairstyle_12_04.png": "characters/Hairstyle_12_04.png",
+    "c_hair_Hairstyle_12_05.png": "characters/Hairstyle_12_05.png",
+    "c_hair_Hairstyle_12_06.png": "characters/Hairstyle_12_06.png",
+    "c_hair_Hairstyle_12_07.png": "characters/Hairstyle_12_07.png",
+    "c_hair_Hairstyle_13_01.png": "characters/Hairstyle_13_01.png",
+    "c_hair_Hairstyle_13_02.png": "characters/Hairstyle_13_02.png",
+    "c_hair_Hairstyle_13_03.png": "characters/Hairstyle_13_03.png",
+    "c_hair_Hairstyle_13_04.png": "characters/Hairstyle_13_04.png",
+    "c_hair_Hairstyle_13_05.png": "characters/Hairstyle_13_05.png",
+    "c_hair_Hairstyle_13_06.png": "characters/Hairstyle_13_06.png",
+    "c_hair_Hairstyle_13_07.png": "characters/Hairstyle_13_07.png",
+    "c_hair_Hairstyle_14_01.png": "characters/Hairstyle_14_01.png",
+    "c_hair_Hairstyle_14_02.png": "characters/Hairstyle_14_02.png",
+    "c_hair_Hairstyle_14_03.png": "characters/Hairstyle_14_03.png",
+    "c_hair_Hairstyle_14_04.png": "characters/Hairstyle_14_04.png",
+    "c_hair_Hairstyle_14_05.png": "characters/Hairstyle_14_05.png",
+    "c_hair_Hairstyle_14_06.png": "characters/Hairstyle_14_06.png",
+    "c_hair_Hairstyle_14_07.png": "characters/Hairstyle_14_07.png",
+    "c_hair_Hairstyle_15_01.png": "characters/Hairstyle_15_01.png",
+    "c_hair_Hairstyle_15_02.png": "characters/Hairstyle_15_02.png",
+    "c_hair_Hairstyle_15_03.png": "characters/Hairstyle_15_03.png",
+    "c_hair_Hairstyle_15_04.png": "characters/Hairstyle_15_04.png",
+    "c_hair_Hairstyle_15_05.png": "characters/Hairstyle_15_05.png",
+    "c_hair_Hairstyle_15_06.png": "characters/Hairstyle_15_06.png",
+    "c_hair_Hairstyle_15_07.png": "characters/Hairstyle_15_07.png",
+    "c_hair_Hairstyle_16_01.png": "characters/Hairstyle_16_01.png",
+    "c_hair_Hairstyle_16_02.png": "characters/Hairstyle_16_02.png",
+    "c_hair_Hairstyle_16_03.png": "characters/Hairstyle_16_03.png",
+    "c_hair_Hairstyle_16_04.png": "characters/Hairstyle_16_04.png",
+    "c_hair_Hairstyle_16_05.png": "characters/Hairstyle_16_05.png",
+    "c_hair_Hairstyle_16_06.png": "characters/Hairstyle_16_06.png",
+    "c_hair_Hairstyle_16_07.png": "characters/Hairstyle_16_07.png",
+    "c_hair_Hairstyle_17_01.png": "characters/Hairstyle_17_01.png",
+    "c_hair_Hairstyle_17_02.png": "characters/Hairstyle_17_02.png",
+    "c_hair_Hairstyle_17_03.png": "characters/Hairstyle_17_03.png",
+    "c_hair_Hairstyle_17_04.png": "characters/Hairstyle_17_04.png",
+    "c_hair_Hairstyle_17_05.png": "characters/Hairstyle_17_05.png",
+    "c_hair_Hairstyle_17_06.png": "characters/Hairstyle_17_06.png",
+    "c_hair_Hairstyle_17_07.png": "characters/Hairstyle_17_07.png",
+    "c_hair_Hairstyle_18_01.png": "characters/Hairstyle_18_01.png",
+    "c_hair_Hairstyle_18_02.png": "characters/Hairstyle_18_02.png",
+    "c_hair_Hairstyle_18_03.png": "characters/Hairstyle_18_03.png",
+    "c_hair_Hairstyle_18_04.png": "characters/Hairstyle_18_04.png",
+    "c_hair_Hairstyle_18_05.png": "characters/Hairstyle_18_05.png",
+    "c_hair_Hairstyle_18_06.png": "characters/Hairstyle_18_06.png",
+    "c_hair_Hairstyle_18_07.png": "characters/Hairstyle_18_07.png",
+    "c_hair_Hairstyle_19_01.png": "characters/Hairstyle_19_01.png",
+    "c_hair_Hairstyle_19_02.png": "characters/Hairstyle_19_02.png",
+    "c_hair_Hairstyle_19_03.png": "characters/Hairstyle_19_03.png",
+    "c_hair_Hairstyle_19_04.png": "characters/Hairstyle_19_04.png",
+    "c_hair_Hairstyle_19_05.png": "characters/Hairstyle_19_05.png",
+    "c_hair_Hairstyle_19_06.png": "characters/Hairstyle_19_06.png",
+    "c_hair_Hairstyle_19_07.png": "characters/Hairstyle_19_07.png",
+    "c_hair_Hairstyle_20_01.png": "characters/Hairstyle_20_01.png",
+    "c_hair_Hairstyle_20_02.png": "characters/Hairstyle_20_02.png",
+    "c_hair_Hairstyle_20_03.png": "characters/Hairstyle_20_03.png",
+    "c_hair_Hairstyle_20_04.png": "characters/Hairstyle_20_04.png",
+    "c_hair_Hairstyle_20_05.png": "characters/Hairstyle_20_05.png",
+    "c_hair_Hairstyle_20_06.png": "characters/Hairstyle_20_06.png",
+    "c_hair_Hairstyle_20_07.png": "characters/Hairstyle_20_07.png",
+    "c_hair_Hairstyle_21_01.png": "characters/Hairstyle_21_01.png",
+    "c_hair_Hairstyle_21_02.png": "characters/Hairstyle_21_02.png",
+    "c_hair_Hairstyle_21_03.png": "characters/Hairstyle_21_03.png",
+    "c_hair_Hairstyle_21_04.png": "characters/Hairstyle_21_04.png",
+    "c_hair_Hairstyle_21_05.png": "characters/Hairstyle_21_05.png",
+    "c_hair_Hairstyle_21_06.png": "characters/Hairstyle_21_06.png",
+    "c_hair_Hairstyle_21_07.png": "characters/Hairstyle_21_07.png",
+    "c_hair_Hairstyle_22_01.png": "characters/Hairstyle_22_01.png",
+    "c_hair_Hairstyle_22_02.png": "characters/Hairstyle_22_02.png",
+    "c_hair_Hairstyle_22_03.png": "characters/Hairstyle_22_03.png",
+    "c_hair_Hairstyle_22_04.png": "characters/Hairstyle_22_04.png",
+    "c_hair_Hairstyle_22_05.png": "characters/Hairstyle_22_05.png",
+    "c_hair_Hairstyle_22_06.png": "characters/Hairstyle_22_06.png",
+    "c_hair_Hairstyle_22_07.png": "characters/Hairstyle_22_07.png",
+    "c_hair_Hairstyle_23_01.png": "characters/Hairstyle_23_01.png",
+    "c_hair_Hairstyle_23_02.png": "characters/Hairstyle_23_02.png",
+    "c_hair_Hairstyle_23_03.png": "characters/Hairstyle_23_03.png",
+    "c_hair_Hairstyle_23_04.png": "characters/Hairstyle_23_04.png",
+    "c_hair_Hairstyle_23_05.png": "characters/Hairstyle_23_05.png",
+    "c_hair_Hairstyle_23_06.png": "characters/Hairstyle_23_06.png",
+    "c_hair_Hairstyle_23_07.png": "characters/Hairstyle_23_07.png",
+    "c_hair_Hairstyle_24_01.png": "characters/Hairstyle_24_01.png",
+    "c_hair_Hairstyle_24_02.png": "characters/Hairstyle_24_02.png",
+    "c_hair_Hairstyle_24_03.png": "characters/Hairstyle_24_03.png",
+    "c_hair_Hairstyle_24_04.png": "characters/Hairstyle_24_04.png",
+    "c_hair_Hairstyle_24_05.png": "characters/Hairstyle_24_05.png",
+    "c_hair_Hairstyle_24_06.png": "characters/Hairstyle_24_06.png",
+    "c_hair_Hairstyle_24_07.png": "characters/Hairstyle_24_07.png",
+    "c_hair_Hairstyle_25_01.png": "characters/Hairstyle_25_01.png",
+    "c_hair_Hairstyle_25_02.png": "characters/Hairstyle_25_02.png",
+    "c_hair_Hairstyle_25_03.png": "characters/Hairstyle_25_03.png",
+    "c_hair_Hairstyle_25_04.png": "characters/Hairstyle_25_04.png",
+    "c_hair_Hairstyle_25_05.png": "characters/Hairstyle_25_05.png",
+    "c_hair_Hairstyle_25_06.png": "characters/Hairstyle_25_06.png",
+    "c_hair_Hairstyle_25_07.png": "characters/Hairstyle_25_07.png",
+    "c_hair_Hairstyle_26_01.png": "characters/Hairstyle_26_01.png",
+    "c_hair_Hairstyle_26_02.png": "characters/Hairstyle_26_02.png",
+    "c_hair_Hairstyle_26_03.png": "characters/Hairstyle_26_03.png",
+    "c_hair_Hairstyle_26_04.png": "characters/Hairstyle_26_04.png",
+    "c_hair_Hairstyle_26_05.png": "characters/Hairstyle_26_05.png",
+    "c_hair_Hairstyle_26_06.png": "characters/Hairstyle_26_06.png",
+    "c_hair_Hairstyle_26_07.png": "characters/Hairstyle_26_07.png",
+    "c_hair_Hairstyle_27_01.png": "characters/Hairstyle_27_01.png",
+    "c_hair_Hairstyle_27_02.png": "characters/Hairstyle_27_02.png",
+    "c_hair_Hairstyle_27_03.png": "characters/Hairstyle_27_03.png",
+    "c_hair_Hairstyle_27_04.png": "characters/Hairstyle_27_04.png",
+    "c_hair_Hairstyle_27_05.png": "characters/Hairstyle_27_05.png",
+    "c_hair_Hairstyle_27_06.png": "characters/Hairstyle_27_06.png",
+    "c_hair_Hairstyle_28_01.png": "characters/Hairstyle_28_01.png",
+    "c_hair_Hairstyle_28_02.png": "characters/Hairstyle_28_02.png",
+    "c_hair_Hairstyle_28_03.png": "characters/Hairstyle_28_03.png",
+    "c_hair_Hairstyle_28_04.png": "characters/Hairstyle_28_04.png",
+    "c_hair_Hairstyle_28_05.png": "characters/Hairstyle_28_05.png",
+    "c_hair_Hairstyle_28_06.png": "characters/Hairstyle_28_06.png",
+    "c_hair_Hairstyle_29_01.png": "characters/Hairstyle_29_01.png",
+    "c_hair_Hairstyle_29_02.png": "characters/Hairstyle_29_02.png",
+    "c_hair_Hairstyle_29_03.png": "characters/Hairstyle_29_03.png",
+    "c_hair_Hairstyle_29_04.png": "characters/Hairstyle_29_04.png",
+    "c_hair_Hairstyle_29_05.png": "characters/Hairstyle_29_05.png",
+    "c_hair_Hairstyle_29_06.png": "characters/Hairstyle_29_06.png",
+    "c_outfit_Outfit_01_01.png": "characters/Outfit_01_01.png",
+    "c_outfit_Outfit_01_02.png": "characters/Outfit_01_02.png",
+    "c_outfit_Outfit_01_03.png": "characters/Outfit_01_03.png",
+    "c_outfit_Outfit_01_04.png": "characters/Outfit_01_04.png",
+    "c_outfit_Outfit_01_05.png": "characters/Outfit_01_05.png",
+    "c_outfit_Outfit_01_06.png": "characters/Outfit_01_06.png",
+    "c_outfit_Outfit_01_07.png": "characters/Outfit_01_07.png",
+    "c_outfit_Outfit_01_08.png": "characters/Outfit_01_08.png",
+    "c_outfit_Outfit_01_09.png": "characters/Outfit_01_09.png",
+    "c_outfit_Outfit_01_10.png": "characters/Outfit_01_10.png",
+    "c_outfit_Outfit_02_01.png": "characters/Outfit_02_01.png",
+    "c_outfit_Outfit_02_02.png": "characters/Outfit_02_02.png",
+    "c_outfit_Outfit_02_03.png": "characters/Outfit_02_03.png",
+    "c_outfit_Outfit_02_04.png": "characters/Outfit_02_04.png",
+    "c_outfit_Outfit_03_01.png": "characters/Outfit_03_01.png",
+    "c_outfit_Outfit_03_02.png": "characters/Outfit_03_02.png",
+    "c_outfit_Outfit_03_03.png": "characters/Outfit_03_03.png",
+    "c_outfit_Outfit_03_04.png": "characters/Outfit_03_04.png",
+    "c_outfit_Outfit_04_01.png": "characters/Outfit_04_01.png",
+    "c_outfit_Outfit_04_02.png": "characters/Outfit_04_02.png",
+    "c_outfit_Outfit_04_03.png": "characters/Outfit_04_03.png",
+    "c_outfit_Outfit_05_01.png": "characters/Outfit_05_01.png",
+    "c_outfit_Outfit_05_02.png": "characters/Outfit_05_02.png",
+    "c_outfit_Outfit_05_03.png": "characters/Outfit_05_03.png",
+    "c_outfit_Outfit_05_04.png": "characters/Outfit_05_04.png",
+    "c_outfit_Outfit_05_05.png": "characters/Outfit_05_05.png",
+    "c_outfit_Outfit_06_01.png": "characters/Outfit_06_01.png",
+    "c_outfit_Outfit_06_02.png": "characters/Outfit_06_02.png",
+    "c_outfit_Outfit_06_03.png": "characters/Outfit_06_03.png",
+    "c_outfit_Outfit_06_04.png": "characters/Outfit_06_04.png",
+    "c_outfit_Outfit_07_01.png": "characters/Outfit_07_01.png",
+    "c_outfit_Outfit_07_02.png": "characters/Outfit_07_02.png",
+    "c_outfit_Outfit_07_03.png": "characters/Outfit_07_03.png",
+    "c_outfit_Outfit_07_04.png": "characters/Outfit_07_04.png",
+    "c_outfit_Outfit_08_01.png": "characters/Outfit_08_01.png",
+    "c_outfit_Outfit_08_02.png": "characters/Outfit_08_02.png",
+    "c_outfit_Outfit_08_03.png": "characters/Outfit_08_03.png",
+    "c_outfit_Outfit_09_01.png": "characters/Outfit_09_01.png",
+    "c_outfit_Outfit_09_02.png": "characters/Outfit_09_02.png",
+    "c_outfit_Outfit_09_03.png": "characters/Outfit_09_03.png",
+    "c_outfit_Outfit_10_01.png": "characters/Outfit_10_01.png",
+    "c_outfit_Outfit_10_02.png": "characters/Outfit_10_02.png",
+    "c_outfit_Outfit_10_03.png": "characters/Outfit_10_03.png",
+    "c_outfit_Outfit_10_04.png": "characters/Outfit_10_04.png",
+    "c_outfit_Outfit_10_05.png": "characters/Outfit_10_05.png",
+    "c_outfit_Outfit_11_01.png": "characters/Outfit_11_01.png",
+    "c_outfit_Outfit_11_02.png": "characters/Outfit_11_02.png",
+    "c_outfit_Outfit_11_03.png": "characters/Outfit_11_03.png",
+    "c_outfit_Outfit_11_04.png": "characters/Outfit_11_04.png",
+    "c_outfit_Outfit_12_01.png": "characters/Outfit_12_01.png",
+    "c_outfit_Outfit_12_02.png": "characters/Outfit_12_02.png",
+    "c_outfit_Outfit_12_03.png": "characters/Outfit_12_03.png",
+    "c_outfit_Outfit_13_01.png": "characters/Outfit_13_01.png",
+    "c_outfit_Outfit_13_02.png": "characters/Outfit_13_02.png",
+    "c_outfit_Outfit_13_03.png": "characters/Outfit_13_03.png",
+    "c_outfit_Outfit_13_04.png": "characters/Outfit_13_04.png",
+    "c_outfit_Outfit_14_01.png": "characters/Outfit_14_01.png",
+    "c_outfit_Outfit_14_02.png": "characters/Outfit_14_02.png",
+    "c_outfit_Outfit_14_03.png": "characters/Outfit_14_03.png",
+    "c_outfit_Outfit_14_04.png": "characters/Outfit_14_04.png",
+    "c_outfit_Outfit_14_05.png": "characters/Outfit_14_05.png",
+    "c_outfit_Outfit_15_01.png": "characters/Outfit_15_01.png",
+    "c_outfit_Outfit_15_02.png": "characters/Outfit_15_02.png",
+    "c_outfit_Outfit_15_03.png": "characters/Outfit_15_03.png",
+    "c_outfit_Outfit_16_01.png": "characters/Outfit_16_01.png",
+    "c_outfit_Outfit_16_02.png": "characters/Outfit_16_02.png",
+    "c_outfit_Outfit_16_03.png": "characters/Outfit_16_03.png",
+    "c_outfit_Outfit_17_01.png": "characters/Outfit_17_01.png",
+    "c_outfit_Outfit_17_02.png": "characters/Outfit_17_02.png",
+    "c_outfit_Outfit_17_03.png": "characters/Outfit_17_03.png",
+    "c_outfit_Outfit_18_01.png": "characters/Outfit_18_01.png",
+    "c_outfit_Outfit_18_02.png": "characters/Outfit_18_02.png",
+    "c_outfit_Outfit_18_03.png": "characters/Outfit_18_03.png",
+    "c_outfit_Outfit_18_04.png": "characters/Outfit_18_04.png",
+    "c_outfit_Outfit_19_01.png": "characters/Outfit_19_01.png",
+    "c_outfit_Outfit_19_02.png": "characters/Outfit_19_02.png",
+    "c_outfit_Outfit_19_03.png": "characters/Outfit_19_03.png",
+    "c_outfit_Outfit_19_04.png": "characters/Outfit_19_04.png",
+    "c_outfit_Outfit_20_01.png": "characters/Outfit_20_01.png",
+    "c_outfit_Outfit_20_02.png": "characters/Outfit_20_02.png",
+    "c_outfit_Outfit_20_03.png": "characters/Outfit_20_03.png",
+    "c_outfit_Outfit_21_01.png": "characters/Outfit_21_01.png",
+    "c_outfit_Outfit_21_02.png": "characters/Outfit_21_02.png",
+    "c_outfit_Outfit_21_03.png": "characters/Outfit_21_03.png",
+    "c_outfit_Outfit_21_04.png": "characters/Outfit_21_04.png",
+    "c_outfit_Outfit_22_01.png": "characters/Outfit_22_01.png",
+    "c_outfit_Outfit_22_02.png": "characters/Outfit_22_02.png",
+    "c_outfit_Outfit_22_03.png": "characters/Outfit_22_03.png",
+    "c_outfit_Outfit_22_04.png": "characters/Outfit_22_04.png",
+    "c_outfit_Outfit_23_01.png": "characters/Outfit_23_01.png",
+    "c_outfit_Outfit_23_02.png": "characters/Outfit_23_02.png",
+    "c_outfit_Outfit_23_03.png": "characters/Outfit_23_03.png",
+    "c_outfit_Outfit_23_04.png": "characters/Outfit_23_04.png",
+    "c_outfit_Outfit_24_01.png": "characters/Outfit_24_01.png",
+    "c_outfit_Outfit_24_02.png": "characters/Outfit_24_02.png",
+    "c_outfit_Outfit_24_03.png": "characters/Outfit_24_03.png",
+    "c_outfit_Outfit_24_04.png": "characters/Outfit_24_04.png",
+    "c_outfit_Outfit_25_01.png": "characters/Outfit_25_01.png",
+    "c_outfit_Outfit_25_02.png": "characters/Outfit_25_02.png",
+    "c_outfit_Outfit_25_03.png": "characters/Outfit_25_03.png",
+    "c_outfit_Outfit_25_04.png": "characters/Outfit_25_04.png",
+    "c_outfit_Outfit_25_05.png": "characters/Outfit_25_05.png",
+    "c_outfit_Outfit_26_01.png": "characters/Outfit_26_01.png",
+    "c_outfit_Outfit_26_02.png": "characters/Outfit_26_02.png",
+    "c_outfit_Outfit_26_03.png": "characters/Outfit_26_03.png",
+    "c_outfit_Outfit_27_01.png": "characters/Outfit_27_01.png",
+    "c_outfit_Outfit_27_02.png": "characters/Outfit_27_02.png",
+    "c_outfit_Outfit_27_03.png": "characters/Outfit_27_03.png",
+    "c_outfit_Outfit_28_01.png": "characters/Outfit_28_01.png",
+    "c_outfit_Outfit_28_02.png": "characters/Outfit_28_02.png",
+    "c_outfit_Outfit_28_03.png": "characters/Outfit_28_03.png",
+    "c_outfit_Outfit_28_04.png": "characters/Outfit_28_04.png",
+    "c_outfit_Outfit_29_01.png": "characters/Outfit_29_01.png",
+    "c_outfit_Outfit_29_02.png": "characters/Outfit_29_02.png",
+    "c_outfit_Outfit_29_03.png": "characters/Outfit_29_03.png",
+    "c_outfit_Outfit_29_04.png": "characters/Outfit_29_04.png",
+    "c_outfit_Outfit_30_01.png": "characters/Outfit_30_01.png",
+    "c_outfit_Outfit_30_02.png": "characters/Outfit_30_02.png",
+    "c_outfit_Outfit_30_03.png": "characters/Outfit_30_03.png",
+    "c_outfit_Outfit_31_01.png": "characters/Outfit_31_01.png",
+    "c_outfit_Outfit_31_02.png": "characters/Outfit_31_02.png",
+    "c_outfit_Outfit_31_03.png": "characters/Outfit_31_03.png",
+    "c_outfit_Outfit_31_04.png": "characters/Outfit_31_04.png",
+    "c_outfit_Outfit_31_05.png": "characters/Outfit_31_05.png",
+    "c_outfit_Outfit_32_01.png": "characters/Outfit_32_01.png",
+    "c_outfit_Outfit_32_02.png": "characters/Outfit_32_02.png",
+    "c_outfit_Outfit_32_03.png": "characters/Outfit_32_03.png",
+    "c_outfit_Outfit_32_04.png": "characters/Outfit_32_04.png",
+    "c_outfit_Outfit_32_05.png": "characters/Outfit_32_05.png",
+    "c_outfit_Outfit_33_01.png": "characters/Outfit_33_01.png",
+    "c_outfit_Outfit_33_02.png": "characters/Outfit_33_02.png",
+    "c_outfit_Outfit_33_03.png": "characters/Outfit_33_03.png",
+    "c_accessory": "characters/accessory.png",
+    "c_accessory_cap": "characters/accessory_cap.png",
+    "c_accessory_beanie": "characters/accessory_beanie.png",
+    "c_accessory_backpack": "characters/accessory_backpack.png",
+    "c_accessory_satchel": "characters/accessory_satchel.png",
+    "rs_premade_01": "runtime/premade_01.png",
+    "rs_premade_02": "runtime/premade_02.png",
+    "rs_premade_04": "runtime/premade_04.png",
+    "rs_premade_06": "runtime/premade_06.png",
+    "rs_premade_07": "runtime/premade_07.png",
+    "rs_premade_08": "runtime/premade_08.png",
+    "rs_premade_09": "runtime/premade_09.png",
+    "rs_premade_10": "runtime/premade_10.png",
+    "rs_premade_14": "runtime/premade_14.png",
+    "rs_premade_15": "runtime/premade_15.png",
+    "rs_premade_18": "runtime/premade_18.png",
+    "rs_premade_19": "runtime/premade_19.png",
+    "rs_animal_cow": "runtime/animal_cow.png",
+    "rs_animal_pig": "runtime/animal_pig.png",
+    "rs_animal_dog": "runtime/animal_dog.png",
+    "rs_animal_chicken": "runtime/animal_chicken.png"
+  },
+  "rects": {
+    "grass": {
+      "file": "t_grass",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "e99c647d14bfa9bb5ae79b607a3283783897a5111c7df92f7d436fac24ed2dc9"
+    },
+    "grassA": {
+      "file": "t_grassA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "cb6f613b3ecb228e6512482f905d047a9075e452d6bc05c00fdfdbeedfa55d17"
+    },
+    "grassB": {
+      "file": "t_grassB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "c944418e43a09347e423cc597269b64e47c5be77f4aec3afc60bac739558ad86"
+    },
+    "sideA": {
+      "file": "t_sideA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "5a9bdace81912c2c0fa5f226b49406b0dfa624b9116b13ceb37b51dc5f66e5e0"
+    },
+    "sideB": {
+      "file": "t_sideB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "d34962793883fd341f4d2f9997360e1481d949952891a6e2aab6b771bd401e89"
+    },
+    "sideC": {
+      "file": "t_sideC",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "68209038f93cfeca3cb7c2b04c3cb7c94640395db7c7bae6f4c3ddc180fd39e3"
+    },
+    "sideD": {
+      "file": "t_sideD",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "74f856997559101ac34ccc2e8f5d4e66d21dff18dfbd6fe83856adbac239a6b3"
+    },
+    "asphA": {
+      "file": "t_asphA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "d6e1cde12da6578ac6be2e446e776fd87c98714c13c1bf555040cc0930e4beb2"
+    },
+    "asphB": {
+      "file": "t_asphB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "1d56baac91262fddc97ce979f4496e4bf96d6ea8296e415c4a1f1057939e7748"
+    },
+    "asphC": {
+      "file": "t_asphC",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "219b5c0ec23c052c28036a737a4b20ab5a792da291aad1ac868da694ddc6a606"
+    },
+    "asphD": {
+      "file": "t_asphD",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "7396ae9d98593c62f910bf9bafbdfc1685862fa2e94c32488f7d02a666b3bbd6"
+    },
+    "dashH": {
+      "file": "t_dashH",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "449d220db1e01be9cd6be6fa157c1461d20bee95784b8b69355b15c46140bc79"
+    },
+    "dashV": {
+      "file": "t_dashV",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "7266d39568324219900de14a9c5fd96b8df41a5318a9f08d6f41f77f49c093c7"
+    },
+    "zebHa1": {
+      "file": "t_zebHa1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "9ca9e342b05a478a8b995a2528a72681654f4053fc053ef996588817ced1e154"
+    },
+    "zebHb1": {
+      "file": "t_zebHb1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "904bb6865c109907020e5daff342630925d9af55b61ec937c91aeabc06916631"
+    },
+    "zebHa2": {
+      "file": "t_zebHa2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "e552a32dc56e77d7dcbbbf9d5496679790d15bd9c41243fe3e319ef8fa2edd88"
+    },
+    "zebHb2": {
+      "file": "t_zebHb2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "4a41f18b12ade2e777343f16aeb3a99fd8848031aa4cb89501a10ce33a9349fa"
+    },
+    "zebVa1": {
+      "file": "t_zebVa1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "e785ea62f9d76f052601fe57fecd5c63686a2d36f21db2b3dd8a3b3d085dbf5c"
+    },
+    "zebVb1": {
+      "file": "t_zebVb1",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "68ac61a67eb75b6c4c05f6d513ecce99347cb1ca064f904bc4ed39daf225a01a"
+    },
+    "zebVa2": {
+      "file": "t_zebVa2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "2e6e86e3e362f99de0bbc501a6afd06ef31b97441741c83cbef322b02a53a4d4"
+    },
+    "zebVb2": {
+      "file": "t_zebVb2",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "d08205edf3b9c0040d8ad9fa6aa7c129ee3079dcbc2ed7ccffa154baa2039698"
+    },
+    "dirt": {
+      "file": "t_dirt",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "62115241c6b591186f18aa2e069924b36747e2e41d7e6da7b72327f6dc54412f"
+    },
+    "dirtA": {
+      "file": "t_dirtA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "609100d074fc8bbd626ba0ab2eeaf75ffdecbffd2ffb73c55dcc02f1a9568010"
+    },
+    "border": {
+      "file": "t_border",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "6cc613feb40efe1baee5a49d8a25d1535f4aba897cbcb3fb78716ea00c2c8b6a"
+    },
+    "wallOfficeA": {
+      "file": "t_wallOfficeA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "75946a48f0cabe81a2c27c74a70531e0a5f64bee64f5932f74b118f8a57285ea"
+    },
+    "wallOfficeB": {
+      "file": "t_wallOfficeB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "7017e9feae9860c44ab6d2ce5cf92f3fa053fed16d99ee52934de752518272d0"
+    },
+    "wallCafeA": {
+      "file": "t_wallCafeA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "db928fdaa93b5734629c616f1bdeb40007016ebe7a6a91b88392440c7b3c825f"
+    },
+    "wallCafeB": {
+      "file": "t_wallCafeB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "3f7ac00904c23c45d3529c6acae7e6f7a53c4b63e6dccfc174823374a513b491"
+    },
+    "wallDormA": {
+      "file": "t_wallDormA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "003ae5ecfa0d3f108fb1ffc92c4b990a42684b0c68c9ca4688d5b758f850e340"
+    },
+    "wallDormB": {
+      "file": "t_wallDormB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "9660352db66cc97ba92cf0b45a9758ecd63a74dcf5673e2170f951d5cec22a0a"
+    },
+    "wallLibA": {
+      "file": "t_wallLibA",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "6ba995d04ebae69d3d7728d818b1e36e1f53ed9584bc725c5f0a7a498a1f8956"
+    },
+    "wallLibB": {
+      "file": "t_wallLibB",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "a8f55ff4ab81f095dbdfb487218fc10257cbc0d780ab400cebd3fba3d995fcc6"
+    },
+    "floorOffice": {
+      "file": "t_floorOffice",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "45b5e6247a9d64ce0e85837e4a864c6a94f88bd2e4a5957afc858009099537fb"
+    },
+    "floorCafe": {
+      "file": "t_floorCafe",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "0d787c6a18e5bbb6a6df14f3a4886697878dc53bc73ee9b6d6c4d4448d16c34b"
+    },
+    "floorDorm": {
+      "file": "t_floorDorm",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "0abc8e94c6e4231ce692f26645e3cf686040dbeaf60f65c9aa85dff28848c08a"
+    },
+    "floorLib": {
+      "file": "t_floorLib",
+      "x": 0,
+      "y": 0,
+      "w": 16,
+      "h": 16,
+      "pin": "9508f3c67ecd7de2f652e915da60df580740ee4d4cd8a735f674acb636ee2ab6"
+    },
+    "office_building": {
+      "file": "p_office_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "594e561df6e4c8198edc2ce38178d23c825e4b0a62c262a5afc4ffac78bb80f7"
+    },
+    "cafe_building": {
+      "file": "p_cafe_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b79e82c199cad1c24be88023fedc1a61beefdf7a56600c017b87ed9a938004c4"
+    },
+    "villa_building": {
+      "file": "p_villa_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "40ea40eaedcae721ce1daba8b61e0acf9c63db7bb691e07aad95c8236b0a6c25"
+    },
+    "library_building": {
+      "file": "p_library_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "44413ce5b09f62e9d9b766d88a6eb0ff4e67b3d1ae26e1403ccb82ae659b16f8"
+    },
+    "barn": {
+      "file": "p_barn",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e6fd1fdb7531b91408d2a112bfa6900997b5a1614353fcd337ad3f5917f96449"
+    },
+    "tree_oak_big": {
+      "file": "p_tree_oak_big",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "88e83fc951c01c38503e01b83cb0bcb76afa47a93af1966a82da1fafa60f2c26"
+    },
+    "tree_oak_med": {
+      "file": "p_tree_oak_med",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "55d9ed3fa7205e462dc8898a417b1916af0a3e30ea4dcaf16365ed16576f8459"
+    },
+    "tree_birch": {
+      "file": "p_tree_birch",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "95647bcd110588f46a5d5a4b491dd51172bed6bf3388bd48aac6c157cd0c7151"
+    },
+    "street_lamp": {
+      "file": "p_street_lamp",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "593ffe3cfff45d4215c4f23b9a17bd81ec23391c809a744b8e71579bd2d26c46"
+    },
+    "bench": {
+      "file": "p_bench",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b8b34cea3a88f412e5d0a4b46cdb417cf77fa26e645a82c952850b0530c32601"
+    },
+    "trash_can": {
+      "file": "p_trash_can",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "634b3bead6631cd2d50bca41eeb4257c72be8f815bacc605bb4ef2d46742863f"
+    },
+    "hydrant": {
+      "file": "p_hydrant",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "73c8eaae4cb6be192628490c07bd9b51c10fcf7239843048a5524fef83e36911"
+    },
+    "car_right_1": {
+      "file": "p_car_right_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c3ba0a81e7259e794e494f6f4a845154dc340db3c83ea6a91d8769a1c0c7c552"
+    },
+    "car_left_1": {
+      "file": "p_car_left_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6d80e5d98b1c519b1ba0f062cef4101370b56de95b4784f283a2e63d08d1a4aa"
+    },
+    "car_right_2": {
+      "file": "p_car_right_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3e27a76ed988d37f76660be72971f9d1bdf53ce527c39cad56e13384cff3166c"
+    },
+    "car_down_1": {
+      "file": "p_car_down_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "beab443eabc9b78dab82e602fcf175784a78f05d6c4882c65a56a8ca87444b5e"
+    },
+    "car_down_2": {
+      "file": "p_car_down_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "efdaecfc35c7077351279911ebca5970012fc8d189da7fdccbfa2b9746741b64"
+    },
+    "bush_1": {
+      "file": "p_bush_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "55adcf81c849c77e06d1fc3e0f038b1caf9bd7a12a90f90ce90a3387b00941bf"
+    },
+    "bush_2": {
+      "file": "p_bush_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0a294728ad9828b9bd093a9078db4998f4da5946cd1d81d024305cfceab4f47f"
+    },
+    "crop_cabbage": {
+      "file": "p_crop_cabbage",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "825789c627cce2ef155a6496bd33d04ce1384dc7d8485270fb28e48aaaa8062b"
+    },
+    "crop_berry": {
+      "file": "p_crop_berry",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "1f196c06965fe5143fc8c13f7b319d267f8fdcf5efd6e7f50a9ea542ccd3fef3"
+    },
+    "soil_left": {
+      "file": "p_soil_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "89372d3a5c12517b446b4c65b842e87f6da869946b2c57238053a3ed3f3cbfa5"
+    },
+    "soil_mid": {
+      "file": "p_soil_mid",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "370b74df2e82671ccddb16f20d4321bf8cfb8bb9805955a30b8896d3ce27e9c8"
+    },
+    "soil_right": {
+      "file": "p_soil_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b5b6b8bdfd160036fc1b9380a274b6dc7934af90d8f41258b6e99de1f56100b1"
+    },
+    "fence_top_left": {
+      "file": "p_fence_top_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "7b90cbe3419a5e5dfcbe1286b21a60133e3f883528d322ab5f503c52c69bb44a"
+    },
+    "fence_top_middle": {
+      "file": "p_fence_top_middle",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b787d190a973f54e1853cf267cd5b9dd1c99f35d2c8a31cd4373d4b1cd30baaa"
+    },
+    "fence_top_right": {
+      "file": "p_fence_top_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "61be29e18c7e6818961ad8b207121ff747a5ee509f41a0d4915d32c69f1d1bc9"
+    },
+    "fence_middle_left": {
+      "file": "p_fence_middle_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "386c755fa9f06be8fdc7bf0c822a80f6dad146faa0b22b1d68fb7786757d42c9"
+    },
+    "fence_middle_right": {
+      "file": "p_fence_middle_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "8d4407edc1c68fa94f5067202e148ec4e3a50dc0dcc1225c2b8c14d4a8994637"
+    },
+    "fence_bottom_left": {
+      "file": "p_fence_bottom_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3934d71ea4a724992212ef193c7e8ce242e93b075a2753a7fae16347dc0254c7"
+    },
+    "fence_bottom_middle": {
+      "file": "p_fence_bottom_middle",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5cfb9d22b547bc446a41ed676be7734150c71b1f80778677fa67dec02b127da5"
+    },
+    "fence_bottom_right": {
+      "file": "p_fence_bottom_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6c7ed5779179742242e0c6f34eaff13e6616e42f41b6ecc09d6077554c1dacce"
+    },
+    "bed_green": {
+      "file": "p_bed_green",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "2970a2c2a8734b249ecdd93203ab96aad35e3d6129560db642db5a72b5425a33"
+    },
+    "bed_blue": {
+      "file": "p_bed_blue",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "be18df8e5e4c7d3356ad85fcd01c47f464b79bc93b0f64135d7445c93f9b6877"
+    },
+    "bed_teal": {
+      "file": "p_bed_teal",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "d9184b951c4e6e47812a4280994d0d1fa3b0cf735168dab0d6c37e3c0e941a17"
+    },
+    "nightstand": {
+      "file": "p_nightstand",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "17869ad869487707ca77cd7db5cf26e9a2e1089606d844705a9ef32a1579bd90"
+    },
+    "rug_pink": {
+      "file": "p_rug_pink",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ecce40f8f00b08d5f7b74b20ee079f4bc19cccc7c732ffa4f55be43fc841395d"
+    },
+    "chair_blue_r": {
+      "file": "p_chair_blue_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ccb18521163cb7cb6e9365b67fcfc43d9700fb758defca6f6e6bc15657c0c9e9"
+    },
+    "chair_blue_l": {
+      "file": "p_chair_blue_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "aab0c7b90d429ba18f4d7ac1d0fabb1345b197ef0d5af78029b28cc2ae2c6994"
+    },
+    "chair_red_r": {
+      "file": "p_chair_red_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "fc76e2cf403a83c88bf4532e8ae3cab88a66b7920daa49c0c1532cc8027d7e79"
+    },
+    "chair_red_l": {
+      "file": "p_chair_red_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f48cdeb87b3f5265e34e1b1755c84c81a12d87e7ecee86b11b6b08b3e2972b0a"
+    },
+    "chair_yellow_r": {
+      "file": "p_chair_yellow_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e177a586b6628d72f4fadaeb3a57dce49c095a1506d5f9c2da149a8060a6a691"
+    },
+    "chair_yellow_l": {
+      "file": "p_chair_yellow_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "73fbbafd2623e7cd48e3068e042900e283cea808439f81e7315b6194c16a9fee"
+    },
+    "table_plain": {
+      "file": "p_table_plain",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "04e30d5d579264ad826d565520b7462a368924acc03ca162f64a05f97abe8d2b"
+    },
+    "armchair_grey_r": {
+      "file": "p_armchair_grey_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "308bcd62339868b6f9e2ce37d897e6ab850df2b99ed983cd93a2136b42a1aaf1"
+    },
+    "armchair_grey_l": {
+      "file": "p_armchair_grey_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "86903e735ffc9176d93dcc2134e8dc1fc9f06f9d39416b9065bbcbe85f8898ba"
+    },
+    "armchair_blue_r": {
+      "file": "p_armchair_blue_r",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0c054de6c72f5e0ac5a0ca3a04bc3ad414622a04aaa40b334f960a400729c3b7"
+    },
+    "armchair_blue_l": {
+      "file": "p_armchair_blue_l",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "4923054a55408ff64e71ed9dad58e257730000592b69a6bec36c210f97500a46"
+    },
+    "lamp_red": {
+      "file": "p_lamp_red",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "96bdd630a39ab357083c6dfd276d6137ccf34a2a346f02ffdff78f086a0842cc"
+    },
+    "plant_palm": {
+      "file": "p_plant_palm",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5d8f0f4e8088ef6e564a932f835eebc0ae07f631bfbfda7bf9686a6f906c883f"
+    },
+    "bookshelf_a": {
+      "file": "p_bookshelf_a",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c31f5414869de350c707ee07d6a362c2f0e83dc6884a875a6b629aed214cb0d1"
+    },
+    "bookshelf_b": {
+      "file": "p_bookshelf_b",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "799813958d5b753d5735deb1dae2442917b7a8b97cb01d27a4c24a8732e70d98"
+    },
+    "bookshelf_narrow": {
+      "file": "p_bookshelf_narrow",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3aac4b031389edbd340c46733fbbb50b0ec01f55b6b06418f54f97e94c26536e"
+    },
+    "lectern": {
+      "file": "p_lectern",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a4c92c79157e2774fbcd9d4c00a567cdc70c0ed1addc01bbe4f74e61026f1738"
+    },
+    "globe": {
+      "file": "p_globe",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "933d956caf31a4552fe189adb08933349860f096696234932636e43e0ea38e25"
+    },
+    "chalkboard": {
+      "file": "p_chalkboard",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c62b6aacfd8d72319dbbb7be1373fc5e2ce68c8d3a10eb66d53c12a2a77bf89b"
+    },
+    "counter_wide": {
+      "file": "p_counter_wide",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "06c69a937431e7042bdb2c716c422b871469d64653771d550c96310a0f17ee25"
+    },
+    "stool": {
+      "file": "p_stool",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "323c4bc4bbcf0d61470e8a7af33c1ab4eb5b410dfb576acd9e6d732d23e407fc"
+    },
+    "doormat": {
+      "file": "p_doormat",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "4b6433d108197e829a285fa1401fa483f3b340dfe5f99573a77e47144c9a980e"
+    },
+    "plant_small": {
+      "file": "p_plant_small",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "2423757679318298566e0fe3870113170aa5914aedc93da952505f03aaa499c8"
+    },
+    "plant_pot": {
+      "file": "p_plant_pot",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "d9d58d2c6222a6ac100b4c86f7ee63bb58ba0222be0c6610b5b5c0eef7dd5169"
+    },
+    "office_chair_right": {
+      "file": "p_office_chair_right",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "289f033b32a959aeefb2db197862dd8b024de07e9fe9dc550f28e8ef08333d9a"
+    },
+    "office_chair_left": {
+      "file": "p_office_chair_left",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "702a506e4fd1ae1211d1e902702bdff5a3b161726533a888698f03eddeaac708"
+    },
+    "whiteboard": {
+      "file": "p_whiteboard",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e0d4bd128f1ace0b859e805df84d5f5d306626a4ae1448f1bd8833a977c41b46"
+    },
+    "printer": {
+      "file": "p_printer",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a8d122d6bee4f7acf989781ebc3c252853a249484846b7854a5ab4fc24f7bd16"
+    },
+    "workstation_single": {
+      "file": "p_workstation_single",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "64e9f601bf0b9b466ffd0bb01f1edafe69de9debed39cf9ecd51ec4ef7725d37"
+    },
+    "workstation_double": {
+      "file": "p_workstation_double",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "407371a9dc1d92782940d0d3568954f1a0167341e9858ff7b7cf290f73334332"
+    },
+    "coffee_machine": {
+      "file": "p_coffee_machine",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a8ed04a48234c47d6cc47801f604e68ada033316f913c6cefe8969c74cb76861"
+    },
+    "coffee_steam": {
+      "file": "a_coffee_steam",
+      "pin": "32d9a5b3d4a6be67b1e6f020c79fa06396160704597ad3ecc381e4476ac19eef"
+    },
+    "cake_fridge": {
+      "file": "a_cake_fridge",
+      "pin": "0aaed765c96994e44172600ec8886d1c3799873973b9c7989ccc2c7cb071c133"
+    },
+    "tv_news": {
+      "file": "a_tv_news",
+      "pin": "656f6bd9d9d69df64aa673f23f1613d84b6cbda74e68d333c5d68e0786d13cef"
+    },
+    "office_screen": {
+      "file": "a_office_screen",
+      "pin": "4248a1e9861df4c397185824466c83b34e2af74cb08fd91bd14b5ad45e0f7dab"
+    },
+    "cuckoo_clock": {
+      "file": "a_cuckoo_clock",
+      "pin": "45db07292988d1844c0ee100c93bf2b2c6e76436049b266c6f36892d80ef84fa"
+    },
+    "emote_sheet": {
+      "file": "emotes",
+      "pin": "cb316e1f8bbe5909e3839d045e4855f6baedadc0074a26c9184d2225ecee2787"
+    },
+    "ui_sheet": {
+      "file": "ui",
+      "pin": "c330006295301532c882e1f19dddf527dbfe333595be9b37ad47049db4926e68"
+    },
+    "char_body": {
+      "file": "c_body",
+      "pin": "c2ca84edeb9ea7a090e44a9fc0b0ed25f4c6733a74a3bd3868d9328eb887d232"
+    },
+    "char_eyes": {
+      "file": "c_eyes_Eyes_01.png",
+      "pin": "50e8b1082f33e1724ae9055e99cd1f7146b26d77a8612fe2be66c5ec43c146c0"
+    },
+    "char_hair": {
+      "file": "c_hair_Hairstyle_01_01.png",
+      "pin": "e1c2bb06864767db8820add3e79343be076d2b3a39414568634bb35489b4db0e"
+    },
+    "char_outfit": {
+      "file": "c_outfit_Outfit_01_01.png",
+      "pin": "d1b2c2f05dc6d0a0d76856894fe1b126c5df2b5b03e79f604db4a7d44b4bc101"
+    },
+    "char_accessory": {
+      "file": "c_accessory",
+      "pin": "e782bca32f2308b78dcb1ae085efbed71f33320618c537a90e10b98d0d5ea259"
+    },
+    "char_accessory_cap": {
+      "file": "c_accessory_cap",
+      "pin": "7217cc91912aef2dfda3e361c9974ea3994ff4107b071a7a40b951dc4556a253"
+    },
+    "char_accessory_beanie": {
+      "file": "c_accessory_beanie",
+      "pin": "b38f2d75495304496ff3afdedb15b9df1deead79fc6c4483a2fbfb753dbd9247"
+    },
+    "char_accessory_backpack": {
+      "file": "c_accessory_backpack",
+      "pin": "082d2bf9db25e51a448603eb381caec1cb8781b771538e39963ac2188e1667e2"
+    },
+    "char_accessory_satchel": {
+      "file": "c_accessory_satchel",
+      "pin": "8085a03f38b844c7a61a4f109b8ae4d7eaa7914bf1a1dd6c018917c05452a46a"
+    },
+    "premade_01": {
+      "file": "rs_premade_01",
+      "pin": "765a21a55d203e6522400641a60a8ad8e4ffeb590ceb8aebdb27ad419c6ae1e2"
+    },
+    "premade_02": {
+      "file": "rs_premade_02",
+      "pin": "844e7c31d2f6d65cc0c30f9f3dad97018a5f66b37a0af812f0daf98a78ffde09"
+    },
+    "premade_04": {
+      "file": "rs_premade_04",
+      "pin": "122d42d5af444da47f9c2494e355eaec4736a189c914467621355706a147bb8e"
+    },
+    "premade_06": {
+      "file": "rs_premade_06",
+      "pin": "6a7d72815c2aeebe5d1d20ed3d232f5b6bc581239d2d55c5075e334063c0fb39"
+    },
+    "premade_07": {
+      "file": "rs_premade_07",
+      "pin": "71f2b3e034fabd77f82b8492c2ecf4a04cb7b36a0711013f0556a38ae505ffb8"
+    },
+    "premade_08": {
+      "file": "rs_premade_08",
+      "pin": "a64205137d150806ea102cefef5e9e297bd57926f309b7d37e91af83bcb7e0f5"
+    },
+    "premade_09": {
+      "file": "rs_premade_09",
+      "pin": "0fde20e2ca5b75b0365840dd7ced040b6cb50e5130c7b7717af149109be5e057"
+    },
+    "premade_10": {
+      "file": "rs_premade_10",
+      "pin": "3ad98ade1cbc5f21800752bf1ad9dbc6b73737c08a7204f4184434bf949e98a5"
+    },
+    "premade_14": {
+      "file": "rs_premade_14",
+      "pin": "d7ef9350c2dbd1fe76d3513a8cd64ac8e0596de36154915988c56765c46da0b3"
+    },
+    "premade_15": {
+      "file": "rs_premade_15",
+      "pin": "cf7cba8633e38749a711cfcff56f0a5d0564e6d58599a350c18ea5fabad55c37"
+    },
+    "premade_18": {
+      "file": "rs_premade_18",
+      "pin": "d9b92860a601aa36c1b704f939128e083b7faf8e484df6a9051ce9e39d38378c"
+    },
+    "premade_19": {
+      "file": "rs_premade_19",
+      "pin": "80a87dae2a0ea41feb636378398a647c477dfaccb0fb0ef989da2cedf2e197b5"
+    },
+    "animal_cow": {
+      "file": "rs_animal_cow",
+      "pin": "65b3683d010d7a4c243061f265149aa3faa6a9f90bea1fa992a0f91cfbef0970"
+    },
+    "animal_pig": {
+      "file": "rs_animal_pig",
+      "pin": "0ee32ea18749d7c17f5ec44b1d29bc824318c9a84b3318210d4932bc8212c9a9"
+    },
+    "animal_dog": {
+      "file": "rs_animal_dog",
+      "pin": "2ba917d2b66143b39af6fc7d60bdadf3020c4d4ed740c633c0feedf766e399f8"
+    },
+    "animal_chicken": {
+      "file": "rs_animal_chicken",
+      "pin": "6d2a1b09629c477aa984814ee2dcfff9d2c7bc3f00ad13bdd9bc101b4a919b2d"
+    }
+  }
+}

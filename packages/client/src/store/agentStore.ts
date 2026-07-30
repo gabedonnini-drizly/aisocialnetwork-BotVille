@@ -1,15 +1,10 @@
 import { create } from 'zustand';
-import type { Agent, AgentLocation, AgentStatus, CreateAgentDto } from '@botville/shared';
-import { AGENT_LOCATIONS } from '@botville/shared';
+import type { Agent, AgentStatus, CreateAgentDto } from '@botville/shared';
 import { apiFetch } from '../lib/api.js';
 
 // The session is anonymous: httpOnly av_session cookie plus a signed token in
 // localStorage for cross-site (TZ-12, see lib/api.ts). The client neither knows
 // nor constructs the userId — it only carries the signed value issued by the server.
-
-function normalizeLocation(value: unknown): AgentLocation {
-  return AGENT_LOCATIONS.includes(value as AgentLocation) ? (value as AgentLocation) : 'district';
-}
 
 // ── Agent Store ───────────────────────────────────────────────────────────────
 interface AgentStore {
@@ -23,8 +18,10 @@ interface AgentStore {
   createAgent: (dto: CreateAgentDto) => Promise<{ ok: true; id: string } | { ok: false; network: boolean }>;
   deleteAgent: (agentId: string) => Promise<void>;
   updateAgentStatus: (agentId: string, status: AgentStatus) => void;
-  /** TZ-16: merges fresh locations from polling without touching runtime statuses. */
-  applyLocations: (locations: Array<{ id: string; location: AgentLocation }>) => void;
+  /** TZ-16: merges fresh locations from polling without touching runtime statuses.
+   *  F-3: a venue id, not a member of a closed vocabulary — PresenceModel (over the
+   *  venue registry), not this store, decides what "known" means (see game/presence.ts). */
+  applyLocations: (locations: Array<{ id: string; location: string }>) => void;
   /** Saves the key; returns the health-check verdict: true/false, null — the check could not be performed */
   setApiKey: (agentId: string, apiKey: string) => Promise<boolean | null>;
   /** Deletes the agent's saved key (TZ-04): the agent requires a key again / falls back to demo. */
@@ -55,8 +52,10 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
         customBaseUrl: r.custom_base_url as string | undefined,
         createdAt: r.created_at as number,
         hasKey: Number(r.has_key ?? 0) > 0,
-        // TZ-16: the agent's whereabouts are the server's truth; an unknown value must not break the UI
-        location: normalizeLocation(r.location),
+        // TZ-16: the agent's whereabouts are the server's truth. F-3: kept RAW —
+        // no clamp to a closed vocabulary. PresenceModel decides somewhere/absent/
+        // unknown downstream (game/presence.ts); this store must not pre-judge it.
+        location: r.location as Agent['location'],
         // runtime defaults
         status: 'idle' as AgentStatus,
         position: { locationId: 'district' as const, x: 0, y: 0 },
@@ -103,11 +102,14 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
 
   applyLocations: (locations) => {
     set(s => {
-      const byId = new Map(locations.map(l => [l.id, normalizeLocation(l.location)]));
+      const byId = new Map(locations.map(l => [l.id, l.location]));
       let changed = false;
       const agents = s.agents.map(a => {
         const loc = byId.get(a.id);
-        if (loc && loc !== a.location) { changed = true; return { ...a, location: loc }; }
+        if (loc !== undefined && loc !== a.location) {
+          changed = true;
+          return { ...a, location: loc as Agent['location'] };
+        }
         return a;
       });
       // no changes — keep the same reference to avoid pointless scene resyncs

@@ -1,0 +1,77 @@
+# BotVille — deployment packaging (D-20).
+#
+# Self-hosted: two Docker-packaged Node apps (client + server), same shape as
+# the platform's own api/frontend pair. This file is both the local-dev
+# alternative to `npm run dev` and how the pair actually ships; see DEPLOY.md.
+#
+# ART: PACK defaults to `fixture`, so `docker compose build` with no
+# environment produces images containing no licensed pixel (I-12). Real art
+# is never baked INTO an image built from this file by default — see
+# DEPLOY.md ("Serving the real art") for the two supported ways to get it
+# onto a self-hosted deployment.
+
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+      args:
+        PACK: ${BOTVILLE_PACK:-fixture}
+        SRC_ROOT: ${BOTVILLE_SRC_ROOT:-test/fixtures/pack-src}
+    ports:
+      - "8080:80"
+    volumes:
+      - botville-baked:/usr/share/nginx/html/assets/baked:ro
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+    env_file:
+      # Long syntax deliberately: the file is gitignored and absent on a
+      # fresh clone, and without `required: false` `docker compose up`
+      # hard-fails before a single container starts.
+      - path: packages/server/.env
+        required: false
+    volumes:
+      - botville-data:/app/data
+
+  # Batch agent bake. Runs to completion and exits; safe to re-run, and safe
+  # to run concurrently with the event path (I-6). Writes to the SAME volume
+  # the client serves read-only.
+  agent-bake:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+      target: build
+    profiles: ["bake"]
+    command: >
+      node scripts/agent-bake.mjs
+      --pack ${BOTVILLE_PACK:-fixture}
+      --src ${BOTVILLE_SRC_ROOT:-test/fixtures/pack-src}
+      --roster /roster/roster.json
+      --out /baked
+    volumes:
+      - botville-baked:/baked
+      - ./roster:/roster:ro
+
+  # ── FUTURE INTEGRATION SEAM (spec R-6) ────────────────────────────────
+  # BotVille's server has no Postgres client and reading the platform DB is
+  # UNBUILT and out of scope. This stanza marks where that connection will
+  # attach, so the seam is visible rather than discovered later.
+  #
+  #   BOTVILLE_PLATFORM_DB_URL: postgres://user:pass@host:5432/ai_social_network
+  #
+  # Until it exists, packages/server/src/world/agentLife.ts still owns the
+  # world and the client polls GET /api/agents/locations.
+
+volumes:
+  botville-baked:
+  botville-data:

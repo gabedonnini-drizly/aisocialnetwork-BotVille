@@ -3,7 +3,9 @@
 // What it does: opens the client at /app in the system Chrome (puppeteer-core,
 // headless 'new' — requestAnimationFrame ticks in it), creates 4 agents
 // (3 humans + a cow, within FREE_SLOT_LIMIT), sets night via
-// window.__setGameHour, hides the React HUD (only the Phaser district in frame),
+// window.__setGameHour, hides the React HUD but keeps the LimeZu ArtCredit
+// link on screen (the Phaser district plus the licence-required attribution
+// line — see ui/ArtCredit.tsx — are in frame; nothing else React-side is),
 // captures canvas frames and encodes them with the static ffmpeg into:
 //   public/hero/district-night.png   — clean poster (og:image + fallback)
 //   public/hero/district-night.webm  — web hero (VP9)
@@ -11,15 +13,21 @@
 //   public/hero/district-night.gif   — version for X / Product Hunt
 //
 // Requirements (dev-only, not in the app's dependencies):
-//   npm i -D puppeteer-core @ffmpeg-installer/ffmpeg
-//   the system Google Chrome; running dev servers (client :5173, server :3001)
+//   npm i -D puppeteer-core
+//   a system ffmpeg (brew install ffmpeg) with libx264, libvpx-vp9 and gif
+//   (palettegen/paletteuse) support — @ffmpeg-installer/ffmpeg is deliberately
+//   not a project dependency, so this script resolves ffmpeg from the system
+//   (FFMPEG_PATH env var, else whatever `ffmpeg` resolves to on PATH), falling
+//   back to the npm installer package only if it happens to be present;
+//   the system Google Chrome (or another Chromium, via CHROME_PATH); running
+//   dev servers (client :5173, server :3001)
 //
 // Run from the repo root:  node scripts/record-hero.mjs
 //
 // Why 21:00 and not 22:00: from 22–7 the nightly go-to-sleep routine kicks in
 // (people to the dorm, animals to the pen) and the streets empty out in 12 s.
 // 21:00 is the same night with the full glow, but agents roam freely.
-// The camera is static (scene zoom 1.8, the whole intersection).
+// The camera is static (scene zoom 2, the whole intersection).
 
 import puppeteer from 'puppeteer-core';
 import { execFileSync } from 'node:child_process';
@@ -29,7 +37,15 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const FFMPEG = require('@ffmpeg-installer/ffmpeg').path;
+function resolveFfmpeg() {
+  if (process.env.FFMPEG_PATH) return process.env.FFMPEG_PATH;
+  try {
+    return require('@ffmpeg-installer/ffmpeg').path;
+  } catch {
+    return 'ffmpeg'; // resolved from PATH by execFileSync/the shell
+  }
+}
+const FFMPEG = resolveFfmpeg();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(__dirname, '..');
@@ -86,9 +102,20 @@ await page.evaluate(async (list) => {
 await page.reload({ waitUntil: 'networkidle2' });
 await page.waitForFunction(() => window.__game && typeof window.__setGameHour === 'function', { timeout: 20000 });
 
-// Night + hide the React HUD
+// Night + hide the React HUD — but NOT the LimeZu ArtCredit link: #ui-root is
+// the actual React mount (index.html), and ArtCredit renders inside it
+// alongside the HUD (App.tsx), so hiding the whole root would drop the
+// licence-required attribution from the hero image. Hide every child of the
+// app's #ui-overlay div except the credit anchor instead.
 await page.evaluate((hr) => window.__setGameHour(hr), HOUR);
-await page.evaluate(() => { const u = document.getElementById('ui-root'); if (u) u.style.display = 'none'; });
+await page.evaluate(() => {
+  const overlay = document.getElementById('ui-overlay');
+  if (!overlay) return;
+  for (const el of overlay.children) {
+    const isCredit = el.tagName === 'A' && el.textContent?.includes('LimeZu');
+    if (!isCredit) el.style.display = 'none';
+  }
+});
 await sleep(SETTLE_MS);
 
 // Poster (clean, no HUD)

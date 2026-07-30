@@ -1,4 +1,4 @@
-import type { AgentLocation, CatalogModel, LLMProviderType, UserKeyStatus } from '@botville/shared';
+import type { CatalogModel, LLMProviderType, UserKeyStatus } from '@botville/shared';
 
 // In dev, Vite proxy handles /api → localhost:3001 (API_BASE = '').
 // In prod, VITE_API_URL wins if set at build time; otherwise fall back to the
@@ -118,7 +118,9 @@ export async function apiFetch(
 
 export interface AgentLocationsSnapshot {
   gameHour: number;
-  locations: Array<{ id: string; location: AgentLocation }>;
+  // F-3: a venue id, not the retired six-string AGENT_LOCATIONS vocabulary —
+  // see game/presence.ts (PresenceModel over the venue registry) for what "known" means.
+  locations: Array<{ id: string; location: string }>;
 }
 
 /** Lightweight "who is where" polling + server game hour; null — network/server unavailable. */

@@ -1,0 +1,52 @@
+node_modules
+**/node_modules
+**/dist
+.turbo
+**/.turbo
+.git
+assets-src
+test/fixtures/pack-src
+packages/client/public/assets/tilesets/pack
+packages/client/public/assets/sprites/pack
+packages/client/public/assets/baked
+# The frozen legacy pipeline (scripts/capture-golden-baseline.mjs) still
+# writes REAL licensed pixels straight from assets-src/ to these vendor-named
+# paths (see .gitignore) — gitignored, so `git archive` never ships them, but
+# a Docker build context reads the working tree directly. Verified: without
+# this rule a stray `npm run golden:capture` residue on disk gets COPIed
+# straight into the image (I-12).
+packages/client/public/assets/tilesets/limezu
+packages/client/public/assets/sprites/limezu
+packages/client/public/assets/ui/limezu
+# Contact sheets (npm run contact) — Task 3's pack-QA review artifact, real
+# licensed pixel crops rendered straight off assets-src/. Gitignored, but
+# docker-compose's agent-bake service builds Dockerfile.client's
+# intermediate `build` stage (target: build) and keeps it as a runnable,
+# taggable image — COPY . . before this rule existed pulled contact/ into
+# that image on every build, fixture or real (I-12).
+contact
+# Per-cell pack inventory (npm run pack:index) — sources/limezu.index.json is
+# 826 MB of hashes/palettes derived from the real pack. Gitignored (mirrors
+# .gitignore's sources/*.index.json exactly); excluding it here keeps every
+# build context small and keeps derived-from-licensed-art fingerprints out of
+# the same intermediate stage as above.
+sources/*.index.json
+# Self-host secrets and data (Plan 6 final review, Important finding 1):
+# root-only patterns (no leading **/) match ONLY at the build-context root —
+# this file's own node_modules/.turbo rules already knew that (paired with
+# **/node_modules, **/.turbo above), but *.db*/.env* were left root-only.
+# Verified: without the **/ forms, packages/server/.env and
+# packages/server/botville.db entered the agent-bake build-stage image
+# byte-for-byte. DEPLOY.md tells self-host operators to put real secrets in
+# exactly that .env, so this is a production-credentials leak, not just a
+# hygiene one.
+**/.env
+**/.env.*
+**/*.db
+**/*.db-shm
+**/*.db-wal
+# User-authored agent roster (docker-compose.yml's agent-bake --roster) — a
+# real one is COPY . .'d into the same build stage for nothing; the running
+# container already reads it via a runtime bind mount (Minor finding 2, same
+# class as the above).
+roster/*.json

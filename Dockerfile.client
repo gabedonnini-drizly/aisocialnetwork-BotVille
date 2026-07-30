@@ -1,0 +1,39 @@
+# BotVille client — deployment packaging (D-20: self-hosted, Docker-packaged,
+# same shape as the platform's own api/frontend pair). Static build served by
+# nginx; docker-compose.yml runs this beside the server image.
+#
+# The default PACK is `fixture`: no licensed pixel enters the image unless
+# someone deliberately passes PACK=limezu with assets-src in the build
+# context. Keep it that way before pushing anywhere public (I-12) — real art
+# is baked on the host (or mounted from a volume) never inside a shipped
+# image; see the README's Deployment section for both options.
+FROM node:24-alpine AS build
+WORKDIR /app
+
+COPY package.json package-lock.json turbo.json tsconfig.base.json ./
+COPY packages/shared/package.json packages/shared/
+COPY packages/client/package.json packages/client/
+COPY packages/server/package.json packages/server/
+RUN npm ci
+
+COPY . .
+
+ARG PACK=fixture
+ARG SRC_ROOT=test/fixtures/pack-src
+RUN if [ "$PACK" = "fixture" ]; then npm run fixture; fi \
+ && node scripts/world-bake.mjs "$PACK" "$SRC_ROOT"
+
+# vite's rollup/esbuild step OOMs under the memory ceilings typical of a
+# small self-host box (verified: it crashes with Node's default heap sizing
+# on a constrained VM). Capping the heap explicitly makes V8 collect instead
+# of growing until the container's cgroup kills it.
+ENV NODE_OPTIONS=--max-old-space-size=768
+RUN npm run build --workspace=packages/client
+
+FROM nginx:1.27-alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/packages/client/dist /usr/share/nginx/html
+# Baked appearance sheets arrive on a volume, not in the image: they grow with
+# the realized appearance space while the image stays fixed-size (spec §7.2).
+VOLUME ["/usr/share/nginx/html/assets/baked"]
+EXPOSE 80
