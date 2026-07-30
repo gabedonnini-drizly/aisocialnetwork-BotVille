@@ -475,7 +475,7 @@ Replace `assetManifest.ts:211-218` (the `byStatus` object) with:
 
 so `EMOTES.icons` keeps only `textureKey`, `frameWidth`, `frameHeight` and `frameRate`. Then fix every consumer: `AgentSprite.ts:278` currently reads `pair[0]` from `EMOTES.icons.byStatus`. Change it to import `EMOTE_FRAMES` from `../assets.generated.js` and read `EMOTE_FRAMES[status]`.
 
-Also update the `limezu/` paths in `assetManifest.ts` — line 71 (`assets/sprites/limezu/Premade_Character_${nn}.png`), line 100 (`assets/sprites/limezu/${file}`), line 195 (`EMOTES.file`), line 225 (`UI_SHEET.file`) and lines 243-247 (`ANIMATED_OBJECTS`) — replacing the `limezu/` segment with `pack/`.
+Also update the `limezu/` paths in `assetManifest.ts` — line 71 (`assets/sprites/limezu/Premade_Character_${nn}.png`), line 100 (`assets/sprites/limezu/${file}`), line 195 (`EMOTES.file`), line 225 (`UI_SHEET.file`) — replacing the `limezu/` segment with `pack/`. For lines 243-247 (`ANIMATED_OBJECTS`) the filename changes too, not just the segment: post-Task-19a `sync-assets.mjs` copies the contract's `animatedObjects` under their **contract names** (`assets/sprites/pack/coffee_steam.png`, `cake_fridge.png`, `tv_news.png`, `office_screen.png`, `cuckoo_clock.png`), so each entry's `file` becomes `assets/sprites/pack/<contract-name>.png` — the legacy `animated_*.png` filenames no longer exist in the synced output. (Amended 2026-07-29 during Plan 2 execution: the Task 19a sync rewrite dropped the legacy animated copies; delivery was restored via derived contract-name copies, closing the hole this line would otherwise 404 on.)
 
 - [ ] **Step 6: Make `GameInit` build its scene list from the registry**
 
