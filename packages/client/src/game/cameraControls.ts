@@ -86,10 +86,16 @@ export function attachCameraControls(scene: Phaser.Scene, opts: CameraControlOpt
     pinchEndedAt = Date.now();
   };
 
+  // Keyboard zoom must respect the same opts-driven ladder ends as wheel/pinch
+  // (setZoom above): interiors attach a minZoom above the ladder bottom (the
+  // snapped room fit), so an unclamped zoomTo would walk past it and expose
+  // the void beyond the room. clampScroll rides along as the zoomTo callback
+  // (fired every frame of the effect) so the scroll stays in bounds too, the
+  // way setZoom's synchronous call does for the other controls.
   scene.input.keyboard?.on('keydown-EQUAL', () =>
-    cam.zoomTo(nextZoom(cam.zoom, 1), 300));
+    cam.zoomTo(Phaser.Math.Clamp(nextZoom(cam.zoom, 1), minZoom, maxZoom), 300, undefined, undefined, clampScroll));
   scene.input.keyboard?.on('keydown-MINUS', () =>
-    cam.zoomTo(nextZoom(cam.zoom, -1), 300));
+    cam.zoomTo(Phaser.Math.Clamp(nextZoom(cam.zoom, -1), minZoom, maxZoom), 300, undefined, undefined, clampScroll));
   scene.input.on('wheel', (_p: unknown, _go: unknown, _dx: number, dy: number) => {
     if (dy !== 0) setZoom(nextZoom(cam.zoom, dy < 0 ? 1 : -1));
   });

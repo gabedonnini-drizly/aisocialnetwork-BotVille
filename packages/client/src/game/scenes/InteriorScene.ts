@@ -248,8 +248,11 @@ export class VenueScene extends Phaser.Scene {
   syncAgents(fullList: SyncedAgent[]) {
     // THE KEY FIX of TZ-16: draw only those who per the server are actually in this
     // building — not all of the user's agents at the entry point, as before.
-    // TZ-16 + spec §8.1: venue id == server location. An unknown id simply
-    // never reaches this point — PresenceModel filters it out (Task 34).
+    // TZ-16 + spec §8.1: venue id == server location. Today, an unknown id never
+    // reaches this point because agentStore's normalizeLocation (the legacy gate)
+    // clamps it to 'district' upstream. PresenceModel (Task 34) is the intended
+    // owner of that filtering, but it is not yet wired into the live store — that
+    // wiring is carried as integration work, not done by this file.
     const agentList = fullList.filter(a => a.location === this.locationId);
     const incoming = new Set(agentList.map(a => a.id));
     this.agentSprites.forEach((sprite, id) => {
