@@ -354,7 +354,7 @@ outstanding, not a pass.
 | **G-C** venues are data | `test/bake/fixture-venue.test.mjs` — a venue no code mentions produces a loadable scene, and the commit that adds it touches only `test/` |
 | **G-F** the city looks inhabited | `tests/scheduleCoverage.test.js` "no venue holds more than half the roster at ANY hour — nights included" (F-12 resolved: sleep distributes across residences), "every published venue is occupied at some point in the week" |
 | **G-H** BotVille is containerised | `test/deploy-config.test.mjs`; `docker compose up` in Task 35 Step 11 — alongside the Vercel and Railway paths it must not replace |
-| **G-D** ≥10⁴ appearance space | `test/appearance-derive.test.mjs` "the space is at least 10^4" — 604,800 against 16 today |
+| **G-D** ≥10⁴ appearance space | `test/appearance-derive.test.mjs` "the space is at least 10^4" — 16,632,000 against 16 today (D-19, 2026-07-30: derived from `HAIR_MANIFEST`/`OUTFIT_MANIFEST`'s full pack variant counts — 200 hair × 132 outfit — not a curated 12/8 subset; supersedes the earlier 604,800 figure) |
 
 ---
 

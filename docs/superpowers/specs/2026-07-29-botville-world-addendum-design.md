@@ -206,24 +206,38 @@ both) runs in each repo's CI.
 
 ### I.5 Character parts reconciliation (revises §6.1)
 
-`AppearanceRecord` becomes:
+`AppearanceRecord` becomes (revised again by **D-19, 2026-07-30** — use all
+pack variants, no manual curation; supersedes D-16's owner-pick-12/8):
 
 ```ts
 interface AppearanceRecord {
   build: Build;          // normalised, not hashed
   skinTone: string;
   eyes: string;          // selects one of the 7 eye sheets — the sheet IS the colour
-  hairStyle: string;
-  hairColor: string;
-  outfit: string;        // one garment axis — the pack ships one garment layer
+  hairStyle: string;     // selects one of 29 pack-derived hairstyle styles
+  hairVariant: string;   // (D-19) that style's own built-in colour variant — pack file, not a hex value
+  outfit: string;        // selects one of 33 pack-derived outfit styles — one garment axis
+  outfitVariant: string; // (D-19) new field: outfit is two-stage now, same as hair
   accessory: string;
 }
 ```
 
-Space: `3 × 6 × 7 × 12 × 10 × 8 × 5 ≈ 605,000` — still vastly above the
-distinctness floor. `PART_COLOR.eyes = null` (like `accessory`): eyes are
-selection, not tint. The axis change invalidates every `appearanceHash` via the
-embedded `SCHEMA_VERSION` (I-7) — cache turnover is automatic, no purge step.
+Space (D-19, 2026-07-30): `3 × 6 × 7 × 200 × 132 × 5 = 16,632,000` at today's
+measured pack counts (BUILDS × SKIN_TONES × EYE_VARIANTS × [hair variant
+count] × [outfit variant count] × ACCESSORIES) — supersedes the earlier
+`3 × 6 × 7 × 12 × 10 × 8 × 5 ≈ 605,000` figure, which assumed a curated
+12-hairstyle/8-outfit/10-hair-color subset that no longer exists. Hair and
+outfit are pack-derived, two-stage picks (style, then that style's own
+variant) over committed generated manifests, not a hardcoded name/hex list;
+`HAIR_COLORS`/`OUTFIT_COLORS` hex arrays are deleted, since colour now comes
+from the pack's own variant files. Still vastly above the distinctness
+floor, and it moves whenever the pack does — changing the pack re-rolls
+every derived appearance (owner-accepted, D-19). `PART_COLOR.eyes = null`
+(like `accessory`); `PART_COLOR.hair` and `PART_COLOR.outfit` are `null` too
+now (D-19) — they resolve a concrete sibling sheet instead of tinting one.
+`skinTone` remains the one recolored part. The axis change invalidates every
+`appearanceHash` via the embedded `SCHEMA_VERSION` (I-7) — cache turnover is
+automatic, no purge step.
 
 Body sheets (927×656) are cropped to whole frames before compositing;
 `ContractValidator` asserts all character layers share one canvas

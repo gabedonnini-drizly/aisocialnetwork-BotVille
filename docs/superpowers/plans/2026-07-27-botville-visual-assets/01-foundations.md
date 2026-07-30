@@ -376,7 +376,7 @@ The types both packages and both bake stages agree on. Types only — no logic, 
   - `const SCHEMA_VERSION: 1` (re-exported)
   - `interface AgentPresence { id: string; displayName: string; spriteSeed: string; venueId: string | null }`
   - `type PresenceState = { kind: 'somewhere'; venueId: string } | { kind: 'absent' } | { kind: 'unknown' }`
-  - `interface AppearanceRecord { build: Build; skinTone: string; eyes: string; hairStyle: string; hairColor: string; outfit: string; accessory: string }`
+  - `interface AppearanceRecord { build: Build; skinTone: string; eyes: string; hairStyle: string; hairVariant: string; outfit: string; outfitVariant: string; accessory: string }` — hairVariant renamed from hairColor, outfitVariant added per D-19's two-stage pack-derived axes (2026-07-30; code updated in the Task 26 rework)
   - `type Build = 'masc' | 'fem' | 'neutral'`
   - `interface VenueDescriptor { id; label; indoor; sizeTiles; groundAtlas; capacity; archetype?; roles; affords; hours; ground?; generator?; furniture; seats; spawns; animated; doors; glows }`
   - `interface PublishedVenue { id: string; label: string; indoor: boolean; capacity: number; archetype: string; roles: VenueRole[]; affords: string[]; hours: VenueHoursWindow[] }`
@@ -572,9 +572,12 @@ export interface AppearanceRecord {
   /** Sheet-selection axis: '01'..'07' — each Eyes_NN.png sheet IS the colour. */
   eyes: string;
   hairStyle: string;
-  hairColor: string;
+  /** The style's own colour-variant file id (D-19): a pack variant, not a tint. */
+  hairVariant: string;
   /** One whole-garment axis; replaces the earlier separate top/bottom pair. */
   outfit: string;
+  /** The outfit style's own colour-variant file id (D-19). */
+  outfitVariant: string;
   accessory: string;
 }
 

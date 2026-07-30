@@ -69,25 +69,38 @@ A pure function of identity — no DB, no clock, no `Math.random()` (I-5). It mi
 
 **Cross-repo determinism is a contract, and it is pinned where the function is defined.** `hashString` lives in `packages/shared/src/hash.mjs` (Plan 1 Task 2), where a test asserts it bit-identical to the api copy. This task only re-exports it — never redefines it.
 
-The record's axes follow the real Character Generator layers (body, eyes, hair, outfit, accessory — art-pack QA 2026-07-29): `eyes` is a sheet-selection axis (each `Eyes_NN.png` sheet is its own colour), and the old separate top/bottom garment axes collapse into one `outfit` axis. That drops the appearance space from ~690k to **604,800 (≈605k)** — still far above the 10⁴ floor (G-D). No manual cache migration is needed for the record-shape change: the appearance hash embeds `SCHEMA_VERSION` (I-7), so bumping it invalidates every cached bake automatically.
+The record's axes follow the real Character Generator layers (body, eyes, hair, outfit, accessory — art-pack QA 2026-07-29): `eyes` is a sheet-selection axis (each `Eyes_NN.png` sheet is its own colour), and the old separate top/bottom garment axes collapse into one `outfit` axis.
+
+**(D-19, 2026-07-30) Hair and outfit use every pack variant, not a curated 12-style/8-color subset — the manual hex recolor axis for hair is deleted.** Measured counts (art-pack QA 2026-07-29): 200 hairstyle sheets group into 29 distinct styles (`Hairstyle_<NN>_<MM>.png`, `MM` a variable-length built-in colour variant per style); 132 outfit sheets group into 33 distinct styles (`Outfit_<NN>_<MM>.png`) the same way. Both axes are pack-derived and two-stage: `style = hashString(seed, styleSalt) % styleCount` over the **sorted distinct styles**, then `variant = hashString(seed, variantSalt) % variantCount` over that style's **sorted variant files**. Colour comes from whichever variant file that lands on — there is no separate `HAIR_COLORS` hex array any more, because the pack's own sibling files already are the colour. `SKIN_TONES`, `EYE_VARIANTS`, `ACCESSORIES` and `BUILDS` are unchanged (spec unaffected; art-pack QA never touched those axes).
+
+The style/variant lists are **committed generated data**, never hand-transcribed (Task 26 Step 3a): a small generator derives them from the pack's file index (Plan 1 Task 4a) and writes `sources/<pack>.variants.json`, sorted for stable, reproducible regeneration. Task 27 Step 0's coverage check (sleep/sit rows) can drop a variant from that manifest automatically, with a recorded reason — never a hand swap (D-19 supersedes D-16's owner-pick-12/8 at Task 9a).
+
+This raises the appearance space rather than shrinking it: `3 × 6 × 7 × 200 × 132 × 5 = 16,632,000` at today's measured counts (BUILDS × SKIN_TONES × EYE_VARIANTS × [hair variant count] × [outfit variant count] × ACCESSORIES) — still far above the 10⁴ floor (G-D), and it moves whenever the pack does: **changing the pack re-rolls every derived appearance, and that is owner-accepted (D-19)**, not a regression to guard against. No manual cache migration is needed for the record-shape change either way: the appearance hash embeds `SCHEMA_VERSION` (I-7), so bumping it invalidates every cached bake automatically.
 
 **Files:**
 - Create: `packages/shared/src/appearance/derive.mjs`
+- Create: `scripts/lib/variantManifest.mjs` — pure generator: pack file index → sorted style/variant manifest (D-19, 2026-07-30)
+- Create (committed, generated, never hand-edited — D-19, 2026-07-30): `sources/limezu.variants.json` + `.variants.outfit.json` (from Task 4a's already-committed real-pack file index — no art on disk needed), `sources/fixture.variants.json` + `.variants.outfit.json` (from the synthetic pack, for Task 27's composer tests)
 - Consumes: `packages/shared/src/hash.mjs` (Plan 1 Task 2)
 - Modify: `test/harness-no-hook.test.mjs` — add `derive.mjs` to `NO_HOOK_MODULES`
 - Test: `test/appearance-derive.test.mjs`
+- Test: `test/variant-manifest.test.mjs` (D-19, 2026-07-30) — sorted-stable derivation
 
 **Interfaces:**
 - Consumes: `AppearanceRecord`, `Build`, `SCHEMA_VERSION`, `hashString` (Plan 1 Task 2).
+- Produces `scripts/lib/variantManifest.mjs` (D-19, 2026-07-30):
+  - `buildVariantManifest(filenames, pattern) → { styles: string[], variantsByStyle: Record<string, string[]> }` — pure, sorts both levels; regenerating from the same (possibly shuffled) file list is byte-identical
 - Produces `packages/shared/src/appearance/derive.mjs`:
   - `hashString` — re-exported from `../hash.mjs` (Plan 1 Task 2), not redefined
   - `pickFrom(list, seed, salt) → T`
+  - `pickStyleAndVariant(manifest, seed, styleSalt, variantSalt) → { style, variant }` (D-19, 2026-07-30) — the two-stage pack-derived pick shared by hair and outfit
   - `normalizeGender(raw) → Build`
-  - `SKIN_TONES, EYE_VARIANTS, HAIR_STYLES, HAIR_COLORS, OUTFIT_COLORS, ACCESSORIES, BUILDS` — the colour palettes, the eyes sheet-variant list and the build list
+  - `SKIN_TONES, EYE_VARIANTS, ACCESSORIES, BUILDS` — unchanged palettes/lists (D-19 does not touch these axes)
+  - `HAIR_MANIFEST, OUTFIT_MANIFEST` (D-19, 2026-07-30) — the committed, generated style/variant manifests for the shipping pack; **`HAIR_STYLES`, `HAIR_COLORS` and `OUTFIT_COLORS` as hardcoded arrays are deleted** — colour and style now come from the pack's own files, not a hex palette
   - `appearanceRecord(spriteSeed, gender) → AppearanceRecord`
   - `appearanceHash(record) → string` (8 lowercase hex chars)
   - `appearanceHashAt(record, version) → string` — the version-explicit form `appearanceHash` wraps; the tests use it to prove a `SCHEMA_VERSION` bump changes every hash
-  - `appearanceSpaceSize() → number`
+  - `appearanceSpaceSize() → number` — computed from `HAIR_MANIFEST`/`OUTFIT_MANIFEST` variant counts, never a hardcoded product (D-19, 2026-07-30)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -99,9 +112,12 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import {
   normalizeGender, appearanceRecord, appearanceHash,
-  appearanceSpaceSize, SKIN_TONES, EYE_VARIANTS, HAIR_STYLES, HAIR_COLORS,
-  OUTFIT_COLORS, ACCESSORIES,
+  appearanceSpaceSize, SKIN_TONES, EYE_VARIANTS, ACCESSORIES, BUILDS,
+  HAIR_MANIFEST, OUTFIT_MANIFEST,
 } from '../packages/shared/src/appearance/derive.mjs';
+// HAIR_STYLES / HAIR_COLORS / OUTFIT_COLORS are gone (D-19, 2026-07-30):
+// hair and outfit are pack-derived two-stage picks over HAIR_MANIFEST /
+// OUTFIT_MANIFEST — committed generated data, not a hardcoded hex palette.
 
 // The hashString unit and cross-repo contract tests live in
 // test/shared-types.test.ts (Plan 1 Task 2), beside hash.mjs itself.
@@ -137,22 +153,33 @@ test('every axis is seed-derived — no dimension is gated on gender', () => {
   const m = appearanceRecord('aisha_khan', 'male');
   const f = appearanceRecord('aisha_khan', 'female');
   assert.notEqual(m.build, f.build);
-  for (const k of ['skinTone', 'eyes', 'hairStyle', 'hairColor', 'outfit', 'accessory'])
+  for (const k of ['skinTone', 'eyes', 'hairStyle', 'hairVariant', 'outfit', 'outfitVariant', 'accessory'])
     assert.equal(m[k], f[k], `${k} must not depend on build`);
 });
 
-test('every derived value comes from its declared palette', () => {
+test('every derived value comes from its declared palette or pack manifest', () => {
   const r = appearanceRecord('the_skeptic', 'male');
   assert.ok(SKIN_TONES.includes(r.skinTone));
   assert.ok(EYE_VARIANTS.includes(r.eyes));
-  assert.ok(HAIR_STYLES.includes(r.hairStyle));
-  assert.ok(HAIR_COLORS.includes(r.hairColor));
-  assert.ok(OUTFIT_COLORS.includes(r.outfit));
+  // Hair and outfit are two-stage pack picks (D-19, 2026-07-30): the style
+  // must be one of the manifest's sorted distinct styles, and the variant
+  // must belong to THAT style's own sorted variant list — proving the pick
+  // is not just "any file", but style-then-variant-within-style.
+  assert.ok(HAIR_MANIFEST.styles.includes(r.hairStyle));
+  assert.ok(HAIR_MANIFEST.variantsByStyle[r.hairStyle].includes(r.hairVariant));
+  assert.ok(OUTFIT_MANIFEST.styles.includes(r.outfit));
+  assert.ok(OUTFIT_MANIFEST.variantsByStyle[r.outfit].includes(r.outfitVariant));
   assert.ok(ACCESSORIES.includes(r.accessory));
 });
 
 test('the space is at least 10^4 as G-D requires', () => {
-  assert.equal(appearanceSpaceSize(), 3 * 6 * 7 * 12 * 10 * 8 * 5);
+  // Derived from the manifests' own counts, never a hardcoded product
+  // (Global Constraint: "test expectations are derived, never transcribed";
+  // D-19, 2026-07-30, sharpens this for hair/outfit specifically).
+  const hairCount = Object.values(HAIR_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  const outfitCount = Object.values(OUTFIT_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  assert.equal(appearanceSpaceSize(),
+    BUILDS.length * SKIN_TONES.length * EYE_VARIANTS.length * hairCount * outfitCount * ACCESSORIES.length);
   assert.ok(appearanceSpaceSize() >= 1e4);
 });
 
@@ -231,8 +258,47 @@ import { SCHEMA_VERSION } from '../schemaVersion.mjs';
 import { hashString } from '../hash.mjs';
 export { hashString };
 
+/**
+ * (D-19, 2026-07-30) COMMITTED GENERATED DATA — never hand-transcribed.
+ * `scripts/lib/variantManifest.mjs` derives these from the pack's own file
+ * index (Plan 1 Task 4a) and writes them to `sources/<pack>.variants.json`
+ * (Task 26 Step 3a); Task 27 Step 0 regenerates the real pack's copy with
+ * any coverage-failing hair variant automatically excluded. `derive.mjs`
+ * imports the SHIPPING pack's manifest — swapping the import is how a pack
+ * change re-rolls every derived appearance (owner-accepted, D-19).
+ *
+ * Shape: `{ styles: string[], variantsByStyle: Record<string, string[]> }` —
+ * both `styles` and every value in `variantsByStyle` are sorted.
+ *
+ * No art on disk required to import these (Task 26 stays "no art needed"):
+ * they are grouped from the FILENAME index the art-pack QA pass already
+ * captured 2026-07-29 (Plan 1 Task 4a), not from the pixels themselves.
+ * Task 27 Step 0 later regenerates them WITH coverage-based exclusion,
+ * which does need the real pixels — that reopening is real-pack-gated,
+ * this initial commit is not.
+ */
+import HAIR_MANIFEST from '../../../../sources/limezu.variants.json' with { type: 'json' };
+import OUTFIT_MANIFEST from '../../../../sources/limezu.variants.outfit.json' with { type: 'json' };
+export { HAIR_MANIFEST, OUTFIT_MANIFEST };
+
 export function pickFrom(list, seed, salt) {
   return list[hashString(seed, salt) % list.length];
+}
+
+/**
+ * (D-19, 2026-07-30) The two-stage pack-derived pick shared by hair and
+ * outfit: a style, then that style's OWN built-in variant — never a flat
+ * pick over every file (that would weight styles with more variants more
+ * heavily) and never an algorithmic recolor (there is no hex axis here at
+ * all any more). `manifest` is a committed, generated
+ * `{ styles: string[], variantsByStyle: Record<string, string[]> }` — see
+ * `scripts/lib/variantManifest.mjs` below and Task 27 Step 0 for how a
+ * variant can be dropped from it automatically.
+ */
+export function pickStyleAndVariant(manifest, seed, styleSalt, variantSalt) {
+  const style = pickFrom(manifest.styles, seed, styleSalt);
+  const variant = pickFrom(manifest.variantsByStyle[style], seed, variantSalt);
+  return { style, variant };
 }
 
 // ── palettes ────────────────────────────────────────────────────────────
@@ -240,24 +306,16 @@ export function pickFrom(list, seed, salt) {
 // colour must stay distinguishable under the night tint (DAY_TINT_KEYS
 // reaches alpha 0.45) and for colour-vision deficiency. Name labels remain
 // the authoritative identifier; colour is an aid, never the only channel.
+//
+// (D-19, 2026-07-30) Hair and outfit are NOT here any more. There is no
+// HAIR_STYLES name list, no HAIR_COLORS hex array and no OUTFIT_COLORS hex
+// array — style comes from the pack's own distinct hairstyle/outfit
+// directories and colour comes from the pack's own sibling variant file.
+// The only axes still spelled out as an in-repo array are the ones D-19
+// leaves untouched: skin tone (a body-layer tint), eyes (a sheet-selection
+// axis with no tint at all) and accessories (silhouette, not colour).
 
 export const SKIN_TONES = ['#5c3317', '#8d5524', '#c68642', '#e0ac69', '#f1c27d', '#ffdbac'];
-
-/** Silhouette carries more at 16px than hue does — styles differ in volume. */
-export const HAIR_STYLES = [
-  'buzz', 'short_crop', 'side_part', 'bob', 'long_straight', 'ponytail',
-  'bun', 'curly_short', 'curly_long', 'afro', 'mohawk', 'braids',
-];
-
-export const HAIR_COLORS = [
-  '#1a1a1a', '#4a2c19', '#8b5a2b', '#c98a3b', '#e8c547',
-  '#f2f2f2', '#8c8c8c', '#a33b2a', '#d2691e', '#3f5fa8',
-];
-
-export const OUTFIT_COLORS = [
-  '#c0392b', '#2980b9', '#27ae60', '#f1c40f',
-  '#8e44ad', '#e67e22', '#ecf0f1', '#34495e',
-];
 
 /**
  * Eyes are a SHEET-SELECTION axis, not a colour: the pack ships one full
@@ -288,22 +346,25 @@ export function normalizeGender(raw) {
 /**
  * @param {string} spriteSeed stable, unique — the username
  * @param {unknown} gender free text from users.gender
- * @returns {{build:string, skinTone:string, eyes:string, hairStyle:string, hairColor:string, outfit:string, accessory:string}}
+ * @returns {{build:string, skinTone:string, eyes:string, hairStyle:string, hairVariant:string, outfit:string, outfitVariant:string, accessory:string}}
  */
 export function appearanceRecord(spriteSeed, gender) {
+  const hair = pickStyleAndVariant(HAIR_MANIFEST, spriteSeed, 'sprite:hairStyle', 'sprite:hairVariant');
+  const outfit = pickStyleAndVariant(OUTFIT_MANIFEST, spriteSeed, 'sprite:outfitStyle', 'sprite:outfitVariant');
   return {
-    build:     normalizeGender(gender),                          // not hashed
-    skinTone:  pickFrom(SKIN_TONES,     spriteSeed, 'sprite:skin'),
-    eyes:      pickFrom(EYE_VARIANTS,   spriteSeed, 'sprite:eyes'),
-    hairStyle: pickFrom(HAIR_STYLES,    spriteSeed, 'sprite:hairStyle'),
-    hairColor: pickFrom(HAIR_COLORS,    spriteSeed, 'sprite:hairColor'),
-    outfit:    pickFrom(OUTFIT_COLORS,  spriteSeed, 'sprite:outfit'),
-    accessory: pickFrom(ACCESSORIES,    spriteSeed, 'sprite:accessory'),
+    build:         normalizeGender(gender),                       // not hashed
+    skinTone:      pickFrom(SKIN_TONES,   spriteSeed, 'sprite:skin'),
+    eyes:          pickFrom(EYE_VARIANTS, spriteSeed, 'sprite:eyes'),
+    hairStyle:     hair.style,
+    hairVariant:   hair.variant,     // (D-19) the pack's own colour variant — not a hex value
+    outfit:        outfit.style,
+    outfitVariant: outfit.variant,   // (D-19) new field: outfit is two-stage now, same as hair
+    accessory:     pickFrom(ACCESSORIES, spriteSeed, 'sprite:accessory'),
   };
 }
 
 /** Key order is fixed so JSON.stringify is stable across engines. */
-const KEYS = ['build', 'skinTone', 'eyes', 'hairStyle', 'hairColor', 'outfit', 'accessory'];
+const KEYS = ['build', 'skinTone', 'eyes', 'hairStyle', 'hairVariant', 'outfit', 'outfitVariant', 'accessory'];
 const canonical = record => JSON.stringify(KEYS.map(k => record[k]));
 
 /**
@@ -318,11 +379,54 @@ export function appearanceHash(record) {
   return appearanceHashAt(record, SCHEMA_VERSION);
 }
 
+/**
+ * (D-19, 2026-07-30) Hair/outfit counts come from the manifests' own
+ * `.length` — never a hardcoded product — so this number tracks whatever
+ * the committed manifest says today, including any automatic exclusions
+ * from Task 27 Step 0.
+ */
 export function appearanceSpaceSize() {
-  return BUILDS.length * SKIN_TONES.length * EYE_VARIANTS.length * HAIR_STYLES.length
-    * HAIR_COLORS.length * OUTFIT_COLORS.length * ACCESSORIES.length;
+  const hairCount = Object.values(HAIR_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  const outfitCount = Object.values(OUTFIT_MANIFEST.variantsByStyle).reduce((n, v) => n + v.length, 0);
+  return BUILDS.length * SKIN_TONES.length * EYE_VARIANTS.length * hairCount * outfitCount * ACCESSORIES.length;
 }
 ```
+
+- [ ] **Step 3a: Generate the committed variant manifests (D-19, 2026-07-30)**
+
+`scripts/lib/variantManifest.mjs` — the generator. Pure and pack-agnostic: it groups a flat filename list by the pack's own `<style>_<variant>.png` naming, sorts both levels, and is deliberately re-runnable — regenerating from an unchanged (even reshuffled) file list must reproduce byte-identical JSON, because "committed generated data" only means something if it is *stable*.
+
+```js
+/**
+ * Pack file index -> sorted style/variant manifest (D-19, 2026-07-30).
+ * No hand-transcribed style or variant list anywhere downstream of this.
+ */
+export function buildVariantManifest(filenames, pattern) {
+  const byStyle = new Map();
+  for (const name of filenames) {
+    const m = pattern.exec(name);
+    if (!m) continue;
+    const [, style, variant] = m;
+    if (!byStyle.has(style)) byStyle.set(style, []);
+    byStyle.get(style).push(variant);
+  }
+  const styles = [...byStyle.keys()].sort();
+  const variantsByStyle = {};
+  for (const style of styles) variantsByStyle[style] = [...byStyle.get(style)].sort();
+  return { styles, variantsByStyle };
+}
+```
+
+A thin CLI (`scripts/gen-variant-manifest.mjs --pack <name>`) reads a pack's file index and writes `sources/<pack>.variants.json` (hair, matched against `/^Hairstyle_(\d+)_(\d+)\.png$/`) and `sources/<pack>.variants.outfit.json` (outfit, `/^Outfit_(\d+)_(\d+)\.png$/`).
+
+Run it **twice, for two different reasons**:
+
+- **`--pack limezu`, now, against Plan 1 Task 4a's already-committed filename index** (art-pack QA 2026-07-29 captured it; no pixels needed) — this writes the `sources/limezu.variants.json` / `.variants.outfit.json` that `derive.mjs` imports above. This is why Task 26 stays art-free even though it consumes real-pack-shaped data.
+- **`--pack fixture`**, against the synthetic pack (Task 8), for `test/appearance-composer.test.mjs` (Task 27) to exercise the same two-stage resolution mechanism without needing the real files at all.
+
+Task 27 Step 0 re-runs the `limezu` generation once the real pack is actually on disk, this time passing the coverage check's excluded-hair-variant set — the only step that needs real pixels, because alpha-sampling a sleep row requires the row to exist.
+
+`test/variant-manifest.test.mjs` asserts the stability claim directly: build the manifest from a filename list, build it again from a shuffled copy of the same list, `assert.deepEqual` the two. That is the whole test — "sorted-stable derivation" is either true structurally or it is not.
 
 - [ ] **Step 4: Confirm the subpath resolves in all three loaders**
 
@@ -344,7 +448,8 @@ fix it there, not here.
 - [ ] **Step 5: Run tests**
 
 Run: `npm test`
-Expected: PASS — 12 new tests.
+Expected: PASS — 12 tests in `appearance-derive.test.mjs` plus the new
+`variant-manifest.test.mjs` suite (D-19, 2026-07-30).
 
 One of them carries the weight:
 
@@ -361,8 +466,14 @@ Also add `packages/shared/src/appearance/derive.mjs` to `NO_HOOK_MODULES` in
 - [ ] **Step 6: Commit**
 
 ```bash
-git add packages/shared/src/appearance/derive.mjs test/appearance-derive.test.mjs test/harness-no-hook.test.mjs
-git commit -m "feat(appearance): pure identity-derived appearance record on the shared cross-repo hash"
+git add packages/shared/src/appearance/derive.mjs scripts/lib/variantManifest.mjs \
+  sources/limezu.variants.json sources/limezu.variants.outfit.json \
+  sources/fixture.variants.json sources/fixture.variants.outfit.json \
+  test/appearance-derive.test.mjs test/variant-manifest.test.mjs test/harness-no-hook.test.mjs
+git commit -m "feat(appearance): pure identity-derived appearance record on the shared cross-repo hash
+
+Hair/outfit are pack-derived, two-stage picks over committed generated
+manifests, per D-19 (use all pack variants, no manual curation)."
 ```
 
 ---
@@ -374,7 +485,7 @@ git commit -m "feat(appearance): pure identity-derived appearance record on the 
 Two real-pack facts shape this task (pixel-measured 2026-07-29):
 
 - **The shared canvas is 896×656 — 56 whole 16 px frames wide.** Only the Bodies sheets (and the four `Accessory_19_Party_Cone_*` sheets) ship at 927×656; Eyes (7), Hairstyles (200), Outfits (132) and the other 80 Accessories are all 896×656. The extra 31 columns hold art in exactly one sheet — Body_01's rows 11–12, lift/throw animations the contract never uses — so the adapter crops `char_body` to 896 wide (Plan 1 Task 7) and every layer resolves at 896×656; cropping loses nothing the runtime consumes. The composer must still size its canvas to whole frames (`floor(w / frameWidth) * frameWidth`, same for height), never to the raw sheet size, as a guard for packs whose sheets are not frame-aligned; a 927-wide party-cone variant sheet simply has its padding columns clipped by the 896-wide canvas.
-- **Variant axes are sibling files, not rows.** The adapter aliases one index-0 file per layer (`Eyes_01.png`, `Hairstyle_01_01.png`, `Outfit_01_01.png`, ...); the pack ships 7 eye sheets, 200 hairstyle sheets and 132 outfit sheets as siblings. The composer resolves the concrete sheet for a record by replacing the index in the aliased file's name with the record's variant (`eyes: '04'` → `Eyes_04.png`; the record's `hairStyle`/`hairColor` select the hairstyle sheet the same way). One mechanism for all variant layers — do not invent a separate one per layer.
+- **Variant axes are sibling files, not rows.** The adapter aliases one index-0 file per layer (`Eyes_01.png`, `Hairstyle_01_01.png`, `Outfit_01_01.png`, ...); the pack ships 7 eye sheets, 200 hairstyle sheets and 132 outfit sheets as siblings. The composer resolves the concrete sheet for a record by replacing the index in the aliased file's name with the record's variant (`eyes: '04'` → `Eyes_04.png`). **(D-19, 2026-07-30)** Hair and outfit are the same mechanism applied twice — `record.hairStyle`/`record.hairVariant` select `Hairstyle_<hairStyle>_<hairVariant>.png` and `record.outfit`/`record.outfitVariant` select `Outfit_<outfit>_<outfitVariant>.png` — both style and variant now come from the pack's own 29/33-style manifests (Task 26), never a hex tint. One mechanism for all variant layers — do not invent a separate one per layer.
 
 Sit/sleep row coverage is **measured, decided, and pinned by Step 0 below** — read it before writing composition code, because it defines which layers a sleep frame contains.
 
@@ -390,7 +501,7 @@ Sit/sleep row coverage is **measured, decided, and pinned by Step 0 below** — 
   - `remapPalette(canvas, from[], to[]) → canvas` — the `characterLayers: false` path
   - `hexToRgba(hex) → [r,g,b,a]`
 
-- [ ] **Step 0 (real pack — BLOCKING): pin sit/sleep row coverage for the curated variants**
+- [ ] **Step 0 (real pack — BLOCKING): pin sit/sleep row coverage for every pack variant, and auto-exclude the failures (D-19, 2026-07-30)**
 
 The question this step used to ask is answered (pixel pass over the real sheets, 2026-07-29). The 32 px rows of every layer sheet are: r0 preview, r1 idle, r2 walk, **r3 sleep**, r4 sit-right, r5 sit-left (sheets are 656 tall = 20.5 rows; the half row is empty). Measured sleep-row (r3) alpha coverage:
 
@@ -402,10 +513,11 @@ The question this step used to ask is answered (pixel pass over the real sheets,
 
 **Design decision (owner, final — build to it, do not hedge):** composed **sleep frames are body + hair only**. Outfit and eyes are absent by pack design, and the bed's blanket art covers the body, so the missing layers never show on screen. Accessories from the no-sleep-art families simply vanish in sleep frames — **accepted v1 behavior** (they are removed at bedtime, which is arguably correct realism); do not "fix" it by substituting idle-row art or dropping those accessories. The owner verifies the composed sleep look at the first localhost render checkpoint.
 
-What this step does, on the machine with the real pack:
+**(D-19, 2026-07-30, supersedes D-16's owner-pick-12/8 at Task 9a).** There is no curated subset any more, so there is nothing to hand-pick and nothing to re-pick. This step samples **every** hairstyle sheet (all 200, for r3) and **every** layer in use (bodies, eyes, all 200 hairstyles, all 132 outfits, accessories — for r4/r5), and a variant that fails is **excluded automatically** from the committed manifest (`sources/limezu.variants.json` / `.variants.outfit.json`, Task 26) — with the reason recorded next to it, never a hand swap. "If a cap is ever technically required, the first set meeting requirements wins — never a taste pass" (D-19). What this step does, on the machine with the real pack:
 
-1. **Assert the coverage holds for the CHOSEN curated variants, not samples.** The owner picks the 12 hairstyles and 8 outfits from Task 9a's contact sheets (Plan 1); once picked, alpha-sample rows in each chosen sheet by script — the sleep row (r3) of every chosen **hair** sheet must be non-empty, and the sit rows (r4/r5) of **every** layer in use (bodies, eyes, chosen hairstyles, chosen outfits, accessories) must be non-empty. A chosen hairstyle with an empty sleep row fails this step: pick a different one at the Task 9a checkpoint rather than shipping a bald sleeper.
-2. **Record the outcome in `docs/ASSETS.md`** — the measured row map, the per-layer coverage result for the chosen variants, and the body+hair sleep decision, so the next reader does not re-litigate it from the sheets.
+1. **Sample sleep-row (r3) coverage across every hair variant, and sit-row (r4/r5) coverage across every layer in use.** Today's measured pass (art-pack QA 2026-07-29) shows every sampled hair sheet has sleep art and every layer passes both sit rows — so, as of today, the automatic exclusion drops nothing, and the manifest stays the full 200 hair / 132 outfit variants. Re-running this step against a changed or updated pack may drop some; that is the mechanism working as designed, not a regression to chase down.
+2. **Regenerate `sources/limezu.variants.json` / `.variants.outfit.json`** (Task 26 Step 3a's generator, `--exclude` set from step 1) so the committed manifest already reflects any drop — `appearanceRecord()` never has to know a variant almost got picked.
+3. **Record the outcome in `docs/ASSETS.md`** — the measured row map, the per-layer coverage result across all variants (not a chosen dozen), the count and identity of any automatically-excluded variants and why, and the body+hair sleep decision, so the next reader does not re-litigate it from the sheets.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -525,6 +637,7 @@ Expected: FAIL — `Cannot find module '.../scripts/lib/appearanceComposer.mjs'`
  */
 import { createCanvas } from '../png-lib.mjs';
 import { readSprite, asSource } from './spriteReader.mjs';
+import { hashString } from '../../packages/shared/src/hash.mjs';
 
 export function hexToRgba(hex) {
   const h = hex.replace('#', '');
@@ -563,14 +676,51 @@ function tintLayer(src, [r, g, b]) {
 }
 
 /**
+ * (D-19, 2026-07-30) Resolves the concrete sibling sheet for a two-stage
+ * variant layer. `adapter.files[key]` names the alias — index 0 of the
+ * style/variant pair, e.g. `Hairstyle_01_01.png` — and this substitutes the
+ * record's own style/variant into that same filename shape. One mechanism
+ * for hair and outfit both (see the task header's "Variant axes are sibling
+ * files" note); the fixture pack's single sheet per style makes this a
+ * no-op there, same as it always was for eyes.
+ */
+function resolveVariantFile(adapter, key, style, variant) {
+  const fileId = adapter.rects[key]?.file;
+  const alias = adapter.files[fileId] ?? fileId;
+  return alias.replace(/_\d+_\d+(?=\.\w+$)/, `_${style}_${variant}`);
+}
+// NOTE: this assumes readSprite(adapter, key, { file }) grows an optional
+// third argument that overrides the resolved filename for exactly this
+// substitution, and that adapter.rects[key].file / adapter.files[id] shape
+// this test file (below) already exercises. readSprite and the adapter
+// shape are Plan 1 Task 9's, out of this plan's edit scope. If the override
+// does not exist yet, it is a small, load-bearing addition Plan 1 owes this
+// task, not a redesign.
+
+/**
+ * (D-19, 2026-07-30) The remap fallback's OWN small tint set — not an
+ * AppearanceRecord axis, not exported from derive.mjs. Once colour comes
+ * from the pack's own hair/outfit files (the shipping, layered path), those
+ * two record fields hold style/variant IDs, not hex — so a hypothetical
+ * non-layered pack has nothing left to recolour hair/outfit WITH. This
+ * exists only to keep the degenerate `characterLayers: false` fallback
+ * visually varied; the record's own `hairStyle`/`outfit` (style, still
+ * seed-derived) picks which fallback tint, so the fallback stays
+ * deterministic without adding a real axis back.
+ */
+const FALLBACK_TINTS = ['#4a2c19', '#8b5a2b', '#c98a3b', '#2c3e50', '#8e44ad', '#27ae60'];
+const fallbackTint = key => FALLBACK_TINTS[hashString(key, 'composer:fallbackTint') % FALLBACK_TINTS.length];
+
+/**
  * Which record field colours which part. `build` selects the body sheet
  * variant rather than a colour. `eyes` is a SHEET-SELECTION axis, never a
  * tint: each Eyes_NN.png sheet is its own colour, so eyes map to null here.
- * `hairStyle`/`hairColor` likewise select a hairstyle sheet (see the variant
- * note in the task header); the tint entry for hair covers the fixture pack,
- * whose single hair layer is tintable.
+ * (D-19, 2026-07-30) `hair` and `outfit` are ALSO null now — they resolve a
+ * concrete sibling sheet (`resolveVariantFile` above) instead of tinting a
+ * single base layer, because colour now comes from the pack's own files.
+ * `body`/`skinTone` is the only recolored part left in the layered path.
  */
-const PART_COLOR = { body: 'skinTone', eyes: null, hair: 'hairColor', outfit: 'outfit', accessory: null };
+const PART_COLOR = { body: 'skinTone', eyes: null, hair: null, outfit: null, accessory: null };
 
 export function composeSheet(contract, adapter, record) {
   const layered = adapter.capabilities.characterLayers === true;
@@ -589,21 +739,27 @@ export function composeSheet(contract, adapter, record) {
   const out = createCanvas(sheetW, sheetH);
 
   if (!layered) {
-    // Palette-remap path: one base sheet, recoloured. With a single `outfit`
-    // axis the two garment ramps (#ecf0f1 top, #2c3e50 bottom) both map onto
-    // record.outfit — deliberately degenerate: the fallback trades garment
-    // variety for zero extra machinery. Document, don't "fix".
+    // Palette-remap path: one base sheet, recoloured. Skin tone is still a
+    // real record axis (D-19 keeps it). Hair/outfit no longer carry a hex
+    // value (D-19), so the degenerate fallback recolours with its OWN small
+    // tint set, keyed off the still-seed-derived style id — composer-local,
+    // never promoted back into AppearanceRecord. Document, don't "fix".
     const from = [hexToRgba('#ffdbac'), hexToRgba('#1a1a1a'), hexToRgba('#ecf0f1'), hexToRgba('#2c3e50')];
-    const to = [hexToRgba(record.skinTone), hexToRgba(record.hairColor), hexToRgba(record.outfit), hexToRgba(record.outfit)];
+    const to = [
+      hexToRgba(record.skinTone),
+      hexToRgba(fallbackTint(record.hairStyle)),
+      hexToRgba(fallbackTint(record.outfit)),
+      hexToRgba(fallbackTint(record.outfit)),
+    ];
     out.blit(asSource(base.canvas), 0, 0, sheetW, sheetH, 0, 0);
     return remapPalette(out, from, to);
   }
 
   // Layered path: stack body -> eyes -> hair -> outfit -> accessory.
-  // Variant layers (eyes, and hair/outfit on the real pack) resolve their
-  // concrete sibling sheet by index replacement in the aliased file's name —
-  // see the task header. The fixture pack has one sheet per layer, so there
-  // the alias is the sheet; the resolution helper is a no-op for it.
+  // Variant layers (eyes, and hair/outfit — D-19, 2026-07-30) resolve their
+  // concrete sibling sheet via resolveVariantFile above. The fixture pack
+  // has one sheet per layer, so there the alias is already the sheet and
+  // resolution is a no-op.
   //
   // Sleep row (r3): on the real pack, outfit and eye sheets have NO art in
   // that row (Step 0) — a composed sleep frame is body+hair by pack design,
@@ -613,7 +769,11 @@ export function composeSheet(contract, adapter, record) {
   // the padding columns of the four 927px-wide party-cone accessory sheets.
   for (const part of parts) {
     if (part === 'accessory' && record.accessory === 'none') continue;
-    const layer = readSprite(adapter, `char_${part}`);
+    const key = `char_${part}`;
+    const file = part === 'hair' ? resolveVariantFile(adapter, key, record.hairStyle, record.hairVariant)
+               : part === 'outfit' ? resolveVariantFile(adapter, key, record.outfit, record.outfitVariant)
+               : null;
+    const layer = readSprite(adapter, key, file ? { file } : undefined);
     const colorKey = PART_COLOR[part];
     const src = colorKey ? asSource(tintLayer(asSource(layer.canvas), hexToRgba(record[colorKey])))
                          : asSource(layer.canvas);
@@ -624,8 +784,9 @@ export function composeSheet(contract, adapter, record) {
 
 /**
  * 32x32 head-and-shoulders, composed from the SAME record as the sprite —
- * so build, skin tone and hair colour agree across surfaces (spec §6.3).
- * The two depictions may look different; they must not contradict.
+ * so build, skin tone and hair (style and variant) agree across surfaces
+ * (spec §6.3). The two depictions may look different; they must not
+ * contradict.
  */
 export function composePortrait(contract, adapter, record) {
   const sheet = composeSheet(contract, adapter, record);
@@ -1264,13 +1425,15 @@ git commit -m "feat(appearance): AppearanceResolver with human-only fallback (I-
 
 Colour is an identity signal here (spec §10.2), so the palettes must stay distinguishable **under the night tint** — `DAY_TINT_KEYS` reaches `alpha: 0.45` over `#0a0a2e` — and for colour-vision deficiency. Name labels remain the authoritative identifier; colour is an aid, never the only channel. This task makes that an assertion rather than an intention.
 
+**(D-19, 2026-07-30) Disposition: NARROW to `SKIN_TONES`, not converted to a no-recolor-path assertion.** Task 26/27 deleted the algorithmic hex axes for hair (`HAIR_COLORS`) and outfit (`OUTFIT_COLORS`) — colour for those two now comes straight from whichever pack variant file the two-stage pick lands on, so there is no in-repo hex value for this task to compare pairwise any more. But `body`/`skinTone` recoloring is untouched by D-19 (item 1 keeps it "as designed") and stays live in `appearanceComposer.mjs`'s layered path (`PART_COLOR.body = 'skinTone'`, still `tintLayer`-ed) — so a real recolor axis still exists, and this task still has something to assert. The check narrows to `SKIN_TONES` alone rather than disappearing.
+
 **Files:**
 - Create: `test/palette-separation.test.mjs`
-- Modify: `packages/shared/src/appearance/derive.mjs` if any pair fails
+- Modify: `packages/shared/src/appearance/derive.mjs` if `SKIN_TONES` fails
 
 **Interfaces:**
-- Consumes: the palettes from Task 26.
-- Produces: a test asserting minimum perceptual distance within each palette, in daylight, under the night tint, and under simulated deuteranopia.
+- Consumes: `SKIN_TONES` from Task 26 (D-19, 2026-07-30 — `HAIR_COLORS`/`OUTFIT_COLORS` no longer exist to consume).
+- Produces: a test asserting minimum perceptual distance within `SKIN_TONES`, in daylight, under the night tint, and under simulated deuteranopia.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1280,8 +1443,13 @@ Colour is an identity signal here (spec §10.2), so the palettes must stay disti
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS,
+  SKIN_TONES,
 } from '../packages/shared/src/appearance/derive.mjs';
+// HAIR_COLORS / OUTFIT_COLORS are gone (D-19, 2026-07-30): hair and outfit
+// colour now comes from the pack's own variant files, not a hex axis this
+// test could compare. SKIN_TONES is the one recolor axis D-19 leaves live
+// (the composer still tints the body layer by it), so it is the one
+// palette this task still separates.
 
 const rgb = hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
 
@@ -1310,8 +1478,10 @@ const deuter = ([r, g, b]) => [
 
 // Eyes are deliberately absent: EYE_VARIANTS is a sheet-selection axis
 // (each Eyes_NN.png sheet is its own colour) — there is no hex palette to
-// separate, so the separation tests do not include eyes.
-const PALETTES = { SKIN_TONES, HAIR_COLORS, OUTFIT_COLORS };
+// separate, so the separation tests do not include eyes. Hair and outfit
+// are absent for the same reason as of D-19, 2026-07-30 — their colour is
+// now a pack variant file too, not a hex value in this repo.
+const PALETTES = { SKIN_TONES };
 
 function worstPair(list, transform) {
   let worst = Infinity, pair = null;
@@ -1344,19 +1514,16 @@ test('every palette survives deuteranopia', () => {
   }
 });
 
-test('palettes are not evenly spaced in hue — separation is perceptual', () => {
-  const hue = ([r, g, b]) => {
-    const mx = Math.max(r, g, b), mn = Math.min(r, g, b);
-    if (mx === mn) return 0;
-    const d = mx - mn;
-    const h = mx === r ? (g - b) / d % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
-    return ((h * 60) + 360) % 360;
-  };
-  const hues = OUTFIT_COLORS.map(c => hue(rgb(c))).sort((a, b) => a - b);
-  const gaps = hues.slice(1).map((h, i) => h - hues[i]);
-  const spread = Math.max(...gaps) - Math.min(...gaps);
-  assert.ok(spread > 20, 'hues look mechanically even-spaced rather than perceptually chosen');
-});
+// (D-19, 2026-07-30) The "palettes are not evenly spaced in hue" test is
+// GONE, not repointed at SKIN_TONES: it asserted OUTFIT_COLORS wasn't a
+// mechanical rainbow (an anti-pattern for a palette meant to span the wheel).
+// SKIN_TONES is deliberately the opposite shape — a narrow-hue LIGHTNESS
+// ramp (all ~24-36° hue; separation Task 26's own comment already says is
+// perceptual, i.e. Lab-distance-driven, not hue-spread-driven). Applying
+// the same "hue gaps aren't even" check to it would fail on a palette that
+// was never designed to spread across hues in the first place — the wrong
+// test for what SKIN_TONES is. The three dE tests above still hold
+// SKIN_TONES to the real requirement (daylight/night/CVD separation).
 ```
 
 - [ ] **Step 2: Run to see where the palettes stand**
@@ -1366,18 +1533,21 @@ Expected: either PASS, or a failure naming the offending pair and its ΔE.
 
 - [ ] **Step 3: Fix any failing pair**
 
-If a test fails, adjust that one colour in `derive.mjs` and re-run. Do **not** loosen the threshold — the threshold is the requirement. Palette lengths must stay `6/10/8` (skin/hair/outfit) plus `12` hair styles, `7` eye variants and `5` accessories, because Task 26 asserts `appearanceSpaceSize() === 3*6*7*12*10*8*5`.
+If a test fails, adjust that one colour in `derive.mjs` and re-run. Do **not** loosen the threshold — the threshold is the requirement. `SKIN_TONES` must stay length `6` — Task 26's `appearanceSpaceSize()` multiplies by `SKIN_TONES.length`, not a hardcoded `6` (D-19, 2026-07-30: hair/outfit counts come from `HAIR_MANIFEST`/`OUTFIT_MANIFEST` instead, so this task no longer needs to keep `10`/`8`/`12` in lockstep with anything — those numbers, and `HAIR_COLORS`/`OUTFIT_COLORS` themselves, no longer exist).
 
-Likely candidate from the Task 26 values: `HAIR_COLORS` `#8c8c8c` vs `#f2f2f2` under the night tint. (The old worst offenders — the three near-identical dark blue-grey `BOTTOM_COLORS` — are gone with the top/bottom → outfit merge.)
+As of today's `SKIN_TONES` values this task has nothing to fix — the old worst offenders (`HAIR_COLORS` `#8c8c8c` vs `#f2f2f2` under the night tint, and before that the three near-identical dark blue-grey `BOTTOM_COLORS`) left with the hair-recolor axis itself (D-19) and the earlier top/bottom → outfit merge.
 
 - [ ] **Step 4: Re-run everything**
 
 Run: `npm test`
-Expected: all four palette tests PASS, and Task 26's `appearanceSpaceSize` and distribution tests still PASS.
+Expected: all three palette tests PASS (D-19, 2026-07-30 — the hue-spacing test is gone, not four), and Task 26's `appearanceSpaceSize` and distribution tests still PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add packages/shared/src/appearance/derive.mjs test/palette-separation.test.mjs
-git commit -m "test(appearance): assert palette separation in daylight, under night tint and under CVD"
+git commit -m "test(appearance): assert SKIN_TONES separation in daylight, under night tint and under CVD
+
+Narrowed from skin/hair/outfit to skin tone only (D-19): hair and outfit
+color now comes from the pack's own files, not an algorithmic hex axis."
 ```
