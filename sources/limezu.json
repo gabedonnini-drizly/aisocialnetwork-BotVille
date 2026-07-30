@@ -259,6 +259,7 @@
       "y": 704,
       "w": 16,
       "h": 16,
+      "note": "dark void around the room (was build-interiors.mjs:31)",
       "pin": "a7f436d93380b0a391e406a7f9b05b09a9b68ec818635346279f6fb015096dcd"
     },
     "wallOfficeA": {
@@ -267,6 +268,7 @@
       "y": 336,
       "w": 16,
       "h": 16,
+      "note": "grey-green wall (was build-interiors.mjs:32)",
       "pin": "c5f82ac33ca8d1beca242b70197db683a3ba66a42bd6a4d6532f3e27393d9f75"
     },
     "wallOfficeB": {
@@ -275,6 +277,7 @@
       "y": 352,
       "w": 16,
       "h": 16,
+      "note": "grey-green wall (was build-interiors.mjs:32)",
       "pin": "6214e235124ff667f7c10b5320c09cf8f69a12e18dc2bf886f8fabcfa62bafd1"
     },
     "wallCafeA": {
@@ -283,6 +286,7 @@
       "y": 272,
       "w": 16,
       "h": 16,
+      "note": "cream wall (was build-interiors.mjs:33)",
       "pin": "bce2db28038d90aed01a2a0c4e42cba582ade2c73385082bad9cd22cea04e6db"
     },
     "wallCafeB": {
@@ -291,6 +295,7 @@
       "y": 288,
       "w": 16,
       "h": 16,
+      "note": "cream wall (was build-interiors.mjs:33)",
       "pin": "d1046d619c8231641e1329f005ec345d75676455d53a2206aa0e3a10cab6ab7c"
     },
     "wallDormA": {
@@ -299,6 +304,7 @@
       "y": 176,
       "w": 16,
       "h": 16,
+      "note": "wallpaper with diamonds (was build-interiors.mjs:34)",
       "pin": "a8850addc4aa570814373a8f19ad47593324518a50d1313bae4aad9fe86cac7c"
     },
     "wallDormB": {
@@ -307,6 +313,7 @@
       "y": 192,
       "w": 16,
       "h": 16,
+      "note": "wallpaper with diamonds (was build-interiors.mjs:34)",
       "pin": "fa442fd9fa4acc85052a3e8179536698c0206544b6bdab2c0f50d48ca8e7bb13"
     },
     "wallLibA": {
@@ -315,6 +322,7 @@
       "y": 592,
       "w": 16,
       "h": 16,
+      "note": "wooden panels (was build-interiors.mjs:35)",
       "pin": "4e92cfc1956eded77773f6b470199a381cbdf6ba48294b0de5ede26febe7e68f"
     },
     "wallLibB": {
@@ -323,6 +331,7 @@
       "y": 608,
       "w": 16,
       "h": 16,
+      "note": "wooden panels (was build-interiors.mjs:35)",
       "pin": "67217aef60e7e6c71c7e7506272ed094f95c1d339dbfd5e1ac5ff7b8fa559089"
     },
     "floorOffice": {
@@ -331,6 +340,7 @@
       "y": 176,
       "w": 16,
       "h": 16,
+      "note": "grey-blue checker (carpet) (was build-interiors.mjs:36)",
       "pin": "26454cdb27fe628c44cfe40c39c04d82bd762ca76f5a159044b0d80a8d025a73"
     },
     "floorCafe": {
@@ -339,6 +349,7 @@
       "y": 176,
       "w": 16,
       "h": 16,
+      "note": "white-pink checkerboard (was build-interiors.mjs:37)",
       "pin": "532f701c63b9439b59d8772c5197dcdd005183cb9f763afae6008903884bd3e3"
     },
     "floorDorm": {
@@ -347,6 +358,7 @@
       "y": 384,
       "w": 16,
       "h": 16,
+      "note": "warm parquet in squares (was build-interiors.mjs:38)",
       "pin": "6c8efe01c9c77b1320bc4beea112e92dea979e39bbe7e8113febb810bb225f44"
     },
     "floorLib": {
@@ -355,6 +367,7 @@
       "y": 304,
       "w": 16,
       "h": 16,
+      "note": "herringbone parquet (was build-interiors.mjs:39)",
       "pin": "35a9bc372be140e695a5c5cd9af347823498d29b6adeb99285b5eac38a55ddaf"
     },
     "office_building": {

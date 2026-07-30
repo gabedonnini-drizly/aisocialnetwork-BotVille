@@ -1,5 +1,25 @@
 #!/usr/bin/env node
 /**
+ * FROZEN — do not modify, do not import.
+ *
+ * This is the imperative build script this repo used before the world bake
+ * existed. Kept for exactly one purpose: proving that scripts/world-bake.mjs
+ * reproduces what it produced, byte for byte (Task 20's golden gate).
+ *
+ * - Nothing in scripts/, packages/ or test/ imports this.
+ * - The build never runs it.
+ * - Its only callers are scripts/capture-golden-baseline.mjs and
+ *   test/bake/golden.test.mjs, both of which are about comparing to the past.
+ * - It needs assets-src/ to run, so it is inert without the licensed packs.
+ *
+ * If you are tempted to fix a bug in here: don't. Fix it in the contract, the
+ * adapter or the venue descriptor, and let the golden gate tell you the output
+ * changed. A change here would make the gate compare the new pipeline against a
+ * moving target, which is the one thing it must never do.
+ *
+ * See test/golden/legacy/README.md.
+ */
+/**
  * Step 2 of TZ-01: district map generation.
  * Builds from the LimeZu assets:
  *  1) ground atlas  -> public/assets/tilesets/limezu/district_ground.png
@@ -13,9 +33,9 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { decodePng, createCanvas, encodePng } from './png-lib.mjs';
+import { decodePng, createCanvas, encodePng } from '../../../scripts/png-lib.mjs';
 
-const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
+const ROOT = join(fileURLToPath(import.meta.url), '..', '..', '..', '..');
 const SRC = join(ROOT, 'assets-src');
 const PUB = join(ROOT, 'packages', 'client', 'public', 'assets');
 

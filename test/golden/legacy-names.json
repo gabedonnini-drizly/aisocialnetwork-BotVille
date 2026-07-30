@@ -1,7 +1,7 @@
 {
   "source": {
-    "district_ground": "scripts/build-district.mjs",
-    "interiors_ground": "scripts/build-interiors.mjs",
+    "district_ground": "test/golden/legacy/build-district.mjs",
+    "interiors_ground": "test/golden/legacy/build-interiors.mjs",
     "props": "packages/client/src/game/config.ts"
   },
   "atlasTiles": {

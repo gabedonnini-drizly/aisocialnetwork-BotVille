@@ -95,7 +95,8 @@ Unpack them into `assets-src/` in the repo root, keeping each pack's own folder
 layout, then run:
 
 ```bash
-node scripts/sync-assets.mjs
+node scripts/sync-assets.mjs        # copy the licensed source files into place
+npm run bake:world -- limezu assets-src
 ```
 
 That copies only the files actually used into

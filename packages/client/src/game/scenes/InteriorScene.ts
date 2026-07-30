@@ -31,7 +31,7 @@ function propsOf(o: Phaser.Types.Tilemaps.TiledObject): TiledProps {
 }
 
 /**
- * Base interior scene: a room from a TMJ (scripts/build-interiors.mjs),
+ * Base interior scene: a room from a TMJ (scripts/world-bake.mjs),
  * seats with occupancy (two agents will not take the same chair), a prominent
  * exit door (a doormat with hover highlight), animated objects.
  *
