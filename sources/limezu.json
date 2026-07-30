@@ -372,11 +372,13 @@
       "w": 148,
       "h": 232,
       "trim": true,
+      "note": "blue villa: region up to x=300 so the crop doesn't catch the red house to its right (was build-district.mjs:70)",
       "pin": "6639f93de977eac3bd152586c231877ab1b43066deba0f75e121fc3571a574b3"
     },
     "library_building": {
       "file": "hardware_single",
       "generated": "bookSign",
+      "note": "the pack has no bookstore sign, so a stylized \"BOOKS\" plate is stamped onto this hardware-store facade (was build-district.mjs:94-95)",
       "pin": "d58de52114565d269e6fbf51ae175ba0003d07c7880b61deb13cf6ee4d15a016"
     },
     "barn": {
