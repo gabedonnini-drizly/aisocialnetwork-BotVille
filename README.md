@@ -81,15 +81,17 @@ setup — choose **Ollama (Local)** with a model you have pulled (`ollama pull q
 ## About the art
 
 The pixel art is **not in this repository**. BotVille is drawn with the paid
-[LimeZu](https://limezu.itch.io/) packs. Their licence: "YOU CAN: Edit and use
-the asset in any commercial or non commercial project. YOU CAN'T: Resell or
-distribute the asset to others [or] Edit and resell the asset to others" (the
-same text on all four pack pages and in `office/LICENSE.txt` — see
-`docs/ASSETS.md`) — so the repo is code-only. Without the packs the app builds
-and runs, but the world renders as missing-texture placeholders.
+[LimeZu](https://limezu.itch.io/) packs. Their licence (`office/LICENSE.txt`,
+confirmed word-for-word on three of the four itch.io pack pages — see
+`docs/ASSETS.md`): "YOU CAN: Edit and use the asset in any commercial or non
+commercial project. YOU CAN'T: Resell or distribute the asset to others [or]
+Edit and resell the asset to others" — so the repo is code-only. Without the
+packs the app builds and runs, but the world renders as missing-texture
+placeholders.
 
-To get the real thing, buy the **16x16** versions of all four (`sync-assets.mjs`
-reads all four; none is optional):
+To get the real thing, buy the **16x16** versions of all four — the bake reads
+from every one of them (`sources/limezu.json`'s `files` block), so none is
+optional:
 
 1. [Modern Exteriors](https://limezu.itch.io/modernexteriors) — streets, buildings, props
 2. [Modern Interiors](https://limezu.itch.io/moderninteriors) — interiors + characters
