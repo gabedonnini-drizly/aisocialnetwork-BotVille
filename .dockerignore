@@ -31,8 +31,22 @@ contact
 # build context small and keeps derived-from-licensed-art fingerprints out of
 # the same intermediate stage as above.
 sources/*.index.json
-*.db
-*.db-shm
-*.db-wal
-.env
-.env.*
+# Self-host secrets and data (Plan 6 final review, Important finding 1):
+# root-only patterns (no leading **/) match ONLY at the build-context root —
+# this file's own node_modules/.turbo rules already knew that (paired with
+# **/node_modules, **/.turbo above), but *.db*/.env* were left root-only.
+# Verified: without the **/ forms, packages/server/.env and
+# packages/server/botville.db entered the agent-bake build-stage image
+# byte-for-byte. DEPLOY.md tells self-host operators to put real secrets in
+# exactly that .env, so this is a production-credentials leak, not just a
+# hygiene one.
+**/.env
+**/.env.*
+**/*.db
+**/*.db-shm
+**/*.db-wal
+# User-authored agent roster (docker-compose.yml's agent-bake --roster) — a
+# real one is COPY . .'d into the same build stage for nothing; the running
+# container already reads it via a runtime bind mount (Minor finding 2, same
+# class as the above).
+roster/*.json

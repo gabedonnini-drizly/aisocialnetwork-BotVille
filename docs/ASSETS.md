@@ -112,6 +112,52 @@ incidental:
    other sprite is. `scripts/index-pack.mjs` also needed a fix unrelated to
    this bridge — see the sheets-manifest note below.
 
+### Re-recording the golden baseline after the freeze (Task 3b)
+
+`UPDATE_GOLDEN=1 npm run test:bake` now fails with an `ENOENT` **by design**.
+The frozen legacy scripts (`build-district.mjs` / `build-interiors.mjs`) read
+the real pack through nine short compatibility paths that don't exist in any
+LimeZu download — `interiors/themes`, `exteriors/animated`, and so on. Those
+paths were symlinks, planted during the 2026-07-29 art-pack QA specifically so
+the legacy pipeline could run once, against real pixels, to capture
+`test/golden/baseline.json` and `test/golden/tmj/`. Once that capture was
+done (Task 3), the links were deliberately deleted (Task 3b) — the durable
+fix is `sources/limezu.json`'s `files` block naming the pack's *real* paths
+(Plan 1 Tasks 5–7), so nothing in the current pipeline needs the links, and
+leaving them in place would let the frozen scripts silently rot in step with
+future pack updates instead of visibly refusing to run.
+
+**If you ever need to re-record the baseline from scratch** — a genuine crop
+correction found during a pack-QA review, the only reason to touch it — the
+recipe is: recreate the links, capture, delete them again.
+
+```bash
+# 1. Recreate the nine links (relative, from assets-src/), matching the
+#    native LimeZu layout on the left below:
+ln -s "1_Interiors/16x16/Theme_Sorter"                                  assets-src/interiors/themes
+ln -s "1_Interiors/16x16/Room_Builder_16x16.png"                        assets-src/interiors/Room_Builder_16x16.png
+ln -s "3_Animated_objects/16x16/spritesheets"                           assets-src/interiors/animated
+ln -s "4_User_Interface_Elements"                                       assets-src/interiors/ui
+ln -s "2_Characters/Character_Generator/0_Premade_Characters/16x16"     assets-src/interiors/characters-premade
+ln -s "Modern_Exteriors_16x16/ME_Theme_Sorter_16x16"                    assets-src/exteriors/themes
+ln -s "Modern_Exteriors_16x16/Animated_16x16/Animated_sheets_16x16"     assets-src/exteriors/animated
+ln -s "4_Modern_Office_singles/16x16"                                   assets-src/office/singles
+ln -s "1_Room_Builder_Office"                                           assets-src/office/room-builder
+find assets-src -maxdepth 2 -type l   # expect exactly 9 lines
+
+# 2. Capture — review the diff before committing anything
+UPDATE_GOLDEN=1 npm run test:bake
+git diff --stat test/golden/
+
+# 3. Delete the links again — the current pipeline never needed them
+find assets-src -maxdepth 2 -type l -print -delete
+find assets-src -type l               # expect nothing
+```
+
+The links are gitignored (`.gitignore:21` covers `assets-src`), so step 1
+changes only the local tree — there is nothing to undo in git for the links
+themselves, only for whatever `test/golden/` diff step 2 produces.
+
 ### Known baseline divergences from a future world-bake (for Task 20)
 
 The golden baseline (`test/golden/baseline.json`) captures what the FROZEN

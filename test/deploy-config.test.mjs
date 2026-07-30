@@ -96,6 +96,30 @@ test('.dockerignore excludes every licence-critical path from every build contex
     assert.ok(rules.includes(p), `.dockerignore has no rule line for ${p}`);
 });
 
+// Secrets/data class, not licence class (Plan 6 final review, Important
+// finding 1 + Minor 2): root-only patterns (no leading `**/`) match ONLY at
+// the build-context root, so `.env`/`*.db` without the nested form never
+// caught `packages/server/.env` or `packages/server/botville.db` — verified
+// byte-present in the agent-bake build-stage image before this fix. Every
+// entry here MUST use the nested (`**/…`) form; a root-only sibling doesn't
+// count, so this checks the exact pattern, not just "some rule mentions it".
+const SECRETS_CRITICAL_DOCKERIGNORE_ENTRIES = [
+  '**/.env',
+  '**/.env.*',
+  '**/*.db',
+  '**/*.db-shm',
+  '**/*.db-wal',
+  // User-authored agent roster — dead weight plus a small privacy ride-along
+  // in the same build stage; the running container mounts it at runtime.
+  'roster/*.json',
+];
+
+test('.dockerignore excludes secrets and local data from every build context, in nested form', () => {
+  const rules = dockerignoreRules();
+  for (const p of SECRETS_CRITICAL_DOCKERIGNORE_ENTRIES)
+    assert.ok(rules.includes(p), `.dockerignore has no (nested-form) rule line for ${p}`);
+});
+
 test('.dockerignore also keeps the ordinary build-hygiene excludes', () => {
   assert.ok(dockerignoreRules().includes('node_modules'));
 });
