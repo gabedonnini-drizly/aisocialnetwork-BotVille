@@ -49,21 +49,55 @@ test('the future Postgres seam is declared but inactive (R-6)', () => {
     'the DB connection must stay commented out');
 });
 
-test('.dockerignore excludes the licensed art from every build context (I-12)', () => {
-  const d = readFileSync('.dockerignore', 'utf8');
-  for (const p of ['assets-src', 'node_modules', 'packages/client/public/assets/baked'])
-    assert.ok(d.includes(p), `missing ${p}`);
+// Single source of truth for "every path on disk that can hold licensed
+// pixels or pack-derived data, gitignored, and therefore invisible to a
+// `git archive`-based check but NOT invisible to a Docker build context
+// (docker-compose's agent-bake service builds Dockerfile.client's
+// intermediate `build` stage via COPY . . and keeps it as a runnable,
+// taggable image — the review that added this list found `contact/` and
+// `sources/*.index.json` riding along into exactly that stage, missed by
+// the first pass of this guard). Drift here — a new gitignored,
+// art-bearing path added without a matching .dockerignore rule — must fail
+// this test loudly, not get discovered by opening a built image by hand.
+const LICENCE_CRITICAL_DOCKERIGNORE_ENTRIES = [
+  'assets-src',
+  'packages/client/public/assets/tilesets/pack',
+  'packages/client/public/assets/sprites/pack',
+  'packages/client/public/assets/baked',
+  // The frozen legacy pipeline (scripts/capture-golden-baseline.mjs) writes
+  // REAL licensed pixels straight from assets-src/ to these vendor-named
+  // paths (see .gitignore) on every `npm run golden:capture`.
+  'packages/client/public/assets/tilesets/limezu',
+  'packages/client/public/assets/sprites/limezu',
+  'packages/client/public/assets/ui/limezu',
+  // Contact sheets (npm run contact) — real licensed pixel crops rendered
+  // straight off assets-src/ for pack-QA review (Task 3 Step 6).
+  'contact',
+  // Per-cell pack inventory (npm run pack:index) — sources/limezu.index.json
+  // is hundreds of MB of hashes/palettes derived from the real pack.
+  'sources/*.index.json',
+];
+
+// Actual pattern lines only — comments (which name these same paths in
+// prose, e.g. "npm run contact") must not be able to satisfy this check.
+// A naive whole-file `.includes()` passed even with the real `contact` rule
+// line deleted, because the word still appeared in a comment above it —
+// caught by manually deleting the rule line and re-running this test.
+function dockerignoreRules() {
+  return readFileSync('.dockerignore', 'utf8')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#'));
+}
+
+test('.dockerignore excludes every licence-critical path from every build context (I-12)', () => {
+  const rules = dockerignoreRules();
+  for (const p of LICENCE_CRITICAL_DOCKERIGNORE_ENTRIES)
+    assert.ok(rules.includes(p), `.dockerignore has no rule line for ${p}`);
 });
 
-test('.dockerignore also excludes the frozen legacy pipeline\'s vendor-named output (I-12)', () => {
-  // scripts/capture-golden-baseline.mjs writes REAL licensed pixels to these
-  // paths when run against assets-src (npm run golden:capture). They are
-  // gitignored, but a Docker build context reads the working tree directly —
-  // verified during this task: without this rule, stray residue on disk
-  // gets copied straight into the image.
-  const d = readFileSync('.dockerignore', 'utf8');
-  for (const p of ['sprites/limezu', 'tilesets/limezu', 'ui/limezu'])
-    assert.ok(d.includes(p), `missing ${p}`);
+test('.dockerignore also keeps the ordinary build-hygiene excludes', () => {
+  assert.ok(dockerignoreRules().includes('node_modules'));
 });
 
 test('the images pin the same Node major as the rest of the repo', () => {

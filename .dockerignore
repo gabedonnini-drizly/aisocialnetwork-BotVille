@@ -18,6 +18,19 @@ packages/client/public/assets/baked
 packages/client/public/assets/tilesets/limezu
 packages/client/public/assets/sprites/limezu
 packages/client/public/assets/ui/limezu
+# Contact sheets (npm run contact) — Task 3's pack-QA review artifact, real
+# licensed pixel crops rendered straight off assets-src/. Gitignored, but
+# docker-compose's agent-bake service builds Dockerfile.client's
+# intermediate `build` stage (target: build) and keeps it as a runnable,
+# taggable image — COPY . . before this rule existed pulled contact/ into
+# that image on every build, fixture or real (I-12).
+contact
+# Per-cell pack inventory (npm run pack:index) — sources/limezu.index.json is
+# 826 MB of hashes/palettes derived from the real pack. Gitignored (mirrors
+# .gitignore's sources/*.index.json exactly); excluding it here keeps every
+# build context small and keeps derived-from-licensed-art fingerprints out of
+# the same intermediate stage as above.
+sources/*.index.json
 *.db
 *.db-shm
 *.db-wal

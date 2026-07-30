@@ -24,10 +24,14 @@ request.
 **Art.** A build with no licensed packs is not broken — it bakes the
 synthetic fixture pack and renders a complete city in flat colours. That is
 what `docker compose build` produces with no environment set, and it is
-deliberately art-free (I-12): `.dockerignore` excludes `assets-src/` (and the
-frozen legacy pipeline's vendor-named output — see README's *Artifact
-policy*) from every build context, so a plain build cannot pick up licensed
-pixels even by accident.
+deliberately art-free (I-12): `.dockerignore` excludes `assets-src/`, the
+frozen legacy pipeline's vendor-named output, contact sheets (`contact/`),
+and the per-cell pack inventory (`sources/*.index.json`) — every gitignored,
+art-bearing path on disk, not just the obvious one — from every build
+context, so a plain build cannot pick up licensed pixels even by accident.
+`test/deploy-config.test.mjs` pins this list so a future path that should be
+excluded and isn't fails the suite instead of riding along into a built
+image quietly.
 
 **Serving the real art.** Two ways, both requiring you to hold the LimeZu
 licence yourself, and both meaning the resulting artifacts are yours to keep

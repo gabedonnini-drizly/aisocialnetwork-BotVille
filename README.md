@@ -103,9 +103,13 @@ fresh clone).
 One compose file, not two: the licence fork is a build arg, not a fork of the
 file. `PACK` defaults to `fixture`, so `docker compose build` with no
 environment set produces images with **zero licensed pixels** (I-12) —
-`.dockerignore` excludes `assets-src/` from **every** build context
+`.dockerignore` excludes `assets-src/` and every other gitignored,
+art-bearing path (the frozen legacy pipeline's vendor-named output, contact
+sheets, the per-cell pack inventory) from **every** build context
 unconditionally, so a plain `docker build` cannot pick up licensed pixels
-even by accident.
+even by accident. `test/deploy-config.test.mjs` pins the full list so a new
+one added later without a matching rule fails the suite instead of riding
+along quietly.
 
 That same exclusion means `BOTVILLE_PACK=limezu` alone is not enough: the
 build context has to actually contain `assets-src/` for the bake to find it.
