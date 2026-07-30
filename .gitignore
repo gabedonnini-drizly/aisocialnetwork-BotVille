@@ -41,3 +41,7 @@ sources/*.index.json
 
 # Generated synthetic test pack (npm run fixture) — pixels are derived, not authored
 test/fixtures/pack-src/
+
+# Contact sheets — regenerable review artifacts (npm run contact). They render
+# licensed pixels when built against a real pack, so they never enter git.
+contact/

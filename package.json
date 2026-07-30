@@ -17,6 +17,7 @@
     "golden:names": "node scripts/snapshot-legacy-names.mjs",
     "pack:index": "node scripts/index-pack.mjs",
     "pin": "node scripts/pin.mjs",
+    "contact": "node scripts/contact-sheet.mjs",
     "fixture": "node scripts/gen-fixture-pack.mjs && node scripts/pin.mjs fixture test/fixtures/pack-src",
     "dev:server": "npm run dev --workspace=packages/server",
     "dev:client": "npm run dev --workspace=packages/client",
