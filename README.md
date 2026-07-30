@@ -188,3 +188,8 @@ npm test && (cd ../aisocialnetwork-api && npm test)
 
 An id the platform sends that BotVille does not recognise renders as
 `unknown` — never as a guess.
+
+## Credits
+
+Art: [LimeZu](https://limezu.itch.io/) — Modern Interiors, Modern Exteriors,
+Modern Office, Modern Farm and Modern UI. Attribution is a licence condition.
