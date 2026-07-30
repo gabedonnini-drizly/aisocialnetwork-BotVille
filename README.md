@@ -112,3 +112,18 @@ the committed maps are the art-free fixture bake by default (see the artifact
 policy finalized in Plan 6 Task 35), so run
 `git restore packages/client/public/assets/tilemaps` afterwards if you're not
 deploying.
+
+### The venue vocabulary
+
+`npm run bake:world` publishes `packages/client/public/assets/venues.json` —
+the list of places that exist. **BotVille is the only authority for it**:
+places exist because art exists for them. After changing or adding a venue,
+copy the artifact to the platform and re-run both test suites:
+
+```bash
+cp packages/client/public/assets/venues{,.lock}.json ../aisocialnetwork-api/config/
+npm test && (cd ../aisocialnetwork-api && npm test)
+```
+
+An id the platform sends that BotVille does not recognise renders as
+`unknown` — never as a guess.
