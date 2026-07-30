@@ -1,6 +1,7 @@
-# BotVille server — local parity only. Production is Railway/Nixpacks
-# (railway.toml), which builds from the repo root with turbo. This image
-# reproduces that build so `docker compose up` gives a working pair.
+# BotVille server — deployment packaging (D-20: self-hosted, Docker-packaged,
+# same shape as the platform's own api/frontend pair). Builds from the repo
+# root with turbo, same as local dev, so a green container is evidence the
+# server actually runs.
 #
 # SQLite stays. Replacing it is integration work and out of scope (spec §13).
 FROM node:24-alpine AS build
@@ -14,7 +15,6 @@ RUN npm ci
 
 COPY packages/shared packages/shared
 COPY packages/server packages/server
-# The same filter Railway uses, so a green container is evidence about production.
 RUN npx turbo build --filter=@botville/server
 
 FROM node:24-alpine

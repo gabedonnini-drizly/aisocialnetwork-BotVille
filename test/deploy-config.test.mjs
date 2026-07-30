@@ -3,50 +3,28 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
-const vercel = JSON.parse(readFileSync('vercel.json', 'utf8'));
 
-// ── The real deploy paths ────────────────────────────────────────────────
+// ── D-20: Vercel and Railway are retired. Docker is the deployment ───────
+// (self-hosting two Node apps, same as the platform's own api/frontend
+// pair) — not just local parity. These are structural guards against
+// quietly reintroducing the retired config.
 
-test('the Vercel build bakes the world before building the client', () => {
-  assert.match(vercel.buildCommand, /bake:world/,
-    'a Vercel build without a bake ships a client with no maps');
-  assert.ok(vercel.buildCommand.indexOf('bake:world') < vercel.buildCommand.indexOf('build'),
-    'the bake has to run first — vite copies public/ at build time');
+test('the retired hosting configs do not come back', () => {
+  for (const f of ['vercel.json', 'railway.toml', 'scripts/deploy-server.mjs'])
+    assert.equal(existsSync(f), false, `${f} was retired by D-20 — self-hosting via Docker replaced it`);
 });
 
-test('a Vercel Git build cannot contain licensed art (I-12)', () => {
-  // assets-src/ is gitignored, so a Git-triggered build has no packs and the
-  // bake falls back to the fixture. Belt and braces: the command must not
-  // name the licensed pack.
-  assert.equal(/limezu/.test(vercel.buildCommand), false,
-    'the public build command names the licensed pack — a Git build must be art-free');
+test('package.json carries no deploy:client/deploy:server script', () => {
+  assert.equal(pkg.scripts['deploy:client'], undefined);
+  assert.equal(pkg.scripts['deploy:server'], undefined);
 });
 
-test('deploy:client bakes with the real pack before uploading prebuilt output', () => {
-  const cmd = pkg.scripts['deploy:client'];
-  // Every stage must name the real pack. A bare sync-assets.mjs would copy
-  // the FIXTURE character sheets next to real tiles, silently.
-  assert.match(cmd, /sync-assets\.mjs limezu assets-src/);
-  assert.match(cmd, /bake:world -- limezu assets-src/);
-  assert.match(cmd, /bake:agents -- --pack limezu --src assets-src/);
-  assert.match(cmd, /--prebuilt/, 'prebuilt is what makes the local bake reach production');
-  assert.equal(/\.\.\./.test(cmd), false, 'a literal "..." means a plan placeholder leaked into package.json');
+test('vercel is not a dependency anywhere in package.json', () => {
+  const all = { ...pkg.dependencies, ...pkg.devDependencies };
+  assert.equal(Object.hasOwn(all, 'vercel'), false);
 });
 
-test('the Railway server build is untouched by the art pipeline', () => {
-  const railway = readFileSync('railway.toml', 'utf8');
-  assert.match(railway, /turbo build --filter=@botville\/server/);
-  assert.equal(/bake:world/.test(railway), false,
-    'the server serves no art; baking in its build is wasted time and a licence risk');
-});
-
-test('the server deploy snapshot still strips every art directory (I-12)', () => {
-  const src = readFileSync('scripts/deploy-server.mjs', 'utf8');
-  for (const p of ['assets-src', 'baked'])
-    assert.ok(src.includes(p), `deploy-server.mjs no longer strips ${p}`);
-});
-
-// ── Docker: parity, not a second deployment ──────────────────────────────
+// ── Docker: the deployment packaging (self-host, two Node apps) ──────────
 
 test('the container files exist', () => {
   for (const f of ['Dockerfile.client', 'Dockerfile.server', 'docker-compose.yml', '.dockerignore'])
@@ -74,6 +52,17 @@ test('the future Postgres seam is declared but inactive (R-6)', () => {
 test('.dockerignore excludes the licensed art from every build context (I-12)', () => {
   const d = readFileSync('.dockerignore', 'utf8');
   for (const p of ['assets-src', 'node_modules', 'packages/client/public/assets/baked'])
+    assert.ok(d.includes(p), `missing ${p}`);
+});
+
+test('.dockerignore also excludes the frozen legacy pipeline\'s vendor-named output (I-12)', () => {
+  // scripts/capture-golden-baseline.mjs writes REAL licensed pixels to these
+  // paths when run against assets-src (npm run golden:capture). They are
+  // gitignored, but a Docker build context reads the working tree directly —
+  // verified during this task: without this rule, stray residue on disk
+  // gets copied straight into the image.
+  const d = readFileSync('.dockerignore', 'utf8');
+  for (const p of ['sprites/limezu', 'tilesets/limezu', 'ui/limezu'])
     assert.ok(d.includes(p), `missing ${p}`);
 });
 

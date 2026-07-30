@@ -35,9 +35,6 @@ packages/client/public/assets/tilesets/limezu/
 packages/client/public/assets/sprites/limezu/
 packages/client/public/assets/ui/limezu/
 
-# Deploy remote config (written by scripts/deploy-server.mjs)
-.deploy-server.json
-
 # Docker self-host: user-provided agent roster for the agent-bake profile
 # (docker-compose.yml). The directory is tracked (roster/.gitkeep) so it
 # exists on a fresh clone; its content is local input, never committed.

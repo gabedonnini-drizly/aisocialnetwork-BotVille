@@ -10,9 +10,10 @@ import { worldBake } from '../../scripts/world-bake.mjs';
  * packages/client/public/assets/tilemaps/ stay FIXTURE geometry, always. A
  * fresh clone must render a complete, art-free city with zero setup.
  *
- * Real-art geometry is a DEPLOY-TIME artifact — produced by `npm run
- * deploy:client` on a machine with `assets-src/`, or by a Docker build with
- * PACK=limezu — and it must never be committed.
+ * Real-art geometry only ever exists locally or on a self-hosted machine —
+ * baked with `bake:world -- limezu assets-src` before running/serving the
+ * app, or by a Docker build with PACK=limezu (see DEPLOY.md) — and it must
+ * never be committed.
  *
  * This is the structural guard: it re-bakes the fixture pack into a temp
  * dir and diffs the result, byte for byte, against what is checked in. A

@@ -24,16 +24,13 @@
     "bake:world": "node scripts/world-bake.mjs",
     "bake:agents": "node scripts/agent-bake.mjs",
     "dev:server": "npm run dev --workspace=packages/server",
-    "dev:client": "npm run dev --workspace=packages/client",
-    "deploy:client": "node scripts/sync-assets.mjs limezu assets-src && npm run bake:world -- limezu assets-src && npm run bake:agents -- --pack limezu --src assets-src && vercel pull --yes --environment=production && vercel build --prod && vercel deploy --prebuilt --prod",
-    "deploy:server": "node scripts/deploy-server.mjs"
+    "dev:client": "npm run dev --workspace=packages/client"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
     "puppeteer-core": "^25.3.0",
     "turbo": "^2.3.3",
-    "typescript": "^5.7.2",
-    "vercel": "^58.4.0"
+    "typescript": "^5.7.2"
   },
   "engines": {
     "node": ">=24.0.0"

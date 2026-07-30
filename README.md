@@ -80,10 +80,10 @@ setup — choose **Ollama (Local)** with a model you have pulled (`ollama pull q
 
 ## Docker
 
-BotVille does not deploy with Docker — production is Vercel (client) +
-Railway (server), see [DEPLOY.md](DEPLOY.md). `docker-compose.yml` exists for
-**local parity** (the same bake and build Vercel/Railway run, reproducible on
-a machine with nothing but Docker) and as a **self-hosting** path.
+BotVille self-hosts as two Docker-packaged Node apps — the client and the
+server — the same shape as the platform's own api/frontend pair. This is
+both the deployment story (see [DEPLOY.md](DEPLOY.md)) and a drop-in
+alternative to `npm run dev` for local work.
 
 ```bash
 mkdir -p roster
@@ -109,16 +109,11 @@ even by accident.
 
 That same exclusion means `BOTVILLE_PACK=limezu` alone is not enough: the
 build context has to actually contain `assets-src/` for the bake to find it.
-Self-hosters who own the LimeZu licence and want the real art baked in have
-to opt in explicitly — comment out the `assets-src` line in `.dockerignore`
-locally (never commit that change) before building:
-
-```bash
-BOTVILLE_PACK=limezu BOTVILLE_SRC_ROOT=assets-src docker compose build
-```
-
-and then treat the resulting images as private — they contain licensed
-pixels and must not be pushed to a public registry.
+Self-hosters who own the LimeZu licence have to opt in explicitly — see
+DEPLOY.md's *Serving the real art* section for the two supported ways (bake
+into the image at build time, or bake agent sheets on the host and mount
+them in without touching the image at all) — and then treat anything built
+with the real pack as private: never push those images to a public registry.
 
 ## About the art
 
@@ -160,18 +155,20 @@ Running `bake:world -- limezu assets-src` also rewrites the 18 tracked `.tmj`
 maps under `packages/client/public/assets/tilemaps/` with real-pack geometry.
 
 **Artifact policy: the committed `.tmj` files stay fixture geometry, always.**
-A fresh clone bakes and renders a complete city with zero licensed pixels
-(I-12) — that is what a Vercel Git build does, automatically, because
-`assets-src/` is never uploaded. Real-art geometry is a **deploy-time**
-artifact: `npm run deploy:client` bakes it on a machine that holds
-`assets-src/` and uploads the built output directly, and a Docker image built
-with `PACK=limezu` bakes it into that image — neither path writes real
-geometry back into the repo. If you baked locally with the real pack just to
-look at the result, run `git restore packages/client/public/assets/tilemaps`
-before committing anything. `test/bake/tmj-fixture-geometry-guard.test.mjs`
-enforces this structurally: it re-bakes the fixture pack into a temp dir and
-diffs it, byte for byte, against what's checked in, so an accidental
-`git add` after a real-pack bake fails the test suite loudly.
+A fresh clone already renders a complete city with zero licensed pixels
+(I-12) — the committed maps are the fixture bake, so nothing needs baking or
+configuring just to see the city. Real-art geometry only ever exists
+locally or on the host you self-host from: bake it (`sync-assets.mjs` +
+`bake:world -- limezu assets-src` + `bake:agents`) before running or serving
+the app with the real art — in a plain `npm run dev`, or in a Docker image
+built with `PACK=limezu` (see DEPLOY.md) — and it never gets written back
+into the repo by either path. If you baked locally with the real pack just
+to look at the result, run
+`git restore packages/client/public/assets/tilemaps` before committing
+anything. `test/bake/tmj-fixture-geometry-guard.test.mjs` enforces this
+structurally: it re-bakes the fixture pack into a temp dir and diffs it,
+byte for byte, against what's checked in, so an accidental `git add` after a
+real-pack bake fails the test suite loudly.
 
 ### The venue vocabulary
 

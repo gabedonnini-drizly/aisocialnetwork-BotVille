@@ -1,12 +1,14 @@
-# BotVille — local parity and self-hosting.
+# BotVille — deployment packaging (D-20).
 #
-# Production is Vercel (client) + Railway (server); see DEPLOY.md. This file
-# is for running the pair locally and for self-hosters.
+# Self-hosted: two Docker-packaged Node apps (client + server), same shape as
+# the platform's own api/frontend pair. This file is both the local-dev
+# alternative to `npm run dev` and how the pair actually ships; see DEPLOY.md.
 #
 # ART: PACK defaults to `fixture`, so `docker compose build` with no
-# environment produces images containing no licensed pixel (I-12). Set
-# BOTVILLE_PACK=limezu and BOTVILLE_SRC_ROOT=assets-src to build with the real
-# art — and then treat the images as private.
+# environment produces images containing no licensed pixel (I-12). Real art
+# is never baked INTO an image built from this file by default — see
+# DEPLOY.md ("Serving the real art") for the two supported ways to get it
+# onto a self-hosted deployment.
 
 services:
   client:

@@ -1,12 +1,12 @@
-# BotVille client — local parity and self-hosting.
-#
-# This is NOT how BotVille deploys. Production is Vercel (see vercel.json);
-# this image exists so the same bake can be reproduced on a machine that has
-# nothing but Docker, and so a self-hoster has a supported path.
+# BotVille client — deployment packaging (D-20: self-hosted, Docker-packaged,
+# same shape as the platform's own api/frontend pair). Static build served by
+# nginx; docker-compose.yml runs this beside the server image.
 #
 # The default PACK is `fixture`: no licensed pixel enters the image unless
 # someone deliberately passes PACK=limezu with assets-src in the build
-# context. Keep it that way before pushing anywhere public (I-12).
+# context. Keep it that way before pushing anywhere public (I-12) — real art
+# is baked on the host (or mounted from a volume) never inside a shipped
+# image; see the README's Deployment section for both options.
 FROM node:24-alpine AS build
 WORKDIR /app
 
