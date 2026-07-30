@@ -64,6 +64,9 @@ test('a minimal VenueDescriptor type-checks', () => {
   const v: VenueDescriptor = {
     id: 'fixture', label: 'Fixture', indoor: true, sizeTiles: [20, 15],
     groundAtlas: 'interiors_ground', capacity: 4,
+    // Addendum §I.1: roles/affords/hours are required — a literal omitting
+    // them must NOT type-check (archetype stays optional, so it is absent here).
+    roles: ['hangout'], affords: ['idle'], hours: [{ open: 0, close: 24 }],
     ground: { wallA: 'wallCafeA', wallB: 'wallCafeB', floor: 'floorCafe' },
     furniture: [], seats: [], spawns: [[9, 13]], animated: [], doors: [], glows: [],
   };

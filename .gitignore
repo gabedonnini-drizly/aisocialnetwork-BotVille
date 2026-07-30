@@ -17,11 +17,14 @@ dist/
 *.db-shm
 *.db-wal
 
-# Paid LimeZu art — licence permits use, forbids redistribution
+# Paid art — licence permits use, forbids redistribution (see docs/ASSETS.md)
+# No trailing slash: some dev setups symlink this in (a trailing-slash
+# pattern does not match a symlink-to-directory, only a real directory).
 assets-src
-packages/client/public/assets/tilesets/limezu/
-packages/client/public/assets/sprites/limezu/
-packages/client/public/assets/ui/limezu/
+packages/client/public/assets/tilesets/pack/
+packages/client/public/assets/sprites/pack/
+packages/client/public/assets/ui/pack/
+packages/client/public/assets/baked/
 
 # Deploy remote config (written by scripts/deploy-server.mjs)
 .deploy-server.json

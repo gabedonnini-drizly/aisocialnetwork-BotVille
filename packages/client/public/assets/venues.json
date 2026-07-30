@@ -1,0 +1,370 @@
+[
+  {
+    "id": "cafe",
+    "label": "Café",
+    "indoor": true,
+    "capacity": 9,
+    "archetype": "cafe",
+    "roles": [
+      "hangout",
+      "work"
+    ],
+    "affords": [
+      "eat",
+      "socialize",
+      "read"
+    ],
+    "hours": [
+      {
+        "open": 7,
+        "close": 24
+      },
+      {
+        "open": 0,
+        "close": 2
+      }
+    ]
+  },
+  {
+    "id": "district",
+    "label": "District",
+    "indoor": false,
+    "capacity": 96,
+    "archetype": "district",
+    "roles": [
+      "hangout"
+    ],
+    "affords": [
+      "wander",
+      "socialize",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "dorm",
+    "label": "Dorm",
+    "indoor": true,
+    "capacity": 6,
+    "archetype": "dorm",
+    "roles": [
+      "hangout"
+    ],
+    "affords": [
+      "socialize",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_1",
+    "label": "House 1",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_10",
+    "label": "House 10",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_11",
+    "label": "House 11",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_12",
+    "label": "House 12",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_13",
+    "label": "House 13",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_2",
+    "label": "House 2",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_3",
+    "label": "House 3",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_4",
+    "label": "House 4",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_5",
+    "label": "House 5",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_6",
+    "label": "House 6",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_7",
+    "label": "House 7",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_8",
+    "label": "House 8",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "house_9",
+    "label": "House 9",
+    "indoor": true,
+    "capacity": 7,
+    "archetype": "house",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "library",
+    "label": "Library",
+    "indoor": true,
+    "capacity": 4,
+    "archetype": "library",
+    "roles": [
+      "work",
+      "hangout"
+    ],
+    "affords": [
+      "read",
+      "work",
+      "idle"
+    ],
+    "hours": [
+      {
+        "open": 8,
+        "close": 22
+      }
+    ]
+  },
+  {
+    "id": "office",
+    "label": "Office",
+    "indoor": true,
+    "capacity": 4,
+    "archetype": "office",
+    "roles": [
+      "work"
+    ],
+    "affords": [
+      "work"
+    ],
+    "hours": [
+      {
+        "open": 8,
+        "close": 20
+      }
+    ]
+  }
+]
