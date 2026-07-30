@@ -380,3 +380,31 @@ fixed enum above, not a two-stage pack pick), but if a future task adds
 per-accessory sheet resolution, `composeSheet`'s `Math.min(layer.w, out.w)`
 blit clamp already handles the extra 31px of padding harmlessly — same as
 it does for the body sheet.
+
+## One-time collision look (Plan 6 Task 20, 2026-07-30)
+
+The golden gate deliberately does not diff collision against the legacy maps
+byte for byte (derived collision is *supposed* to differ — see the plan's
+Task 20 table); Plan 2's structural tests pin walkability going forward.
+This is the one migration-specific human look the plan calls for: baked with
+`npm run bake:world -- limezu assets-src` and dumped each venue's `collision`
+layer boxes (legacy vs. baked) side by side. Every venue kept the SAME
+object count (no box dropped, none merged/swallowed); the only differences
+are position/size shifts at doorway openings and building footprints —
+exactly what deriving collision from footprints instead of hand-authored
+boxes, plus the new doormat at every interior doorway, would produce.
+
+| Venue | Boxes (legacy = baked) | Outcome |
+|---|---|---|
+| cafe | 13 = 13 | walls/furniture unchanged; doorway box narrowed (28→10 wide, doormat), still open |
+| district | 104 = 104 | walls/fences/props unchanged; one residence footprint 12px narrower (152→140) |
+| dorm | 16 = 16 | walls/furniture unchanged; doorway box narrowed (28→10 wide), still open |
+| house_1 .. house_13 (all 13) | 15 = 15 each | identical pattern: one furniture box repositioned (137,148,44,18→137,141,30,18) and the doorway box narrowed (28→10), both consistent with derived collision + doormat; doorway still open in every instance |
+| library | 18 = 18 | walls/furniture unchanged; doorway box narrowed (30→10 wide), still open |
+| office | 15 = 15 | walls/furniture unchanged; doorway box narrowed (30→14 wide) and one shelf box narrowed (30→10), still open |
+
+No wall, border, or colliding furniture piece lost coverage in any venue;
+every doorway gap that was open in the legacy maps is still open in the
+baked ones. Nothing here is committed tooling — a comparison that runs once
+does not earn a helper (per the plan's own instruction); this table is the
+record of having taken the look.

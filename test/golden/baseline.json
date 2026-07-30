@@ -110,5 +110,10 @@
     "sprites/pack/tv_news.png": "558ec753c7feb5f496b1a3e3d8ec682f28203ceb7e520e50ce872003ac9bdf4e",
     "tilesets/limezu/district_ground.png": "1a717a95c5dbb5e990ebfdf211d611f66a558a3b6d025c824988fb377d738681",
     "tilesets/limezu/interiors_ground.png": "5ffaabf4734a119d98d4b09706b4e5268d55b87a834035029c5e2e10523582a0"
+  },
+  "renames": {
+    "tilesets/limezu/": "tilesets/pack/",
+    "sprites/limezu/district/": "sprites/pack/district/",
+    "sprites/limezu/interior/": "sprites/pack/interior/"
   }
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "grassA",
+    "reason": "legacy build-district.mjs's hardcoded ATLAS_TILES rect (TERR col 3, row 5 = y:80) sat in a transparent 2-row gap in the sheet, shipping an invisible tile; the adapter's corrected rect reads the real content one row down (y:96). The frozen script was never touched by the fix, so it still carries the original bug — the baseline's district_ground.png has blank pixels here where the bake has grass.",
+    "plan-ref": "Plan 1 Task 9 (commit cddf2ac, fix(source): shift grassA/grassB one tile-row down)"
+  },
+  {
+    "name": "grassB",
+    "reason": "Same transparent-gap bug as grassA, same fix, same file (district_ground.png). TERR col 4, row 5 (y:80) is the legacy rect; the adapter's corrected rect is y:96.",
+    "plan-ref": "Plan 1 Task 9 (commit cddf2ac, fix(source): shift grassA/grassB one tile-row down)"
+  },
+  {
+    "name": "plant_small",
+    "reason": "Whole-file contract prop with no declared crop rect, so the legacy pipeline shipped the raw 32x48 source file untrimmed. The 2026-07-29 validator fix set trim:true because the raw file exceeds the contract's maxSize; PropBaker now crops to the true content bbox (16x18).",
+    "plan-ref": "Plan 1 Task 10 (commit 68221d8, fix(source): retarget car_down_2 to fit contract maxSize; trim plant_small/plant_pot)"
+  },
+  {
+    "name": "plant_pot",
+    "reason": "Same untrimmed-vs-trimmed divergence as plant_small: raw 32x48 source, no crop rect declared, legacy shipped it whole; trim:true now crops to the true content bbox (12x26).",
+    "plan-ref": "Plan 1 Task 10 (commit 68221d8, fix(source): retarget car_down_2 to fit contract maxSize; trim plant_small/plant_pot)"
+  }
+]

@@ -3,7 +3,7 @@
  * VenueBaker stamps those sizes into the .tmj, which is what removes the
  * hand-authored object dimensions the old maps carried.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { createCanvas, encodePng } from '../png-lib.mjs';
 import { readSprite, asSource } from './spriteReader.mjs';
@@ -57,12 +57,23 @@ export function bakeProps(contract, adapter, group) {
 
   for (const name of Object.keys(defs)) {
     const s = readSprite(adapter, name);
-    const gen = adapter.resolve(name).generated;
-    if (gen) {
-      const fn = GENERATORS[gen];
-      if (!fn) throw new Error(`prop ${name} names unknown generator: ${gen}`);
+    const r = adapter.resolve(name);
+    if (r.generated) {
+      const fn = GENERATORS[r.generated];
+      if (!fn) throw new Error(`prop ${name} names unknown generator: ${r.generated}`);
       const canvas = fn(s.canvas);
       out.set(name, { canvas, w: canvas.w, h: canvas.h });
+    } else if (r.w == null && r.h == null && !r.trim) {
+      // Whole file, no crop, no trim: the pixels are the source file's
+      // pixels, untouched. Re-encoding them through png-lib's canvas
+      // round-trip is lossless per-PIXEL but NOT per-byte (a different PNG
+      // encoder chose different filters/compression than whatever produced
+      // the source file) — the golden gate (Plan 6 Task 20) caught this:
+      // every untrimmed whole-file prop diverged from the legacy pipeline's
+      // raw `copyFileSync`. A crop or a trim genuinely changes the pixels
+      // and must go through the canvas; a bare pass-through must not touch
+      // the bytes at all.
+      out.set(name, { canvas: s.canvas, w: s.w, h: s.h, raw: r.absPath });
     } else {
       out.set(name, { canvas: s.canvas, w: s.w, h: s.h });
     }
@@ -73,10 +84,10 @@ export function bakeProps(contract, adapter, group) {
 /** @returns {string[]} written file names */
 export function writeProps(baked, outDir) {
   const written = [];
-  for (const [name, { canvas }] of baked) {
+  for (const [name, { canvas, raw }] of baked) {
     const p = join(outDir, `${name}.png`);
     mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p, encodePng(canvas));
+    writeFileSync(p, raw ? readFileSync(raw) : encodePng(canvas));
     written.push(`${name}.png`);
   }
   return written.sort();
