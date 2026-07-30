@@ -17,11 +17,30 @@
  *   node scripts/index-pack.mjs [pack] [srcRoot]
  */
 import { createHash } from 'node:crypto';
-import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, writeFileSync, writeSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { decodePng } from './png-lib.mjs';
 import { loadContract } from './lib/assetContract.mjs';
+
+/**
+ * Writes { key: value, ... } as JSON one entry at a time, so a real 16×16
+ * pack — tens of thousands of sheets, one candidate-cell array apiece — never
+ * forces `JSON.stringify` to materialise a single string past V8's ~512MB
+ * limit. Only used for the (gitignored, regenerable) per-cell index; the
+ * small committed sheets manifest still goes through plain JSON.stringify.
+ */
+function writeJsonMapSync(path, map) {
+  const fd = openSync(path, 'w');
+  writeSync(fd, '{\n');
+  const keys = Object.keys(map);
+  keys.forEach((k, i) => {
+    const entry = `  ${JSON.stringify(k)}: ${JSON.stringify(map[k])}${i < keys.length - 1 ? ',' : ''}\n`;
+    writeSync(fd, entry);
+  });
+  writeSync(fd, '}\n');
+  closeSync(fd);
+}
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
 
@@ -129,7 +148,7 @@ export function indexPack({ srcRoot, tileSize = 16, out }) {
   if (out) {
     mkdirSync(out, { recursive: true });
     writeFileSync(join(out, 'sheets.json'), JSON.stringify(sheets, null, 2) + '\n');
-    writeFileSync(join(out, 'index.json'), JSON.stringify(cells, null, 2) + '\n');
+    writeJsonMapSync(join(out, 'index.json'), cells);
   }
   return { sheets, cells };
 }
@@ -140,9 +159,28 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const { sheets, cells } = indexPack({ srcRoot, tileSize: loadContract().tileSize });
 
   mkdirSync(join(ROOT, 'sources'), { recursive: true });
-  writeFileSync(join(ROOT, 'sources', `${pack}.sheets.json`), JSON.stringify(sheets, null, 2) + '\n');
-  writeFileSync(join(ROOT, 'sources', `${pack}.index.json`), JSON.stringify(cells, null, 2) + '\n');
+
+  // The COMMITTED manifest is scoped to sheets sources/<pack>.json actually
+  // names (its own header above: "this file's diff names exactly which
+  // sheets moved, which is the signal that the crops taken from them need
+  // re-reviewing" — a sheet nothing crops from can never trigger that
+  // signal). A full-pack manifest was measured against the real four-pack
+  // assets-src/ at 41,488 sheets / 9.7MB and rejected: almost none of those
+  // rows name a sheet anything in this repo ever reads, so its diff would
+  // fire on pack noise no crop depends on. The gitignored per-cell index
+  // stays full-pack — it is the browsing aid for CHOOSING a crop in the
+  // first place, which is exactly the job a scoped-to-already-chosen list
+  // cannot do.
+  const manifestPath = join(ROOT, 'sources', `${pack}.json`);
+  const referenced = existsSync(manifestPath)
+    ? new Set(Object.values(JSON.parse(readFileSync(manifestPath, 'utf8')).files ?? {}))
+    : null;
+  const scopedSheets = referenced
+    ? Object.fromEntries(Object.entries(sheets).filter(([p]) => referenced.has(p)))
+    : sheets;
+  writeFileSync(join(ROOT, 'sources', `${pack}.sheets.json`), JSON.stringify(scopedSheets, null, 2) + '\n');
+  writeJsonMapSync(join(ROOT, 'sources', `${pack}.index.json`), cells);
 
   const candidates = Object.values(cells).reduce((n, l) => n + l.length, 0);
-  console.log(`pack index: ${Object.keys(sheets).length} sheets, ${candidates} candidate cells -> sources/${pack}.{sheets,index}.json`);
+  console.log(`pack index: ${Object.keys(scopedSheets).length} sheets referenced (of ${Object.keys(sheets).length} pack files scanned), ${candidates} candidate cells -> sources/${pack}.{sheets,index}.json`);
 }

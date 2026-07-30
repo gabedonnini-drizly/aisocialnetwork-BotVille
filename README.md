@@ -81,18 +81,24 @@ setup — choose **Ollama (Local)** with a model you have pulled (`ollama pull q
 ## About the art
 
 The pixel art is **not in this repository**. BotVille is drawn with the paid
-[LimeZu](https://limezu.itch.io/) packs, whose licence permits use but forbids
-redistribution — so the repo is code-only. Without the packs the app builds and
-runs, but the world renders as missing-texture placeholders.
+[LimeZu](https://limezu.itch.io/) packs. Their licence: "YOU CAN: Edit and use
+the asset in any commercial or non commercial project. YOU CAN'T: Resell or
+distribute the asset to others [or] Edit and resell the asset to others" (the
+same text on all four pack pages and in `office/LICENSE.txt` — see
+`docs/ASSETS.md`) — so the repo is code-only. Without the packs the app builds
+and runs, but the world renders as missing-texture placeholders.
 
-To get the real thing, buy the **16x16** versions of:
+To get the real thing, buy the **16x16** versions of all four (`sync-assets.mjs`
+reads all four; none is optional):
 
 1. [Modern Exteriors](https://limezu.itch.io/modernexteriors) — streets, buildings, props
 2. [Modern Interiors](https://limezu.itch.io/moderninteriors) — interiors + characters
-3. *(optional)* [Modern User Interface](https://limezu.itch.io/modernuserinterface)
+3. [Modern Farm](https://limezu.itch.io/modernfarm) — farm terrain, crops, animals
+4. [Modern Office](https://limezu.itch.io/modernoffice) — office furniture and singles
 
 Unpack them into `assets-src/` in the repo root, keeping each pack's own folder
-layout, then run:
+layout (`exteriors/`, `interiors/`, `farm/16x16/`, `office/` — see
+`docs/ASSETS.md` for the exact subtree each pack unpacks to), then run:
 
 ```bash
 node scripts/sync-assets.mjs limezu assets-src   # copy the licensed source files into place
