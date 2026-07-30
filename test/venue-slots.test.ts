@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { assignSlots, standingSlot, isOverCapacity } from '../packages/client/src/game/venueSlots.ts';
+import { assignSlots, standingSlot, isOverCapacity, displacedSlot } from '../packages/client/src/game/venueSlots.ts';
 import type { FootprintRect } from '../packages/client/src/game/venueSlots.ts';
 import { venueRegistry } from '../packages/client/src/game/venueRegistry.ts';
 
@@ -131,4 +131,37 @@ test('every venue can seat at least one agent', () => {
     assert.ok(v.seats.length > 0, v.id);
     assert.equal(assignSlots(v, ['solo']).get('solo')!.seatIndex, 0);
   }
+});
+
+// ── displaced seats (animal-on-bed / bed-outside-sleep-hours) ────────────
+// VenueScene falls back to displacedSlot(venue, id, seatIndex, standingCount)
+// whenever an agent's ranked seat is off-limits to them right now. The
+// partition (standingCount + seatIndex) must never collide with a genuine
+// standing rank or with another displaced seat — pinned here against real
+// descriptor data (cafe.seats.length), not a hypothetical seat count.
+
+test('displaced seats never collide with standing agents or each other', () => {
+  for (const standingCount of [0, 1, 3, cafe.seats.length, cafe.seats.length + 5]) {
+    const standingKeys = new Set<string>();
+    for (let r = 0; r < standingCount; r++) {
+      const { x, y } = standingSlot(cafe, `standee_${r}`, r);
+      standingKeys.add(`${x},${y}`);
+    }
+    const displacedKeys = new Set<string>();
+    for (let seatIndex = 0; seatIndex < cafe.seats.length; seatIndex++) {
+      const { x, y } = displacedSlot(cafe, `displaced_${seatIndex}`, seatIndex, standingCount);
+      const key = `${x},${y}`;
+      assert.equal(standingKeys.has(key), false,
+        `standingCount ${standingCount}: displaced seat ${seatIndex} collides with a standing agent`);
+      assert.equal(displacedKeys.has(key), false,
+        `standingCount ${standingCount}: displaced seat ${seatIndex} collides with another displaced seat`);
+      displacedKeys.add(key);
+    }
+  }
+});
+
+test('displacedSlot is deterministic and agent-independent (only the seat and standingCount matter)', () => {
+  assert.deepEqual(displacedSlot(cafe, 'a', 2, 3), displacedSlot(cafe, 'a', 2, 3));
+  assert.deepEqual(displacedSlot(cafe, 'a', 2, 3), displacedSlot(cafe, 'z', 2, 3),
+    'the same seat/standingCount lands the same regardless of WHICH agent was displaced');
 });

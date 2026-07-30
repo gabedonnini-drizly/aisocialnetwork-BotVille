@@ -95,6 +95,29 @@ export function standingSlot(
 }
 
 /**
+ * Where an agent goes when their assigned SEAT is off-limits to them right now
+ * (an animal ranked onto a bed; a bed ranked outside sleep hours — VenueScene
+ * decides the "off-limits" part, this only decides WHERE they land instead).
+ *
+ * Standing agents occupy floor ranks 0..(standingCount-1) (assignSlots above).
+ * A displaced agent takes standingCount + their own seatIndex: seatIndex is
+ * unique per seat (0..venue.seats.length-1), so the displaced range
+ * [standingCount, standingCount+seats.length-1] can never overlap the genuine
+ * standing range, and two displaced agents (different seats) can never
+ * collide with each other either. The bijection in standingSlot wraps modulo
+ * the free-cell count, so an out-of-range rank is safe by construction.
+ */
+export function displacedSlot(
+  venue: VenueDescriptor,
+  agentId: string,
+  seatIndex: number,
+  standingCount: number,
+  footprints: FootprintRect[] = [],
+): { x: number; y: number } {
+  return standingSlot(venue, agentId, standingCount + seatIndex, footprints);
+}
+
+/**
  * Hand out slots to the whole roster in a single pass.
  * Chairs fill up before anyone stands; the roster's order has no effect.
  * footprints is the collision layer from the baked map: standing agents route

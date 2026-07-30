@@ -10,8 +10,8 @@ import { ANIMATED_OBJECTS, getVariant } from '../assetManifest.js';
 import { GameTime } from '../time.js';
 import { isSleepTime } from '../dayNight.js';
 import { consumePendingFocus } from '../navigation.js';
-import { assignSlots, isOverCapacity, standingSlot } from '../venueSlots.js';
-import type { FootprintRect } from '../venueSlots.js';
+import { assignSlots, displacedSlot, isOverCapacity } from '../venueSlots.js';
+import type { FootprintRect, Slot } from '../venueSlots.js';
 import type { SyncedAgent } from '../../hooks/useGameSync.js';
 import type { VenueDescriptor } from '@botville/shared';
 
@@ -52,6 +52,14 @@ export class VenueScene extends Phaser.Scene {
   private bedWakeHours: Map<string, number> = new Map();
   /** The collision layer's rectangles — the F-14 input for venueSlots. */
   private furnitureFootprints: FootprintRect[] = [];
+  /**
+   * agent -> the slot they were last reconciled to. assignSlots recomputes the
+   * WHOLE roster's arrangement from scratch every call (it is a pure function
+   * of ids + venue + footprints) — this is what lets syncAgents tell "rank
+   * shifted, re-seat them" apart from "nothing changed, leave them be" without
+   * ever trusting stale occupancy as the source of truth.
+   */
+  private assignedSlot: Map<string, Slot> = new Map();
   private roomW = 320;
   private roomH = 240;
   private transitioning = false;
@@ -175,6 +183,7 @@ export class VenueScene extends Phaser.Scene {
       this.agentSprites.clear();
       this.pendingSeat.clear();
       this.bedWakeHours.clear();
+      this.assignedSlot.clear();
       this.seats.forEach(s => { s.occupiedBy = null; });
     });
 
@@ -247,50 +256,81 @@ export class VenueScene extends Phaser.Scene {
       if (!incoming.has(id)) {
         this.releaseSeatOf(id);
         this.pendingSeat.delete(id);
+        this.assignedSlot.delete(id);
         sprite.destroy();
         this.agentSprites.delete(id);
       }
     });
     // Deterministic layout: chairs fill before anyone stands, and the same agent
-    // sits in the same place after a reload.
-    // Furniture footprints exclude the occupied cells (F-14).
+    // sits in the same place after a reload. assignSlots recomputes the WHOLE
+    // roster's arrangement from scratch every call — it is a pure function of
+    // ids + venue + footprints, not an incremental patch — so a newcomer's rank
+    // can shift an already-present agent's rank too (any id whose hash sorts
+    // after the newcomer's moves up one). Furniture footprints exclude the
+    // occupied cells (F-14).
     const slots = assignSlots(this.venue, agentList.map(a => a.id), this.furnitureFootprints);
     if (isOverCapacity(this.venue, agentList.length)) {
       // R-3: the over-capacity UX is deferred; we record the fact so it stays visible
       console.debug(`[${this.venue.id}] over capacity: ${agentList.length}/${this.venue.capacity}`);
     }
 
+    const standingCount = Math.max(0, agentList.length - this.seats.length);
+    const hour = GameTime.hour;
+
     agentList.forEach(a => {
-      if (this.agentSprites.has(a.id)) return;
       const slot = slots.get(a.id)!;
-      const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, this.spawnPoint.x, this.spawnPoint.y);
-      this.agentSprites.set(a.id, sprite);
-
-      // animals do not climb onto beds
-      const isAnimal = getVariant(a.avatarVariant).kind === 'animal';
-      const seat = slot.seatIndex !== null ? this.seats[slot.seatIndex] : undefined;
-      const seatAllowed = seat && !(isAnimal && seat.kind === 'bed');
-
-      if (seatAllowed) {
-        seat.occupiedBy = a.id;
-        this.pendingSeat.set(a.id, seat);
-        sprite.walkTo(seat.x, seat.y);
-        return;
+      let sprite = this.agentSprites.get(a.id);
+      if (!sprite) {
+        sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, this.spawnPoint.x, this.spawnPoint.y);
+        this.agentSprites.set(a.id, sprite);
       }
 
-      // There is a slot, but it is forbidden (animal + bed) — slot.x/y point at
-      // the SAME seat, so walking there is not allowed: it would produce exactly
-      // what we just forbade. Send them to free floor — at a rank that CANNOT
-      // collide with a real standing rank: standing agents occupy floor ranks
-      // 0..(standingCount-1), so the displaced animal takes standingCount plus
-      // its own seatIndex (unique per seat, so two displaced animals cannot
-      // collide either). The bijection wraps modulo the free cells, so an
-      // out-of-range rank is safe by construction.
-      const standingCount = Math.max(0, agentList.length - this.seats.length);
-      const floor = seat
-        ? standingSlot(this.venue, a.id, standingCount + slot.seatIndex!, this.furnitureFootprints)
-        : slot;
-      sprite.walkTo(floor.x, floor.y);
+      // A ranked seat can be off-limits to THIS agent right now:
+      //  - animals do not climb onto beds, ever (I-13: currently unreachable —
+      //    no agent is assigned an animal appearance — but harmless to keep);
+      //  - nobody does, outside sleep hours: O-3 puts sleepers in beds at
+      //    night, but a bed taken by day would be immediately vacated by the
+      //    existing same-tick wake-from-bed check in update() below, producing
+      //    an invisible sit/stand glitch. Treating a daytime bed as
+      //    unavailable — exactly like the animal case — routes both through
+      //    the same collision-free floor fallback (venueSlots.displacedSlot).
+      const isAnimal = getVariant(a.avatarVariant).kind === 'animal';
+      const seat = slot.seatIndex !== null ? this.seats[slot.seatIndex] : undefined;
+      const bedBlocked = seat?.kind === 'bed' && (isAnimal || !isSleepTime(hour));
+      const seatAllowed = !!seat && !bedBlocked;
+
+      const target: Slot = seatAllowed
+        ? { x: seat!.x, y: seat!.y, seatIndex: slot.seatIndex }
+        : seat
+          ? { ...displacedSlot(this.venue, a.id, slot.seatIndex!, standingCount, this.furnitureFootprints), seatIndex: null }
+          : slot;
+
+      // Reconcile, don't patch: if this agent's target hasn't changed since we
+      // last reconciled them, they are either already there or already walking
+      // there — nothing to do. This is what makes the deterministic mapping
+      // above safe to recompute on every call (including polling ticks where
+      // the roster didn't actually change) without constantly restarting
+      // already-settled agents' walk/sit animation.
+      const previous = this.assignedSlot.get(a.id);
+      if (previous && previous.seatIndex === target.seatIndex
+        && previous.x === target.x && previous.y === target.y) return;
+      this.assignedSlot.set(a.id, target);
+
+      // Vacate whatever seat this agent previously held (a no-op if they
+      // weren't seated, or if some other agent already reconciled into it —
+      // matching by id, never by index, so this can't clobber someone else's
+      // claim). The seat this agent is moving INTO is claimed fresh below,
+      // which is what makes double-seating structurally impossible: at the
+      // end of this loop every seat's occupiedBy matches exactly the one
+      // agent whose rank points at it, regardless of iteration order.
+      this.releaseSeatOf(a.id);
+      this.pendingSeat.delete(a.id);
+
+      if (seatAllowed) {
+        seat!.occupiedBy = a.id;
+        this.pendingSeat.set(a.id, seat!);
+      }
+      sprite.walkTo(target.x, target.y);
     });
 
     // we came here for a specific agent from the HUD — aim the camera (TZ-16)
