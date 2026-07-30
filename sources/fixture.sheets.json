@@ -24,30 +24,1730 @@
     "h": 32,
     "sha256": "9839bad79bec4f89ee89b37a420b05940c6996f603a56ccada95ae2c3cc15489"
   },
+  "characters/Eyes_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "29cc91237b50bf329c4aa1fd0e02cf977d4ceeef66e912d6fa36350a76db8611"
+  },
+  "characters/Eyes_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5978f5767030a5238c3a0b2a96864feb972555fb3e25c2a1b8d2d065e6a49daa"
+  },
+  "characters/Eyes_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e6de109237d25691e457e9db22277f62325064f1c62cbe83d7e0d2bcc3f8d8d9"
+  },
+  "characters/Eyes_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7d661800d904a1cf0dd4bc853b2d3e488e90bc90e26257eabb3f89ca6f92cfab"
+  },
+  "characters/Eyes_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "73da005391adc26d8c3184ae5b09615821ba932b5279131bbf362412628160c9"
+  },
+  "characters/Eyes_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "aeba853eff584281009ac0071800cbedf5f4e7f5d6aea9b8b00146ebcf928552"
+  },
+  "characters/Eyes_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "20a966be9fea554886e35e887d1c1419d9715258c616c75af8463b7644cb529a"
+  },
+  "characters/Hairstyle_01_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6546fe9846e22d05beda8b43692d326b864aad7e582b4000ece24c2212f03056"
+  },
+  "characters/Hairstyle_01_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6538010f85d95dc1f4560232262972663b0829405c38039e45b76fd437f3b698"
+  },
+  "characters/Hairstyle_01_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e8cd00b31e438822e638cd0792fd74e8d770842f9736ed195e10cb787eab5dcd"
+  },
+  "characters/Hairstyle_01_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5c6aa67f69c07e51e70fd3fb43e07cd38fbd45419bdaee7dbf5559e3dca15056"
+  },
+  "characters/Hairstyle_01_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e807264c0fddf44f105ac86e711a647ac19b540a898d8138d5f4a71aac5f69ee"
+  },
+  "characters/Hairstyle_01_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "fa395655487792d932a6e6f16627eca72a652df4ef8802ade39220d987ad0549"
+  },
+  "characters/Hairstyle_01_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "186eee215becf0b22fb2c85044a664c68632733344ca6e22da05a415dd0aba87"
+  },
+  "characters/Hairstyle_02_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "12a8bc67bfa284638f7cb07cd853b8594256e64120edc707b870d0cc7e6fe01a"
+  },
+  "characters/Hairstyle_02_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f6288db31a9b46ba30d0c97234799f2d4cbaeb00811819bdf2d9a93bf0a74916"
+  },
+  "characters/Hairstyle_02_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "289b4f0279951660bb4ee5823abe0ddd9c14744ec08c57aa0b6bd04793711c4c"
+  },
+  "characters/Hairstyle_02_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7e0ad32a1512ec3f989b5938ba1dda68a31affdb381097155d5e5e963240ffd4"
+  },
+  "characters/Hairstyle_02_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b369a0f70a85f2e9b35f194597ff3194357e10237ecc83eceddaf6c7865add1b"
+  },
+  "characters/Hairstyle_02_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "2db4de23718da82955c02a8bd552e0ebfb6fbf1ae6e3addcda6a0198a97f5f4a"
+  },
+  "characters/Hairstyle_02_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "396774a96d246a71f1290319dd76aeb709140b16effca41ad2e5b993e01ccf51"
+  },
+  "characters/Hairstyle_03_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a595aa4bfbb4b72cc7b16e4a43875076ac9828ab16c9ff0243e1c4f8f2618b39"
+  },
+  "characters/Hairstyle_03_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7cbb9d07a9f3697c00983290264c6c8fbeb034d0e52d2f879846f375800fdac3"
+  },
+  "characters/Hairstyle_03_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "0db87b3fea9e998d552e84f1f8fbcc4444df445218d1ec045b6527e5a0c0c87f"
+  },
+  "characters/Hairstyle_03_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4cc40ea32aafdeec3bb19a5a37478d4fce4bb84a435451a8485daf195a93f5ee"
+  },
+  "characters/Hairstyle_03_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "366cdc0e05adfa9f55301029d53417e0fe5e61cfa41c4bfb372c20a49c65d3c2"
+  },
+  "characters/Hairstyle_03_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "2eeeeca268d1c2c61af723148e4b1de65510752f429cdc5b24bb3897a92c19d7"
+  },
+  "characters/Hairstyle_03_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ace32abc0aadee961e100c03f4ee55eeef67537c3caec08cf646bde6359f7fce"
+  },
+  "characters/Hairstyle_04_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "65a32e42303eff6899337308247622ad6aa090506665834feb491498e65ad657"
+  },
+  "characters/Hairstyle_04_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "8b0d40bb5d178e9c1cc57bd35949027099089681ae0a155459f11a4a1949417d"
+  },
+  "characters/Hairstyle_04_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "88443e4d0ea204e13cca0d9dfcb617c234a310e0635edae90c76a573f97fae75"
+  },
+  "characters/Hairstyle_04_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "52f95b02483cc20e7c51a3c2adfc09a8dfcf1049788dcdda3cd5579c0bee9560"
+  },
+  "characters/Hairstyle_04_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b723120e81a73981de1de5cee4eb76c2f8fde9c87df7dec703c7105263f5f706"
+  },
+  "characters/Hairstyle_04_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f5372adc750282c46becb06b6143c28be9ac2ae6e73e52a1667bbecbd86742ee"
+  },
+  "characters/Hairstyle_04_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "17d92ce1f1bd74c00077394a10ce4299ee578eba190b0b1ed5081ea439938bca"
+  },
+  "characters/Hairstyle_05_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "59e20c724c052981646f419860d6575af9bc7008beebb70c80547d5134a5689c"
+  },
+  "characters/Hairstyle_05_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "44bf8f422d731e0527079ed5f56e259238a2aaccaf1c0fb932eeb9446981f366"
+  },
+  "characters/Hairstyle_05_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a5405260e21f5295d78cf846c857fca74f379084547c1142476630cb514f5ac8"
+  },
+  "characters/Hairstyle_05_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a6f278fbe032be30998bd6a6de92f41c952147c134fe79ce5835afc38721fe73"
+  },
+  "characters/Hairstyle_05_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3bbf6c01e4be7986480e60d56db0fa7e14eaeb2b4088369c08d1117f5f5bc992"
+  },
+  "characters/Hairstyle_05_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1c48232b5e77ed3c923f2e971cc53e69d59851cea231176565d54f03d988ebda"
+  },
+  "characters/Hairstyle_05_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "70b28ff7a7cf7ef81da91b1bae1a5bc6ef500352e58e6565bb6a7e9a10166d94"
+  },
+  "characters/Hairstyle_06_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3402bcd0d21a9e613e16d9c56c41a11a2dec85ea39d37f055bcbe756905560be"
+  },
+  "characters/Hairstyle_06_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c72eafcb4dbce3fcf1d9287e237bbb70a6f4086ebdfec22e8e2bccc37ecebe8b"
+  },
+  "characters/Hairstyle_06_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e142820d472ef66ec2e07c37426ec01e1aee9144b7fc5d5b9734cf31aa97f91d"
+  },
+  "characters/Hairstyle_06_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "eafca2efb7f01d2244448dfcabda42317a4e0df03ec9af21fb2be0eb0090684c"
+  },
+  "characters/Hairstyle_06_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "885d8aba76e51f8092c1649c88deb702aff732fb5a44f9075d729bfb20f46916"
+  },
+  "characters/Hairstyle_06_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7e7be5dfa6bb59d5ff254c3d02a9a9bccc6d8a07548cae36acd598effc737cb1"
+  },
+  "characters/Hairstyle_06_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3268b0d7801136cd022f677840a43dea08493be360ebbf39f555bf467b1d7c2e"
+  },
+  "characters/Hairstyle_07_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6609c530b75516203f70478a0f38eb3e34675e7a0d7b676157a3cd0af9632da5"
+  },
+  "characters/Hairstyle_07_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "64a523ac362d3dcd8c84fd61c7a780a08285fc49b5778b13b5e9ae11eb39c2ca"
+  },
+  "characters/Hairstyle_07_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "460825ec90b740ca19bf23b8718e1847b8ee5dfa09acd853b3506a918e9125e6"
+  },
+  "characters/Hairstyle_07_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "cffbcd56ae305b9c11872b5b3b16290cee0af2f55aa84e8bab60858778fa9448"
+  },
+  "characters/Hairstyle_07_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a9a53b04701b6e875d90f98196879d10d308cb18ab2295ea22bb63953ffdb13c"
+  },
+  "characters/Hairstyle_07_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "eb1ba2eb2a477fcb79f8388d6145c2dfc3c37740386ffa664c7cd495856f254a"
+  },
+  "characters/Hairstyle_07_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6b0f998e577dd30a65e7c13e47ef91983ae2982b9210cbee772c5d9738c82b3e"
+  },
+  "characters/Hairstyle_08_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5361650b235743f0f2c876f74c536a3ce4f74466da08dc94fae798ec7d7cbf0e"
+  },
+  "characters/Hairstyle_08_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "73df6ff9a25e0647e625901bac831fa29c54674e74074a83af96074a442b40f4"
+  },
+  "characters/Hairstyle_08_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1d8077ee94f0ac57daecdb62a2615c1a492933eb600b23c7ee28c1022d197efa"
+  },
+  "characters/Hairstyle_08_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4fcf508ec32ba49accbcfe60fd1381ccbf314e56458ceae5f2f9494008d7575b"
+  },
+  "characters/Hairstyle_08_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e4692d4515686f1d0d370a817682ca0dd9f0fcb9365c13067022e31c44412abb"
+  },
+  "characters/Hairstyle_08_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9b7b92a386baa181ac0182f612a2a23f068d21b96bd9a3178c2f8eea12592bb5"
+  },
+  "characters/Hairstyle_08_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "0bdd56b2063f28f77dc9685ef4523acf6c1bceb9ce1dbb9664be40e70b154150"
+  },
+  "characters/Hairstyle_09_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1eafc1440f28f4a7efe40e92f24226a814b05cf9d8188247e48e034b0e15723f"
+  },
+  "characters/Hairstyle_09_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1aa16b66aabc7470dbb2c61b2ed5034a8aeb28e1e9fa6fc220bdd0a349c81b1d"
+  },
+  "characters/Hairstyle_09_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "0c0525c017d3f3b8fc73a2d94b9ca7c2011c4e98709dad555077a4a506a9de6a"
+  },
+  "characters/Hairstyle_09_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ab7deced73127d89567fb1a995e17373ec54a0e00f3124ab4bc1a76e72ed851d"
+  },
+  "characters/Hairstyle_09_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "758e5dbee560a667821169eeab7379cd633f061c1d710b1034b19f86c8ba965b"
+  },
+  "characters/Hairstyle_09_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e85e760c6aac0c805bbcb4d19531b0e5592dcd544417fdf7eca2deccaf7898ea"
+  },
+  "characters/Hairstyle_09_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d5a9130d383066569b8fb84b21588201419bdb86fbe7a9fdc4e02f958c7d3845"
+  },
+  "characters/Hairstyle_10_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "0581f7befe76fc995ff08e9055205ce5bfb3be415fc33e800ab5cd79f7ce5b67"
+  },
+  "characters/Hairstyle_10_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "29bb5ba5d9990e8d5230d9e41f22c287108d27d2d7f1671a57bf9c557dc4869f"
+  },
+  "characters/Hairstyle_10_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "dfe3daf6cd5a573e90117b81ac8a496441f0be8aa06fe238f961eb17ce2b1030"
+  },
+  "characters/Hairstyle_10_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4aa835619c1672f8235aa225a0fba023aa9de1a7b73d428b45f6e059731d49a7"
+  },
+  "characters/Hairstyle_10_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "99726f577d2c96fdc4d24409069d78825665b883dc200b858bfe87ff70487fee"
+  },
+  "characters/Hairstyle_10_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "03314c4af20cacbe31e962f941888b12f618b41fb8145c531bb9206619714750"
+  },
+  "characters/Hairstyle_10_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7b91f4df61dae050599e5e047f7a1a5231ec3abcf3fb5a88fed7c170cedbffcc"
+  },
+  "characters/Hairstyle_11_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "60d2b8b1022f63f61bf5e3277f454ff05342e66862c53a8b2e0f19d1dddd272a"
+  },
+  "characters/Hairstyle_11_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "33dff4a2b9327f3c29d501d7bb6fe1ac1e8b5b5f9e7c1b0198bacc6cba9781f4"
+  },
+  "characters/Hairstyle_11_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6b857a42eac354483cfdc3261fcbcc7bcfddb8b40af23e7cfbc4727b7fd49504"
+  },
+  "characters/Hairstyle_11_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9aba804879f452743de1d4eda2280a9b886d5ae8a7105759fa8944cf2f213666"
+  },
+  "characters/Hairstyle_11_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b7512cdb7ea9747e15ef4d7486273aec7aebfe5af9b8388f705ff6fec445ab6e"
+  },
+  "characters/Hairstyle_11_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a990bad06d14e080279c83a4195356984717a89649b67eff7aaffbf64bd42319"
+  },
+  "characters/Hairstyle_11_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "2a03d41f1db07d5d00c95b34a2fd895f51f177bbc7ecb5170c04029013f1092b"
+  },
+  "characters/Hairstyle_12_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "cdec8733bedbc984c1441c4b17392d1b86d3b1e94d2373603f79573d9f585771"
+  },
+  "characters/Hairstyle_12_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "780e947d6f318c5cf7ab3ef794dbfd653d2d73f65553b834279e8a5dbb891253"
+  },
+  "characters/Hairstyle_12_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7115dfb9856c69ef4a575c6c1b25266a6a3810f844b47e716cf1686e1095f6d4"
+  },
+  "characters/Hairstyle_12_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5013101ef9f7dcf2998c18a6ff0271f3ef3f28d77b299ccfe4ba6a61cae8341a"
+  },
+  "characters/Hairstyle_12_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "65c0a5d91cdd602dee0afffbbe1a03420a564692bc0f22d369cf962beac17012"
+  },
+  "characters/Hairstyle_12_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1651b466b2ba2919be44b77f28c83f09a884b281abaa0c1a49dfdae738e7897b"
+  },
+  "characters/Hairstyle_12_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7fe95fd30434832ed7097455e2cec6662451821cb5075202639308ac324488ee"
+  },
+  "characters/Hairstyle_13_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9d5dc1da5c9dc41aafa0bbd4b64f1e3043b38ebf51172e2de001dc15e5040848"
+  },
+  "characters/Hairstyle_13_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1f5d59a835f798f3d9433c9a0d9d713c88e6e9f052214c5e5f5e92217cdf9c51"
+  },
+  "characters/Hairstyle_13_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "87227fc5e29b262fd7695e78eb5cad0678012fd6d09753f8416927e9a0f46ea3"
+  },
+  "characters/Hairstyle_13_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d5db0c54d61cbb7c1008f99918d5a94dfd28b5b30e48cb4976901925b57733c6"
+  },
+  "characters/Hairstyle_13_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4c150ee1c3e418f65d50868c0c1474263dd93ba1a62a6e3c0be1901f2e613b2a"
+  },
+  "characters/Hairstyle_13_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3a10be0f59bac9e76dfbbcccfd7469b88f492bec18644065a697c2681f3e0f30"
+  },
+  "characters/Hairstyle_13_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "fc30d91ed4ac415c007071ab38f74299c74920b3421fbb389f0fb0adcb0bc6e6"
+  },
+  "characters/Hairstyle_14_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1af8d50ad0fa24c34212635425f2e2b312b800ca3164201f39d98700426d6676"
+  },
+  "characters/Hairstyle_14_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7cfc8fce94aa8c3fe1773e3644168ad3e67dde721dcbf86235d41b531c6518e2"
+  },
+  "characters/Hairstyle_14_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "0e60fd76332a83a81ac6b6681c9d77267830ce0369b173924460e77cf373525e"
+  },
+  "characters/Hairstyle_14_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d1e46ed8a6ddff53f348e649febfe7f2e52194c85bf18e31bc6cf901656efe84"
+  },
+  "characters/Hairstyle_14_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1020bebf40bf6db45ec90c9202b25148157f309d618c5cb017010e400c7857f7"
+  },
+  "characters/Hairstyle_14_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f3e297b49e27de4eb515a51c882f6561cd9fe48c6cda342e832c66b84c8e4a03"
+  },
+  "characters/Hairstyle_14_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "140f8ae1e0c8b0f35d89743b91324e2f5d83d45232e9d79feb5eddd0dac06144"
+  },
+  "characters/Hairstyle_15_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c546241087d191cade00d7dbe4941f0166badada8252053b8a8c318cce66faff"
+  },
+  "characters/Hairstyle_15_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3282e5a657fd7ac5d15bcee5758065b148f08715d1182a4f9c2becae41046c99"
+  },
+  "characters/Hairstyle_15_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "45360accdeb6455bea978c71701987821048d4ba6ff7dd7e135a390c16f24c71"
+  },
+  "characters/Hairstyle_15_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "08de28583e804805edaeed69f7a004a7dd84e88c2fa314d67d67e9ae99a07da5"
+  },
+  "characters/Hairstyle_15_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b273e09fd29bde39963cbc5742dd7687535337d0b4378d1c773933ca8a837d29"
+  },
+  "characters/Hairstyle_15_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "546539348db2248d10c06e5615aa7f241722080a92c25c8532062cb0343474ea"
+  },
+  "characters/Hairstyle_15_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b25762035f046ee2407c20e8feff4e7ee4aacd44a6eec92e001009fe8afe0ae9"
+  },
+  "characters/Hairstyle_16_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "12272c10086e2c375943240ffe9f6c15469b5b0047bf08dbe61dbccf05c7f247"
+  },
+  "characters/Hairstyle_16_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "05ad1a052969967d56f7ae42a2576193c6f8898a6e057ec331e0ac3cd3f36053"
+  },
+  "characters/Hairstyle_16_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f3946f301531d3f6f830c0eba2be1916cf20d9dd186b8bcba68fb442c1cae9b1"
+  },
+  "characters/Hairstyle_16_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4f47b6065b24a09c80ffefee618cdb833001592beba9d70f9c8cca88028f9bfb"
+  },
+  "characters/Hairstyle_16_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d0528a6921fe4fe891b9783bb6bb613c5bf55c009c5f1af96fdbb67b66e7ed1b"
+  },
+  "characters/Hairstyle_16_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "15fa603d7b41354d33c7f9b51d8144dff5447aa5af7aff3f055c5ea378d65007"
+  },
+  "characters/Hairstyle_16_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d5c895a0693477db1aad4008e4211a10d09fca127583ceeb1d61eda759278170"
+  },
+  "characters/Hairstyle_17_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "8ebf59d1111e5df2320f03691d119547bcd5be47c2e72072e7ce569524641649"
+  },
+  "characters/Hairstyle_17_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "74fd0eec8bda71ca32ed1ca4d524960f0853e36c022b7050033fe44bcc112e54"
+  },
+  "characters/Hairstyle_17_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "71d5e39240e9022404901562ad228bba23196f231fca86d13e1b513a2a38c5f1"
+  },
+  "characters/Hairstyle_17_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "86f2e166312521a21e0232581f3665161a1593040b767208f3d27074bb69c2b0"
+  },
+  "characters/Hairstyle_17_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7cf1d940d27ee6c39509ee3035a8c49503e7134ed9735244bd86dc92b1995b6a"
+  },
+  "characters/Hairstyle_17_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f2474c7d282b46bfa2412a20ff50f7a16743dcbb2fe7d260f38378a76cd191e3"
+  },
+  "characters/Hairstyle_17_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "820cbcb38f911e9fb5455e7af5c4830f431672dce3e2be7b0f7f91c33161b874"
+  },
+  "characters/Hairstyle_18_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "bc04e9cccd6a5d716fc24414a98d95863943a921f9b5047069ddbafb7a984636"
+  },
+  "characters/Hairstyle_18_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ca00fdfb698251ce28d6c55db2238a6f14fd99f10ad50306bbd3826b29d2401b"
+  },
+  "characters/Hairstyle_18_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5e30f92d74ec8bcf212147d72d2343aafed627bd08456da4c7671ca00011c35e"
+  },
+  "characters/Hairstyle_18_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9e5d73b75570a9f849de0940c1018682f71089d91ce6f25a37eacc20f318233f"
+  },
+  "characters/Hairstyle_18_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ebd20807a978962ebc8ac506b1927464001e6f367794f351cabc931814c2425c"
+  },
+  "characters/Hairstyle_18_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "78fc8f04d6313a50a46c7d291c375356d509b92312993a0bbaabeaa78ea80b20"
+  },
+  "characters/Hairstyle_18_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "fb0148aa208be5d8b8925c5d6fb0c3a99d59b52d58c644712d7f91024940325c"
+  },
+  "characters/Hairstyle_19_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "83210e0d0e25e1ccc0a2f1f55099ec1adcd2de4b6fe9c5298f4aa6b4069c171b"
+  },
+  "characters/Hairstyle_19_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "106066b4d32eeb5cba9dbf1536841658c8b2eb445b32b0ade0a4acc5e21a424e"
+  },
+  "characters/Hairstyle_19_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5d7834b905dfd5bfb3bf246939154d7b558cdb3af85da6835be99a0edf495ba9"
+  },
+  "characters/Hairstyle_19_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "429a6672c9d5b45d2d2b7795f7198d86ed4fe8b5ff8a1e4f345b3ab82ba76975"
+  },
+  "characters/Hairstyle_19_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e9d9f09d87b7b13c371aa076409bbf3ec2ee1701f0c635d1b56791235677ad01"
+  },
+  "characters/Hairstyle_19_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c9e32e8fd8c8c8dd0984804964fa268e697593f869cae2d645eba1c50624e463"
+  },
+  "characters/Hairstyle_19_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d01af163737b62aef389fc5b92be4c3169bec5d14dac29936edf6bb47e304ea3"
+  },
+  "characters/Hairstyle_20_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ccf37a2a3ddc4fd47dd5abcf8e10504ec4239f61f7cfb04cf824313ee929b9b7"
+  },
+  "characters/Hairstyle_20_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b99d28f6a7f7d5a0671dcaac64e07b174936c9733cb3b4c05568b0d9f9a249da"
+  },
+  "characters/Hairstyle_20_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6a0192885be78e31bf8489196c2a13eb4b54c0f5f48a217bf0a7dd7b7e2baff5"
+  },
+  "characters/Hairstyle_20_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4d1bc9fc1b2a7e828a1b3f048416d7d1b32e2a032f8bf257c16120bf6a293cd2"
+  },
+  "characters/Hairstyle_20_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "31b136f1e906e3d7e6d9bf3679a9c73228990c2b699dd6a09d132abbced8e542"
+  },
+  "characters/Hairstyle_20_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e23cd3c5bdb8c893bdb0acaecaa1ca4a196ce7919797d7186671f958231bff2c"
+  },
+  "characters/Hairstyle_20_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d51057fc565d6f518eccea0be975730a7b09f92f1a5b673459f968fc8748cc4d"
+  },
+  "characters/Hairstyle_21_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b77168e061fc8f2fc146b487ae3a971697cf7a048fb5c5058687f3c5600c48f7"
+  },
+  "characters/Hairstyle_21_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "bb419b35f1c9ed0096fa923e71fd19d7d8a29775f5bea3c1d23b46674e904aa5"
+  },
+  "characters/Hairstyle_21_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "589a9f8ac96c8312f2114fcaac9e5fe7b1a8aa829d856f254342b219a090e009"
+  },
+  "characters/Hairstyle_21_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "aacfad27564b47d5013fd42c73bef3b081907f53c123b9271bcfc4e56e8d5880"
+  },
+  "characters/Hairstyle_21_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "869fceee0e29eeff5fd6a4137772a2f39a0da22266dfd12aff22d89bac3037ca"
+  },
+  "characters/Hairstyle_21_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7fd1fc381351a41523f104de2fbc2b51ad40f1d4b9fde4deac89357ebb90d4a6"
+  },
+  "characters/Hairstyle_21_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "822ee5156e4750b298121b0e5cb9a8521b755cc1bf770c92f2d3f6059320f00f"
+  },
+  "characters/Hairstyle_22_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4236dd24f3d9f51dc9ff5e0b29a2355f1b55973782d3cd79a972575c55148a6b"
+  },
+  "characters/Hairstyle_22_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7701f01c3ac380496cdae4180bf1858f9ce63050f6ad5563ba6ca8664cbb9448"
+  },
+  "characters/Hairstyle_22_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f46f84b1d3b3a3dce646a0a360453a098bdd9ad06d2a61f82680c887c26289a4"
+  },
+  "characters/Hairstyle_22_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ff5d48acdaeed81abd57e007ccee4051b8cc962a5ccf2a40d78640ccf20a89f6"
+  },
+  "characters/Hairstyle_22_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "873322ed3a92b004b2d8081098597653fcd6c20bc66e63b2c9f3f015d1325c15"
+  },
+  "characters/Hairstyle_22_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ae7460aeabbe513babb19f1a772e03ac9fd526ec7d8092bbf90a9574195d31f2"
+  },
+  "characters/Hairstyle_22_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4cc2f2037c3daa0d034f17e4b8ca693e4ad70b8fa31b86d096fcb78b44950f28"
+  },
+  "characters/Hairstyle_23_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "2691832f8325852570bdc7853b4adeae5a049d08b2fe3c59d441ff7f0c78bd53"
+  },
+  "characters/Hairstyle_23_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3d79915d4a9c74ede677784ccef9278ac79412da2312ffbebedbf1d284aea587"
+  },
+  "characters/Hairstyle_23_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "279c9df7509b81c7d7549b00e95e5f3938d574ce9cebec1b78ad62afa4691096"
+  },
+  "characters/Hairstyle_23_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7cf81812ebc06c21f54b6df75a6e49b5fb1455f7389658ac776d1d4f1050c470"
+  },
+  "characters/Hairstyle_23_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c4f32f78fcbf9900db0f7c865d1a71abce0a5946c306dfadf14819efd04d0043"
+  },
+  "characters/Hairstyle_23_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7c6d1b650eb6281f1d499190c37f019b18cc9b03b2af867ca12839ec6cdcec10"
+  },
+  "characters/Hairstyle_23_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "67ff9d8aff0c26d3f04623a9b3fe9d6da6226be9ab09202b5a0be8a1c3c6dace"
+  },
+  "characters/Hairstyle_24_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "8317a6f545478b243bb85f22830568e0ce62973ba1a5f74c03ba777792d96201"
+  },
+  "characters/Hairstyle_24_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ad3cb42aef9502045f972a6ed10861ebf38612e78bb633db3262b206610c8e10"
+  },
+  "characters/Hairstyle_24_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "57b5108f89106bae2d39cf40023955861a572d959f85868a46f7d7780d3b4ac8"
+  },
+  "characters/Hairstyle_24_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e565480e69e5ec9bb325009c0668d5c224a259d263e2dd4070ea89be18729dfa"
+  },
+  "characters/Hairstyle_24_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b6a155b96b3d8e0238d532e8d4abcac43f795556d4f6e33cdf5636f7e8f5d2e8"
+  },
+  "characters/Hairstyle_24_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "09027c99097af586e9c1288e638b3a02beee0c26163ecac34e7c7f8d0e5cd7fa"
+  },
+  "characters/Hairstyle_24_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "626fc0bdf916d188c71b80bd497611261eb15ea618c99d821a5928c78513fc5f"
+  },
+  "characters/Hairstyle_25_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d9e362bb1f12ce459bd66ae027869c7db55eeba5544116e0f963763fd8b515de"
+  },
+  "characters/Hairstyle_25_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "31dc4286043b79e3254aa95eae283a073889d3c5a8ef60e770058e8d21139d71"
+  },
+  "characters/Hairstyle_25_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6edd01742466ce289f50c0d9ebdd61fdbea4f304571f62e7fdb9cf252c2148e4"
+  },
+  "characters/Hairstyle_25_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "648f5f0f6211be85e7d3715154b810d5e80e55d3ad22a9e4d641e6611a7024ba"
+  },
+  "characters/Hairstyle_25_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4926304f450618827cb6eac984e774cce063763f7019f2f0f1249e05fead97b0"
+  },
+  "characters/Hairstyle_25_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a908630f3f602ff180f9dcb3735efa554d8384896600af78a207f3a013b2feea"
+  },
+  "characters/Hairstyle_25_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "8674688a4e094cea43faf3db040d71d23ca117f16e355f707b78ec1ff2cb8183"
+  },
+  "characters/Hairstyle_26_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "13be083519003dc98d34a3c1fe365606013b5f5ae4e6ffa681b888606779e603"
+  },
+  "characters/Hairstyle_26_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7f89e7b6654b23f54d65bdf2c9183fc0d3aa18dde904fcc21a8683f2034df85a"
+  },
+  "characters/Hairstyle_26_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "47da355362d536bf208a4c68a575d03c675c5b47d5e9cdd2485080c78a2ec480"
+  },
+  "characters/Hairstyle_26_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6232217c48b4a87f696bf925aa06cf5f8b3e4a56defc0eb7f39e35cc73a5a840"
+  },
+  "characters/Hairstyle_26_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4abbeb9bfa376dcc71ca3d456d40b2943a8e941d3e55c5039845a49304024c96"
+  },
+  "characters/Hairstyle_26_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a67e239c904c33e1b17e6e679ca33675436d2825f723b92bd213e34550ee22b6"
+  },
+  "characters/Hairstyle_26_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4e9e66ef08364c77d2ac867f35e58d3407c9121c0a94d75c718b42b845145682"
+  },
+  "characters/Hairstyle_27_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f6fd891bfecd0c2e7ac6616faac3c072bbd163f150e440bced43e03558fda09a"
+  },
+  "characters/Hairstyle_27_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "efaf754d738e51ce09d3e2fac56ed283cad40baaddf0d81ffe71188e8b957f8a"
+  },
+  "characters/Hairstyle_27_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e017262dc86108ef651b105f30701e9653ac2b3df8058cca4f8170ca3f25e43b"
+  },
+  "characters/Hairstyle_27_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "209353a305aada748bbf96eda2f336ef4b4a790a61743eb3a8a9c4d01284e30a"
+  },
+  "characters/Hairstyle_27_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4889094f692586ad81e70d45ff2722d2b6c94c60d9dc12f506c4130ff2519adc"
+  },
+  "characters/Hairstyle_27_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "0921ea0ab7248570f8eb8389f1d62d4ba75d9b9625fc32e2d563c937efb2d39d"
+  },
+  "characters/Hairstyle_28_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c18de4cbccdd71d6b7657f87a16bcd140fde112bcb99eb97398a39faccb95d70"
+  },
+  "characters/Hairstyle_28_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5c7c8d4f8d7613bd3f34c646cf08b8ea6f699d15c36d248523c1b72f3b1ebc9c"
+  },
+  "characters/Hairstyle_28_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3894e8e44e9d5f10c9a04b0a5443603ee7772e4eb6e5c2087ca9462743db3ee9"
+  },
+  "characters/Hairstyle_28_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "653c2e7332cb6370cf0ff18b1fc6a8ff8a9b37a46cf2f61b1272bf7ff4e3e2e4"
+  },
+  "characters/Hairstyle_28_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "88aa7b22c7d4c9a0c9055d9eddd0de1c1166fdeea02b217567d089833f76dd14"
+  },
+  "characters/Hairstyle_28_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b3ddb0a1efb727bf4223e7dea85092d09fd60905dfe5363eed72de4114e7557c"
+  },
+  "characters/Hairstyle_29_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "65757398159e3d7b57cdbebc5f5e2935afe0eebdaa604a9d3301a9d2094ad83a"
+  },
+  "characters/Hairstyle_29_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5e218e9ff77fc186ee670ed8eeafa828103375991c0491cb5454410616b32b78"
+  },
+  "characters/Hairstyle_29_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4e6b993985b7ed880656ec80b542037d5f9a239e93581bb48b4c052adef28ba8"
+  },
+  "characters/Hairstyle_29_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d2cfd2f7dbc951270caa9b224a9acd6190b3552a0c01ded5bd59a0da08e996f2"
+  },
+  "characters/Hairstyle_29_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ff38c3ed7012b1e8d969f95a85f7ca6520d8d7065f120c9958c7ac00228d5641"
+  },
+  "characters/Hairstyle_29_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "0a02a4a4ae04817f894ee9f93ceee12f6a4f2bee944ff836b396c9dd94922124"
+  },
+  "characters/Outfit_01_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1809bfbede47f9436a7514cbff3fec46fe7957765aac43bd322af909f773e0aa"
+  },
+  "characters/Outfit_01_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e7081ed8ab622b8bb34d4eeb8ba4ee28c655446b817687366a3ee637c2363c5e"
+  },
+  "characters/Outfit_01_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f780b242a8291e1b6b08be9ea03ea4048173eda0dc6fe12c7516fbb7e6dd19b1"
+  },
+  "characters/Outfit_01_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c56a247b39de5ba7ecc55bf4f367c274f0ae8617a205f0090e3bba45016c4b9f"
+  },
+  "characters/Outfit_01_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a92e3522b60f637523cf5f0ea029053b0c9eab94b30e754edbc58727129fca92"
+  },
+  "characters/Outfit_01_06.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "887ad3e5dfef4871086507d87d04e0e0f7809be58b99e478796c8e7f7a5ecc5a"
+  },
+  "characters/Outfit_01_07.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "704fda898f3d231ca9bcb135abf4105eecd65f959433e7113efa6001ba115aa3"
+  },
+  "characters/Outfit_01_08.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "dc2ce54c8b10e60981c491c6addba998e4f5dac1e6b9548ca97affb8e57f09fc"
+  },
+  "characters/Outfit_01_09.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "fbc8ffface0fe74981afd8385020c1710dc8e8421c49a65ecbc4cc8861f988ee"
+  },
+  "characters/Outfit_01_10.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "52ce7c0f53f235ef79139a13e3e1fd92cd285e54441d54e736f94c5d7d96560e"
+  },
+  "characters/Outfit_02_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a72abd6d80e7116e97699e7f12695e411fe97815d62f2e4dd78403cbd0ad2280"
+  },
+  "characters/Outfit_02_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b8e6bb1f470d9cbb043d2d6fad04fa448dbb854c3b03a8f7e2354f6ce865ee20"
+  },
+  "characters/Outfit_02_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ce38c2335d1c9262a5bfb8c5d77d940e144d743853d73c06b3ba96693d1b8086"
+  },
+  "characters/Outfit_02_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b02c4075961da17ea9a9000470155e396ae989a8ddb2d4559e1eb9742c5b4c5a"
+  },
+  "characters/Outfit_03_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "cb1b916ca25535cb7576c20dfdc9780d8a645192efe1e866240c0b5eebddb0f1"
+  },
+  "characters/Outfit_03_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1d3885b1e611804c43b6e41f7cf32d580cd558a1079634a964b4290841f81231"
+  },
+  "characters/Outfit_03_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4d71d2aec969639c3fabeeffe9f2cc334a017cfcb0e3582bd3223effec98f160"
+  },
+  "characters/Outfit_03_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "73c15a0da38731f7a761a020c704c01250b1038aeed985c0fa6fc90ef66ec2e8"
+  },
+  "characters/Outfit_04_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "20824d02203a4781e4a7e1a787d4d6426d66bc4553c3e00e0a0db9eac2d0dad0"
+  },
+  "characters/Outfit_04_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7216fc0ebcc5fadde1021b755edaae21c8a34b4eccf0e8dadfe2e90ad973121b"
+  },
+  "characters/Outfit_04_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "03bf84f3a7fefdc88d7007e5538751e3d52d33a45c347f96af7316e976ba9fd3"
+  },
+  "characters/Outfit_05_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a164558566bafbaaa5e86738825cd89734d93ba970b01076bf01ab7d08a90ae6"
+  },
+  "characters/Outfit_05_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "328959154f11f45f01258093f3b8cb73d545f445794bf08b3133610a0b9cc4a0"
+  },
+  "characters/Outfit_05_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4d9d8ffccdb2bea329da3beeb1705a32174ea55807ae452a592e994b87057f54"
+  },
+  "characters/Outfit_05_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "fc83220dd253995b9c6e04eed11018924d9d6987032ceeef8d9bdb1ab87fea68"
+  },
+  "characters/Outfit_05_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c8f02cd43f806286bce16cb658453c12e425af82e20f7bb582cdbb810791937c"
+  },
+  "characters/Outfit_06_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ba13d5a357b10b82a3b9d0fb0536ca63014431eb40ec5d778795ebfefe44bc53"
+  },
+  "characters/Outfit_06_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7cbf80341d232116753f3e7bb3ee97c79babbb5b0c5ca909e8fe4b40b7d16219"
+  },
+  "characters/Outfit_06_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "78442711b13a72ad4745e93162e162d4ba0f2dce9465f48afd9713e1d692abd4"
+  },
+  "characters/Outfit_06_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "91d1b1b8c790eac3883922c3282c1f425b30982b5086fc7f34840e41092002a2"
+  },
+  "characters/Outfit_07_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c856469eca321bc8e15bdfec087282a8be14591fbe603fc42956766ea2fa4905"
+  },
+  "characters/Outfit_07_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1cfa5964191f57eb59222e707a35c7a90b0b93358cbb1a19550f7d1f5e9a0a85"
+  },
+  "characters/Outfit_07_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "32ec0cd08eb01b5226333ceed7aa24130f03e0f637bc8fa066a7b70fb3977501"
+  },
+  "characters/Outfit_07_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "17c346078fa2763adbacaccac6b7bd7eebaaa2c7115ad696fbe6bfa3645f7a0a"
+  },
+  "characters/Outfit_08_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "175956eeb002ae890e1513ea640a80939876013a5ae24d6b1030d3083004d435"
+  },
+  "characters/Outfit_08_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "52de52f34aed291b41d4ee1bd99168c2d7716c2c290998c8e0b80a22ee1dfff8"
+  },
+  "characters/Outfit_08_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9fd32b7e586d3ebb970b60d08e21035d6db744dd4b567d0a1541ad30bc16b9fc"
+  },
+  "characters/Outfit_09_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7fc4702ea33dc6ca9e66b7cf81a1917b83d623d5b2eae6a182c38bea76816fc4"
+  },
+  "characters/Outfit_09_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "bba8b88715234a4e20432c347a7dbecffc019fa6a85edcbd1b0c36b0a88ece27"
+  },
+  "characters/Outfit_09_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "365965202b47fcca7ba2ecd6372b5dad986005c39e6a838604fe4bd21734e348"
+  },
+  "characters/Outfit_10_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "38fb3be59aa1551746bd073fe16da3489e773f0f75fcf3e1a993217fd3878cc4"
+  },
+  "characters/Outfit_10_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ee287b93569f0dcf20601bb2fb3660864fb4e9d096b588cbab2d68caff139d99"
+  },
+  "characters/Outfit_10_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "9b02ba03684b1658e1a1705f4fd237102577446c736da5ffb64d4db95c7b5519"
+  },
+  "characters/Outfit_10_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "fc9be72fd18fffba491d04b7df5123b6ee0a1b51c99839ff89e78941f6a21982"
+  },
+  "characters/Outfit_10_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "23d40fa583315eb42c44c4216f5afbffb5d0c3c509c4d3167206455c87a12343"
+  },
+  "characters/Outfit_11_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "308bede9a1e5cc30c32355b1eca6a1324fb3c1ff52e8593a8364f9ed4a667ee5"
+  },
+  "characters/Outfit_11_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "988a48f012f1e88d5521bc5e383ee8707385d8469d283ba169ad49d53e3c75f6"
+  },
+  "characters/Outfit_11_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "87b0fcb2471be8b266805a9a4351cf237cec751052b27018f5161ee34a9100e5"
+  },
+  "characters/Outfit_11_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1258cb36ac4bee73d578cb4207f6ad19bc446f52c9da7d1dab101c3c599cf4ae"
+  },
+  "characters/Outfit_12_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "edbf5d4ec36242e9af27a6fc5c016e0f7f0612b0560afe88d9f1c65f42c08787"
+  },
+  "characters/Outfit_12_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f0ef9c0532b237d5497ddbd65e076f83303551ad2a72cf6aa7436eccc7f349ab"
+  },
+  "characters/Outfit_12_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "84613f8ca7b2584ad1653f55155ab718e0ebc6e57421902be712f95feab0fd31"
+  },
+  "characters/Outfit_13_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f66aed06b14f6682064921fc50aaecb7fe22324c3a28e70f7ab941f3269aee59"
+  },
+  "characters/Outfit_13_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ffdebaf0b8c0d91a6a40819a772cfc382bf4a32a24b7d1d0f3fb3fefd798f6cc"
+  },
+  "characters/Outfit_13_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4a3a9f8169b76d988b2b704dc5bc49d221b5ca2f40d042e18fd28592434f237b"
+  },
+  "characters/Outfit_13_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d3808f49f2d68a69a3f209026fbd21a125bbb08ed874be86ee5811e731e215ab"
+  },
+  "characters/Outfit_14_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "34c2b8f85d548a806bdac937323c8c32c6aa6ea68545265b93d2839b441ce579"
+  },
+  "characters/Outfit_14_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1e1889c4fcb0c70fdb437947d19b59fcc1af55ea5a8f8f0e2519e745cfa3da30"
+  },
+  "characters/Outfit_14_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b0979c9125e6c16b828e94cf29f6a5793d57184fad1ad0b4f4532c082edb9fb0"
+  },
+  "characters/Outfit_14_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1ef0f7b2126a1a7c096c80c5ed95606844c0fa91bc27c17f600c2f7ec3d89aef"
+  },
+  "characters/Outfit_14_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "72ed9f35f7f350d8e17126336c535c5645de55b5ca99aa9d39a995953d8ba7eb"
+  },
+  "characters/Outfit_15_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "8500f6f656dd867f0a6ae86905dfff3ebc33f942c11c0353e99a7f00d03363eb"
+  },
+  "characters/Outfit_15_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1b0147adcd5bb769ea8d4b936869ba30a2f67d8262679986179a2afab16803b2"
+  },
+  "characters/Outfit_15_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e14bf19e4fcc94a4eac1217831d75659ce63376835b6e6eb2558c1634c9af536"
+  },
+  "characters/Outfit_16_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d870c176f2dcba1b6567c27da2aa7c9c1f705ebbfd7ef1c05c3e524dff57e150"
+  },
+  "characters/Outfit_16_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1de943f280032b1461887c16d6bf83723ff9d5597fce8fa4b8db018459589aaf"
+  },
+  "characters/Outfit_16_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b2e6f4aef6419aab18da70ec123b61848e8dfeb91bd7f50e8285eec66cb1817e"
+  },
+  "characters/Outfit_17_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c7cb3ae171e46826f31f5a0c635cda645c5cf81feaee2b63350764059903c841"
+  },
+  "characters/Outfit_17_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6f22818e508e8daafe18162a4c07ce766c1ee59ef07342d64df04baad0e38b70"
+  },
+  "characters/Outfit_17_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f3acf26dd06806192509c116b0991ce3c1f2b08552714ad955dc03e275b4357b"
+  },
+  "characters/Outfit_18_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "2d865893fca63bffd08009dedca2bac1d926f441bde8639e36c1d07f221b3f9b"
+  },
+  "characters/Outfit_18_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "97482d1389a4fb970be0962d45d5ca808868f7f57686fcf5e45ca3dd343e62a3"
+  },
+  "characters/Outfit_18_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d467ea2771ccf2c13e9a208a218f50e48a74a3f76b8551ebc7eb82acd9e1c6ff"
+  },
+  "characters/Outfit_18_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "00e8bbf4c00dedb1cab2e5468fbc980516aa3c5353cab30da65bfdf8e10c4fa8"
+  },
+  "characters/Outfit_19_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d5ffc60193a5216e75b8a4d4df208369e67d8a9c8e255d97653164d1069a7b54"
+  },
+  "characters/Outfit_19_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "cb6e8977f4acfb28781455d71b0ea522689768cfbb562214c57229d407eb694b"
+  },
+  "characters/Outfit_19_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3c30fe05a8540b3a8405e43363351d1a3fb2d187ed5c458bc3f092169621eece"
+  },
+  "characters/Outfit_19_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f3827e1841d8bd19378d275e6ab82fe99ee9c0fd603ea9cf042fec058075be68"
+  },
+  "characters/Outfit_20_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "cc6f07759ed47edd6001e0ed9dd6a2ec5ded93f4d3a88596c9e931e874d3c742"
+  },
+  "characters/Outfit_20_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "93a3670a20a3df794068f5054a14f60b2317b129fea0976ad89986d76a1bfd39"
+  },
+  "characters/Outfit_20_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f7dd071d3d7a0d01a39af6d3ef74bd61a71a30a88a541f4ed5986d5b642da8b1"
+  },
+  "characters/Outfit_21_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3813d485c39dd7774913b633ef479f35138dcc1ba3e081e057582b15774d7f95"
+  },
+  "characters/Outfit_21_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "59adda51ffa92d76283e8143b734c8649c314a27ceb8859829ff0444c6d8e57a"
+  },
+  "characters/Outfit_21_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c4e0899a6335cc4e6990eeb278679019fe52c261ff56eafbc0d390eb614c3689"
+  },
+  "characters/Outfit_21_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d2eb612d7de8491025870a44d7ba45dd297a94cd2747e522fc37b0ff3e94891b"
+  },
+  "characters/Outfit_22_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ee017e6dc6d0679ef333c8e2674fc35e50d49964506eb9648b5cc6c0fcf6adbc"
+  },
+  "characters/Outfit_22_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6adcdfe53e659e4cfc3ddf98339437c29036d46bfab71235f55248a5cdb52119"
+  },
+  "characters/Outfit_22_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "15eece3f21d1cf59e3cb7e57b26fb6e4fac35a8f0ee2b1d19ad6c1b1025a6ad8"
+  },
+  "characters/Outfit_22_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c167a40ce77d3e496e377065f62f42c932f6c11089bb239f3ce28294995a5e3e"
+  },
+  "characters/Outfit_23_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "81c97c216818708e0f7d19c316c30dbbae42a3e7d1070a30a997ded625a33515"
+  },
+  "characters/Outfit_23_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "88071947ff2ca9472ca21bafa61bbc12b8fbc264ac82f7e7a232f146ef72e544"
+  },
+  "characters/Outfit_23_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f0d4fbcd28dde5430cafc506fb83c4ff0478812db7ccfc270381c28097825c20"
+  },
+  "characters/Outfit_23_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "f1142bd1ff19192bf6e886214cd93fb9455c35b4b1dc49a6751ecee9dd00288a"
+  },
+  "characters/Outfit_24_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4befd4551ecb31fd9849000ea5d53f51eba34d67786b91c375164b166f062317"
+  },
+  "characters/Outfit_24_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ad5de1717aec76cb90797c6b47a9571635fbedae70d3d25e5b6c4bc0a329548b"
+  },
+  "characters/Outfit_24_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "98cb3fffdbe59950e9920bddd9c7c8561083258b55e518a165ff7952475d6306"
+  },
+  "characters/Outfit_24_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "b5cb80ea67919131b034cf895cefa68faffd0c026db1059e8ac251ec93d9c8ab"
+  },
+  "characters/Outfit_25_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e1c52c50fc07f2596f81e27db3ca24aa669040e3f601dd953e9b2e17b7eb63ca"
+  },
+  "characters/Outfit_25_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "12f14d21b54f452f85e182eae5c8d6d53692e83f8ae6f69201c61034312d0f80"
+  },
+  "characters/Outfit_25_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7b6f2f1d6bd5d19f9e1a9f13257d755134c3fe952b8270d343ef58cf9d477023"
+  },
+  "characters/Outfit_25_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ff1bf067dbc562202ba7d5c24675b034b530c6d600313f68ce0b999a6bbf4de2"
+  },
+  "characters/Outfit_25_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "2861173f5b391a726faeea08f661341a97ce9be5054ae5d355dfcf920cade873"
+  },
+  "characters/Outfit_26_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "291cc8dac5694f22ed23d2c5bb11c0456c95c0ffe9b3039ce2c43f55af990e22"
+  },
+  "characters/Outfit_26_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "ddcad0ed40db2e17810b9e98c82a667f2a3f39f31a23bb02912fb2402cf4885d"
+  },
+  "characters/Outfit_26_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "843857fc18d334f7ab036df79c879a660d15948aaeaddd629ddc072448df9893"
+  },
+  "characters/Outfit_27_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e868900f074aad96296554ed0d15a53a012222a1a4f216e7483c1d50e487c1e0"
+  },
+  "characters/Outfit_27_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "c779992f11fb0fbf85c5720379e3be71decfde3887b05f9a22572ac2e75fdfe1"
+  },
+  "characters/Outfit_27_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "e2cf3fc61ace4988e2add3519578c0aadd9b55f2f6492bad857d30a18cf1f532"
+  },
+  "characters/Outfit_28_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6aa6e69d8834ec29835bcb08e8f147e5853e7338b68ce666be62f9b99d876eec"
+  },
+  "characters/Outfit_28_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7f87d4187f0bf7ec3d7355033dbdc5a77b185e65b2f295c50a6cc9160cde31a7"
+  },
+  "characters/Outfit_28_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "2f8d1d2feaa22433bff6bfd67fc416fb08b724f982fd6fb4443dce591f6c4e43"
+  },
+  "characters/Outfit_28_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4bb8639495f4c15a862047dbdd30bf5c26ea8a07af70c294867032a21e5a4d2f"
+  },
+  "characters/Outfit_29_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "8b2c43e2bc8285021c16eee15365886aceb6ee45d575ee0734a2a14c1ac35ee0"
+  },
+  "characters/Outfit_29_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "d960ff481c06f50f26a507bfbf7395071508a9d0b6ffcc050ae6ed1120d39445"
+  },
+  "characters/Outfit_29_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "082b3ec53998b06a62e2b79aea4c2cb37d0e02555970cb485ef32f42e96ebbac"
+  },
+  "characters/Outfit_29_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7edbaa2b9d205e526a610c5c03be7346cc1e49b1d2b1be5bf2df6b74edce4ddb"
+  },
+  "characters/Outfit_30_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "269df09869ab25f59098720dad7a8ed5915272f3eb9dc7da9da3cc643de7d072"
+  },
+  "characters/Outfit_30_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "3022898316a20c704dea2d6437f773d6a52042c4043dc73c1be07d04fa2d4d87"
+  },
+  "characters/Outfit_30_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "879639dfbc30df5ac851fa3582a7e2b99cb06f43a705f3d9727936507736bb2f"
+  },
+  "characters/Outfit_31_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "4ba7a87d9a4891994e0e113677c97849520228406c484af6f4be30fb4bfd6f24"
+  },
+  "characters/Outfit_31_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "637008518015268d1967af1e3c90dbfc144d8619770a1c8e13e6792c66160380"
+  },
+  "characters/Outfit_31_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "bb286e9d27037fe539bd2129c6264049cb68ef474a701611c17fa5158945af19"
+  },
+  "characters/Outfit_31_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "7ad900deb64ced91361c6fcb962fa0f895421fb057dad1d411e402a20efad0e4"
+  },
+  "characters/Outfit_31_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "5b204342a1599192f917dd465f3e30667bf0d22bc37bf59d4e0c487e398a29bd"
+  },
+  "characters/Outfit_32_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "77a6f2cd0669d048f665b7e602cfddb57df6decc9180f01697080925d84cabc0"
+  },
+  "characters/Outfit_32_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "95f4fb65fbd18497b2df0a078ee632e8ffc13ac07bf53028788d535ea13c7008"
+  },
+  "characters/Outfit_32_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "44fe281ce6ab5100d40c8da838b9fc7d46650d38c509a0dd0b05a65a777f7de4"
+  },
+  "characters/Outfit_32_04.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "df13a31c0b6d0608a30ea24f7810b02a4a7d4df68e94d258c255fbb7a540cdc5"
+  },
+  "characters/Outfit_32_05.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "19bb685a45eb1e74bb1f5d08afee1d2f34a18bced799431d710c9e51b6b4eda0"
+  },
+  "characters/Outfit_33_01.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "a7b3e16ee7c46896b48f0a43dc783841bcca906e919bde0e1666225e317c0e0d"
+  },
+  "characters/Outfit_33_02.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "355eeecc3c9eb761053e7059a8a712a9df0b8d2200ea530ff51c4a4383d89aef"
+  },
+  "characters/Outfit_33_03.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "1884f1074c1e31f544e8766233f1f9330ecebcf08eb05d1511dfaefdb683b2dd"
+  },
   "characters/accessory.png": {
     "w": 896,
     "h": 256,
-    "sha256": "b89f743ff120650baca4670ada0a11ff313ab5bde4335f48376113f771a78bff"
+    "sha256": "0734c76a9df0deae46cbcf118a0692c3e17538d58b52a3079d2b467c4df6dcd4"
+  },
+  "characters/accessory_backpack.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "04a505006b334ce368d9c4c8f3b718c533001b9bc58557a45c590e12c08bcc2a"
+  },
+  "characters/accessory_beanie.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "6749e278f051a214e629f8d55f7d701faa0da939ccb7fa940605800ca9a8b491"
+  },
+  "characters/accessory_cap.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "8f72505703ab210832a5db3a09248866bc2a09027b61bc73f71728e8c1cc38d6"
+  },
+  "characters/accessory_satchel.png": {
+    "w": 896,
+    "h": 256,
+    "sha256": "09993bcb6f56762459ea74077316f3e85f2174a3c70d5d944a4748d844e34b71"
   },
   "characters/body.png": {
     "w": 896,
     "h": 256,
-    "sha256": "35fbe3e3b11f7e291fe7b692f71688c1300cc6f98e4e4ae2e79e498c8876a1a2"
-  },
-  "characters/eyes.png": {
-    "w": 896,
-    "h": 256,
-    "sha256": "9494586636fb46d5302f560824a51b9aa76f242afa65c6ed586acafd4d13e5f1"
-  },
-  "characters/hair.png": {
-    "w": 896,
-    "h": 256,
-    "sha256": "61cb2a9d912dbfbe33c73c1633d81fc49d71bef7590a080bb5839832b3c95f80"
-  },
-  "characters/outfit.png": {
-    "w": 896,
-    "h": 256,
-    "sha256": "9c0cae79900ee2042e2692240657eafa69d8ae7be87e59c6ca50f4d0d2b840cb"
+    "sha256": "578d5ae3cf20609c1216b399c8220b166760b44af6b6ffd7bc973bec47528bcd"
   },
   "props/armchair_blue_l.png": {
     "w": 32,
@@ -388,6 +2088,86 @@
     "w": 48,
     "h": 48,
     "sha256": "b89a1f46602d1564cd1889e6c56aa8aa9ac5aaf6b0011034554db9f138355ea8"
+  },
+  "runtime/animal_chicken.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "6bbce96f15df2fdeb55be029ef6e805a8716452255eb0b054dec2637bf340c92"
+  },
+  "runtime/animal_cow.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "80f37b5af0e4360d79947e212721c5e60e4d3c0cd35f1d974cbe1470fec93550"
+  },
+  "runtime/animal_dog.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "bbe43869f1b5bacc7f0aeb9671b386924135100dac5a882d62daf11438c1ff71"
+  },
+  "runtime/animal_pig.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "3476432594abb88df672edaed6c0ec5ba448a742c61c9a7093c5c679b7f3b839"
+  },
+  "runtime/premade_01.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "6d39de217c2906fe1a4e2ad4efbf3e71ca57c7d80f4d8cdce47caa598d00889c"
+  },
+  "runtime/premade_02.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "065859cb8d0b63b6d44aa14ca8e12fd81fafecc29368304f897f7966a53bcea6"
+  },
+  "runtime/premade_04.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "059f3a59ba4a70d2710d2cc1ab6fb812b45db2c8bb9dd95f2e9933bc7f4edfc4"
+  },
+  "runtime/premade_06.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "26589ebb59d7063cd70cc6c975caadeec421991edb1e307365faa934339ef707"
+  },
+  "runtime/premade_07.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "38e2063328c5151ddfb72879b24c7bd53b9dc46a8c69bf9a1d8fdc21b60aa81d"
+  },
+  "runtime/premade_08.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "eda975f1aec02a76386de5453aec3e880b13f36d23bf8f1761fa1ac65bb2ae4f"
+  },
+  "runtime/premade_09.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "a24d743cb1a6d1e56ffdb8b3ebd1f6eeb94a6ce131394dbc4ecd79586144e964"
+  },
+  "runtime/premade_10.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "68982252d81828849161bc05cf8c5da264224a9af1935208db16eb1039e867f9"
+  },
+  "runtime/premade_14.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "969aff8c9144182f231b55789ec55d771eac9fd257d6d484ed907e4a188bf0c9"
+  },
+  "runtime/premade_15.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "4a0169df351ee1f58d3bea80e99bf5a9d5375ffc5c280cdab2f60bb1a1bb43cb"
+  },
+  "runtime/premade_18.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "bae87f8362f9d5e38e84ac21583f310cd5867d9d8f3a8014cda567bd3e9c5530"
+  },
+  "runtime/premade_19.png": {
+    "w": 64,
+    "h": 64,
+    "sha256": "a27c9dd79600bf063c69b5f00e97b8fc5067719b1c418176799e9f0a088ad7f8"
   },
   "tiles/asphA.png": {
     "w": 16,
