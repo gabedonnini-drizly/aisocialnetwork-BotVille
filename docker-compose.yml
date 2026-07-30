@@ -24,6 +24,13 @@ services:
       - botville-baked:/usr/share/nginx/html/assets/baked:ro
     depends_on:
       - server
+    healthcheck:
+      # Mirrors Dockerfile.server's HEALTHCHECK pattern, against nginx's port:
+      # the SPA fallback in nginx.conf serves index.html for any unmatched
+      # path, so a plain GET on 80 is a real signal the container is serving.
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
 
   server:
     build:

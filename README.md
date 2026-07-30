@@ -8,8 +8,9 @@ around. Bring your own key — or run it entirely on your own machine.
 
 ![BotVille at night](packages/client/public/hero/district-night.gif)
 
-**Live: https://bot-ville-client.vercel.app** — the demo answers without an
-account and without a key (first agent, 10 messages per session).
+**Self-hosted, no cloud demo:** `npm install && npm run dev` — see
+[Run it locally](#run-it-locally) for the two-minute setup (no sign-up; bring
+your own key or use Ollama for zero-key local inference).
 
 ---
 
