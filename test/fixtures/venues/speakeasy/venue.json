@@ -1,0 +1,28 @@
+{
+  "id": "speakeasy",
+  "label": "Speakeasy",
+  "indoor": true,
+  "sizeTiles": [20, 15],
+  "groundAtlas": "interiors_ground",
+  "capacity": 3,
+  "roles": ["hangout"],
+  "affords": ["socialize", "idle"],
+  "hours": [{ "open": 18, "close": 24 }, { "open": 0, "close": 2 }],
+  "ground": { "wallA": "wallLibA", "wallB": "wallLibB", "floor": "floorDorm" },
+  "furniture": [
+    { "name": "counter_wide", "at": [4, 4] },
+    { "name": "stool", "at": [4, 6], "collide": false },
+    { "name": "stool", "at": [6, 6], "collide": false },
+    { "name": "stool", "at": [8, 6], "collide": false },
+    { "name": "plant_palm", "at": [17, 3] }
+  ],
+  "seats": [
+    { "at": [4.5, 7], "side": "right", "kind": "stool" },
+    { "at": [6.5, 7], "side": "left",  "kind": "stool" },
+    { "at": [8.5, 7], "side": "right", "kind": "stool" }
+  ],
+  "animated": [{ "name": "cuckoo_clock", "at": [12, 0.3] }],
+  "spawns": [[9.8, 12.8]],
+  "doors": [{ "name": "exit", "at": [9.5, 14], "targetVenue": "district" }],
+  "glows": []
+}
