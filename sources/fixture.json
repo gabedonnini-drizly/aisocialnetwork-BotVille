@@ -153,628 +153,744 @@
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "e99c647d14bfa9bb5ae79b607a3283783897a5111c7df92f7d436fac24ed2dc9"
     },
     "grassA": {
       "file": "t_grassA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "cb6f613b3ecb228e6512482f905d047a9075e452d6bc05c00fdfdbeedfa55d17"
     },
     "grassB": {
       "file": "t_grassB",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "c944418e43a09347e423cc597269b64e47c5be77f4aec3afc60bac739558ad86"
     },
     "sideA": {
       "file": "t_sideA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "5a9bdace81912c2c0fa5f226b49406b0dfa624b9116b13ceb37b51dc5f66e5e0"
     },
     "sideB": {
       "file": "t_sideB",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "d34962793883fd341f4d2f9997360e1481d949952891a6e2aab6b771bd401e89"
     },
     "sideC": {
       "file": "t_sideC",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "68209038f93cfeca3cb7c2b04c3cb7c94640395db7c7bae6f4c3ddc180fd39e3"
     },
     "sideD": {
       "file": "t_sideD",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "74f856997559101ac34ccc2e8f5d4e66d21dff18dfbd6fe83856adbac239a6b3"
     },
     "asphA": {
       "file": "t_asphA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "d6e1cde12da6578ac6be2e446e776fd87c98714c13c1bf555040cc0930e4beb2"
     },
     "asphB": {
       "file": "t_asphB",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "1d56baac91262fddc97ce979f4496e4bf96d6ea8296e415c4a1f1057939e7748"
     },
     "asphC": {
       "file": "t_asphC",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "219b5c0ec23c052c28036a737a4b20ab5a792da291aad1ac868da694ddc6a606"
     },
     "asphD": {
       "file": "t_asphD",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "7396ae9d98593c62f910bf9bafbdfc1685862fa2e94c32488f7d02a666b3bbd6"
     },
     "dashH": {
       "file": "t_dashH",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "449d220db1e01be9cd6be6fa157c1461d20bee95784b8b69355b15c46140bc79"
     },
     "dashV": {
       "file": "t_dashV",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "7266d39568324219900de14a9c5fd96b8df41a5318a9f08d6f41f77f49c093c7"
     },
     "zebHa1": {
       "file": "t_zebHa1",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "9ca9e342b05a478a8b995a2528a72681654f4053fc053ef996588817ced1e154"
     },
     "zebHb1": {
       "file": "t_zebHb1",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "904bb6865c109907020e5daff342630925d9af55b61ec937c91aeabc06916631"
     },
     "zebHa2": {
       "file": "t_zebHa2",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "e552a32dc56e77d7dcbbbf9d5496679790d15bd9c41243fe3e319ef8fa2edd88"
     },
     "zebHb2": {
       "file": "t_zebHb2",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "4a41f18b12ade2e777343f16aeb3a99fd8848031aa4cb89501a10ce33a9349fa"
     },
     "zebVa1": {
       "file": "t_zebVa1",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "e785ea62f9d76f052601fe57fecd5c63686a2d36f21db2b3dd8a3b3d085dbf5c"
     },
     "zebVb1": {
       "file": "t_zebVb1",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "68ac61a67eb75b6c4c05f6d513ecce99347cb1ca064f904bc4ed39daf225a01a"
     },
     "zebVa2": {
       "file": "t_zebVa2",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "2e6e86e3e362f99de0bbc501a6afd06ef31b97441741c83cbef322b02a53a4d4"
     },
     "zebVb2": {
       "file": "t_zebVb2",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "d08205edf3b9c0040d8ad9fa6aa7c129ee3079dcbc2ed7ccffa154baa2039698"
     },
     "dirt": {
       "file": "t_dirt",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "62115241c6b591186f18aa2e069924b36747e2e41d7e6da7b72327f6dc54412f"
     },
     "dirtA": {
       "file": "t_dirtA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "609100d074fc8bbd626ba0ab2eeaf75ffdecbffd2ffb73c55dcc02f1a9568010"
     },
     "border": {
       "file": "t_border",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "6cc613feb40efe1baee5a49d8a25d1535f4aba897cbcb3fb78716ea00c2c8b6a"
     },
     "wallOfficeA": {
       "file": "t_wallOfficeA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "75946a48f0cabe81a2c27c74a70531e0a5f64bee64f5932f74b118f8a57285ea"
     },
     "wallOfficeB": {
       "file": "t_wallOfficeB",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "7017e9feae9860c44ab6d2ce5cf92f3fa053fed16d99ee52934de752518272d0"
     },
     "wallCafeA": {
       "file": "t_wallCafeA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "db928fdaa93b5734629c616f1bdeb40007016ebe7a6a91b88392440c7b3c825f"
     },
     "wallCafeB": {
       "file": "t_wallCafeB",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "3f7ac00904c23c45d3529c6acae7e6f7a53c4b63e6dccfc174823374a513b491"
     },
     "wallDormA": {
       "file": "t_wallDormA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "003ae5ecfa0d3f108fb1ffc92c4b990a42684b0c68c9ca4688d5b758f850e340"
     },
     "wallDormB": {
       "file": "t_wallDormB",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "9660352db66cc97ba92cf0b45a9758ecd63a74dcf5673e2170f951d5cec22a0a"
     },
     "wallLibA": {
       "file": "t_wallLibA",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "6ba995d04ebae69d3d7728d818b1e36e1f53ed9584bc725c5f0a7a498a1f8956"
     },
     "wallLibB": {
       "file": "t_wallLibB",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "a8f55ff4ab81f095dbdfb487218fc10257cbc0d780ab400cebd3fba3d995fcc6"
     },
     "floorOffice": {
       "file": "t_floorOffice",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "45b5e6247a9d64ce0e85837e4a864c6a94f88bd2e4a5957afc858009099537fb"
     },
     "floorCafe": {
       "file": "t_floorCafe",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "0d787c6a18e5bbb6a6df14f3a4886697878dc53bc73ee9b6d6c4d4448d16c34b"
     },
     "floorDorm": {
       "file": "t_floorDorm",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "0abc8e94c6e4231ce692f26645e3cf686040dbeaf60f65c9aa85dff28848c08a"
     },
     "floorLib": {
       "file": "t_floorLib",
       "x": 0,
       "y": 0,
       "w": 16,
-      "h": 16
+      "h": 16,
+      "pin": "9508f3c67ecd7de2f652e915da60df580740ee4d4cd8a735f674acb636ee2ab6"
     },
     "office_building": {
       "file": "p_office_building",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "594e561df6e4c8198edc2ce38178d23c825e4b0a62c262a5afc4ffac78bb80f7"
     },
     "cafe_building": {
       "file": "p_cafe_building",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b79e82c199cad1c24be88023fedc1a61beefdf7a56600c017b87ed9a938004c4"
     },
     "villa_building": {
       "file": "p_villa_building",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "40ea40eaedcae721ce1daba8b61e0acf9c63db7bb691e07aad95c8236b0a6c25"
     },
     "library_building": {
       "file": "p_library_building",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "44413ce5b09f62e9d9b766d88a6eb0ff4e67b3d1ae26e1403ccb82ae659b16f8"
     },
     "barn": {
       "file": "p_barn",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e6fd1fdb7531b91408d2a112bfa6900997b5a1614353fcd337ad3f5917f96449"
     },
     "tree_oak_big": {
       "file": "p_tree_oak_big",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "88e83fc951c01c38503e01b83cb0bcb76afa47a93af1966a82da1fafa60f2c26"
     },
     "tree_oak_med": {
       "file": "p_tree_oak_med",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "55d9ed3fa7205e462dc8898a417b1916af0a3e30ea4dcaf16365ed16576f8459"
     },
     "tree_birch": {
       "file": "p_tree_birch",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "95647bcd110588f46a5d5a4b491dd51172bed6bf3388bd48aac6c157cd0c7151"
     },
     "street_lamp": {
       "file": "p_street_lamp",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "593ffe3cfff45d4215c4f23b9a17bd81ec23391c809a744b8e71579bd2d26c46"
     },
     "bench": {
       "file": "p_bench",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b8b34cea3a88f412e5d0a4b46cdb417cf77fa26e645a82c952850b0530c32601"
     },
     "trash_can": {
       "file": "p_trash_can",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "634b3bead6631cd2d50bca41eeb4257c72be8f815bacc605bb4ef2d46742863f"
     },
     "hydrant": {
       "file": "p_hydrant",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "73c8eaae4cb6be192628490c07bd9b51c10fcf7239843048a5524fef83e36911"
     },
     "car_right_1": {
       "file": "p_car_right_1",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c3ba0a81e7259e794e494f6f4a845154dc340db3c83ea6a91d8769a1c0c7c552"
     },
     "car_left_1": {
       "file": "p_car_left_1",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6d80e5d98b1c519b1ba0f062cef4101370b56de95b4784f283a2e63d08d1a4aa"
     },
     "car_right_2": {
       "file": "p_car_right_2",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3e27a76ed988d37f76660be72971f9d1bdf53ce527c39cad56e13384cff3166c"
     },
     "car_down_1": {
       "file": "p_car_down_1",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "beab443eabc9b78dab82e602fcf175784a78f05d6c4882c65a56a8ca87444b5e"
     },
     "car_down_2": {
       "file": "p_car_down_2",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "efdaecfc35c7077351279911ebca5970012fc8d189da7fdccbfa2b9746741b64"
     },
     "bush_1": {
       "file": "p_bush_1",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "55adcf81c849c77e06d1fc3e0f038b1caf9bd7a12a90f90ce90a3387b00941bf"
     },
     "bush_2": {
       "file": "p_bush_2",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0a294728ad9828b9bd093a9078db4998f4da5946cd1d81d024305cfceab4f47f"
     },
     "crop_cabbage": {
       "file": "p_crop_cabbage",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "825789c627cce2ef155a6496bd33d04ce1384dc7d8485270fb28e48aaaa8062b"
     },
     "crop_berry": {
       "file": "p_crop_berry",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "1f196c06965fe5143fc8c13f7b319d267f8fdcf5efd6e7f50a9ea542ccd3fef3"
     },
     "soil_left": {
       "file": "p_soil_left",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "89372d3a5c12517b446b4c65b842e87f6da869946b2c57238053a3ed3f3cbfa5"
     },
     "soil_mid": {
       "file": "p_soil_mid",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "370b74df2e82671ccddb16f20d4321bf8cfb8bb9805955a30b8896d3ce27e9c8"
     },
     "soil_right": {
       "file": "p_soil_right",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b5b6b8bdfd160036fc1b9380a274b6dc7934af90d8f41258b6e99de1f56100b1"
     },
     "fence_top_left": {
       "file": "p_fence_top_left",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "7b90cbe3419a5e5dfcbe1286b21a60133e3f883528d322ab5f503c52c69bb44a"
     },
     "fence_top_middle": {
       "file": "p_fence_top_middle",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b787d190a973f54e1853cf267cd5b9dd1c99f35d2c8a31cd4373d4b1cd30baaa"
     },
     "fence_top_right": {
       "file": "p_fence_top_right",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "61be29e18c7e6818961ad8b207121ff747a5ee509f41a0d4915d32c69f1d1bc9"
     },
     "fence_middle_left": {
       "file": "p_fence_middle_left",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "386c755fa9f06be8fdc7bf0c822a80f6dad146faa0b22b1d68fb7786757d42c9"
     },
     "fence_middle_right": {
       "file": "p_fence_middle_right",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "8d4407edc1c68fa94f5067202e148ec4e3a50dc0dcc1225c2b8c14d4a8994637"
     },
     "fence_bottom_left": {
       "file": "p_fence_bottom_left",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3934d71ea4a724992212ef193c7e8ce242e93b075a2753a7fae16347dc0254c7"
     },
     "fence_bottom_middle": {
       "file": "p_fence_bottom_middle",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5cfb9d22b547bc446a41ed676be7734150c71b1f80778677fa67dec02b127da5"
     },
     "fence_bottom_right": {
       "file": "p_fence_bottom_right",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6c7ed5779179742242e0c6f34eaff13e6616e42f41b6ecc09d6077554c1dacce"
     },
     "bed_green": {
       "file": "p_bed_green",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "2970a2c2a8734b249ecdd93203ab96aad35e3d6129560db642db5a72b5425a33"
     },
     "bed_blue": {
       "file": "p_bed_blue",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "be18df8e5e4c7d3356ad85fcd01c47f464b79bc93b0f64135d7445c93f9b6877"
     },
     "bed_teal": {
       "file": "p_bed_teal",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "d9184b951c4e6e47812a4280994d0d1fa3b0cf735168dab0d6c37e3c0e941a17"
     },
     "nightstand": {
       "file": "p_nightstand",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "17869ad869487707ca77cd7db5cf26e9a2e1089606d844705a9ef32a1579bd90"
     },
     "rug_pink": {
       "file": "p_rug_pink",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ecce40f8f00b08d5f7b74b20ee079f4bc19cccc7c732ffa4f55be43fc841395d"
     },
     "chair_blue_r": {
       "file": "p_chair_blue_r",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ccb18521163cb7cb6e9365b67fcfc43d9700fb758defca6f6e6bc15657c0c9e9"
     },
     "chair_blue_l": {
       "file": "p_chair_blue_l",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "aab0c7b90d429ba18f4d7ac1d0fabb1345b197ef0d5af78029b28cc2ae2c6994"
     },
     "chair_red_r": {
       "file": "p_chair_red_r",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "fc76e2cf403a83c88bf4532e8ae3cab88a66b7920daa49c0c1532cc8027d7e79"
     },
     "chair_red_l": {
       "file": "p_chair_red_l",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f48cdeb87b3f5265e34e1b1755c84c81a12d87e7ecee86b11b6b08b3e2972b0a"
     },
     "chair_yellow_r": {
       "file": "p_chair_yellow_r",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e177a586b6628d72f4fadaeb3a57dce49c095a1506d5f9c2da149a8060a6a691"
     },
     "chair_yellow_l": {
       "file": "p_chair_yellow_l",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "73fbbafd2623e7cd48e3068e042900e283cea808439f81e7315b6194c16a9fee"
     },
     "table_plain": {
       "file": "p_table_plain",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "04e30d5d579264ad826d565520b7462a368924acc03ca162f64a05f97abe8d2b"
     },
     "armchair_grey_r": {
       "file": "p_armchair_grey_r",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "308bcd62339868b6f9e2ce37d897e6ab850df2b99ed983cd93a2136b42a1aaf1"
     },
     "armchair_grey_l": {
       "file": "p_armchair_grey_l",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "86903e735ffc9176d93dcc2134e8dc1fc9f06f9d39416b9065bbcbe85f8898ba"
     },
     "armchair_blue_r": {
       "file": "p_armchair_blue_r",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0c054de6c72f5e0ac5a0ca3a04bc3ad414622a04aaa40b334f960a400729c3b7"
     },
     "armchair_blue_l": {
       "file": "p_armchair_blue_l",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "4923054a55408ff64e71ed9dad58e257730000592b69a6bec36c210f97500a46"
     },
     "lamp_red": {
       "file": "p_lamp_red",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "96bdd630a39ab357083c6dfd276d6137ccf34a2a346f02ffdff78f086a0842cc"
     },
     "plant_palm": {
       "file": "p_plant_palm",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5d8f0f4e8088ef6e564a932f835eebc0ae07f631bfbfda7bf9686a6f906c883f"
     },
     "bookshelf_a": {
       "file": "p_bookshelf_a",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c31f5414869de350c707ee07d6a362c2f0e83dc6884a875a6b629aed214cb0d1"
     },
     "bookshelf_b": {
       "file": "p_bookshelf_b",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "799813958d5b753d5735deb1dae2442917b7a8b97cb01d27a4c24a8732e70d98"
     },
     "bookshelf_narrow": {
       "file": "p_bookshelf_narrow",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3aac4b031389edbd340c46733fbbb50b0ec01f55b6b06418f54f97e94c26536e"
     },
     "lectern": {
       "file": "p_lectern",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a4c92c79157e2774fbcd9d4c00a567cdc70c0ed1addc01bbe4f74e61026f1738"
     },
     "globe": {
       "file": "p_globe",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "933d956caf31a4552fe189adb08933349860f096696234932636e43e0ea38e25"
     },
     "chalkboard": {
       "file": "p_chalkboard",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c62b6aacfd8d72319dbbb7be1373fc5e2ce68c8d3a10eb66d53c12a2a77bf89b"
     },
     "counter_wide": {
       "file": "p_counter_wide",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "06c69a937431e7042bdb2c716c422b871469d64653771d550c96310a0f17ee25"
     },
     "stool": {
       "file": "p_stool",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "323c4bc4bbcf0d61470e8a7af33c1ab4eb5b410dfb576acd9e6d732d23e407fc"
     },
     "doormat": {
       "file": "p_doormat",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "4b6433d108197e829a285fa1401fa483f3b340dfe5f99573a77e47144c9a980e"
     },
     "plant_small": {
       "file": "p_plant_small",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "2423757679318298566e0fe3870113170aa5914aedc93da952505f03aaa499c8"
     },
     "plant_pot": {
       "file": "p_plant_pot",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "d9d58d2c6222a6ac100b4c86f7ee63bb58ba0222be0c6610b5b5c0eef7dd5169"
     },
     "office_chair_right": {
       "file": "p_office_chair_right",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "289f033b32a959aeefb2db197862dd8b024de07e9fe9dc550f28e8ef08333d9a"
     },
     "office_chair_left": {
       "file": "p_office_chair_left",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "702a506e4fd1ae1211d1e902702bdff5a3b161726533a888698f03eddeaac708"
     },
     "whiteboard": {
       "file": "p_whiteboard",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e0d4bd128f1ace0b859e805df84d5f5d306626a4ae1448f1bd8833a977c41b46"
     },
     "printer": {
       "file": "p_printer",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a8d122d6bee4f7acf989781ebc3c252853a249484846b7854a5ab4fc24f7bd16"
     },
     "workstation_single": {
       "file": "p_workstation_single",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "64e9f601bf0b9b466ffd0bb01f1edafe69de9debed39cf9ecd51ec4ef7725d37"
     },
     "workstation_double": {
       "file": "p_workstation_double",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "407371a9dc1d92782940d0d3568954f1a0167341e9858ff7b7cf290f73334332"
     },
     "coffee_machine": {
       "file": "p_coffee_machine",
       "trim": true,
-      "note": "generated fixture sprite — geometry is derived from the contract, not chosen"
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a8ed04a48234c47d6cc47801f604e68ada033316f913c6cefe8969c74cb76861"
     },
     "coffee_steam": {
-      "file": "a_coffee_steam"
+      "file": "a_coffee_steam",
+      "pin": "32d9a5b3d4a6be67b1e6f020c79fa06396160704597ad3ecc381e4476ac19eef"
     },
     "cake_fridge": {
-      "file": "a_cake_fridge"
+      "file": "a_cake_fridge",
+      "pin": "0aaed765c96994e44172600ec8886d1c3799873973b9c7989ccc2c7cb071c133"
     },
     "tv_news": {
-      "file": "a_tv_news"
+      "file": "a_tv_news",
+      "pin": "656f6bd9d9d69df64aa673f23f1613d84b6cbda74e68d333c5d68e0786d13cef"
     },
     "office_screen": {
-      "file": "a_office_screen"
+      "file": "a_office_screen",
+      "pin": "4248a1e9861df4c397185824466c83b34e2af74cb08fd91bd14b5ad45e0f7dab"
     },
     "cuckoo_clock": {
-      "file": "a_cuckoo_clock"
+      "file": "a_cuckoo_clock",
+      "pin": "45db07292988d1844c0ee100c93bf2b2c6e76436049b266c6f36892d80ef84fa"
     },
     "emote_sheet": {
-      "file": "emotes"
+      "file": "emotes",
+      "pin": "cb316e1f8bbe5909e3839d045e4855f6baedadc0074a26c9184d2225ecee2787"
     },
     "ui_sheet": {
-      "file": "ui"
+      "file": "ui",
+      "pin": "c330006295301532c882e1f19dddf527dbfe333595be9b37ad47049db4926e68"
     },
     "char_body": {
-      "file": "c_body"
+      "file": "c_body",
+      "pin": "312ef73127db9b59a35d04435748e02b4ccd7c5e6bf1dc60f5a8a8fa1bcc253c"
     },
     "char_eyes": {
-      "file": "c_eyes"
+      "file": "c_eyes",
+      "pin": "936cda8ef49128280e391f7a908c0c73d906b0f6547f1ff1a1efcdaa4b4d442c"
     },
     "char_hair": {
-      "file": "c_hair"
+      "file": "c_hair",
+      "pin": "9e3f96e915fe8051689b71b62bb3487606f06baf3abd2843342fa24efd8a9cda"
     },
     "char_outfit": {
-      "file": "c_outfit"
+      "file": "c_outfit",
+      "pin": "f0b8e61faee876272d6b2249538e2f9da8a680b200dd2cae4b16f08bbd290dc1"
     },
     "char_accessory": {
-      "file": "c_accessory"
+      "file": "c_accessory",
+      "pin": "c25084fc3b2e483fb710c27f58bfa4470195f1ebcf0679be0213fbc6606d8fc1"
     }
   }
 }
