@@ -4,9 +4,9 @@ import { LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION } from '@botville/shared
 // In dev, Vite proxy handles /api → localhost:3001 (API_BASE = '').
 // In prod, VITE_API_URL is set at build time; the default is '' — same
 // origin, which is how the self-hosted Docker deployment fronts client and
-// server (D-20; see README ## Docker). The old Vercel/Railway fallback URL
-// is retired with those platforms (D-20). `||` (not `??`) so an
-// empty-string env value cannot clobber the same-origin default.
+// server (D-20; see README ## Docker). The old hardcoded cross-site fallback
+// URL is retired along with the platforms that required it (D-20). `||`
+// (not `??`) so an empty-string env value cannot clobber the same-origin default.
 const envUrl = import.meta.env.VITE_API_URL;
 export const API_BASE = envUrl || '';
 
@@ -15,11 +15,13 @@ export function apiUrl(path: string): string {
 }
 
 // ── Session token (TZ-12) ─────────────────────────────────────────────────────
-// The client and server are different sites (vercel.app / railway.app), so the
-// cross-site av_session cookie never reaches the server: Safari (ITP) blocks
-// third-party cookies by default. The symptom was: POST /api/agents creates an
-// agent in one session, the next GET goes out in a new one and returns nothing —
-// the modal closed without an error while the HUD stayed empty.
+// Originally added because client and server were deployed as different sites,
+// so the cross-site av_session cookie never reached the server: Safari (ITP)
+// blocks third-party cookies by default. The symptom was: POST /api/agents
+// creates an agent in one session, the next GET goes out in a new one and
+// returns nothing — the modal closed without an error while the HUD stayed
+// empty. Under D-20's same-origin Docker deployment the cookie path works too,
+// but the header-token approach still just works — no reason to remove it.
 //
 // The fix: the same signed `<uuid>.<hmac>` as in the cookie, but in a header.
 // The cookie is untouched: where the browser allows it, both paths work.
