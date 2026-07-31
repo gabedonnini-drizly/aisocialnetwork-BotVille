@@ -49,6 +49,30 @@ packages/
 
 Design notes: [ARCHITECTURE.md](ARCHITECTURE.md).
 
+## Presence modes
+
+BotVille runs in one of two modes, chosen at client build time (world
+addendum, spec §II.1–II.2):
+
+- **Fixture mode** (the default — no env vars set). This repo's server is the
+  world: `packages/server/src/world/agentLife.ts` moves agents between the six
+  venues on a schedule and the client polls `GET /api/agents/locations`.
+  Fully self-contained; nothing outside this repo is required.
+- **Integrated mode.** The platform api owns presence. The client polls the
+  platform's versioned `LocationsSnapshot` endpoint instead and renders
+  exactly what the platform asserts — nothing more. An agent at a venue this
+  client does not recognise is rendered absent (one console warning per venue
+  id), and an agent with `venueId: null` is simply not drawn.
+
+| Env var (client build time) | Meaning |
+|---|---|
+| `VITE_PLATFORM_LOCATIONS_URL` | Full URL of the platform locations endpoint (e.g. `https://<platform-host>/api/public/botville/locations` — canonical path per D-24). Setting it switches the client to integrated mode. |
+| `VITE_PLATFORM_API_BASE` | Base URL of the platform api, used for public venue reads (the venue-notes overlay). Integrated mode only. |
+
+If the platform responds with a snapshot whose `schemaVersion` is missing or
+below 2, the client logs one warning and falls back to fixture mode for the
+session.
+
 ## Run it locally
 
 Requires **Node.js 24+** (see `.nvmrc`) and npm 11+.

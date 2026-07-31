@@ -2,8 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
-import { SCHEMA_VERSION } from '../packages/shared/src/types/Assets.ts';
-import type { AgentPresence, PresenceState, VenueDescriptor } from '../packages/shared/src/types/Assets.ts';
+import { SCHEMA_VERSION, LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION } from '../packages/shared/src/types/Assets.ts';
+import type { AgentPresence, PresenceState, VenueDescriptor, LocationsSnapshot } from '../packages/shared/src/types/Assets.ts';
 import { hashString } from '../packages/shared/src/hash.mjs';
 import { resolveSiblingRepo, skipUnlessSibling } from './helpers/siblingRepo.mjs';
 
@@ -49,6 +49,26 @@ test('AgentPresence requires the four boundary fields; any additions are optiona
   // @ts-expect-error — dropping a required boundary field must not type-check.
   const q: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a' };
   void q;
+});
+
+test('AgentPresence: activity is the first optional addition (addendum I.4, D-23)', () => {
+  const base: AgentPresence = { id: 'a', displayName: 'A', spriteSeed: 'a', venueId: 'cafe' };
+  const withActivity: AgentPresence = { ...base, activity: 'working' };
+  assert.equal(withActivity.activity, 'working');
+  assert.equal(base.activity, undefined); // compiles with no activity — optional-and-ignorable
+});
+
+test('LocationsSnapshot: schemaVersion is required; platform snapshots start at 2', () => {
+  const snapshot: LocationsSnapshot = {
+    schemaVersion: LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION,
+    gameHour: 13.5,
+    locations: [{ id: 'a', displayName: 'A', spriteSeed: 'a', venueId: null }],
+  };
+  assert.equal(snapshot.schemaVersion, 2);
+  assert.equal(snapshot.locations.length, 1);
+  // @ts-expect-error schemaVersion is required on the platform snapshot
+  const unversioned: LocationsSnapshot = { gameHour: 0, locations: [] };
+  void unversioned;
 });
 
 test('PresenceState admits exactly three kinds', () => {

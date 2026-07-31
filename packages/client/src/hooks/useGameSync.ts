@@ -3,7 +3,7 @@ import { useAgentStore, useUIStore } from '../store/agentStore.js';
 import { sceneRegistry } from '../game/SceneRegistry.js';
 import { GameBridge } from '../game/GameBridge.js';
 import { GameTime } from '../game/time.js';
-import { fetchAgentLocations } from '../lib/api.js';
+import { fetchAgentLocations, fetchPlatformLocations, PRESENCE_MODE, type PresenceMode } from '../lib/api.js';
 import { LOCATION_POLL_MS } from '../game/config.js';
 import { flattenSomewhere, presenceModel, warnUnknown } from '../game/presence.js';
 import type { Agent, AgentPresence } from '@botville/shared';
@@ -16,6 +16,10 @@ export interface SyncedAgent {
   name: string;
   avatarVariant: number;
   location: string;
+  /** Addendum O-2 #1 «where + what»: coarse activity label; integrated mode only. */
+  activity?: string;
+  /** Platform identity for derived appearance (D-25); fixture agents omit it. */
+  spriteSeed?: string;
 }
 
 /** Scenes the agent list is synced into (the district and all interiors). */
@@ -26,6 +30,14 @@ interface AgentSyncScene extends Phaser.Scene {
 function isSyncable(scene: Phaser.Scene | undefined): scene is AgentSyncScene {
   return !!scene && typeof (scene as Partial<AgentSyncScene>).syncAgents === 'function';
 }
+
+// Addendum II.1: the mode is picked ONCE at module scope from the
+// build-time env (PRESENCE_MODE). The only runtime transition is
+// integrated → fixture when the platform serves an invalid snapshot
+// (one warn, in api.ts).
+let presenceMode: PresenceMode = PRESENCE_MODE;
+/** Latest platform roster; syncToScene partitions it instead of the store in integrated mode. */
+let platformRoster: AgentPresence[] = [];
 
 export function useGameSync() {
   const { agents, fetchAgents } = useAgentStore();
@@ -48,6 +60,18 @@ export function useGameSync() {
   useEffect(() => {
     let stopped = false;
     const poll = async () => {
+      if (presenceMode === 'integrated') {
+        const result = await fetchPlatformLocations();
+        if (stopped) return;
+        if (result.ok) {
+          GameTime.syncFrom(result.gameHour);
+          platformRoster = result.roster;
+          syncToScene();
+          return;
+        }
+        if (result.reason === 'network') return; // keep last roster; retry next tick
+        presenceMode = 'fixture'; // invalid schema — warned once in api.ts
+      }
       const snap = await fetchAgentLocations();
       if (!snap || stopped) return;
       GameTime.syncFrom(snap.gameHour);
@@ -63,23 +87,37 @@ export function useGameSync() {
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
     const scene = sceneRegistry.get(sceneKeyRef.current);
     if (isSyncable(scene)) {
-      // F-3: PresenceModel is the runtime authority on "who is where". Unknown/absent
-      // agents never reach a scene — not even mid-transit — and unknown ids get a
-      // single compact warning instead of the retired clamp's silent district fallback.
-      const roster: AgentPresence[] = agentsRef.current.map(a => ({
-        id: a.id, displayName: a.name, spriteSeed: a.id, venueId: a.location,
-      }));
+      // F-3: PresenceModel is the runtime authority on "who is where" — BOTH
+      // modes route through it. Unknown/absent agents never reach a scene,
+      // and unknown ids get warnUnknown's single compact warning per id.
+      const roster: AgentPresence[] = presenceMode === 'integrated'
+        ? platformRoster
+        : agentsRef.current.map(a => ({
+            id: a.id, displayName: a.name, spriteSeed: a.id, venueId: a.location,
+          }));
       const { somewhere, unknown } = presenceModel.partition(roster);
       warnUnknown(unknown);
       const visible = flattenSomewhere(somewhere);
-      scene.syncAgents(agentsRef.current
-        .filter(a => visible.has(a.id))
-        .map(a => ({
-          id: a.id,
-          name: a.name,
-          avatarVariant: a.avatarVariant,
-          location: a.location,
-        })));
+      const list: SyncedAgent[] = presenceMode === 'integrated'
+        ? platformRoster
+            .filter(p => visible.has(p.id) && p.venueId !== null)
+            .map(p => ({
+              id: p.id,
+              name: p.displayName,
+              avatarVariant: 0, // dead field for platform agents — identity drives appearance (D-25)
+              spriteSeed: p.spriteSeed,
+              location: p.venueId as string,
+              ...(p.activity !== undefined ? { activity: p.activity } : {}),
+            }))
+        : agentsRef.current
+            .filter(a => visible.has(a.id))
+            .map(a => ({
+              id: a.id,
+              name: a.name,
+              avatarVariant: a.avatarVariant,
+              location: a.location,
+            }));
+      scene.syncAgents(list);
     } else if (retries > 0) {
       syncTimeoutRef.current = setTimeout(() => syncToScene(retries - 1), 400);
     }

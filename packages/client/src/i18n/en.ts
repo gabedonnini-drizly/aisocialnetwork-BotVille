@@ -193,4 +193,8 @@ export const en = {
   // ── Phaser loader ──
   'game.initializing': 'Initializing...',
   'game.loading': 'Loading {pct}%',
+
+  // Addendum II.6: venue notes overlay (integrated mode only)
+  'venueNotes.title': '📝 Notes here',
+  'venueNotes.empty': 'No notes yet.',
 };
