@@ -10,9 +10,11 @@
  */
 export { SCHEMA_VERSION } from '../schemaVersion.mjs';
 
-// ── The immutable platform↔city boundary (spec §3.1) ────────────────────
-// Four fields. They do not change when a venue is added, a pack is
-// swapped, or the roster grows. Do not extend this interface.
+// ── The platform↔city boundary (spec §3.1; addendum §I.4, D-23) ─────────
+// The four ORIGINAL fields are required and unrenamed forever. Anything
+// beyond them is optional-and-ignorable — restated I-11: the client
+// renders nothing the platform did not assert. Additions land HERE, in
+// this one definition, never in a second declaration.
 
 export interface AgentPresence {
   /** platform agent uuid */
@@ -22,6 +24,26 @@ export interface AgentPresence {
   spriteSeed: string;
   /** null = absent; an id absent from the registry = unknown */
   venueId: string | null;
+  /** Coarse label from the routine slot ("sleeping", "working"). Optional-and-ignorable (I.4). */
+  activity?: string;
+}
+
+/** Platform snapshots carry schemaVersion >= 2; below that the client falls back to fixture mode (II.2). */
+export const LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION = 2;
+
+/**
+ * The versioned locations payload the platform serves in integrated mode
+ * (`GET /api/public/botville/locations` — spec II.2 as amended by D-24).
+ * Canonical schema for the HTTP seam (Conventions table); the platform api
+ * mirrors it with a zod validator. The legacy fixture snapshot
+ * ({ gameHour, locations: [{ id, location }] }, served by this repo's own
+ * server) is a separate, unversioned shape and is deliberately NOT here.
+ */
+export interface LocationsSnapshot {
+  /** Bumps on any breaking change to this payload. */
+  schemaVersion: number;
+  gameHour: number;
+  locations: AgentPresence[];
 }
 
 /** Exactly three states. The client never invents a fourth (I-3). */
