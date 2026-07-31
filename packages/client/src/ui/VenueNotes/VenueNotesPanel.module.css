@@ -1,0 +1,15 @@
+/* Addendum II.6: floating venue-notes card (integrated mode). */
+
+.panel {
+  position: fixed; left: 12px; bottom: 12px; z-index: 250; pointer-events: all;
+  width: 240px; max-height: 40vh; overflow-y: auto;
+  background: var(--panel-bg); border: 1px solid var(--ink-line);
+  border-radius: var(--radius-lg); padding: 12px;
+  font-family: 'Courier New', monospace; color: var(--text-on-dark);
+  box-shadow: var(--shadow-lg);
+}
+.title { font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+.empty { font-size: 11px; color: var(--text-on-dark-muted); }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.note { font-size: 11px; line-height: 1.4; border-top: 1px solid var(--ink-line); padding-top: 6px; overflow-wrap: break-word; }
+.note:first-child { border-top: none; padding-top: 0; }

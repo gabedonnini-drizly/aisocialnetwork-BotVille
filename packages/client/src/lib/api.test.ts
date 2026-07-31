@@ -103,3 +103,46 @@ describe('fetchPlatformLocations', () => {
     ]);
   });
 });
+
+describe('fetchVenueNotes', () => {
+  const NOTES_ENV = {
+    VITE_PLATFORM_LOCATIONS_URL: PLATFORM_URL,
+    VITE_PLATFORM_API_BASE: 'https://platform.test',
+  };
+
+  it('returns [] without fetching when VITE_PLATFORM_API_BASE is unset', async () => {
+    const api = await importApi({ VITE_PLATFORM_API_BASE: '' });
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+    expect(await api.fetchVenueNotes('cafe')).toEqual([]);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('returns at most 10 notes, newest first, skipping malformed rows', async () => {
+    const api = await importApi(NOTES_ENV);
+    // createdAt is ISO-8601, per the platform's VenueNoteSchema.
+    const iso = (i: number) => new Date(Date.UTC(2026, 6, 29, 12, 0, i)).toISOString();
+    const raw = [
+      ...Array.from({ length: 12 }, (_, i) => ({ id: `n${i}`, body: `note ${i}`, createdAt: iso(i) })),
+      { id: 'bad-no-body' },
+    ];
+    const fetchSpy = vi.fn(async () => jsonResponse({ success: true, venueId: 'cafe', notes: raw }));
+    vi.stubGlobal('fetch', fetchSpy);
+    const notes = await api.fetchVenueNotes('cafe');
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://platform.test/api/public/botville/venues/cafe/notes',
+      expect.anything(),
+    );
+    expect(notes).toHaveLength(10);
+    expect(notes[0]).toEqual({ id: 'n11', body: 'note 11', createdAt: iso(11) });
+    expect(notes[9]).toEqual({ id: 'n2', body: 'note 2', createdAt: iso(2) });
+  });
+
+  it('returns [] on network error or non-array payloads', async () => {
+    const api = await importApi(NOTES_ENV);
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('down'); }));
+    expect(await api.fetchVenueNotes('cafe')).toEqual([]);
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse({ success: true, venueId: 'cafe', notes: 'nope' })));
+    expect(await api.fetchVenueNotes('cafe')).toEqual([]);
+  });
+});

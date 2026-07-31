@@ -214,6 +214,48 @@ export async function fetchPlatformLocations(): Promise<PlatformLocationsResult>
   return { ok: true, gameHour: snap.gameHour, roster };
 }
 
+// ── Venue notes (addendum II.4 botville_venue_notes; render per II.6) ──
+// Public reads from the platform; the client's six venueIds map to the interiors.
+// Tolerant parser: any network/shape failure just yields an empty list.
+
+export interface VenueNote {
+  id: string;
+  body: string;
+  createdAt: string; // ISO-8601, per the platform's VenueNoteSchema
+}
+
+/** Show at most this many notes, newest first. */
+export const VENUE_NOTES_MAX_SHOWN = 10;
+
+export async function fetchVenueNotes(venueId: string): Promise<VenueNote[]> {
+  if (!PLATFORM_API_BASE) return [];
+  let body: unknown;
+  try {
+    const res = await fetch(
+      `${PLATFORM_API_BASE}/api/public/botville/venues/${encodeURIComponent(venueId)}/notes`,
+      { signal: AbortSignal.timeout(10_000) },
+    );
+    body = await res.json();
+  } catch {
+    return [];
+  }
+  const raw = (body as { notes?: unknown } | null)?.notes;
+  if (!Array.isArray(raw)) return [];
+  const notes: VenueNote[] = [];
+  for (const entry of raw as Array<Partial<VenueNote> | null>) {
+    if (typeof entry?.id !== 'string' || typeof entry.body !== 'string') continue;
+    notes.push({
+      id: entry.id,
+      body: entry.body,
+      createdAt: typeof entry.createdAt === 'string' ? entry.createdAt : '',
+    });
+  }
+  // ISO-8601 sorts lexicographically — newest first without Date.parse.
+  return notes
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .slice(0, VENUE_NOTES_MAX_SHOWN);
+}
+
 // ── Live OpenRouter model catalog (TZ-14) ────────────────────────────────────
 // The catalog is public and the same for everyone — the server caches it, the
 // client keeps it in tab memory to avoid hitting the API every time the modal opens.

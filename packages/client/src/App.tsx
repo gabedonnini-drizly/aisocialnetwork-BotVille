@@ -8,6 +8,8 @@ import { ArtCredit } from './ui/ArtCredit.js';
 import { ChatWindow } from './ui/Chat/ChatWindow.js';
 import { HUD } from './ui/HUD/HUD.js';
 import { MeetingWindow } from './ui/Meeting/MeetingWindow.js';
+import { VenueNotesPanel } from './ui/VenueNotes/VenueNotesPanel.js';
+import { PRESENCE_MODE } from './lib/api.js';
 
 export function App() {
   const gameInitialized = useRef(false);
@@ -26,6 +28,7 @@ export function App() {
   return (
     <div id="ui-overlay">
       <HUD />
+      {PRESENCE_MODE === 'integrated' && <VenueNotesPanel />}
       {profileOpen && <AgentProfile />}
       {chatOpen && <ChatWindow />}
       {meetingOpen && <MeetingWindow />}
