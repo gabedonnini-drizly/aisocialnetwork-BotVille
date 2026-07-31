@@ -287,9 +287,11 @@ export class VenueScene extends Phaser.Scene {
       const slot = slots.get(a.id)!;
       let sprite = this.agentSprites.get(a.id);
       if (!sprite) {
-        sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, this.spawnPoint.x, this.spawnPoint.y);
+        sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, this.spawnPoint.x, this.spawnPoint.y,
+          a.spriteSeed !== undefined ? { spriteSeed: a.spriteSeed, gender: '' } : undefined);
         this.agentSprites.set(a.id, sprite);
       }
+      sprite.setActivity(a.activity);
 
       // A ranked seat can be off-limits to THIS agent right now:
       //  - animals do not climb onto beds, ever (I-13: currently unreachable —

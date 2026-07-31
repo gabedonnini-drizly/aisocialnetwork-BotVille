@@ -416,11 +416,13 @@ export class DistrictScene extends Phaser.Scene {
     const present = fullList.filter(a => a.location === 'district' || a.location === 'farm');
     const incoming = new Set(present.map(a => a.id));
     const locOf = new Map(fullList.map(a => [a.id, a.location]));
+    const activityOf = new Map(present.map(a => [a.id, a.activity]));
 
     this.agentSprites.forEach((sprite, id) => {
       if (incoming.has(id)) {
         // came back before reaching the door — the departure is cancelled
         if (this.leaving.delete(id)) sprite.cancelGoal();
+        sprite.setActivity(activityOf.get(id));
         return;
       }
       const newLoc = locOf.get(id);
@@ -449,7 +451,9 @@ export class DistrictScene extends Phaser.Scene {
       const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
       const x = base.x + (Math.random() - 0.5) * 16;
       const y = base.y + (door ? 8 + Math.random() * 8 : (Math.random() - 0.5) * 8);
-      const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y);
+      const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y,
+        a.spriteSeed !== undefined ? { spriteSeed: a.spriteSeed, gender: '' } : undefined);
+      sprite.setActivity(a.activity);
       this.agentSprites.set(a.id, sprite);
     });
 

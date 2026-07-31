@@ -14,6 +14,7 @@ import {
 import { EMOTE_FRAMES } from '../assets.generated.js';
 import type { AgentStatus } from '@botville/shared';
 import { AppearanceResolver, resolvedAnimDef } from './AppearanceResolver.js';
+import { formatActivityLabel } from './activityLabel.js';
 
 /** A scene that can answer walkability questions (DistrictScene and interiors). */
 interface WalkableHost {
@@ -35,6 +36,8 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   private sprite: Phaser.GameObjects.Sprite;
   private shadow: Phaser.GameObjects.Ellipse;
   private nameLabel: Phaser.GameObjects.Text;
+  /** Addendum O-2 #1: activity plate under the feet; null — the platform asserted nothing. */
+  private activityLabel: Phaser.GameObjects.Text | null = null;
   private emote: Phaser.GameObjects.Sprite;
   private emoteTween: Phaser.Tweens.Tween | null = null;
   private stateMachine: AgentStateMachine;
@@ -197,6 +200,29 @@ export class AgentSprite extends Phaser.GameObjects.Container {
     this.playAnim('idle', this.facing);
   }
 
+  /** Addendum O-2 #1 "where + what": show/update/remove the activity caption. */
+  setActivity(activity?: string) {
+    const text = formatActivityLabel(activity);
+    if (text === null) {
+      this.activityLabel?.destroy();
+      this.activityLabel = null;
+      return;
+    }
+    if (!this.activityLabel) {
+      // Same recipe as nameLabel: outside the container, above props-above.
+      // No visibility mirroring: the merged sprite never hides nameLabel.
+      this.activityLabel = this.scene.add.text(this.x, this.y + 3, text, {
+        fontSize: '6px',
+        color: UI.textOnDark,
+        fontFamily: 'monospace',
+        stroke: UI.ink900,
+        strokeThickness: 2,
+      }).setOrigin(0.5, 0).setDepth(NAME_LABEL_DEPTH).setAlpha(0.85);
+    } else {
+      this.activityLabel.setText(text);
+    }
+  }
+
   /**
    * Pin the agent to a seat (chair/bed in an interior): teleport to the point,
    * sit down and pause the state machine until released.
@@ -326,6 +352,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
       this.x,
       this.y - this.variantDef.frameHeight * this.variantDef.scale - 6,
     );
+    this.activityLabel?.setPosition(this.x, this.y + 3);
   }
 
   private moveAlongPath(dt: number) {
@@ -389,6 +416,7 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   destroy(fromScene?: boolean) {
     GameBridge.off('dispatch:task', this.onDispatchTask);
     this.emoteTween?.destroy();
+    this.activityLabel?.destroy();
     this.nameLabel.destroy();
     super.destroy(fromScene);
   }
