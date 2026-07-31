@@ -412,7 +412,7 @@ def test_excluded_tools_block_states_the_code_derived_split():
 ```
 
   2. Regenerate the block: `.venv/bin/python -m scripts.docs.gen_blocks --write docs/layers/04-directives-and-run.md`, then `.venv/bin/python -m scripts.docs.gen_blocks --check` — expect exit 0.
-  3. `docs/facts.yaml`: append a new derived fact (verify `M-048` is the next free id — last is `M-047` as of 2026-07-30; bump if taken) and retract `M-037`, mirroring the M-015→M-037 precedent:
+  3. `docs/facts.yaml`: append a new derived fact (verify `M-048` is the next free id — last is `M-047` as of 2026-07-30; bump if taken. **AS EXECUTED 2026-07-31: M-048 was taken by a live reflector round mid-task; the BotVille tiering fact landed as `M-049`** — read M-048/M-049/M-050 in facts.yaml before touching any of them) and retract `M-037`, mirroring the M-015→M-037 precedent:
 
 ```yaml
   - id: M-048
@@ -749,7 +749,7 @@ _EXTRACTORS: Dict[str, Callable[[dict, str], None]] = {
 2. `tests/heartbeat/unit/test_invariants.py` — remove the exemption and the pin test added in Task 2.
 3. `tests/heartbeat/unit/test_tool_exclusion.py` — invert `test_botville_tools_are_excluded_from_l1` (six now L1) and rewrite `test_l1_schema_residue_is_still_21` → residue becomes 26 MCP tools + `delegate-tasks` = **27 schemas**.
 4. `configs/subagents/researcher.yaml` — owner choice: keep the three reads (L1 + delegable, like nothing else in the repo) or remove them (pure L1). Removing preserves the "L1 tools are not also delegable" symmetry.
-5. Docs cascade (same shape as Task 2's): regenerate the `excluded-tools` block (back to 22 entries, 7 L3 / 15 L2), update `tests/docs/test_gen_blocks.py` pins, register a new fact superseding M-048 and update M-006 (the "21 schemas" fact — now false), update `docs/layers/04-directives-and-run.md` prose and `docs/operations.md`.
+5. Docs cascade (same shape as Task 2's): regenerate the `excluded-tools` block (back to 22 entries, 7 L3 / 15 L2), update `tests/docs/test_gen_blocks.py` pins, register a new fact superseding **M-049** (NOT M-048 — that id was taken by an unrelated reflector-round fact in the 2026-07-31 claim-id collision; superseding M-048 would retract a live measured claim) and update M-006 (the "21 schemas" fact — now false), update `docs/layers/04-directives-and-run.md` prose and `docs/operations.md`. **Also in the bill (added by Task 2's execution, missing from the original enumeration):** `scripts/qa/probes/lifecycle_tier_drift.py` `EXPECTED` literals (28/7/21 + `l1_schemas: 21`), `docs/qa/checks.yaml` QA-L08 (cites M-049 and the 21-schema surface), `tests/qa/test_lifecycle_probes_dead.py` — promotion moves both axes (28→22 split, 21→27 schemas).
 6. Catalog delivery becomes live automatically: Task 3's metadata renders the six under `BotVille (your home town):` with Observe/Act sub-categories — no further code.
 
 **What it costs (the reason this is gated):**
