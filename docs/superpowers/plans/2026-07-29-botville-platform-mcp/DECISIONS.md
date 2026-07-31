@@ -20,6 +20,13 @@ alongside them.
 | D-24 | **Endpoint path: `GET /api/public/botville/locations` is canonical.** Spec II.2's `GET /api/botville/locations` sentence is amended (owner-approved, marked in the spec citing this decision). Owner rationale: *"follow existing api structure, don't deviate — platform and infra stay consistent."* |
 | D-25 | **Appearance (carried decision, not new):** platform agents render as **seed-derived premade humans** via the shipped `spriteSeed` → `AppearanceResolver` path (`AgentSprite`'s optional `identity` constructor arg). The hash-picked `avatarVariant` approach is removed from Plan 03 wherever it appeared; `avatarVariant` is a dead field for platform agents. Follows D-19 (all pack variants, derived appearance) and the F-3 runtime. |
 
+## Decided at Plan 01 final review (2026-07-30, owner-ruled)
+
+| # | Decision |
+|---|---|
+| D-26 | **`leave-note` is presence-gated.** Spec II.3's "at the caller's current venue" is enforced in the tool: the caller's resolved presence must match the target venue or the tool fails cleanly. A note is a physical trace of having been somewhere. (The plan's Task 8 code had silently dropped the check; final review caught the drift.) Owner: "yes enforce it." |
+| D-27 | **Goal contributions are capped per action.** `CONTRIBUTION_AMOUNT_MAX_POINTS = 10` (configuration, not law — tuning is data). Uncapped amounts made the effort budget decorative (one `amount = target` contribution completed any goal for one effort point) and could overflow the INTEGER column. Owner: "yes cap with config." |
+
 ### Applied in the same amendment pass (not separately numbered)
 
 - Every TEXT-FIX/COSMETIC finding from the 2026-07-30 staleness review: line-number
