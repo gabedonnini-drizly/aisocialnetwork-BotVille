@@ -1,15 +1,14 @@
-import type { CatalogModel, LLMProviderType, UserKeyStatus } from '@botville/shared';
+import type { AgentPresence, CatalogModel, LLMProviderType, LocationsSnapshot, UserKeyStatus } from '@botville/shared';
+import { LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION } from '@botville/shared';
 
 // In dev, Vite proxy handles /api → localhost:3001 (API_BASE = '').
-// In prod, VITE_API_URL wins if set at build time; otherwise fall back to the
-// known Railway server URL (public, not a secret). Fallback added 2026-07-16:
-// env-injection through vercel build proved unreliable on this setup.
-// NB: `||` (not `??`) — vercel pull returns Sensitive variables as an empty
-// string, and it must not clobber the fallback.
-const PROD_API_FALLBACK = 'https://botvilleserver-production.up.railway.app';
+// In prod, VITE_API_URL is set at build time; the default is '' — same
+// origin, which is how the self-hosted Docker deployment fronts client and
+// server (D-20; see README ## Docker). The old Vercel/Railway fallback URL
+// is retired with those platforms (D-20). `||` (not `??`) so an
+// empty-string env value cannot clobber the same-origin default.
 const envUrl = import.meta.env.VITE_API_URL;
-export const API_BASE =
-  envUrl || (import.meta.env.PROD ? PROD_API_FALLBACK : '');
+export const API_BASE = envUrl || '';
 
 export function apiUrl(path: string): string {
   return `${API_BASE}${path}`;
@@ -133,6 +132,86 @@ export async function fetchAgentLocations(): Promise<AgentLocationsSnapshot | nu
   } catch {
     return null;
   }
+}
+
+// ── Integrated mode (world addendum II.1/II.2): the platform presence seam ──
+// The platform api owns presence; this client renders nothing the platform
+// did not assert (restated I-11). fetchAgentLocations() above stays the
+// fixture-mode path, untouched. This parser validates row SHAPE only —
+// somewhere/absent/unknown is presenceModel's job (game/presence.ts, F-3),
+// so venueId passes through untouched, null and unknown ids included.
+
+export type PresenceMode = 'fixture' | 'integrated';
+
+const PLATFORM_LOCATIONS_URL: string =
+  (import.meta.env.VITE_PLATFORM_LOCATIONS_URL as string | undefined) ?? '';
+
+/** Base URL of the platform api for public venue reads (venue-notes overlay). */
+export const PLATFORM_API_BASE: string =
+  (import.meta.env.VITE_PLATFORM_API_BASE as string | undefined) ?? '';
+
+/** Picked once at module scope: integrated iff the platform URL is configured at build time. */
+export const PRESENCE_MODE: PresenceMode = PLATFORM_LOCATIONS_URL ? 'integrated' : 'fixture';
+
+export type PlatformLocationsResult =
+  | { ok: true; gameHour: number; roster: AgentPresence[] }
+  | { ok: false; reason: 'network' | 'invalid-schema' };
+
+// Once-per-session warn state (module scope; tests reset via vi.resetModules).
+let warnedInvalidSchema = false;
+
+/**
+ * Poll the platform LocationsSnapshot endpoint (addendum II.2, path per
+ * D-24). Tolerant by construction: a malformed row is skipped, and a
+ * snapshot without schemaVersion >= 2 signals fixture fallback (one warn).
+ * The well-formed roster is returned as-is — presenceModel decides
+ * placement (F-3), never this parser.
+ */
+export async function fetchPlatformLocations(): Promise<PlatformLocationsResult> {
+  let body: unknown;
+  try {
+    const res = await fetch(PLATFORM_LOCATIONS_URL, { signal: AbortSignal.timeout(10_000) });
+    body = await res.json();
+  } catch {
+    return { ok: false, reason: 'network' };
+  }
+
+  const snap = body as Partial<LocationsSnapshot> | null;
+  if (
+    typeof snap?.schemaVersion !== 'number' ||
+    snap.schemaVersion < LOCATIONS_SNAPSHOT_MIN_PLATFORM_SCHEMA_VERSION ||
+    typeof snap.gameHour !== 'number' ||
+    !Array.isArray(snap.locations)
+  ) {
+    if (!warnedInvalidSchema) {
+      warnedInvalidSchema = true;
+      console.warn(
+        '[presence] platform snapshot failed validation (schemaVersion must be a number >= 2) — falling back to fixture mode',
+      );
+    }
+    return { ok: false, reason: 'invalid-schema' };
+  }
+
+  const roster: AgentPresence[] = [];
+  for (const entry of snap.locations as Array<Partial<AgentPresence> | null>) {
+    if (
+      typeof entry?.id !== 'string' ||
+      typeof entry.displayName !== 'string' ||
+      typeof entry.spriteSeed !== 'string' ||
+      (entry.venueId !== null && typeof entry.venueId !== 'string')
+    ) {
+      continue; // tolerant: one malformed row never breaks the poll
+    }
+    const presence: AgentPresence = {
+      id: entry.id,
+      displayName: entry.displayName,
+      spriteSeed: entry.spriteSeed,
+      venueId: entry.venueId,
+    };
+    if (typeof entry.activity === 'string') presence.activity = entry.activity;
+    roster.push(presence);
+  }
+  return { ok: true, gameHour: snap.gameHour, roster };
 }
 
 // ── Live OpenRouter model catalog (TZ-14) ────────────────────────────────────
