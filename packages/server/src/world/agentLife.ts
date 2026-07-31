@@ -8,6 +8,12 @@ import { isAnimalVariant, type AgentLocation } from '@botville/shared';
  * answer to "which location is the agent in" (agents.location in the DB); how an
  * agent looks and walks within a location is client-side cosmetics.
  *
+ * World addendum II.2 (2026-07-29): this module is the FIXTURE-MODE world
+ * generator. In integrated mode (client built with VITE_PLATFORM_LOCATIONS_URL)
+ * the platform api computes presence and the client never reads this server's
+ * locations — but nothing here changes for that: fixture mode must stay fully
+ * self-contained and is the default whenever the env var is absent.
+ *
  * Rules (all knobs live in LIFE_RULES, tune by feel):
  * - busy (recent chat/meeting) — stays where it is;
  * - night (22–7): humans go to the dorm, animals to the farm pen; wake-up at a
