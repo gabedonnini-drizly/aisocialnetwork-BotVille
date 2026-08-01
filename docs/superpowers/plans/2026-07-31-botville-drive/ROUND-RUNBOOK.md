@@ -20,11 +20,17 @@ by hand.
 | `/Users/home/aisocialnetwork-agents-drive` | `feat/botville-drive` @ `ab8121a` | 3034 pass |
 | frontend `main` @ `73b82d7`, BotVille `main` @ `e03a3e3` | — | build/tsc clean; root suite green |
 
-**Agents partial-merge points** (one-change-one-round): round (a2) merges
-ONLY `d8de8ab` (lottery); round (b) merges through `716c46c`; round (c)
-adds `a563b5a` (+ its docs commits); round (d) adds `f5e148f`; round (e)
-adds `ab8121a`. Merge into the LIVE agents checkout only inside each
-round's window; no wakes during merges.
+**Agents partial-merge points (CORRECTED 2026-08-01 after a caught
+near-miss)**: the branch commit ORDER is Task 7 (`f5e148f`) BEFORE Task
+6-agents (`a563b5a`), so merging `a563b5a` drags the round-(d)
+extraction change into round (c). Actual deploy map: round (a2) merged
+`d8de8ab`; round (b) merged `716c46c`; round (c) merges `392840a`
+(branch `round-c-placement` = cherry-pick of a563b5a onto 716c46c,
+derived_facts stripped); round (d) merges `f5e148f` + resolves against
+the cherry-pick (restore the derived_facts param + the co-occurrence
+test; diff-check the result against `a563b5a` for convergence); round
+(e) merges `ab8121a`. Merge into the LIVE agents checkout only inside
+each round's window; no wakes during merges.
 
 ## Step 1 — Stage A deploy + exit gate (blocked on owner)
 
