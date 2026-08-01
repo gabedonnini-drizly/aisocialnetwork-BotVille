@@ -55,23 +55,23 @@ this plan.
   (Plan 01 Task 9 shapes), `NudgeCreateRequest`/`NudgeCreateResponse`
   (verb union + per-verb payload union, budget remaining).
 - `fetchChronicle()`, `fetchAgentCity(username)` — plain `fetch`
-  against **`NEXT_PUBLIC_API_URL`** (**⚠ AMENDED, review 2026-07-31,
-  A-6: `NEXT_PUBLIC_API_BASE` does not exist — the var is
-  `NEXT_PUBLIC_API_URL`, `.env.local:1`, 14 existing use sites, house
-  fallback `|| 'http://localhost:9321'`**), **no `{success,data}`
-  unwrapping**, explicit 4xx/5xx → typed error result
-  (`{ok: false, status}`), never throws into a render.
-- `fetchAgentAffordances(username)` — **⚠ AMENDED (RULED D-56): the
-  endpoint stays public for now** (accepted dev risk, recorded), but it
-  carries live ballots + the nudge channel — so the page-level rule
-  stands regardless: only the owner-gated composer may call this
-  helper; NO public page component (Task 7's grep asserts it).
-- `postNudge(request)` — **⚠ AMENDED (A-6): there are no proxy routes
-  and no cookie-authed writes in this frontend.** The house pattern is
-  a direct fetch with `Authorization: Bearer ${sessionToken}` from the
-  NextAuth session (see `agents/[agentId]/edit/page.tsx:84-91`); note
-  the API side expects the owner middleware's `ownerId:sessionToken`
-  bearer shape (`middleware/ownerAuth.js`). Do not invent a new auth
+  against **`NEXT_PUBLIC_API_URL`** (the only API-base var:
+  `.env.local:1`, 13 use sites re-counted 2026-07-31, house fallback
+  `|| 'http://localhost:9321'`; `NEXT_PUBLIC_API_BASE` does not exist
+  [R: A-6]), **no `{success,data}` unwrapping**, explicit 4xx/5xx →
+  typed error result (`{ok: false, status}`), never throws into a
+  render.
+- `fetchAgentAffordances(username)` — the endpoint stays public for now
+  (D-56, accepted dev risk, recorded), but it carries live ballots +
+  the nudge channel — so the page-level rule stands regardless: only
+  the owner-gated composer may call this helper; NO public page
+  component (Task 7's grep asserts it).
+- `postNudge(request)` — there are no proxy routes and no cookie-authed
+  writes in this frontend [R: A-6]. The house pattern is a direct fetch
+  with `Authorization: Bearer ${sessionToken}` from the NextAuth
+  session (see `agents/[agentId]/edit/page.tsx:84-91`); note the API
+  side expects the owner middleware's `ownerId:sessionToken` bearer
+  shape (`middleware/ownerAuth.js`). Do not invent a new auth
   transport.
 
 **Steps:**
@@ -111,25 +111,24 @@ this plan.
   "frame-ancestors <frontend-origin-list>";` with the origins from env
   at deploy time (dev: `http://localhost:3000`; never `*`). Document
   the required origins in `DEPLOY.md`.
-- Modify: `packages/client/src/…` camera/boot path — on boot, read
-  `new URLSearchParams(location.search).get('follow')`; if it names a
-  known agent (presence model), center + follow that agent's sprite;
-  unknown/absent → default camera. **⚠ AMENDED (review 2026-07-31,
-  A-10 — seam verified): the camera seam is
-  `packages/client/src/game/navigation.ts`** (`agent:goto` →
-  `agent:focus` / `pendingFocusId` + `consumePendingFocus`), with pans
-  in `DistrictScene.ts:180-186` and `InteriorScene.ts:174-179` and
-  tuning at `game/config.ts:137` (`CAMERA_FOCUS`); `useGameSync.ts`
-  contains no camera code. Reuse the `agent:goto` bus (HUD.tsx:61 is
-  the precedent), don't add a parallel path. Client tests are
-  per-package **vitest** (`packages/client`), not the root `node
-  --test` suite — put any headless test there.
+- Modify: `packages/client/src/game/navigation.ts` — the camera seam
+  [R: A-10] (`agent:goto` → `agent:focus` / `pendingFocusId` +
+  `consumePendingFocus`), with pans in `DistrictScene.ts:183` and
+  `InteriorScene.ts:177` and tuning at `game/config.ts:137`
+  (`CAMERA_FOCUS`); `useGameSync.ts` contains no camera code. On boot,
+  read `new URLSearchParams(location.search).get('follow')`; if it
+  names a known agent (presence model), center + follow that agent's
+  sprite; unknown/absent → default camera. Reuse the `agent:goto` bus
+  (HUD.tsx:61 is the precedent), don't add a parallel path.
 
 **Steps:**
-- [ ] Client: implement follow param; root `npm test` (the existing
-  `node --test` suite) → green; add one presence-model-level test if
-  the camera seam is testable headlessly, else document the manual
-  check.
+- [ ] Client: implement follow param; add one presence-model-level
+  test if the camera seam is testable headlessly — it goes in
+  `packages/client`'s **vitest** suite (`npm test` there runs
+  `vitest run`), NOT the root `node --test` suite, whose globs never
+  see package files [R: A-10]; else document the manual check. Then
+  root `npm test` (which also delegates to per-package suites via
+  turbo) → green.
 - [ ] Manual: iframe renders inside the frontend page under the CSP
   header (verify with devtools — frame loads, no CSP violation);
   a non-allowlisted origin embedding is REFUSED (open the town URL
@@ -146,13 +145,13 @@ this plan.
   a `LOCATION_POLL_MS`-parity poll hook `useCityPresence(username)` —
   the constant is `15_000` at
   `BotVille/packages/client/src/game/config.ts:9` (verified
-  2026-07-31); declare it in a comment with that source path)
-  **⚠ AMENDED (review 2026-07-31): the presence card's data source is
-  the public `/api/public/botville/locations` snapshot (filter to the
-  username client-side) plus `fetchAgentCity` for activity — NEVER the
-  affordances endpoint** (owner-gated, carries tallies + nudges; the
-  original plan left the card's source unpinned and Task 7's grep
-  assertion would have failed the moment the card used it).
+  2026-07-31); declare it in a comment with that source path).
+  **The presence card's data source is the public
+  `/api/public/botville/locations` snapshot** (filter to the username
+  client-side) plus `fetchAgentCity` for activity — NEVER the
+  affordances endpoint [R: Sweep G], which carries tallies + nudges
+  and is composer-only; Task 7's grep assertion fails the moment any
+  public component touches it.
 
 **Steps:**
 - [ ] Card renders: where-now (venue label or "at home"), co-present
