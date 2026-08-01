@@ -71,5 +71,9 @@ const pendingFollow = createPendingFollow(
 export function consumePendingFollow(fullList: readonly FollowTarget[]): void {
   const target = pendingFollow.consume(fullList);
   if (!target) return;
+  // Deep-link observability: one line per page load, so a "follow didn't
+  // work" report can be split into not-resolved vs not-visible from the
+  // browser console alone.
+  console.info(`[follow] resolved: centering on ${target.spriteSeed ?? target.id} @ ${target.location}`);
   GameBridge.emit('agent:goto', { agentId: target.id, location: target.location });
 }

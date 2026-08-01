@@ -182,6 +182,7 @@ export class DistrictScene extends Phaser.Scene {
       if (!sprite) return;
       cam.pan(sprite.x, sprite.y, CAMERA_FOCUS.panMs, 'Sine.easeInOut');
       if (cam.zoom < CAMERA_FOCUS.zoom) cam.zoomTo(CAMERA_FOCUS.zoom, CAMERA_FOCUS.panMs);
+      sprite.pulseLabel(); // visible confirmation of WHO the camera went to
     };
     GameBridge.on('agent:focus', onFocusAgent);
 

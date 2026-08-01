@@ -201,6 +201,24 @@ export class AgentSprite extends Phaser.GameObjects.Container {
   }
 
   /** Addendum O-2 #1 "where + what": show/update/remove the activity caption. */
+  /** Deep-link/HUD focus confirmation: a brief name-label pulse so the
+   * viewer can SEE which sprite the camera went to (Plan 03 Task 3 UX —
+   * a pan into a crowd is illegible without it). Safe to call anytime;
+   * the tween runs on the label's own scene. */
+  pulseLabel() {
+    const scene = this.nameLabel.scene;
+    if (!scene) return;
+    this.nameLabel.setScale(1);
+    scene.tweens.add({
+      targets: this.nameLabel,
+      scale: { from: 1, to: 1.7 },
+      duration: 260,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: 2,
+    });
+  }
+
   setActivity(activity?: string) {
     const text = formatActivityLabel(activity);
     if (text === null) {

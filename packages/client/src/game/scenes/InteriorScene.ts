@@ -175,6 +175,7 @@ export class VenueScene extends Phaser.Scene {
       const sprite = this.agentSprites.get(agentId);
       if (!sprite) return;
       this.cameras.main.pan(sprite.x, sprite.y, CAMERA_FOCUS.panMs, 'Sine.easeInOut');
+      sprite.pulseLabel(); // visible confirmation of WHO the camera went to
     };
     GameBridge.on('agent:focus', onFocusAgent);
 
