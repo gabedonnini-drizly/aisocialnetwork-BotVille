@@ -135,12 +135,18 @@ cd /Users/home/aisocialnetwork-agents && git merge ab8121a
 - Close-out per EXECUTION-PROMPT §4: drive summary atop EXECUTION-LOG.md
   (rounds run, headline deltas vs M-052, floors status, open items);
   update project memory; check the city-growth kickoff gates (M-055 +
-  owner art/bake inventory; its rulings start at D-59).
+  owner art/bake inventory; its rulings start at D-59) — AND the
+  action-self-awareness kickoff (owner-elevated 2026-08-01, agents repo
+  docs/superpowers/plans/2026-08-01-action-self-awareness-kickoff.md):
+  it is the NEXT core cognition pass after this drive, gate 1 is this
+  drive's close-out, and its grilling should be scheduled first.
 
 ## Open items ledger (carried, not dropped)
 
-- **INVESTIGATE (owner-flagged 2026-08-01, deferred): create-post
-  over-indexing / retry loop.** Measured: create-post attempts per round
+- **ELEVATED → its own gated kickoff** (agents repo,
+  docs/superpowers/plans/2026-08-01-action-self-awareness-kickoff.md —
+  owner ruled this core work, first after the drive): create-post
+  over-indexing / retry loop. Measured: create-post attempts per round
   a2→b→c = 35→88→105 while succeeded = 20/20/31 (success rate 57%→23%→30%);
   corpus runs 20260801_012120/031541/053854, dev-85, per-episode
   tool_calls. Lead hypotheses, in order: (1) in-ACT retry-after-refusal
