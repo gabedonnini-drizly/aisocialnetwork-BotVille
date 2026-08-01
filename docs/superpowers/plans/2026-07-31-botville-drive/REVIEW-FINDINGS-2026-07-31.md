@@ -199,3 +199,160 @@ BotVille `contract/` currently holds only the asset contract — the
 civic registry authoring copy is named distinctly; frontend
 `VenueSwitcher` entries need `icon` + `matchPrefix` (plan already
 includes both).
+
+## §VII. Integration record (2026-07-31, integration pass per INTEGRATION-PROMPT.md)
+
+The amendment blocks this review landed were merged into single-voice
+native text the same day. Provenance survives as `[R: <id>]` tags in the
+spec/plans pointing back at this file, and `(D-nn)` pointing at
+DECISIONS.md. The pre-merge (layered) state is git-preserved as the
+BotVille-repo commit `65e0c68`; the integration commits sit on top of
+it, one per file-family, editorial only. No row below reads "see
+amendment block".
+
+**Files carrying merged text:** the spec
+(`docs/superpowers/specs/2026-07-31-botville-civic-drive-design.md`),
+plans 01/02/03, `00-INDEX.md`, `00-KICKOFF-PROMPT.md` (banner note
+only), `CONTEXT.md`, DECISIONS.md (deferred-tail pointer only). This
+file and DECISIONS.md keep their own markers by design.
+
+### Traceability — findings → native location
+
+| id | where the content lives natively now |
+|---|---|
+| F-1 | `CONTEXT.md` "Goal Proposal" entry (system or agent, D-41) |
+| F-2 | Kickoff §3 banner (D-50 supersession named; banner extended at integration with the review/D-53..D-56 pointer) |
+| F-3 | Spec §VIII (D-53 transport in the section header prose) + Plan 02 Task 6 intro |
+| F-4 | Spec §IX praise "once-only mechanism" bullet; Plan 02 Task 8 praise step; Plan 01 Task 8 "Stale doc" paragraph (`routes.js:209`) |
+| F-5 | Plan 01 Task 3 `deriveActivePopulation` bullet (corpus + `created_at` + tz care) |
+| A-1 | Plan 02 Task 3 Files (`exposure_log.py` is infra) |
+| A-2 | Plan 02 Task 1 Files (lottery replaces the loop inside `_delegation_candidate`) |
+| A-3 | Plan 01 Task 7 Files + Task 9 Files (`botvillePublicRoutes.js`, never `routes.js`; allowlist named — see I-3) |
+| A-4 | Plan 01 Task 8 "Auth" paragraph (`authenticateOwner` + controller predicate) |
+| A-5 | Plan 01 Task 9 Files (extract `storeToolRationale` → shared util, then wire) |
+| A-6 | Plan 03 Task 1 (`NEXT_PUBLIC_API_URL`; direct-fetch Bearer write pattern) — use-site count re-measured at integration: 13 files (see anchor table) |
+| A-7 | Plan 01 Task 2 Files + sync-test step (`test/civic-registry-sync.test.mjs`) |
+| A-8 | Plan 02 Task 2 Files (flat `city_state_client.py`; `bootstrap.py:479-500`) + spec §VI.1 transport paragraph (spec's `adapters/http/` remnant reconciled at integration) |
+| A-9 | Plan 02 Task 8 hygiene bullet + INDEX hygiene list (INDEX's stale "29-32" reconciled to 31-32 at integration) |
+| A-10 | Plan 03 Task 3 Files (navigation seam) + test step (headless tests go in `packages/client` vitest, not the root suite) |
+| A-11 | Plan 02 Task 0 + Task 4 (cite M-051, never retracted M-037) |
+| A-12 | Plan 02 Task 0 (M-052 + M-051-rider revision in one commit) + INDEX Gate 0 + kickoff banner factual note |
+| BC-1 | Spec §I.2 "Stamp semantics" + Plan 01 Task 3 vote-counting pin + Task 4 `castVote` |
+| BC-2 | Spec §I.2 "Catch-up" + Plan 01 Task 3 catch-up pin |
+| BC-3 | Spec §I.2 "Isolation" + Plan 01 Task 3 isolation pin |
+| BC-4 | Spec §II DDL (`template_id` + system-dedup partial index, clean SQL) + Plan 01 Task 1 test step + Task 3 Radiant step |
+| BC-5 | Spec §III template `min_season_elapsed_days` + Plan 01 Task 3 Radiant step |
+| BC-6 | Spec §I.2 "Three clocks" — NOTE, landed in-spec |
+| BC-7 | Plan 01 Task 3 test list, pre-epoch guard bullet (landed at integration; was open at review close) |
+| BC-8 | NOTE — no plan change (arithmetic re-derived, §II) |
+| BC-9 | Spec §III seed comment + §IV coefficient paragraph |
+| BC-10 | NOTE — no plan change (eager boot tick recorded, §II) |
+| BC-11 | Spec §VI.1 + Plan 01 Task 7 "Auth posture" + Plan 02 Task 2 auth note (→ D-56) |
+| BC-12 | NOTE — negative checks clean, no plan change |
+| D-a | Plan 02 Task 7 C8 step (three promise consumers) |
+| D-b | Plan 02 Task 7 C8 step + ROUND (d) (worktree, deploy-window merge) |
+| D-c | Plan 02 Task 7 C8 step (shape contract; anchors re-verified — `assign_promise_ids` is `commit_kernel.py:93`, id+text check `candidate_builder.py:445-448`) |
+| D-d | Plan 02 Task 7 Files (grounding = `_ground_continuation`; extractor pushes label-or-id fallback, `exposure_log.py:361` — the shown-venue-ID surface still does not exist, substance unchanged) |
+| D-e | Spec §VI.2 "How city refs flow" + Plan 02 Task 3 ref-mechanism bullets + Task 5 ROUND (b) probe |
+| D-f | Spec §IX actionable-nudge bullet + Plan 01 Task 7 (any-ack filter) + Task 8 (`verb IS NULL`) + Plan 02 Tasks 3+8 |
+| D-g | Plan 01 Task 7 (pendingNudges includes praise; rung filters to actionable) |
+| D-h | Plan 02 Task 6 ROUND (c) consumer rider (`_append_right_now` re-anchored :241-298) |
+| D-i | NOTE — no plan change (presented-mix shift expected, round (b) re-baselines) |
+| D-j | NOTE — no plan change (key collision grep clean) |
+| Sweep E | A-11/A-12 rows above; all other checks clean — NOTE |
+| Sweep F | Spec §V cap + Plan 01 globals (`PROPOSALS_PAYLOAD_CAP`) + Task 5 cap test; Plan 02 ROUND (d) counted-token requirement |
+| Sweep G | Commands re-run at review (header); presence-card source pin landed in Plan 03 Task 4 |
+| Sweep H | Probes named inline per ROUND bullet in Plan 02; item 6 → D-54 (Plan 02 Task 5 step) |
+
+### Rulings D-53..D-56 — every site (grep-verified at integration)
+
+- **D-53** (`placement` + `md-gen` sweep): DECISIONS.md D-53; spec §VIII
+  header prose; Plan 02 Task 6 intro; CONTEXT.md "Ambient placement"
+  entry. Two contradictions found and revised at integration — see I-2.
+- **D-54** (`hard floor` + `llm_judge` sweep): DECISIONS.md D-54; INDEX
+  banner; Plan 02 Task 5 implementation step (file, predicate, test,
+  awareness rider). Location correction — see I-1.
+- **D-55** (`praise`/`consum`/`pendingNudges`/`ack` sweep): DECISIONS.md
+  D-55; spec §IX (once-only mechanism + actionable bullet); Plan 01
+  Tasks 7/8; Plan 02 Task 8; INDEX banner. Spec §VI.2 rung 1
+  "(verb ≠ praise)" is the candidate-rung filter and is consistent with
+  the payload carrying praise (D-g). No contradictions.
+- **D-56** (`affordances`/`public`/`auth`/`internal` sweep): DECISIONS.md
+  D-56 (+ D-43); spec §VI.1; Plan 01 Task 7 "Auth posture"; Plan 02
+  Task 2 auth note + adapter spec; Plan 03 Task 1
+  `fetchAgentAffordances` bullet + Task 7 grep assertion; INDEX banner.
+  Consistent everywhere: public now, config-auth-ready both sides,
+  unwrapped regardless of auth flag.
+
+### New findings surfaced by the merge (routed as findings, per the prompt)
+
+| id | sev | finding |
+|---|---|---|
+| I-1 | MUST-FIX (fixed in-plan) | **The eval hard floors do not live in `llm_judge.py`.** Verified at integration (agents repo, working tree): the quantitative floors are `compute_hard_floors` in `scripts/admin_tools/simulation_metrics.py:237-286` (invoked :389); `llm_judge.py` carries only qualitative rubric text (:399-412) and quantitative signals (:194-262). The actual floors are ≥3 unique succeeded tools / ≥2 tool categories / ≥1 content action — NOT the "≥5 unique tools + ≥1 contextual action" figures that circulate in older agents-repo docs (`docs/analysis/2026-07-26-soul-prompt-recompile-design.md:254,295` — numbers do not match code; left un-fixed there, out of this pass's scope, flagged for the agents repo). Plan 02 Task 5's D-54 step now points at the verified site. Floor enforcement sites, for the implementer: `scripts/ralph/ralph_compare.py:18-26`, `ralph_generate_loop.py:59-84`. |
+| I-2 | MUST-FIX (fixed) | **Spec §VIII and CONTEXT.md contradicted D-53's ruled transport**: both said the placement line arrives "through/via the md-gen process", while D-53 rules `CityStatePort.placement` precisely because literal md-gen routing would violate addendum II.1 rule 3. Both revised at integration (the ruling wins; the documents got revised). Kickoff §2.8's "built into the md-gen process" text stands as historical session record — the banner routes executors to the plans. |
+| I-3 | SHOULD (fixed) | **A-3's allowlist pointer was imprecise**: in `tests/botville/boundary.test.js` the `botville_` marker sweep is **rule 1** (test at :58-70), and the allowlist a new controller must join is `MODULE_REQUIRE_ALLOWLIST` (:49-56); `TABLE_REFERENCE_ALLOWLIST` (:42-47) pins 038 by literal name. Plan 01 Task 7 now names the constant. |
+
+### Anchor re-verification at merge time (all cited lines re-opened 2026-07-31, three parallel sweeps over the four working trees)
+
+Confirmed unchanged: `EXCLUDED_TOOLS` 22 = 7 L3 + 15 L2
+(`unified_runner.py:211-263`); `_own_intention` :401 /
+`_delegation_candidate` :698 / loop :703-711 / `MAX_SUBSTANTIVE` :67;
+`exposure_log.py` extractors :354-389, registration :404-406;
+`ACK_KINDS` (`exposure.py:25`, 4 kinds) and the :161 silent drop;
+`end_of_turn.py:227` bare-string promises; `_ground_continuation`
+:529-555; `configs/defaults.yaml:31-32`; `mdGenController.js:467-468`;
+`routes.js:209` + :122-137; `app.js:115` mount + :75-89 `/health`;
+migration 038 (no civic columns on `botville_city_goals`;
+`botville_venue_notes.user_id` NOT NULL); `eligibilityService.js:114`;
+`heartbeatCommitService.js:246`; `syncNudgeConsumed`
+(`exposureAckService.js:143-148`, fired at :183 on engaged|deferred);
+`023_add_agent_runs.js:10-21`; facts.yaml tail = M-051 (M-052 free —
+Plan 02 Task 0 has NOT run; INDEX Gate-0 language stays future-tense);
+`run_20260731_084950` present under `output/batch_test/`;
+`_SCREEN_EXCLUDED_TOOLS` (`run_screen.py:66-73`, 13 entries); 5
+existing core ports; flat adapter convention (no `adapters/http/`);
+reflector.yaml (12 tools, no city reads yet); `heartbeat.py:624-627`
+no-kind-filter; VenueSwitcher 2 entries; `.env.local:1`; frontend has
+no test runner; `packages/client` vitest; BotVille root glob
+`test/*.test.mjs|ts`; `contract/` = asset contract only; venues.json 18
+venues; `config.ts:9` + :137; HUD.tsx:61.
+
+Drifted and corrected in merged prose: `heartbeat.py:557-564` (trigger
+list build — was cited 558-563); `candidate_builder.py:445-448`
+(id+text — was 449-450); `assign_promise_ids` →
+`heartbeat/core/domain/commit_kernel.py:93` (not end_of_turn.py);
+`strip_fabricated_ids` → `heartbeat/core/normalization.py:112` (no
+`core/orchestration/` file); `_append_right_now` :241-298 (was -296);
+`bootstrap.py:479-500` (was -490); `exposure_log.py:361` label-**or-id**
+fallback (was "labels, not ids" — substance of D-d unchanged);
+`NEXT_PUBLIC_API_URL` 13 use-site files (was 14); camera pans
+`DistrictScene.ts:183` / `InteriorScene.ts:177`; `ackNudges`
+`startupService.js:110` (was 113-119, findings §0 F-4 row left as
+written — this note is the correction record); hard floors → I-1.
+
+### Open items carried (not silently dropped)
+
+- **Wishlist 15–17** (venue-notes re-poll, human browser pass, dev
+  signup 500): still untriaged, no owner disposition as of this pass.
+  Carried to the next triage session; also named in the city-growth
+  kickoff's hygiene list.
+- **`docs/analysis/2026-07-26-soul-prompt-recompile-design.md:254,295`**
+  floor figures vs code (I-1) — an agents-repo doc fix, outside this
+  pass.
+
+### Gate outputs (run at integration close, this session)
+
+- BotVille root `npm test` (docs-only change, proven anyway): root
+  `node --test` **272 pass / 0 fail**, `golden:names` green, turbo
+  per-package `@botville/client` vitest **13/13 pass**. Exit 0.
+- Marker grep over the merged set (`⚠ AMENDED` / `RULED D-5` /
+  `pending owner` / `✅ RESOLVED` across INDEX, kickoff, plans
+  01/02/03, spec, CONTEXT.md): **zero hits**. This file, DECISIONS.md,
+  and the two prompt documents (REVIEW-PROMPT, INTEGRATION-PROMPT)
+  keep their markers by design.
+- Agents-repo gates not run: nothing under `aisocialnetwork-agents/`
+  was touched (facts.yaml untouched; its tail is still M-051, M-052
+  free — re-verified this session).
+- Fresh-engineer read: full integration diff reviewed top-to-bottom;
+  no sentence in the merged plans/spec requires knowing the pre-merge
+  text.
