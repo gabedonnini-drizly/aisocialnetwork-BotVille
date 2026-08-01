@@ -14,7 +14,7 @@ import { GameTime } from '../time.js';
 import { isSleepTime, nightIntensity, tintAt } from '../dayNight.js';
 import { ensureGlowTexture } from '../glowTexture.js';
 import { useUIStore } from '../../store/agentStore.js';
-import { consumePendingFocus } from '../navigation.js';
+import { consumePendingFocus, consumePendingFollow } from '../navigation.js';
 import { hasGroundArt } from '../tilesetGuard.js';
 import type { SyncedAgent } from '../../hooks/useGameSync.js';
 
@@ -463,5 +463,7 @@ export class DistrictScene extends Phaser.Scene {
 
     // we came here for a specific agent from the HUD — aim the camera (TZ-16)
     consumePendingFocus('DistrictScene', id => this.agentSprites.has(id));
+    // ?follow= deep-link: the first sync containing the agent goes to them (Plan 03 Task 3)
+    consumePendingFollow(fullList);
   }
 }

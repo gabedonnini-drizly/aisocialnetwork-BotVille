@@ -21,6 +21,18 @@ otherwise. `CLIENT_ORIGIN` is an explicit comma-separated allowlist, never
 `COOKIE_SAMESITE=none` on the server so the session survives the cross-site
 request.
 
+**Embedding (frame-ancestors CSP).** The platform frontend embeds the town
+in an iframe (`/botville`), so `nginx.conf` sends
+`Content-Security-Policy: frame-ancestors …` — an explicit origin
+allowlist, never `*`, mirroring the server's `CLIENT_ORIGIN` rule. The
+nginx config has no env-substitution step (Dockerfile.client `COPY`s it
+verbatim), so the checked-in value is the dev default
+(`http://localhost:3000`, the platform frontend's dev origin); at deploy
+time, edit the space-separated origin list in `nginx.conf` to the real
+frontend origin(s) and rebuild the client image. Origins not on the list
+are refused by the browser (the frame renders blank — check devtools for
+the CSP violation when debugging).
+
 **Art.** A build with no licensed packs is not broken — it bakes the
 synthetic fixture pack and renders a complete city in flat colours. That is
 what `docker compose build` produces with no environment set, and it is

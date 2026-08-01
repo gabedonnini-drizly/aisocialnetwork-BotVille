@@ -9,7 +9,7 @@ import { attachCameraControls, onTap } from '../cameraControls.js';
 import { ANIMATED_OBJECTS, getVariant } from '../assetManifest.js';
 import { GameTime } from '../time.js';
 import { isSleepTime } from '../dayNight.js';
-import { consumePendingFocus } from '../navigation.js';
+import { consumePendingFocus, consumePendingFollow } from '../navigation.js';
 import { hasGroundArt } from '../tilesetGuard.js';
 import { assignSlots, displacedSlot, isOverCapacity } from '../venueSlots.js';
 import type { FootprintRect, Slot } from '../venueSlots.js';
@@ -343,6 +343,8 @@ export class VenueScene extends Phaser.Scene {
 
     // we came here for a specific agent from the HUD — aim the camera (TZ-16)
     consumePendingFocus(this.sceneKey, id => this.agentSprites.has(id));
+    // ?follow= deep-link: the first sync containing the agent goes to them (Plan 03 Task 3)
+    consumePendingFollow(fullList);
   }
 
   private releaseSeatOf(agentId: string) {

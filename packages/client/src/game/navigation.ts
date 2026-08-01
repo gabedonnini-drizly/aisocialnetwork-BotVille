@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GameBridge } from './GameBridge.js';
 import { sceneRegistry } from './SceneRegistry.js';
 import { sceneKeyFor } from './venueRegistry.js';
+import { createPendingFollow, type FollowTarget } from './followParam.js';
 
 /**
  * TZ-16: clicking an agent in the HUD takes you to them.
@@ -50,4 +51,25 @@ export function consumePendingFocus(sceneKey: string, hasAgent: (id: string) => 
   const agentId = pendingFocusId;
   pendingFocusId = null;
   GameBridge.emit('agent:focus', { agentId });
+}
+
+// ── ?follow= deep-link (Plan 03 Task 3) ──────────────────────────────────────
+// Read once at boot. The first syncAgents whose roster contains the agent
+// routes through the SAME agent:goto path as a HUD click (TZ-16): same scene —
+// agent:focus pan; another scene — fade transition + pendingFocusId above.
+// No parallel camera path.
+const pendingFollow = createPendingFollow(
+  typeof window !== 'undefined' ? window.location.search : '',
+);
+
+/**
+ * Scenes call this at the end of syncAgents, right after consumePendingFocus.
+ * `fullList` is everyone PresenceModel placed "somewhere" (F-3), so a followed
+ * agent that is absent/unknown simply stays pending — default camera until the
+ * roster first contains them (presence loads async; arriving later is normal).
+ */
+export function consumePendingFollow(fullList: readonly FollowTarget[]): void {
+  const target = pendingFollow.consume(fullList);
+  if (!target) return;
+  GameBridge.emit('agent:goto', { agentId: target.id, location: target.location });
 }
