@@ -1,5 +1,7 @@
 # Plan 03 — BotVille: fixture/integrated seam, tolerant client repoint, activity + notes
 
+> **NOTE: this plan set has SHIPPED (2026-07-31). The checkboxes below were never ticked — `EXECUTION-2026-07-31.md` is the status source, not this file.**
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Spec:** `docs/superpowers/specs/2026-07-29-botville-world-addendum-design.md` — Part II.1/II.2 (fixture vs integrated modes, the HTTP seam), Part I.4 (`LocationsSnapshot` / `AgentPresence`), and the binding Conventions section.
