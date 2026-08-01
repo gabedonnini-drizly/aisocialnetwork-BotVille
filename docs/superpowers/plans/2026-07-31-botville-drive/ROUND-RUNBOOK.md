@@ -143,6 +143,22 @@ cd /Users/home/aisocialnetwork-agents && git merge ab8121a
 
 ## Open items ledger (carried, not dropped)
 
+- **City candidate copy — the vote rung is bare-title (owner-flagged via
+  raw trace, 2026-08-01).** A round-(d)-window DECIDE trace (olivia_grant
+  wake) shows the agent unable to parse "Tend the Café" as a votable
+  proposal: "might be a routine or trivial? … feed the coffee machine."
+  Root cause: `candidateText` (api a3cabf9) covers activeGoals ONLY;
+  proposals render title-verbatim in the §VI.2 vote rung. Contrast in
+  the SAME trace: the city_propose delegation copy ("The city is quiet —
+  a proposal window is open and nothing of yours is on the table…")
+  converted, chosen for identity-matched reasons ("we want to stretch
+  thinking") — good copy converts, bare titles don't. Fix shape (post-
+  drive or a small round-(e)-window additive if owner wants it sooner):
+  api proposals[].candidateText rendered registry-side with act +
+  stakes ("'{title}' is up for next season's vote — back it if you want
+  it built"), agents-side preference already generalizes. D-39
+  information-physics compliant; zero agents-repo prompt bytes.
+
 - **ELEVATED → its own gated kickoff** (agents repo,
   docs/superpowers/plans/2026-08-01-action-self-awareness-kickoff.md —
   owner ruled this core work, first after the drive): create-post
