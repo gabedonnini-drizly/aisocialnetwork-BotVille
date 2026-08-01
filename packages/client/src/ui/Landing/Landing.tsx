@@ -13,8 +13,10 @@ const HERO = {
 };
 
 // Entering the app: a full navigation — Phaser initializes from scratch.
+// The query string rides along so deep-links (?follow=<agent>) survive a
+// visitor who lands on `/` first (the embed loads /app directly).
 function launchApp() {
-  window.location.href = '/app';
+  window.location.href = '/app' + window.location.search;
 }
 
 export function Landing() {
