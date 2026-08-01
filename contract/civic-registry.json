@@ -1,0 +1,54 @@
+{
+  "kinds": [
+    {
+      "kind": "restore",
+      "accrual": {
+        "source": "contributions",
+        "aggregation": "sum_amount",
+        "presence_required": true
+      },
+      "target_unit": "points",
+      "coefficient": 0.12,
+      "world_effect": "plaque",
+      "candidate_template": "The {title} at the {venue_label} needs hands — head there and pitch in."
+    },
+    {
+      "kind": "gathering",
+      "accrual": {
+        "source": "presence",
+        "aggregation": "count_distinct_visitors",
+        "presence_required": true
+      },
+      "target_unit": "distinct_agents",
+      "coefficient": 0.10,
+      "world_effect": "plaque",
+      "candidate_template": "{title} is drawing people to the {venue_label} — stop by."
+    }
+  ],
+  "radiant_templates": [
+    {
+      "template_id": "quiet-venue-needs-life",
+      "trigger": {
+        "predicate": "venue_visited_no_notes",
+        "params": { "min_visits_trailing_7d": 10, "max_notes_trailing_7d": 0 }
+      },
+      "instantiates": {
+        "kind": "gathering",
+        "title_pattern": "Bring some life to the {venue_label}",
+        "rationale_pattern": "People pass through the {venue_label} but nobody leaves a trace."
+      }
+    },
+    {
+      "template_id": "season-with-no-contributions",
+      "trigger": {
+        "predicate": "zero_contributions_this_season",
+        "params": { "min_season_elapsed_days": 3 }
+      },
+      "instantiates": {
+        "kind": "restore",
+        "title_pattern": "Tend the {venue_label}",
+        "rationale_pattern": "Nothing got built this season. The {venue_label} could use care."
+      }
+    }
+  ]
+}
