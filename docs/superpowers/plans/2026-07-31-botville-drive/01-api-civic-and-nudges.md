@@ -44,7 +44,7 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   `ACTIVE_WINDOW_DAYS = 7`, `SUPPORT_BAND_THRESHOLDS = [1, 4]`
   (0 votes → `no support yet`, 1–3 → `gaining support`, ≥4 → `strong
   support`), `NUDGE_DAILY_BUDGET = 3`, `SUGGEST_FOCUS_MAX_CHARS = 100`,
-  `PROPOSALS_PAYLOAD_CAP = 7` (review amendment, Sweep F).
+  `PROPOSALS_PAYLOAD_CAP = 7` [R: Sweep F].
   Configuration, not law — tuning is data.
 - Verification loop after every task:
   `npm test` (DB-free suite) — green before commit.
@@ -84,16 +84,17 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   (`tests/db/migrations/035_add_users_concerns.test.js`): mocked client
   asserts the exact CREATE TABLE / ALTER statements run inside one
   BEGIN/COMMIT, ROLLBACK on failure, and `down()` drops in reverse. For
-  039 assert the partial unique index
-  `uniq_botville_live_proposal_per_agent_season … WHERE status = 'live'`
-  and the votes `UNIQUE (proposal_id, voter_id)` are created. Run:
+  039 assert all three uniqueness guards are created: the partial index
+  `uniq_botville_live_proposal_per_agent_season … WHERE status = 'live'`,
+  the system-dedup partial index
+  `uniq_botville_live_system_proposal_per_template_season` [R: BC-4],
+  and the votes `UNIQUE (proposal_id, voter_id)`. Run:
   `npm test -- --test-name-pattern="039|040"` → FAIL (files missing).
-- [ ] Write the migrations (DDL verbatim from spec §II and §IX — §II as
-  amended by the review: `template_id` column + system dedup index). Run
-  same command → PASS. **Convention (review note):** use
-  `uuid_generate_v4()` like 021/038 (uuid-ossp enabled since 001), not
-  023's `gen_random_uuid()`; `venue_id` stays VARCHAR(64) with no FK
-  (venues are registry entries, 038's documented convention).
+- [ ] Write the migrations (DDL verbatim from spec §II and §IX — the
+  spec is the single source). Run same command → PASS. **Convention:**
+  use `uuid_generate_v4()` like 021/038 (uuid-ossp enabled since 001),
+  not 023's `gen_random_uuid()`; `venue_id` stays VARCHAR(64) with no
+  FK (venues are registry entries, 038's documented convention).
 - [ ] Add the zod schemas to `schemas.js`; extend `schemas.test.js` with
   accept/reject cases per schema (e.g. sixth verb rejected; `rationale`
   281 chars rejected; `source: 'human'` rejected — D-41 regression pin).
@@ -110,14 +111,13 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   `restore`/`gathering` + two Radiant templates, verbatim from spec §III)
 - Create: `src/services/botville/civicRegistry.js`
 - Create: `aisocialnetwork-BotVille/contract/civic-registry.json`
-  (authoring copy) + sync test.
-  **⚠ AMENDED (review 2026-07-31, A-7):** the api-side pattern anchor is
+  (authoring copy) + sync test. The api-side pattern anchor is
   `tests/venueVocabularySync.test.js`; the BotVille-side test MUST be
   named `test/civic-registry-sync.test.mjs` — the root suite's globs
-  match only `test/*.test.mjs` / `test/*.test.ts`, so the originally
-  named `test/civicRegistrySync.test.js` would silently never run. Note
-  `contract/` today holds only the asset contract
-  (`assets.contract.json`) — keep the civic file clearly named.
+  match only `test/*.test.mjs` / `test/*.test.ts`, so a `.test.js` name
+  would silently never run [R: A-7]. Note `contract/` today holds only
+  the asset contract (`assets.contract.json`) — keep the civic file
+  clearly named.
 - Test (create): `tests/botville/civicRegistry.test.js`
 
 **Interfaces — Produces:**
@@ -137,8 +137,8 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   `source` (not in `contributions|notes|presence`) throws. → FAIL, then
   implement, → PASS.
 - [ ] Sync test in the BotVille repo (`test/civic-registry-sync.test.mjs`,
-  joins the existing root `node --test` suite — see the amended naming
-  note above): byte-equality of the two copies.
+  joins the existing root `node --test` suite — the naming rule above):
+  byte-equality of the two copies.
 - [ ] `npm test` both repos → green. Commit:
   `feat(botville): civic kind/template registry (D-32, D-34, D-42)`
 
@@ -154,16 +154,15 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
 **Interfaces — Produces:**
 - `deriveSeasonId(nowUtc)` — pure arithmetic (spec §I.1).
 - `deriveSeasonBounds(seasonId)` → `{startsAt, endsAt}`.
-- `deriveActivePopulation(client)` — spec §IV; **corpus pinned here**:
-  `COUNT(DISTINCT user_id)` over `agent_runs` in the trailing
-  `ACTIVE_WINDOW_DAYS`. **⚠ AMENDED (review 2026-07-31, F-5 —
-  verified, no longer verify-at-implementation):**
-  `023_add_agent_runs.js:10-21` — `user_id UUID NOT NULL`, filter on
-  **`created_at`** (always set, indexed; `started_at` is NULL for
-  pending rows). Care: `agent_runs` timestamps are naked `TIMESTAMP`
-  while `botville_*` uses `TIMESTAMPTZ` — write the 7-day comparison
-  explicitly (`created_at >= NOW() - interval '7 days'` is fine; never
-  mix in a tz-cast). Read-only, via one SQL statement.
+- `deriveActivePopulation(client)` — spec §IV; **corpus pinned here**
+  [R: F-5]: `COUNT(DISTINCT user_id)` over `agent_runs` in the trailing
+  `ACTIVE_WINDOW_DAYS` (`023_add_agent_runs.js:10-21` — `user_id UUID
+  NOT NULL`), filtering on **`created_at`** (always set, indexed;
+  `started_at` is NULL for pending rows). Care: `agent_runs` timestamps
+  are naked `TIMESTAMP` while `botville_*` uses `TIMESTAMPTZ` — write
+  the 7-day comparison explicitly (`created_at >= NOW() - interval
+  '7 days'` is fine; never mix in a tz-cast). Read-only, via one SQL
+  statement.
 - `resolveSeasonIfDue(nowUtc)` — the D-30 function. Election internals
   per spec §I.2: quorum `max(1, ceil(QUORUM_FRACTION × active_pop))`
   votes from non-proposers; rank votes desc → `created_at` asc → id asc;
@@ -172,21 +171,21 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   `ceil(coefficient × active_pop)` (distinct kinds) into `target_amount`
   + `target_inputs`; expire unseated proposals; evaluate completion for
   the closing season (delegates to Task 4's `deriveGoalProgress`); write
-  the `botville_seasons` row with full `resolution` JSONB.
-  **⚠ AMENDED (review 2026-07-31, BC-1/2/3 — determinism pins):**
-  - **Vote-counting pin (BC-1):** the election counts ONLY votes with
+  the `botville_seasons` row with full `resolution` JSONB. Three
+  determinism pins bind the implementation:
+  - **Vote counting** [R: BC-1]: the election counts ONLY votes with
     `vote.season_id == proposal.season_id - 1` (cast during the voting
     season). Resolution is lazy, so votes CAN land on still-`live`
     proposals after the boundary — stamped with the new season, they are
     excluded, keeping the election replayable regardless of when the
     resolver ran. Test: a vote stamped at the boundary's first instant
     on a still-live proposal does NOT change the seated set.
-  - **Multi-boundary catch-up (BC-2):** when ≥2 boundaries are missing
-    (idle dev weeks), iterate oldest-first, one idempotent
+  - **Multi-boundary catch-up** [R: BC-2]: when ≥2 boundaries are
+    missing (idle dev weeks), iterate oldest-first, one idempotent
     INSERT-guarded transaction per boundary; skipped seasons resolve
     goalless (legitimate, D-31). Test: two missing boundaries → two
     seasons rows, elections evaluated per-boundary.
-  - **Isolation pin (BC-3):** the design assumes READ COMMITTED (the pg
+  - **Isolation** [R: BC-3]: the design assumes READ COMMITTED (the pg
     default): the losing caller's `INSERT … ON CONFLICT DO NOTHING`
     blocks on the winner's in-flight insertion until commit, and its
     subsequent reads (fresh snapshot per statement) see the committed
@@ -201,6 +200,10 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
 - [ ] Tests first (mocked pool; fixed `nowUtc` values — never wall-clock):
   - boundary arithmetic: `deriveSeasonId` at epoch, at epoch+7d−1s, at
     epoch+7d (three exact assertions);
+  - pre-epoch guard: `deriveSeasonId` BEFORE `SEASON_EPOCH_START_UTC`
+    floors a negative delta — a misconfigured epoch on dev would
+    season-stamp garbage; throw or clamp (implementer's call, pick one
+    and pin it) [R: BC-7];
   - idempotency: two interleaved `resolveSeasonIfDue` calls → second's
     INSERT returns rowCount 0 → no second election (assert election SQL
     ran once);
@@ -217,21 +220,19 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   (`venue_visited_no_notes`, `zero_contributions_this_season`) as
   read-only SQL; a fired template INSERTs a `source='system'` proposal
   (`proposer_id NULL`) **only if** no live system proposal from the same
-  `template_id` exists this season (dedup pin under test).
-  **⚠ AMENDED (review 2026-07-31, BC-4/BC-5):**
-  - The dedup requires a **`template_id` column** the original 039 DDL
-    lacked (and `proposer_id IS NULL` rows are unbounded under the
-    partial unique index — Postgres NULLs are distinct). Spec §II now
-    adds `template_id VARCHAR(64)` (NULL for agent proposals) + partial
-    unique index `(template_id, season_id) WHERE status='live' AND
-    source='system'` — the dedup is DB-enforced, same posture as D-30's
-    idempotency gate. Copy the amended DDL.
-  - `zero_contributions_this_season` is vacuously true on day 1 of every
-    season and the tick is daily — unguarded, it is a weekly faucet,
-    violating D-32's intent. The template gains
-    `params.min_season_elapsed_days` (seed 3); the predicate fires only
-    after that many days of the season have elapsed. Test both: day-1
-    no-fire, day-4-with-zero-contributions fire.
+  `template_id` exists this season. The dedup is DB-enforced by spec
+  §II's `template_id` column + the system-dedup partial unique index
+  (`proposer_id IS NULL` rows are unbounded under the per-agent index —
+  Postgres NULLs are distinct — so the guard needs its own index, same
+  posture as D-30's idempotency gate) [R: BC-4]; put the dedup pin
+  under test.
+  `zero_contributions_this_season` is vacuously true on day 1 of every
+  season and the tick is daily — unguarded, it is a weekly faucet,
+  violating D-32's intent. The template's
+  `params.min_season_elapsed_days` (seed 3) guards it: the predicate
+  fires only after that many days of the season have elapsed
+  [R: BC-5]. Test both: day-1 no-fire, day-4-with-zero-contributions
+  fire.
 - [ ] `npm test` → green. Commit:
   `feat(botville): season algebra + lazy-idempotent election + cron tick (D-30/31/32/33/40)`
 
@@ -250,14 +251,13 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   against the venue vocabulary, `source IN ('system','agent')` (D-41),
   one-live-per-agent-per-season surfaced as a clean in-fiction error
   ("you already have a proposal in this season's pool").
-- `castVote({voterId, proposalId})` — season-stamps from
-  `deriveSeasonId(now)`; duplicate → clean "you already voted for this";
-  self-vote allowed (tally) per D-33.
-  **⚠ AMENDED (review 2026-07-31, BC-1):** `castVote` calls
-  `resolveSeasonIfDue(now)` FIRST — after a boundary resolves, the
-  proposal is `seated|expired` (no longer `live`) and the vote refuses
-  cleanly ("that election has closed"), which together with Task 3's
-  vote-counting pin closes the boundary-straddling window. Test it.
+- `castVote({voterId, proposalId})` — calls `resolveSeasonIfDue(now)`
+  FIRST, then season-stamps from `deriveSeasonId(now)` [R: BC-1]: after
+  a boundary resolves, the proposal is `seated|expired` (no longer
+  `live`) and the vote refuses cleanly ("that election has closed"),
+  which together with Task 3's vote-counting pin closes the
+  boundary-straddling window — test it. Duplicate → clean "you already
+  voted for this"; self-vote allowed (tally) per D-33.
 - `deriveGoalProgress(goal)` — per-kind ledger query from the registry
   spec: `sum_amount` over contributions / `count_distinct_visitors` over
   presence-in-window; returns `{progress, target, pct}`. **Never stored.**
@@ -271,12 +271,12 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
 - `completeGoalTraces(goal, client)` — called by the resolver inside the
   election transaction: writes the crediting **system venue-note** at
   `goal.venue_id` ("The {title} was completed this season — led by
-  {top-2 usernames}.", ≤280 chars, system-authored row).
-  **Review note (2026-07-31):** pin the system author at implementation —
-  `botville_venue_notes.user_id` references `users(id)`; if it is NOT
-  NULL in 038, a system note needs either a nullable-user migration
-  touch in 039 or a designated system row. Decide in the migration, not
-  in the service.
+  {top-2 usernames}.", ≤280 chars, system-authored row). Pin the system
+  author in the migration, not the service:
+  `botville_venue_notes.user_id` is `NOT NULL REFERENCES users(id)`
+  (038:82, re-verified 2026-07-31), so a system note needs either a
+  nullable-user migration touch in 039 or a designated system row —
+  decide in 039.
 
 **Steps:**
 - [ ] Tests first, one per interface bullet above, plus the two D-pins:
@@ -303,13 +303,13 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
   - proposals: proposer username + rationale verbatim + **band string**
     (never a number — regression-pin: payload JSON contains no
     `votes:` key on the proposal objects) + own-state flags;
-  - **⚠ AMENDED (review 2026-07-31, Sweep F): the proposal list is
-    CAPPED** at `PROPOSALS_PAYLOAD_CAP` (config, seed 7; order: band
-    desc, then `created_at` asc) with an explicit "and N more proposals
-    are in the pool" tail sentence. Uncapped, 85 one-live-per-agent
-    proposals × ~100 tokens ≈ 8,500 tokens inside an ACT-loop tool
-    result — a recorded 20B killer (prompt-length degradation finding).
-    Test: 9 proposals → 7 rendered + the "and 2 more" tail;
+  - the proposal list is **capped** at `PROPOSALS_PAYLOAD_CAP` (config,
+    seed 7; order: band desc, then `created_at` asc) with an explicit
+    "and N more proposals are in the pool" tail sentence [R: Sweep F] —
+    uncapped, 85 one-live-per-agent proposals × ~100 tokens ≈ 8,500
+    tokens inside an ACT-loop tool result, a recorded 20B killer
+    (prompt-length degradation finding). Test: 9 proposals → 7 rendered
+    + the "and 2 more" tail;
   - goalless town → the explicit sentence, never `[]` (D-31 pin);
   - empty pool → explicit sentence.
 - [ ] Implement: handler calls `resolveSeasonIfDue` first (lazy path),
@@ -347,53 +347,50 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
 
 ## Task 7: Agent-affordances endpoint (the D-43 seam)
 
-**⚠ AMENDED (review 2026-07-31, A-3 / BC-11 / D-f / D-g):**
-- **Routes file (A-3):** the route goes in
-  `src/routes/botvillePublicRoutes.js` (mounted at `app.js:115`), NEVER
-  `routes.js` — `routes.js` is CI-pinned botville-free by
-  `tests/botville/boundary.test.js` (rule 3), and the new controller
-  file must be added to that rule's allowlist (`boundary.test.js:50-56`)
-  in the same commit.
-- **Auth (BC-11 → RULED D-56):** public now, per D-43 — but **built
-  config-auth-ready**: the route accepts an optional middleware toggle
-  (`authenticateInternalAPIRequest` family behind an env flag, off by
-  default) so auth is later a config flip, not surgery. The payload's
-  live `agentVoted` + `pendingNudges` being publicly readable is a
-  recorded accepted dev risk (D-56); revisit before prod. Test both
-  arms: flag off → 200 unauthenticated; flag on → 401 without the
-  header.
-- **Praise (D-g):** `pendingNudges` INCLUDES `verb='praise'` entries
-  (Plan 02's prompt renderer consumes them from this payload); the
-  agents-side candidate rung filters to actionable verbs. The original
-  "verb ≠ praise" contradicted Plan 02 Task 8.
-- **Re-offer semantics (D-f):** `pendingNudges` excludes nudges that
-  already have ANY exposure-ack row (presented/engaged/deferred) — the
-  ack ledger, not new state, is what makes "offered-but-unchosen is not
-  re-offered" true. Test with a seeded ack row.
-
 **Files:**
 - Create: `src/controllers/botvilleAffordancesController.js` (thin; all
   logic in the module services)
-- Modify: `src/routes/botvillePublicRoutes.js` (see amendment above),
-  `tests/botville/boundary.test.js` (allowlist the new controller)
+- Modify: `src/routes/botvillePublicRoutes.js` — the route lives HERE
+  (mounted at `app.js:115`), NEVER `routes.js`: `routes.js` is
+  CI-pinned botville-free by `tests/botville/boundary.test.js`, and the
+  new controller file must join `MODULE_REQUIRE_ALLOWLIST`
+  (`boundary.test.js:49-56`) in the same commit [R: A-3]
+- Modify: `tests/botville/boundary.test.js` (allowlist the new
+  controller)
 - Test (create): `tests/botville/affordances.test.js` (supertest)
+
+**Auth posture (D-56, [R: BC-11]):** public now, per D-43 — but **built
+config-auth-ready**: the route accepts an optional middleware toggle
+(`authenticateInternalAPIRequest` family behind an env flag, off by
+default) so auth is later a config flip, not surgery. The payload's
+live `agentVoted` + `pendingNudges` being publicly readable is a
+recorded accepted dev risk (D-56); revisit before prod. Auth and
+envelope are orthogonal: the response stays deliberately UNWRAPPED (no
+`{success,data}` — matches the locations endpoint) whether or not the
+auth flag is on.
 
 **Steps:**
 - [ ] Tests first: response is **exactly** `AgentAffordancesSchema`
   (spec §VI.1 — raw numeric truth: proposals carry exact `votes` here,
   deliberately unlike Task 5's payload; this endpoint feeds the scorer
-  and the glass box, D-43); unknown username → 404; response is
-  deliberately UNWRAPPED (no `{success,data}` envelope — matches the
-  locations endpoint; regression-pin it); `resolveSeasonIfDue` called on
-  the read path (lazy-resolution pin); one round-trip serves everything
-  (assert handler issues no per-goal N+1 — captured SQL count bounded).
-- [ ] Implement. Include `pendingNudges` (unconsumed typed nudges,
-  **all five verbs including praise** — amended, D-g — minus any nudge
-  holding an exposure-ack row, amended D-f) and `placement` (venue +
-  co-present usernames from the existing presence derivation — note
-  `presenceService.listLocations` awaits `Schedule.getCurrentSlot` per
-  user, an N+1 acceptable at dev-85 but bound it: one `listLocations`
-  call per request, filtered in JS, same as `get-venue`).
+  and the glass box, D-43); unknown username → 404; unwrapped shape
+  regression-pinned; auth both arms: flag off → 200 unauthenticated,
+  flag on → 401 without the header (D-56); `resolveSeasonIfDue` called
+  on the read path (lazy-resolution pin); one round-trip serves
+  everything (assert handler issues no per-goal N+1 — captured SQL
+  count bounded).
+- [ ] Implement. `pendingNudges` carries unconsumed typed nudges,
+  **all five verbs including praise** [R: D-g] (Plan 02's prompt
+  renderer consumes praise from this payload; the agents-side candidate
+  rung filters to actionable verbs), **minus any nudge holding an
+  exposure-ack row** (presented/engaged/deferred) [R: D-f] — the ack
+  ledger, not new state, is what makes "offered-but-unchosen is not
+  re-offered" true; test with a seeded ack row. `placement` carries
+  venue + co-present usernames from the existing presence derivation —
+  note `presenceService.listLocations` awaits `Schedule.getCurrentSlot`
+  per user, an N+1 acceptable at dev-85 but bound it: one
+  `listLocations` call per request, filtered in JS, same as
+  `get-venue`.
 - [ ] `npm test` → green. Commit:
   `feat(botville): public agent-affordances endpoint (D-43)`
 
@@ -403,33 +400,37 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
 - Modify: `src/controllers/startupController.js` (or a new
   `nudgeController.js` if startupController is >300 lines — implementer's
   call, one controller either way)
-- Modify: `src/routes/routes.js`
+- Modify: `src/routes/routes.js` (the `POST /api/nudges` route)
+- Modify: `src/services/eligibilityService.js` (the `verb IS NULL`
+  filter below)
 - Test (create): `tests/controllers/nudgeCreate.test.js`
 
-**⚠ AMENDED (review 2026-07-31, A-4 / D-f / F-4):**
-- **Auth (A-4):** the middleware is **`authenticateOwner`**
-  (`src/middleware/ownerAuth.js` — Bearer `ownerId:sessionToken`, sets
-  `req.owner`), NOT `authenticate` (agent API-key auth, `req.user`, no
-  ownership concept). Ownership is a controller-level predicate, house
-  pattern `ownerAgentsController.js:333-334`
-  (`WHERE id = $1 AND owner_id = $2`). Route mounts beside the owner
-  routes family.
-- **Double-offer kill (D-f):** `eligibilityService.js:114` feeds
-  unconsumed `users_nudges` into backlog refs — typed nudges would
-  surface BOTH as ordinary `kind='nudge'` event candidates AND as the
-  city rung-1 candidate. Amend the legacy read to filter
-  `verb IS NULL` (legacy free-text keeps its rail; typed nudges ride
-  ONLY the city affordance path). Regression-pin both directions.
-- **Stale doc (F-4):** fix `routes.js:209`'s comment claiming
-  `GET /api/nudges` "marks them consumed" — reads are non-destructive
-  (`mdGenController.js:467-468`); only `POST /nudges/ack` and the
-  commit-path ack sync consume.
+**Auth [R: A-4]:** the middleware is **`authenticateOwner`**
+(`src/middleware/ownerAuth.js` — Bearer `ownerId:sessionToken`, sets
+`req.owner`), NOT `authenticate` (agent API-key auth, `req.user`, no
+ownership concept). Ownership is a controller-level predicate, house
+pattern `ownerAgentsController.js:333-334`
+(`WHERE id = $1 AND owner_id = $2`). The route rides the owner-auth
+family (`ownerRoutes.js`, mounted `/api/owners` at `app.js:95`, is the
+pattern anchor).
+
+**Double-offer kill [R: D-f]:** `eligibilityService.js:114` feeds
+unconsumed `users_nudges` into backlog refs — unfiltered, typed nudges
+would surface BOTH as ordinary `kind='nudge'` event candidates AND as
+the city rung-1 candidate. The legacy read filters `verb IS NULL`
+(legacy free-text keeps its rail; typed nudges ride ONLY the city
+affordance path). Regression-pin both directions.
+
+**Stale doc [R: F-4]:** fix `routes.js:209`'s comment claiming
+`GET /api/nudges` "marks them consumed" — reads are non-destructive
+(`mdGenController.js:467-468`); only `POST /nudges/ack` and the
+commit-path ack sync consume.
 
 **Steps:**
 - [ ] Tests first:
   - `authenticateOwner` + controller ownership predicate: caller may
     nudge **only their own agent** (the wishlist-A rule) → 403
-    otherwise (amended, A-4);
+    otherwise;
   - verb + payload validated by `NudgeVerbSchema`/`NudgePayloadSchemas`;
     payload ids re-validated against live world (goalId exists,
     venueId in vocabulary, username exists) — **code owns identity**
@@ -449,17 +450,17 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
 
 **Files:**
 - Modify: `src/controllers/botvilleAffordancesController.js` +
-  `src/routes/botvillePublicRoutes.js` (**amended A-3** — never
-  `routes.js`; two GETs: `/api/public/botville/chronicle`,
+  `src/routes/botvillePublicRoutes.js` (never `routes.js` [R: A-3];
+  two GETs: `/api/public/botville/chronicle`,
   `/api/public/botville/agent-city/:username`)
 - Modify: `src/utils/venueVocabulary.js` (`Object.freeze` the cache —
   safe: the sync lock hashes file bytes, not the in-memory object),
-  `src/mcp/botville-mcp-server.js` + **a NEW shared util** (**amended
-  A-5**: `storeToolRationale` is a private function inside
-  `src/mcp/mcp-server.js:125`, not exported — extract it to e.g.
-  `src/mcp/toolRationale.js`, point both servers at it, THEN wire the
-  six shipped tools, which currently ignore their `rationale` arg
-  entirely), `src/app.js` (`/health` endpoints map gains the botville
+  `src/mcp/botville-mcp-server.js` + **a NEW shared util** —
+  `storeToolRationale` is a private function inside
+  `src/mcp/mcp-server.js:125`, not exported [R: A-5]: extract it to
+  e.g. `src/mcp/toolRationale.js`, point both servers at it, THEN wire
+  the six shipped tools, which currently ignore their `rationale` arg
+  entirely — `src/app.js` (`/health` endpoints map gains the botville
   public seam — `/health` lives in `app.js:75-89`, not `routes.js`),
   agent-creation service (call the deterministic schedule writer on
   create — wishlist item 7)
@@ -488,8 +489,10 @@ DB-free `node --test` suite with mocked `pool.query`/`pool.connect`.
 **Surfaces named:** `src/services/botville/**` (schemas, new
 season/civic/registry services, effortService), `src/mcp/botville-mcp-server.js`,
 `src/workers/cronWorker.js`, `src/controllers/startupController.js`,
-`src/routes/routes.js`, migrations 039/040, `config/civic-registry.json`,
-`users_nudges`.
+`src/controllers/botvilleAffordancesController.js` (new),
+`src/routes/botvillePublicRoutes.js`, `src/routes/routes.js` (Task 8
+only), `src/services/eligibilityService.js`, migrations 039/040,
+`config/civic-registry.json`, `users_nudges`.
 
 - **Blast radius:** api-repo surfaces are outside
   `scripts/docs/blast_radius.py`'s corpus (agents repo) — the tool run
