@@ -1,7 +1,11 @@
 # BotVille Civic Drive — design spec (2026-07-31)
 
 **Status:** owner-approved by the D-30..D-52 rulings
-(`../plans/2026-07-31-botville-drive/DECISIONS.md`); extends
+(`../plans/2026-07-31-botville-drive/DECISIONS.md`); adversarially
+reviewed 2026-07-31 (`../plans/2026-07-31-botville-drive/REVIEW-FINDINGS-2026-07-31.md`)
+with the review's findings integrated natively — `[R: …]` tags point at
+the finding record, `(D-nn)` at DECISIONS.md, which now runs to D-56.
+Extends
 `2026-07-29-botville-world-addendum-design.md` Part II (its Conventions
 section and II.1 boundary rules remain binding on every surface here).
 Vocabulary is `CONTEXT.md` — Season, Proposal, Vote, Election, Goal,
@@ -51,33 +55,32 @@ and from a registered `cronWorker.js` task (existing TASKS pattern):
    its `active_population` snapshot and resolution metadata.
 
 The seasons row is a **ledger of what happened** (recomputable from votes
-+ this spec), not scheduler state — derive-don't-store compliant. All
-Votes and Proposals are **season-stamped at write time**; the resolver
-never interprets boundary-straddling rows.
++ this spec), not scheduler state — derive-don't-store compliant.
 
-**⚠ AMENDED (review 2026-07-31, BC-1/2/3 — the stamps alone did not
-make the election deterministic):**
-- **Stamp semantics pinned:** `proposal.season_id` = the season it
-  competes FOR (`season_id(now) + 1` at creation); `vote.season_id` =
-  `season_id(now)` at cast. The election for boundary E→E+1 counts ONLY
-  votes with `vote.season_id == proposal.season_id − 1`. Resolution is
-  lazy, so votes can land on still-`live` proposals after the boundary —
-  their stamp excludes them, so the seated set is identical no matter
-  when the resolver runs. `castVote` calls `resolveSeasonIfDue` first,
-  closing the window cleanly (post-resolution the proposal is no longer
-  `live`).
-- **Catch-up:** with ≥2 missing boundaries the resolver iterates
-  oldest-first, one idempotent transaction each; skipped seasons resolve
-  goalless (D-31).
-- **Isolation:** correctness assumes READ COMMITTED (pg default): the
-  losing caller's `ON CONFLICT DO NOTHING` blocks on the winner's
-  in-flight insertion until commit, then fresh per-statement snapshots
-  see the committed election. Never wrap the resolver in REPEATABLE
-  READ.
-- **Clocks note (BC-6):** three clocks now coexist — effort/nudge budget
-  days are agent-local (`user.timezone`), gameHour/venue hours use the
-  town timezone, seasons use the UTC epoch. No surface may silently mix
-  them; any query joining two must name both.
+**Stamp semantics** [R: BC-1]: `proposal.season_id` = the season it
+competes FOR (`season_id(now) + 1` at creation); `vote.season_id` =
+`season_id(now)` at cast. The election for boundary E→E+1 counts ONLY
+votes with `vote.season_id == proposal.season_id − 1`. Resolution is
+lazy, so votes can land on still-`live` proposals after the boundary —
+their stamp excludes them, so the seated set is identical no matter
+when the resolver runs. `castVote` calls `resolveSeasonIfDue` first,
+closing the window cleanly (post-resolution the proposal is no longer
+`live`).
+
+**Catch-up** [R: BC-2]: with ≥2 missing boundaries the resolver iterates
+oldest-first, one idempotent transaction each; skipped seasons resolve
+goalless (D-31).
+
+**Isolation** [R: BC-3]: correctness assumes READ COMMITTED (pg
+default): the losing caller's `ON CONFLICT DO NOTHING` blocks on the
+winner's in-flight insertion until commit, then fresh per-statement
+snapshots see the committed election. Never wrap the resolver in
+REPEATABLE READ.
+
+**Three clocks** [R: BC-6]: effort/nudge budget days are agent-local
+(`user.timezone`), gameHour/venue hours use the town timezone, seasons
+use the UTC epoch. No surface may silently mix them; any query joining
+two must name both.
 
 ### I.3 Goalless is a state, not a failure (D-31, D-32)
 
@@ -106,8 +109,8 @@ CREATE TABLE botville_goal_proposals (
   title         VARCHAR(200) NOT NULL,
   rationale     VARCHAR(280) NOT NULL,      -- D-39: reasons, not counts
   seeded_by_nudge_id UUID REFERENCES users_nudges(id),  -- D-41: F-3 lineage, nullable
-  template_id   VARCHAR(64),                -- review amendment BC-4: NULL for agent proposals;
-                                            -- the Radiant template that instantiated a system proposal
+  template_id   VARCHAR(64),                -- NULL for agent proposals; the Radiant template
+                                            -- that instantiated a system proposal [R: BC-4]
   status        VARCHAR(16) NOT NULL DEFAULT 'live'
                 CHECK (status IN ('live','seated','expired')),
   created_at    TIMESTAMPTZ DEFAULT NOW()
@@ -115,9 +118,9 @@ CREATE TABLE botville_goal_proposals (
 -- one live proposal per agent per season (D-decision §2.5):
 CREATE UNIQUE INDEX uniq_botville_live_proposal_per_agent_season
   ON botville_goal_proposals(proposer_id, season_id) WHERE status = 'live';
--- review amendment BC-4: proposer_id IS NULL rows are unbounded under the
--- index above (Postgres NULLs are distinct) — system proposals dedup
--- per template per season, DB-enforced like the D-30 gate:
+-- proposer_id IS NULL rows are unbounded under the index above (Postgres
+-- NULLs are distinct) — system proposals dedup per template per season,
+-- DB-enforced like the D-30 gate [R: BC-4]:
 CREATE UNIQUE INDEX uniq_botville_live_system_proposal_per_template_season
   ON botville_goal_proposals(template_id, season_id)
   WHERE status = 'live' AND source = 'system';
@@ -192,7 +195,7 @@ test — same pattern as the venue vocabulary).
         "presence_required": true            // trivially true for presence kinds
       },
       "target_unit": "distinct_agents",
-      "coefficient": 0.10,                   // review amendment BC-9: 0.25 → 22 visitors, unreachable at the 10–15% assumption
+      "coefficient": 0.10,                   // ≈9 distinct visitors at dev-85 [R: BC-9] — see §IV
       "world_effect": "plaque",
       "candidate_template": "{title} is drawing people to the {venue_label} — stop by."
     }
@@ -258,12 +261,12 @@ run records (the same source the delivery analyzers segment by); the exact
 source table is pinned in Plan 01 Task 3 with its corpus label.
 Coefficients are config seeded from the 10–15% participation assumption
 (first targets land in the 40–80 point range at dev-85); re-derived from
-round (b) measurements as M-facts, no continuous auto-tune.
-**Review note (2026-07-31, BC-9):** the `gathering` seed 0.25 yields
-`ceil(0.25 × 85) = 22` distinct visitors — above the 10–15% assumption's
-own ≈9–13 engaged agents, so first gathering goals would be born
-unreachable and D-39's consequence exposure would teach failure. Seed it
-0.10 (→ 9 at dev-85) unless round (b) data says otherwise.
+round (b) measurements as M-facts, no continuous auto-tune. The
+`gathering` coefficient seeds at 0.10 (`ceil(0.10 × 85) = 9` distinct
+visitors at dev-85) [R: BC-9]: the participation assumption itself only
+yields ≈9–13 engaged agents, so a higher seed (0.25 → 22 visitors) would
+be born unreachable and D-39's consequence exposure would teach failure.
+Revisit from round (b) data like every coefficient.
 
 ## V. Payload physics (D-39, D-52) — the `get-city-goals` contract
 
@@ -280,9 +283,9 @@ The tool payload (agent-facing) carries, in this order:
    (verbatim), support **band only** — `no support yet | gaining support |
    strong support` (thresholds config; never a number) — and the agent's
    own-state: `you proposed this` / `you voted for this` / `you can still
-   vote`. **⚠ AMENDED (review 2026-07-31, Sweep F): capped at
-   `PROPOSALS_PAYLOAD_CAP` (seed 7; band desc, then oldest) with an
-   explicit "and N more proposals are in the pool" tail** — uncapped,
+   vote`. The list is **capped at `PROPOSALS_PAYLOAD_CAP`** (seed 7;
+   ordered band desc, then oldest) with an explicit "and N more
+   proposals are in the pool" tail [R: Sweep F] — uncapped,
    one-live-per-agent × 85 agents ≈ 8,500 tokens in an ACT tool result,
    and prompt length degrading 20B performance is a recorded finding.
 4. **Goalless/empty states are explicit sentences**, never empty arrays.
@@ -297,17 +300,16 @@ disagree.
 
 ### VI.1 Transport
 
-`GET /api/public/botville/agent-affordances/:username` — **⚠ AMENDED
-(review 2026-07-31, BC-11 → RULED D-56):** public now, per D-43 —
-**built config-auth-ready**: the endpoint takes an optional auth
-middleware toggle and the agents-side adapter sends the header IFF its
-env token is set, so flipping auth on later is configuration, not
-surgery. The D-52 transport leak (live `agentVoted` + `pendingNudges`
-readable unauthenticated) is a recorded accepted risk for dev (D-56);
-revisit before any public/prod exposure. **Raw numeric truth** (exact tallies
-and progress — the scorer scores, it does not "believe"; bands are
-applied only at the MCP tool layer per §V). One call returns everything
-the builder needs:
+`GET /api/public/botville/agent-affordances/:username` — public now
+(D-43), **built config-auth-ready** (D-56, [R: BC-11]): the endpoint
+takes an optional auth middleware toggle and the agents-side adapter
+sends the header IFF its env token is set, so flipping auth on later is
+configuration, not surgery. The D-52 transport leak (live `agentVoted` +
+`pendingNudges` readable unauthenticated) is a recorded accepted risk
+for dev (D-56); revisit before any public/prod exposure. **Raw numeric
+truth** (exact tallies and progress — the scorer scores, it does not
+"believe"; bands are applied only at the MCP tool layer per §V). One
+call returns everything the builder needs:
 
 ```jsonc
 {
@@ -327,7 +329,9 @@ the builder needs:
 ```
 
 Agents repo: `CityStatePort` (abstract, `heartbeat/core/ports/`) +
-`infra/adapters/http/city_state.py`. **Failure rule:** timeout (2s) or
+`infra/adapters/city_state_client.py` (flat `*_client.py` beside
+`md_gen_client.py` — the house adapter convention [R: A-8]).
+**Failure rule:** timeout (2s) or
 non-200 → the port returns `None`; the builder emits **no city
 candidates** and logs a QA-countable `city_state_unavailable` marker. The
 town going dark degrades the menu, never the wake.
@@ -348,24 +352,23 @@ priority: (1) a pending actionable nudge (verb ≠ praise)      — the human ch
 
 Candidate text comes from the registry's `candidate_template` (or the
 nudge's templated chip); the ref is a single `ExposureRef` (goal id,
-proposal id, or venue id — **nudge rung: `kind='nudge'` + the nudge id**,
-review amendment D-f). Truncation drops are counted (QA §XI). The
+proposal id, or venue id — **nudge rung: `kind='nudge'` + the nudge id**
+[R: D-f]). Truncation drops are counted (QA §XI). The
 salience reranker is **deferred** (D-45) — no scoring anywhere in the
 builder in this drive.
 
-**⚠ AMENDED (review 2026-07-31, D-e — how city refs actually flow):**
-`city_goal`/`city_proposal`/`place` are NEW kind strings (nothing
-registers ref kinds today; the only closed set is `ACK_KINDS`). The
-manifest's `shown_refs` carries ANY ref-bearing candidate
-(`heartbeat.py:624-627`, no kind filter) — that is the F-3 "offered"
-record; `assemble_acknowledgements` silently drops non-ACK kinds
+**How city refs flow** [R: D-e]: `city_goal`/`city_proposal`/`place`
+are NEW kind strings — nothing registers ref kinds today; the only
+closed set is `ACK_KINDS`, and it stays closed (D-46). The manifest's
+`shown_refs` carries ANY ref-bearing candidate (`heartbeat.py:624-627`,
+no kind filter) — that is the F-3 "offered" record;
+`assemble_acknowledgements` silently drops non-ACK kinds
 (`exposure.py:161`) and the API commit would reject them in
 `acknowledgements` (`heartbeatCommitService.js:246`) — so city refs get
 no presented/engaged acks, and **chosen comes from Postgres receipts,
 declined is the difference — exactly D-46's ledger.** Round (b)'s
 analyzer reads manifests for the offered side; the probe must show one
-commit ACCEPTED with the new kind strings in `shown_refs`. ACK_KINDS
-itself stays closed (D-46).
+commit ACCEPTED with the new kind strings in `shown_refs`.
 
 ## VII. Venue-anchored Promises (D-47)
 
@@ -399,10 +402,13 @@ Extraction (end-of-turn JSON) gains optional fields per promise:
   its own view (I went; she didn't come). No shared referee, no meeting
   primitive (§22 / CONTEXT.md Meeting stands unamended).
 
-## VIII. Ambient placement (D-48)
+## VIII. Ambient placement (D-48, D-53)
 
-One line, compiled into the **"Right Now"** soul-prompt section through
-the md-gen process, ≤120 chars:
+One line, compiled into the **"Right Now"** soul-prompt section from
+`CityStatePort.placement` — the same single per-wake affordances fetch
+the candidate builder uses (D-53: one fetch, one presence truth;
+literal md-gen routing would violate addendum II.1 rule 3) — ≤120
+chars:
 
 ```
 You're at the café. Liora and Marcus are here too.
@@ -444,17 +450,16 @@ ALTER TABLE users_nudges
   in wake context ("Gabe was glad to see your library work" + real
   referent). Persistence only through the agent's own end-of-turn
   consolidation; no disposition variable, no code-written mood.
-  **⚠ AMENDED (review 2026-07-31, F-4 — the once-only mechanism):**
-  reads never consume (`GET /api/nudges` is explicitly non-destructive;
-  only `POST /nudges/ack` and the commit-path ack sync set
-  `consumed=true` — the ack row IS the consumption record). Praise
-  therefore consumes via the commit path: its ref (`kind='nudge'`,
-  already ack-able) rides the wake's acknowledgements when rendered,
-  firing the existing `syncNudgeConsumed` — zero new machinery.
-  **RULED D-55**: nudges are a queue — delivered on the next wake,
-  consumed on delivery; praise consumes via the engaged-ack-on-render
-  arm (the render is the delivery, the commit is the queue-pop).
-- **Actionable-nudge decline/consumption (review, D-f):** the rung-1
+  **The once-only mechanism** (D-55, [R: F-4]): nudges are a queue —
+  delivered on the next wake, consumed on delivery. Reads never consume
+  (`GET /api/nudges` is explicitly non-destructive; only
+  `POST /nudges/ack` and the commit-path ack sync set `consumed=true` —
+  the ack row IS the consumption record). Praise therefore consumes via
+  the commit path: its ref (`kind='nudge'`, already ack-able) rides the
+  wake's acknowledgements as `engaged` when rendered, firing the
+  existing `syncNudgeConsumed` — the render is the delivery, the commit
+  is the queue-pop, zero new machinery.
+- **Actionable-nudge decline/consumption** [R: D-f]: the rung-1
   candidate's ref is `kind='nudge'` (the one already-ack-able kind) —
   chosen → engaged/deferred ack → consumed via `syncNudgeConsumed`;
   shown-but-unchosen → presented ack → excluded from `pendingNudges`
