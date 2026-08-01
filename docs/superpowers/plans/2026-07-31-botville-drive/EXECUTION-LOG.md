@@ -1,5 +1,58 @@
 # BotVille Civic Drive — EXECUTION LOG
 
+## ═══ DRIVE CLOSED OUT 2026-08-01 — SUMMARY ═══
+
+**Done per the EXECUTION-PROMPT's definition:** M-052..M-058 registered
+with declared corpora; all five rounds run and analyzed; Plan 03
+surfaces live; no unexplained regression in the decision mix (every
+delta segmented and either attributed or declared confounded).
+
+**Rounds:** Gate 0 (M-052 baseline) → (a2) lottery (M-053) → (b) city
+seam (M-054 surface + M-055) → (c) placement (M-056) → (d) promises
+(M-057) → (e) nudges (M-058). 5×85 wakes, 100% pass rate every round,
+2 extraction-fallback DEGRADEDs total, zero live-checkout edits during
+rounds, every round probe-first (two probes caught real defects
+pre-measurement: the prod-shaped city endpoint; the naive round-c merge
+that would have leaked round-d bytes).
+
+**Headline deltas vs M-052:** the M-048 delegation shadowing is retired,
+measured (multi-fired draws split ~uniform; was all-to-first). Delegation
+candidate conversion went 0 lifetime → 11+ across rounds (city_propose
+converts; generic triggers still ~never). The city entered the menu
+(70-84% of wakes offered) and placement reached 100% derivability with
+zero fabrication — but **city candidate organic conversion is 1/285
+(noah_klein, round e) and every civic intent so far expresses as a feed
+post**: the awareness/copy/self-model cluster is THE binding constraint,
+now precisely instrumented (QA-L14 selection table) and handed to the
+action-self-awareness kickoff. Anchored promises: mechanism proven on
+all four arms live; organic emission blocked on city-read behavior +
+a registered extraction-example watch (1-2/85 vs 4.7-7.1% pre-drive).
+Nudge queue semantics work end-to-end (presented→never-re-offered;
+praise render→consume once). Crowding-out: not measurable yet (no
+organic baseline), boundary set.
+
+**Floors (D-58):** canonical definition live in compute_hard_floors;
+the city floor is unreachable at current awareness (0% engaged agents
+with a city action) — reported as the tuning signal D-54's rider
+prescribed, never dropped.
+
+**Open items:** see ROUND-RUNBOOK.md ledger (vote-rung candidate copy;
+attendance surface for the kept-promise arm; get-nudges verb filter;
+venue-list route; glass-box F-3 surface; QA-W10 probe tz bug; frontend
+TODO(stage-A-verify) curl-pastes; owner browser passes: composer
+round-trip, iframe CSP +/-, follow deep-link with the new pulse).
+
+**Next work, gated and ready:** (1) the ACTION-SELF-AWARENESS KICKOFF
+(agents repo, owner-elevated core work — gate 1 satisfied by this
+close-out; schedule the grilling); (2) the city-growth kickoff (M-055
+exists ✓; awaits the owner art/bake inventory pass; rulings start
+D-59). Plan 03 Task 7 privacy pass: PASS on all verifiable arms
+(live-season votes absent from public payloads with a real vote in DB;
+affordances endpoint untouched by public components; promises absent
+client-side).
+
+## ═══ STEP LOG (newest first below the original header) ═══
+
 **This file is the ONLY status source for the drive** (plan checkboxes are
 never ticked — the platform-MCP lesson). One line per completed step:
 date · task · commit hash · gate output (test counts, probe artifact
@@ -19,6 +72,9 @@ a git worktree, merged only at the Stage A deploy point.
 - 2026-08-01 · QA hardening (owner-directed, mid-round-c, all read-only) · full QA registry run from worktree vs live world: 8 civic checks FIRE-PROVEN live — QA-L14 selection table (city_affordance 0/101, city_propose 4/88 vs concern_step 47.3% — the D-45 corpus begins), QA-L13 never-chosen alarm (unreciprocated_attention 21 wins/0 chosen), QA-L12 22 truncation drops/5 personas, QA-L16 windowing deferred to analyzer · world checks fired (self-comments 36/1118, self-reacts 37/174, near-dup pairs 10, storms 14) = standing lifelikeness signals · 2 QA-harness flags: QA-W10 probe tz-compare crash (fix at round e), QA-L05 fabrications_stripped never-fired zero · TOWN-SIDE QA: platform seams verified (locations schemaVersion 2 + real roster + activities; venue-notes read clean) but the dev town client was running FIXTURE mode — restarted vite :5173 in integrated mode (env-inline verified), frontend iframe target corrected 8080→5173, recipe committed to DEPLOY.md · standing bracket from round (c) on: registry probes + town-seam curls after every round
 - 2026-08-01 · **ROUND (c) DONE — M-056 registered** (agents `2e3efd2`) · run_20260801_053854, 85/85 PASS (1 DEGRADED extraction-fallback, 2nd in 2 rounds — watch) · placement line 85/85 (full 42 / where-only-or-alone 43 / omitted 0; alone-vs-degraded split is api-log-side) · soul prompt new baseline 1,849 chars median · FIRST organic city read (the_strategist: chose city_propose → specialist read get-city-goals → posted a proposal-SHAPED feed post, not propose-city-goal — the groove finding) · delegation conversions 6 this round (11 cumulative vs 0 pre-drive)
 - 2026-08-01 · owner-directed mid-drive fixes · BotVille art: pack/ held only fixture atlases → ran owner-local `bake:world limezu` (venues.json md5 UNCHANGED — api sync safe; suite 274/274 under BOTVILLE_PACK=limezu; diff deliberately uncommitted, DEPLOY.md documents) · landing/Launch flow explained (town client's own landing route; the raw-JS popup was the vite restart window) · REAL dev-85 agents confirmed walking the town with live activity labels
+- 2026-08-01 · **ROUND (e) DONE — M-058 registered** (agents `48ac71e`) · run_20260801_111721, 85/85 PASS 0 DEGRADED · queue semantics live (presented 4 / engaged 2 / praise consumed 2/2); F-3 per verb: 3 rendered 0 chosen, 2 seeded nudges surfaced no candidate (QA-L12/fetch-marker follow-up) · **MILESTONE: noah_klein — first ORGANIC city-candidate choice, 1/285 cumulative — followed through with create-post (groove + copy gap)** · Archivist's city_propose delegation → organic get-city-map read · crowding-out NOT MEASURABLE (boundary set) · promise-emission watch 2/85 second low read
+- 2026-08-01 · Plan 03 Task 7 D-52 privacy pass: PASS (live-vote exclusion verified against a real live-season vote; affordances grep clean — only the owner-gated composer via service layer; promises absent client-side) · browser arms remain owner-side
+- 2026-08-01 · **CLOSE-OUT**: summary written atop this log; memory updated; worktrees removed (branches retained in git); tasks closed · both gated kickoffs checked: action-self-awareness gate-1 SATISFIED (schedule grilling); city-growth awaits owner art/bake inventory
 - 2026-08-01 · **ROUND (d) DONE — M-057 registered** (agents `39e4289`) · run_20260801_083912, 85/85 PASS 0 DEGRADED · probe proved all 4 promise arms live; organic: emission 1/85 (WATCH: extraction example may narrow emission — re-read at round e), 0 anchored (structurally blocked: 0 city reads → nothing to ground on), 0 strips · A-1 79 offered/16 chosen · city candidate chosen 1/74 EXCLUDED as probe-contaminated (e1_gate_probe carried the injected café promise) — organic 0/215 cumulative · promises confirmed agent-owned live (un-re-emitted promise left state in one wake) · rest 10.6% daytime in-band
 - 2026-08-01 · **ROUND (e) DEPLOYED + PROBE PASSED (all arms)** · api praise merge (971 pass) + agents `c1c95db` (ab8121a canonical, 3038 pass, 8 QA checks live) · probe: actionable nudge row→payload→rung-1 candidate ("A nudge from your owner (point-at-goal): Tend the Café", ref kind=nudge)→shown-unchosen→presented ack→EXCLUDED from pendingNudges; praise row→`## Praise` serve→Right Now render (owner-attributed, referent-titled, beside the placement line — the surfaces compose)→engaged ack→consumed=true · composer arm = 21 controller unit tests + owner browser pass pending · 6 controller-shaped nudges seeded across 5 verbs (1/agent, within budget, Dev Seed Owner) · round launched
 - 2026-08-01 · owner bug report FIXED (2-part, both verified): (1) frontend iframe loaded the town LANDING (`/`) which swallowed ?follow= → iframe now embeds `/app` directly (frontend `2d78d06`; rendered src verified `http://localhost:5173/app?follow=sara_kim`); (2) Landing's Launch dropped the query string → now preserves it (BotVille `6bf9c03`) · tsc both repos + vitest 22/22 clean · "watch in town" now lands in-game following the agent
