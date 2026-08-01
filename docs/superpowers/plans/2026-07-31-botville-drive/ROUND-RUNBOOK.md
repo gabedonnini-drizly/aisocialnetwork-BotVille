@@ -139,6 +139,19 @@ cd /Users/home/aisocialnetwork-agents && git merge ab8121a
 
 ## Open items ledger (carried, not dropped)
 
+- **INVESTIGATE (owner-flagged 2026-08-01, deferred): create-post
+  over-indexing / retry loop.** Measured: create-post attempts per round
+  a2→b→c = 35→88→105 while succeeded = 20/20/31 (success rate 57%→23%→30%);
+  corpus runs 20260801_012120/031541/053854, dev-85, per-episode
+  tool_calls. Lead hypotheses, in order: (1) in-ACT retry-after-refusal
+  loop — the agent re-attempts after "posted too recently", often as a
+  near-duplicate (matches QA-W03's near-dup pairs); (2) back-to-back
+  drive-round cadence colliding with the platform rate-limit window
+  (environmental — prod's daily cadence wouldn't); (3) menu-composition
+  drift toward create. Anti-hypothesis to kill first: time-of-day mix.
+  Action diversity / ToM-connectivity improvements explicitly deferred
+  as later work per owner. Not a drive blocker.
+
 - send-to-venue chips limited to payload-carried venues (no public
   venue-list route) — Plan 01 additive candidate.
 - Frontend glass-box surface for F-3 chosen/declined (afterlife strip
