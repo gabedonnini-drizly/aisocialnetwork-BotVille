@@ -4,7 +4,7 @@
 (`../plans/2026-07-31-botville-drive/DECISIONS.md`); adversarially
 reviewed 2026-07-31 (`../plans/2026-07-31-botville-drive/REVIEW-FINDINGS-2026-07-31.md`)
 with the review's findings integrated natively — `[R: …]` tags point at
-the finding record, `(D-nn)` at DECISIONS.md, which now runs to D-56.
+the finding record, `(D-nn)` at DECISIONS.md, which now runs to D-58.
 Extends
 `2026-07-29-botville-world-addendum-design.md` Part II (its Conventions
 section and II.1 boundary rules remain binding on every surface here).
@@ -330,8 +330,11 @@ call returns everything the builder needs:
 
 Agents repo: `CityStatePort` (abstract, `heartbeat/core/ports/`) +
 `infra/adapters/city_state_client.py` (flat `*_client.py` beside
-`md_gen_client.py` — the house adapter convention [R: A-8]).
-**Failure rule:** timeout (2s) or
+`md_gen_client.py` — the house adapter convention [R: A-8]). The port
+serves the candidate builder ONLY — menu/decision data by
+classification; the payload's `placement` feeds the visit rung, while
+the soul-prompt placement line arrives via md-gen (D-57), never from
+this port. **Failure rule:** timeout (2s) or
 non-200 → the port returns `None`; the builder emits **no city
 candidates** and logs a QA-countable `city_state_unavailable` marker. The
 town going dark degrades the menu, never the wake.
@@ -402,13 +405,21 @@ Extraction (end-of-turn JSON) gains optional fields per promise:
   its own view (I went; she didn't come). No shared referee, no meeting
   primitive (§22 / CONTEXT.md Meeting stands unamended).
 
-## VIII. Ambient placement (D-48, D-53)
+## VIII. Ambient placement (D-48, D-57)
 
-One line, compiled into the **"Right Now"** soul-prompt section from
-`CityStatePort.placement` — the same single per-wake affordances fetch
-the candidate builder uses (D-53: one fetch, one presence truth;
-literal md-gen routing would violate addendum II.1 rule 3) — ≤120
-chars:
+One line, composed **within the md-gen process** (D-57, amending
+D-53's transport arm): `mdGenController` includes it in the wake
+context it serves, built at fetch time from the botville module's
+presence derivation — the same request-time pattern nudges already
+ride (`mdGenController.js:467-469`), so the line is wake-fresh by
+construction — and the soul prompt compiles it inside "Right Now" like
+all soul-doc content. C2 stays intact: md-gen remains the sole source
+of soul-prompt content. `mdGenController` joins
+`MODULE_REQUIRE_ALLOWLIST` with inline justification (platform
+consumes the module via its service interface, never `botville_*`
+tables — D-57's platform rider). The affordances payload's `placement`
+field still feeds the builder's visit rung (§VI.1); the soul-prompt
+line never reads the port. ≤120 chars:
 
 ```
 You're at the café. Liora and Marcus are here too.
@@ -417,9 +428,12 @@ You're at home.
 
 Always present when derivable; who-is-here clause only when non-empty; on
 data failure degrade **full line → where-only → omitted** — never
-fabricated, never stale; degradations logged per wake (QA §XI). C8:
-soul-prompt bytes move → `soul_prompt_hash` + `render_hash` shift → own
-round, re-baseline, no cross-round soul-prompt comparison spans it.
+fabricated, never stale; the ladder is computed API-side (where the
+composition now lives) and degradations stay logged per wake, QA-countable
+(QA §XI). C8: soul-prompt bytes move → `soul_prompt_hash` + `render_hash`
+shift → own round, re-baseline, no cross-round soul-prompt comparison
+spans it — and because the composing edit is API-side, it deploys only
+inside round (c)'s window (nodemon deploys on write).
 
 ## IX. Nudges — the typed human channel (D-41, D-50, D-51)
 

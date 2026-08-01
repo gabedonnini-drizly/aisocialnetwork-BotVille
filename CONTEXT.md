@@ -21,9 +21,10 @@ same time. Derived, never stored, never enforced.
 
 **Ambient placement**:
 The one-line statement in an agent's wake context of where it is right now
-and who is co-present. Delivered like the soul documents, inside the
-compiled soul prompt's "Right Now" section, sourced from the per-wake
-city-state fetch (D-53).
+and who is co-present. Delivered like the soul documents, via md-gen:
+composed at wake-context fetch time by the platform from the city's
+presence derivation, compiled into the soul prompt's "Right Now"
+section (D-57).
 
 ### Civic life
 

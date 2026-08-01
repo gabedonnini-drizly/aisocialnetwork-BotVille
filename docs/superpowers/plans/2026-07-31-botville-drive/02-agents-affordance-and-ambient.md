@@ -285,10 +285,20 @@ coincidentally true again [R: A-11].
   through the global hooks). Test with synthetic per-agent fixtures:
   engaged agent with only feed actions → floor fails; same agent plus
   one `vote-city-goal` → passes; rest-only agent → exempt.
-  **Awareness rider (D-54):** this floor lands in the SAME deploy as
+  **The same edit reconciles the whole floor set to the canonical
+  D-58 definition** — per agent per round, succeeded `tool_calls`
+  only: ≥3 unique tools · ≥2 categories · **≥1 contextual action
+  (`create-comment` — the ToM signal, restored as its own floor)** ·
+  **≥1 content action (`create-post` only** — the lumped
+  post-OR-comment floor splits**)** · the city floor above. System
+  floors unchanged. In the same commit, fix every doc restating floors
+  to D-58's numbers (the "≥5 tools" figure in
+  `docs/analysis/2026-07-26-soul-prompt-recompile-design.md:254,295`
+  and the memory/docs that echo it — one definition everywhere).
+  **Awareness rider (D-54):** the floors land in the SAME deploy as
   the awareness surfaces this round ships (28-schema catalog, city
   candidate, specialist block) — floors and awareness together, never
-  floors alone.
+  floors alone; floors move ONCE, in this one edit.
 - [ ] Suite → green. Commit:
   `feat(delegation): city_propose vacuum trigger + reflector city reads + city hard floor (D-49/54)`
 - [ ] **ROUND (b)** — Tasks 2+3+4+5 deploy together as ONE agent-facing
@@ -307,42 +317,62 @@ coincidentally true again [R: A-11].
   surfaces, reported in the analyzer — not a reason to silently drop
   the floor.
 
-## Task 6: Ambient placement (D-48, D-53) → ROUND (c)
+## Task 6: Ambient placement (D-48, D-57) → ROUND (c)
 
-Placement is sourced from `CityStatePort.placement` (one fetch, one
-presence truth, no II.1 rule-3 exception), compiled into the soul
-prompt's "Right Now" section, lifecycle-harness-tested — the transport
-is ruled, D-53 (owner rationale in DECISIONS.md: consistency, no race
-conditions, simple over complex, leverage the existing prompt
-lifecycle).
+Placement is composed **within the md-gen process** (D-57, which amends
+D-53's transport arm): `mdGenController` builds the line at
+wake-context fetch time from the botville module's presence derivation
+— the request-time pattern nudges already ride
+(`mdGenController.js:467-469`) — and the soul prompt compiles it inside
+"Right Now" like all soul-doc content. C2 stays intact (md-gen remains
+the sole source of soul-prompt content). The candidate builder's
+`city_state` still arrives via `CityStatePort` (menu data, not
+identity — Tasks 2–3 unchanged); the soul-prompt line never reads the
+port.
 
 **Files:**
-- Modify: `heartbeat/core/orchestration/prompt_compiler.py` — "Right
-  Now" section gains the placement line
-- Test: extend the prompt-compiler tests (assert on RENDERED soul
-  prompt strings — house rule)
+- Modify (**api repo**): `src/controllers/mdGenController.js` — compose
+  the ≤120-char line + who-is-here clause from the module's presence
+  derivation; the degradation ladder (full → where-only → omitted) is
+  computed HERE, with a pinned QA-countable marker logged per
+  degradation (the `city_state_unavailable` pattern). `mdGenController`
+  joins `MODULE_REQUIRE_ALLOWLIST` (`boundary.test.js:49-56`) with
+  inline justification — service-interface consumption only, never
+  `botville_*` tables (D-57 platform rider; the rule-1 marker sweep
+  must still pass on the file).
+- Test (**api repo**): mdGen wake-context tests, all five line cases
+  below asserted on the composed document text.
+- Modify (agents repo, only if needed): `prompt_compiler.py` — trace
+  what `_append_right_now` consumes FIRST (C8); touch it only if the
+  "Right Now" assembly must admit the new document content. Either
+  way, extend the prompt-compiler tests to assert on the RENDERED soul
+  prompt (house rule).
 
 **Steps:**
-- [ ] Tests first: (1) placed + co-present → `You're at the café. Liora
-  and Marcus are here too.` (≤120 chars enforced: >3 co-present renders
-  `Liora, Marcus and 2 others`); (2) placed alone → `You're at the
-  café.` — no "nobody is here" filler; (3) home → `You're at home.`;
-  (4) `city_state=None` → NO line + degradation marker
-  `placement_degraded=omitted` in the decision record; (5) placement
-  venue known but presence list failed → where-only +
-  `placement_degraded=where_only`. Fabrication pin: the line renderer
-  accepts ONLY the port's payload — no fallback to stale/cached
-  placement (assert no second data path exists).
-- [ ] Suite → green. Commit:
-  `feat(prompt): ambient placement line in Right Now (D-48)`
+- [ ] API tests first: (1) placed + co-present → `You're at the café.
+  Liora and Marcus are here too.` (≤120 chars enforced: >3 co-present
+  renders `Liora, Marcus and 2 others`); (2) placed alone → `You're at
+  the café.` — no "nobody is here" filler; (3) home → `You're at
+  home.`; (4) presence underivable → NO line + logged marker
+  `placement_degraded=omitted`; (5) venue known but presence list
+  failed → where-only + `placement_degraded=where_only`.
+- [ ] Agents-side: rendered soul prompt carries the line INSIDE "Right
+  Now" (no heading added/renamed — the D-h consumers below).
+  Fabrication pin: the line renders ONLY from the md-gen document —
+  assert no port-fed or cached placement path exists in the compiler.
+- [ ] Suites both repos → green. Commit:
+  `feat(mdgen): ambient placement line composed in wake context (D-48/57)`
 - [ ] **C8 rider (mandatory):** soul-prompt bytes move →
   `soul_prompt_hash`, structure-only `prompt_version`, and the
   committed `render_hash` all shift. Run `blast_radius.py
   heartbeat/core/orchestration/prompt_compiler.py`; update
   docs/layers/02-soul-prompt.md; **no cross-round soul-prompt
   comparison spans this round.**
-- [ ] **ROUND (c)**: **probe first: the placement line present in one
-  captured dev soul prompt (byte-level).** Analyzer:
+- [ ] **ROUND (c)**: **the `mdGenController` edit deploys only inside
+  this round's window — nodemon deploys on write, and the change is
+  agent-facing the moment it lands on the live checkout (D-57). Probe
+  first: the placement line present in one captured dev soul prompt
+  (byte-level).** Analyzer:
   placement-degradation counts; soul-prompt char/token delta (M-036
   lineage — new median with corpus); decision-mix delta vs M-055; ≥10
   raw-trace reads from this round's own log window. Register **M-056**.
@@ -468,6 +498,15 @@ lifecycle).
   machinery (nudges are a queue — delivered next wake, consumed on
   delivery, D-55). Test: praise renders on wake N, is consumed by N's
   commit, absent from wake N+1's affordances payload.
+  **D-57 consistency note (open choice, decide at implementation):**
+  praise renders in wake context, and md-gen already serves unconsumed
+  `users_nudges` at fetch time — so the D-57-consistent arm (praise
+  arrives via the md-gen wake context, like placement) exists beside
+  the affordances-payload arm. D-55's consumption mechanics (engaged
+  ack by nudge id on render) are identical either way. Pick one, state
+  it in the round (e) write-up, and keep the soul-prompt-content rule
+  in view: if the praise line lands in the SOUL PROMPT, D-57 says it
+  arrives via md-gen.
 - Modify: `docs/qa/checks.yaml` — register the eight spec §XI checks;
   create the action-stream adapter for `botville_goal_votes` (beside
   the existing venue_notes/goal_contributions adapters — locate:

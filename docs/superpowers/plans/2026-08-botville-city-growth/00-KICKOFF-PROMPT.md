@@ -3,7 +3,7 @@
 **Status:** written 2026-07-31, at the close of the drive-review session,
 BEFORE its own grilling. Paste into a fresh session to (a) grill the §3
 open questions one-at-a-time with the owner and record rulings as
-**D-57+** in a new `DECISIONS.md` here, then (b) produce the spec + plan
+**D-59+** in a new `DECISIONS.md` here, then (b) produce the spec + plan
 set specified in §4, mirroring `2026-07-31-botville-drive/`.
 
 > ⚠ **GATED — do not execute (or even grill) until ALL THREE hold:**
@@ -23,7 +23,7 @@ set specified in §4, mirroring `2026-07-31-botville-drive/`.
 
 ## 0. Your task in one paragraph
 
-The civic drive (D-30..D-56) gives goals a democracy and the town a
+The civic drive (D-30..D-58) gives goals a democracy and the town a
 reason to be touched — but completion effects stop at plaques (D-36 V1),
 and the city itself is static: 18 baked venues (`cafe`, `district`,
 `dorm`, `house_1`..`house_13`, `library`, `office` — verified in
@@ -45,12 +45,14 @@ measurement discipline.
 2. `/Users/home/aisocialnetwork-BotVille/CONTEXT.md` — the city
    glossary. New growth vocabulary you coin (district? plot? home?)
    must be ADDED there in the same style, or not used.
-3. `2026-07-31-botville-drive/` in full: `DECISIONS.md` (D-30..D-56),
-   `REVIEW-FINDINGS-2026-07-31.md`, the spec
+3. `2026-07-31-botville-drive/` in full: `DECISIONS.md` (D-30..D-58),
+   `REVIEW-FINDINGS-2026-07-31.md` (its §VII is the integration
+   record), the spec
    (`specs/2026-07-31-botville-civic-drive-design.md`), and the three
    plans — this drive builds ON those rails (registry kinds, seasons,
-   affordances seam, `CityStatePort`). ⚠ Amended text overrides
-   original wherever they disagree.
+   affordances seam, `CityStatePort`, md-gen placement per D-57). The
+   review's amendments are integrated natively — read the plans as
+   written.
 4. `specs/2026-07-29-botville-world-addendum-design.md` Part II —
    II.1 boundary rules and I-8 remain binding on every surface here.
 5. The bake pipeline (verify anchors — they rot):
@@ -103,7 +105,7 @@ measurement discipline.
    `User`/`Schedule` interfaces only.
 
 ## 3. Open questions — grill BEFORE writing plans (one at a time,
-recommended answer per question; rulings land as D-57+ with owner
+recommended answer per question; rulings land as D-59+ with owner
 rationale verbatim)
 
 **Growth triggers & cadence**
@@ -187,7 +189,7 @@ additions for any coined vocabulary.
 Create under `docs/superpowers/plans/2026-08-botville-city-growth/`
 (this directory), mirroring the civic-drive set:
 
-- `DECISIONS.md` — D-57+ with owner rationale verbatim.
+- `DECISIONS.md` — D-59+ with owner rationale verbatim.
 - A design spec in `docs/superpowers/specs/` (extends the civic-drive
   spec §III's `world_effect` and the world-addendum's bake pipeline;
   CONTEXT.md terms exactly, plus its own vocabulary additions).

@@ -23,7 +23,11 @@ carries the resolution banner.
 > from round (b), landing with the awareness surfaces; D-55 nudges are
 > a queue — praise consumes via engaged-ack-on-render; D-56
 > affordances stays public, built config-auth-ready, leak recorded as
-> accepted dev risk. Nothing blocks execution.
+> accepted dev risk. Two post-integration rulings landed the same day:
+> **D-57** (ambient placement composed within the md-gen process —
+> amends D-53's transport arm) and **D-58** (one canonical ToM-aligned
+> hard-floor definition). The spec and plans read as ruled. Nothing
+> blocks execution.
 
 **What this builds:** the reason to touch the city. Civic democracy
 (Proposals → Votes → Elections → Goals with typed, venue-anchored

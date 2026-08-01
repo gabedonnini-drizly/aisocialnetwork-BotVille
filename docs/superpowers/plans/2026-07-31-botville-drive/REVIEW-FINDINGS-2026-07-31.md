@@ -356,3 +356,31 @@ written — this note is the correction record); hard floors → I-1.
 - Fresh-engineer read: full integration diff reviewed top-to-bottom;
   no sentence in the merged plans/spec requires knowing the pre-merge
   text.
+
+### §VII addendum — post-integration owner rulings (2026-07-31, same day)
+
+The owner read the integration report and ruled on I-1 and I-2's
+dispositions (DECISIONS.md, new section, rationale verbatim):
+
+- **D-57 amends D-53's transport arm** and supersedes I-2's "fixed per
+  D-53" disposition: ambient placement is composed WITHIN the md-gen
+  process (`mdGenController`, request-time, the nudges precedent) —
+  classification-split: self-knowledge → md-gen; menu data →
+  `CityStatePort`. C2 stays intact. Spec §VIII/§VI.1, Plan 02 Task 6,
+  and CONTEXT.md are revised to match; the mdGenController edit is
+  round-(c)-window-gated. The platform rider (owner: "mindful of our
+  platform based approach") pins the boundary mechanics:
+  `MODULE_REQUIRE_ALLOWLIST` row with inline justification,
+  service-interface consumption only.
+- **D-58 closes I-1's one-definition question**: canonical ToM-aligned
+  floors — ≥3 unique succeeded tools · ≥2 categories · ≥1 contextual
+  action (`create-comment`, restored as its own floor) · ≥1 content
+  action (`create-post` only) · D-54's city floor from round (b);
+  system floors unchanged. Code and every floor-restating doc
+  reconcile in Plan 02 Task 5's single floors edit.
+- A D-57-consistency choice on the praise render source (affordances
+  payload vs md-gen-served nudges) is recorded as an explicit
+  implementation decision in Plan 02 Task 8 — consumption mechanics
+  identical either way.
+- The city-growth kickoff's ruling reservation renumbers D-57+ →
+  **D-59+** (D-57/D-58 are now taken by this drive).
