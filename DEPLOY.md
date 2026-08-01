@@ -93,3 +93,18 @@ needs both VITE_ vars at image build time). Verify integration headlessly:
 itself: `curl -s http://localhost:9321/api/public/botville/locations`
 must carry `schemaVersion: 2` and a non-empty roster, or the client
 warns once and falls back to fixture.
+
+
+## Owner-local LimeZu art (baked 2026-08-01)
+
+`npm run bake:world -- limezu` populates the licensed art locally
+(atlases + props + regenerated .tmj/asset-index). This diff is
+DELIBERATELY uncommitted — git ships the fixture bake (CI + public
+safety; `test/asset-index.test.ts` enforces it). Locally:
+
+- run the suite as `BOTVILLE_PACK=limezu npm test` while the limezu
+  bake is in the working tree;
+- to return to the clean fixture state: `git checkout -- packages/client
+  && npm run bake:world` (venues.json is byte-stable across packs —
+  verified 2026-08-01, md5 unchanged — so the api sync test never
+  notices pack flips).
