@@ -73,3 +73,23 @@ private:
    in that directory; a sheet that isn't there yet falls back to a default
    (spec §8.3). This only covers per-agent appearance sheets — world
    geometry has no runtime mount today and still needs option 1.
+
+
+## Integrated-mode dev town (verified 2026-08-01)
+
+The vite dev server defaults to FIXTURE presence. To render the real
+platform agents locally (integrated mode — a build-time switch):
+
+```bash
+cd packages/client
+VITE_PLATFORM_LOCATIONS_URL=http://localhost:9321/api/public/botville/locations VITE_PLATFORM_API_BASE=http://localhost:9321 npx vite            # serves on :5173
+```
+
+The frontend iframe (`NEXT_PUBLIC_BOTVILLE_TOWN_URL`) should point at
+:5173 for dev (the :8080 target is the nginx/Docker deploy, which also
+needs both VITE_ vars at image build time). Verify integration headlessly:
+`curl -s http://localhost:5173/src/lib/api.ts | grep localhost:9321`
+(vite inlines the env at serve time) and confirm the platform snapshot
+itself: `curl -s http://localhost:9321/api/public/botville/locations`
+must carry `schemaVersion: 2` and a non-empty roster, or the client
+warns once and falls back to fixture.
