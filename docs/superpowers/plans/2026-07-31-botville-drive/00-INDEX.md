@@ -11,16 +11,17 @@ II.1 boundary rules remain binding. Vocabulary is `CONTEXT.md`, used exactly.
 D-52 (secret ballot during season). The kickoff (`00-KICKOFF-PROMPT.md`)
 carries the resolution banner.
 
-> ⚠ **ADVERSARIALLY REVIEWED 2026-07-31 —
+> **ADVERSARIALLY REVIEWED 2026-07-31 —
 > [REVIEW-FINDINGS-2026-07-31.md](REVIEW-FINDINGS-2026-07-31.md) is
-> part of this set.** All ≤MUST-FIX findings are landed inline as
-> `⚠ AMENDED (review 2026-07-31)` blocks in the spec and plans — an
-> executor must honor the amended text over the original wherever they
-> disagree. The four owner calls the review surfaced are **RULED as
-> D-53..D-56** (DECISIONS.md, owner rationale verbatim): D-53
-> CityStatePort placement transport; D-54 eval hard floors gain a city
-> criterion from round (b), landing with the awareness surfaces; D-55
-> nudges are a queue — praise consumes via engaged-ack-on-render; D-56
+> part of this set.** All ≤MUST-FIX findings are integrated natively
+> into the spec and plans (an integration pass, same day, merged the
+> amendment blocks into single-voice text — `[R: …]` tags point at the
+> finding record, and its §VII carries the full traceability table).
+> The four owner calls the review surfaced are ruled as **D-53..D-56**
+> (DECISIONS.md, owner rationale verbatim): D-53 CityStatePort
+> placement transport; D-54 eval hard floors gain a city criterion
+> from round (b), landing with the awareness surfaces; D-55 nudges are
+> a queue — praise consumes via engaged-ack-on-render; D-56
 > affordances stays public, built config-auth-ready, leak recorded as
 > accepted dev risk. Nothing blocks execution.
 
@@ -45,9 +46,12 @@ measured round per agent-facing change.
 ## Execution order, gates, and the round schedule
 
 **Gate 0 (before anything moves):** the standing-analyzer write-up of
-baseline `run_20260731_084950` (85/85 PASS, trees agents `80ea342` / API
-`8d778679`, first 27-schema baseline) — Plan 02 Task 0. No agent-facing
-surface changes until it exists.
+`run_20260731_084950` (85/85 PASS, trees agents `80ea342` / API
+`8d778679` — the first round RUN on the 27-schema surface; not yet a
+registered baseline: facts.yaml M-051 still carries its "no
+re-baselining round captured" rider, which Plan 02 Task 0 revises in
+the same commit that registers M-052 [R: A-12]) — Plan 02 Task 0. No
+agent-facing surface changes until it exists.
 
 1. **Plan 01 first, in full.** No agent-facing surface moves (the six
    L1 tools' schemas are untouched; `vote-city-goal`/`propose-city-goal`
@@ -108,13 +112,21 @@ second city menu slot (D-44) · ack-able civic kinds (D-46) · affordances
 auth key (D-43) · noticeboard venue (D-37 — next art/bake pass, BotVille
 repo, not this plan set).
 
+The world-growth cluster (D-36 V2, D-37, housing, districts) has a
+kickoff waiting:
+[`../2026-08-botville-city-growth/00-KICKOFF-PROMPT.md`](../2026-08-botville-city-growth/00-KICKOFF-PROMPT.md)
+— gated on round (b) shipping (M-055 exists) + an owner art/bake
+inventory pass. Those deferred items land THERE, not on this list's
+"later".
+
 ## Hygiene absorbed (kickoff §3 tail — folded into final tasks)
 
 - Plan 01 Task 9: `Object.freeze(venuesCache)`, `storeToolRationale`
   wiring into the six tools, new-agent onboarding automation (schedule
   writer on creation), `/health` entry for the public REST seam.
-- Plan 02 Task 8 (final steps): stale `configs/defaults.yaml:29-32`
-  comment; product-vision taxonomy row (BotVille is a **place**);
+- Plan 02 Task 8 (final steps): stale `configs/defaults.yaml:31-32`
+  comment (31-32 only — 29-30 are current auth docs [R: A-9]);
+  product-vision taxonomy row (BotVille is a **place**);
   researcher.yaml city reads deliberately NOT restored (D-29 symmetry —
   the reflector, not the researcher, gains city reads; revisit stays
   open).

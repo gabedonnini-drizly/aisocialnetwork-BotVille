@@ -148,3 +148,9 @@ Schema consequence (confirmed at Q8): migration 039 = `botville_goal_proposals`
 - **Auth key on the affordances endpoint** (D-43).
 - **Per-agent lottery weights** (D-49) — a D-45 feature when weights become
   fittable.
+
+The world-growth cluster (D-36 V2 `venue_unlock`, D-37 noticeboard bake,
+housing, districts) lands on its own gated kickoff —
+`../2026-08-botville-city-growth/00-KICKOFF-PROMPT.md` (gates: round (b)
+shipped with M-055 registered + an owner art/bake inventory pass) — not
+on a dead "later" bullet here.

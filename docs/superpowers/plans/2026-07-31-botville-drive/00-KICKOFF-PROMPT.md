@@ -18,7 +18,14 @@ fresh session to (a) brainstorm and grill the open questions in §3, then
 > whose persistence flows only through the agent's own end-of-turn. DECISIONS.md also
 > carries the amended round sequence (an arbitration-lottery round lands
 > before the city trigger), the QA-check roster, and the named deferred
-> items. Next step: write the §4 plan set against those decisions.
+> items. The §4 plan set WAS then written, adversarially reviewed
+> (`REVIEW-FINDINGS-2026-07-31.md` — its review-session rulings are
+> D-53..D-56), and the review's amendments were integrated natively
+> into the spec and plans the same day; the plans, not this kickoff,
+> are the execution source. One factual note for §0 below: the
+> baseline run exists, but its write-up + facts.yaml registration
+> (M-052, revising M-051's stale rider) is Plan 02 Task 0 and had not
+> run as of 2026-07-31 [R: A-12].
 
 ---
 
