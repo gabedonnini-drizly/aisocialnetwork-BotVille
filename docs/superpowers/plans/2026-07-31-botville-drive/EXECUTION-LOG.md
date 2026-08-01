@@ -13,6 +13,8 @@ a git worktree, merged only at the Stage A deploy point.
 
 ---
 
+- 2026-08-01 · ROUND (a2) STARTED · lottery merged to live agents checkout (`a16b754`, lottery tests 14/14 live) · PROBE PASSED: episode carries delegation ledger `{"fired": [], "won": null, "chosen": false}` (luis_fernandez wake, exit 0; artifacts: output/probes/round_a2_probe_*.{log,json} in agents repo) · round running: run_all_agents.sh --dev, 85 agents · NO live-checkout edits until it finishes
+- 2026-08-01 · STAGE A DEPLOYED + EXIT GATE PASSED · live api fast-forwarded 8d77867→d68130e; migrations 039+040 applied to ai_social_network (dev) · affordances curl 200 + zod-parse PASS (Season 0 live; Radiant proposal "Tend the Café" self-instantiated — D-32 works) · verify_normalization 6/6 · manual wake aisha_khan exit 0 commit v50 · get-city-goals v2 renders through the agents MCP client (first-season line, D-31 goalless sentence, banded system proposal) · BotVille 274/274 (sync test now byte-equality vs live)
 - 2026-07-31 · drive entered; EXECUTION-LOG.md created; platform-MCP plan files got their NOTE banners (INDEX hygiene item) · (this commit)
 - 2026-07-31 · Plan 01 Task 1 done (worktree `feat/civic-drive`) · api `0af7723` · migrations 039/040 + 12 civic zod schemas, TDD, 818 pass / 0 fail (was 786) · recorded decision: `botville_venue_notes.user_id` DROP NOT NULL in 039 — NULL user_id IS the system author · deviation: AgentAffordancesSchema admits null proposerUsername/placement.venueId (system proposals / absent agents)
 - 2026-07-31 · Plan 01 Task 2 done · api worktree `9d17f4c` (823 pass / 0 fail) + BotVille `9ac4101` (root 273 pass / 1 expected skip until Stage A merge) · registry loader mirrors venueVocabulary.js, contract copy byte-identical, sync test proves both arms
