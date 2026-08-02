@@ -6,18 +6,30 @@ open questions one-at-a-time with the owner and record rulings as
 **D-59+** in a new `DECISIONS.md` here, then (b) produce the spec + plan
 set specified in §4, mirroring `2026-07-31-botville-drive/`.
 
-> ⚠ **GATED — do not execute (or even grill) until ALL THREE hold:**
-> 1. **Round (b) of the civic drive has shipped and M-055 exists** —
->    the F-3 offered/chosen data. Expansion rewards are worthless if the
->    base civic loop doesn't pull; the coefficients and selection rates
->    from that round are inputs to every economy question below.
-> 2. **The owner has done an art/bake inventory pass** — I-8 ("places
->    exist because art exists for them") makes art the rate limiter for
->    ALL growth; §3's first question cannot be answered without knowing
->    what can be baked dormant.
-> 3. **You know the status of civic rounds (c)–(e)** — this drive's
->    changes must not interleave with their re-baselines (one change,
->    one measured round).
+> **SUPERSEDED 2026-08-01 — this document is history, not instruction.**
+> The grilling happened (rulings D-59..D-78 in `DECISIONS.md`), the spec and
+> plan set exist, and the set has been adversarially reviewed
+> (`REVIEW-FINDINGS-2026-08-01.md`). **Execute `EXECUTION-PROMPT.md`; read
+> `00-INDEX.md` for order and gates.**
+>
+> Its three gates all resolved: (1) M-055 exists; (2) the art/bake inventory
+> was done and **verified exact** in review — 35,085 files / 34,078 PNGs, 24
+> exterior categories, 26 interior sets; (3) civic rounds (c), (d) and (e) have
+> all run and the drive is closed out `[R: R-1]`.
+>
+> **Gate 2 — see `ART-INVENTORY-REPORT.md`** (2026-08-01). A later pass
+> re-verified all eight counts above exactly, and corrected the three false
+> premises in `ART-BAKE-INVENTORY-PROMPT.md` (which is stale and should not be
+> executed as written): nothing in `assets-src/` is unextracted, no pack
+> variant is wrong, and **no purchase is owed**. The "8 missing source groups"
+> are an artefact of `scripts/inspect-assets.mjs` still reading the nine
+> compatibility symlinks deleted on purpose in Plan 6 Task 3b. The report also
+> records that D-37's noticeboard has no art under that name and is a
+> `generated:` stamp job, like `library_building`.
+>
+> **Four of its §0 premises are wrong** and every plan is written to the
+> correction — see `DECISIONS.md` § *Kickoff corrections*. Its "reserve M-059+"
+> instruction is also wrong: facts start at **M-060**.
 
 ---
 
