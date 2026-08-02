@@ -9,7 +9,7 @@
  *   node scripts/world-bake.mjs [pack] [srcRoot]
  */
 import { createHash } from 'node:crypto';
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodePng } from './png-lib.mjs';
@@ -157,9 +157,44 @@ export const EMOTE_FRAMES: Record<string, [number, number]> = ${JSON.stringify(
 }
 
 // ── CLI: the ONE place that knows where this repo keeps things ────────────
+//
+// Pack resolution, in precedence order:
+//   1. an explicit argv[2]           — `npm run bake:world -- limezu`
+//   2. $BOTVILLE_PACK                — the SAME variable the suite already
+//      uses (`BOTVILLE_PACK=limezu npm test`, DEPLOY.md). Honouring it here
+//      is what makes "which pack am I on" one setting instead of two.
+//   3. 'fixture'                     — the public/CI default (I-12)
+//
+// And a guard: a bake that would REPLACE licensed art with the fixture pack
+// must be asked for explicitly. That downgrade is silent, destroys an
+// uncommitted owner-local bake, and leaves a town that renders perfectly in
+// flat placeholder colours — that is, it looks like a rendering bug rather
+// than a bake mistake, which is exactly how it cost an afternoon once.
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const pack = process.argv[2] ?? 'fixture';
+  const explicit = process.argv[2] && !process.argv[2].startsWith('-') ? process.argv[2] : null;
+  const pack = explicit ?? process.env.BOTVILLE_PACK ?? 'fixture';
   const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');
+
+  if (pack === 'fixture' && !explicit) {
+    // The bake stamps its pack into the generated header — the same marker
+    // test/asset-index.test.ts asserts on. That is the authoritative answer
+    // to "what is baked right now"; file sizes are not (a fixture bake does
+    // not clear the previous pack's sprites).
+    const generated = join(ROOT, 'packages', 'client', 'src', 'game', 'assets.generated.ts');
+    const bakedPack = existsSync(generated)
+      ? readFileSync(generated, 'utf8').match(/from pack "([^"]+)"/)?.[1]
+      : null;
+    if (bakedPack && bakedPack !== 'fixture') {
+      console.error(
+        `refusing to bake the FIXTURE pack over the "${bakedPack}" bake already in the tree.\n` +
+        `  keep it:             npm run bake:world -- ${bakedPack}\n` +
+        `  make it the default: export BOTVILLE_PACK=${bakedPack}\n` +
+        `  really go to fixture: npm run bake:world -- fixture`
+      );
+      process.exit(1);
+    }
+  }
+
   const r = worldBake({
     pack,
     srcRoot,

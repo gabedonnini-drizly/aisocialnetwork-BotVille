@@ -46,8 +46,9 @@ test('committed .tmj maps are byte-identical to a fresh fixture bake', () => {
     assert.equal(committedBytes, freshBytes,
       `packages/client/public/assets/tilemaps/${f} does not match a fixture bake — ` +
       'this looks like a real-pack (limezu) bake got committed by mistake. Restore it ' +
-      '(git restore packages/client/public/assets/tilemaps) and re-bake with no pack ' +
-      'argument before committing.');
+      '(git restore packages/client) and re-bake with `npm run bake:world -- fixture` ' +
+      'before committing — the bare `bake:world` now refuses to overwrite a ' +
+      'licensed bake, so the pack must be named explicitly here.');
   }
 });
 
