@@ -156,6 +156,48 @@
     "p_condo_7_modular_top": "props/condo_7_modular_top.png",
     "p_condo_7_modular_middle": "props/condo_7_modular_middle.png",
     "p_condo_7_modular_bottom": "props/condo_7_modular_bottom.png",
+    "p_building_skeleton_1": "props/building_skeleton_1.png",
+    "p_building_skeleton_2": "props/building_skeleton_2.png",
+    "p_excavator_1": "props/excavator_1.png",
+    "p_excavator_2": "props/excavator_2.png",
+    "p_excavator_3": "props/excavator_3.png",
+    "p_excavator_4": "props/excavator_4.png",
+    "p_scissor_lifter_1": "props/scissor_lifter_1.png",
+    "p_scissor_lifter_2": "props/scissor_lifter_2.png",
+    "p_light_tower_1": "props/light_tower_1.png",
+    "p_light_tower_2": "props/light_tower_2.png",
+    "p_stacked_material_1": "props/stacked_material_1.png",
+    "p_stacked_material_2": "props/stacked_material_2.png",
+    "p_stacked_material_3": "props/stacked_material_3.png",
+    "p_stacked_material_4": "props/stacked_material_4.png",
+    "p_stacked_material_5": "props/stacked_material_5.png",
+    "p_stacked_material_6": "props/stacked_material_6.png",
+    "p_stacked_material_7": "props/stacked_material_7.png",
+    "p_worksite_cone_1": "props/worksite_cone_1.png",
+    "p_worksite_cone_2": "props/worksite_cone_2.png",
+    "p_worksite_fence_1_1": "props/worksite_fence_1_1.png",
+    "p_worksite_fence_1_2": "props/worksite_fence_1_2.png",
+    "p_worksite_fence_1_3": "props/worksite_fence_1_3.png",
+    "p_worksite_fence_1_4": "props/worksite_fence_1_4.png",
+    "p_worksite_fence_1_5": "props/worksite_fence_1_5.png",
+    "p_worksite_fence_1_6": "props/worksite_fence_1_6.png",
+    "p_worksite_fence_1_7": "props/worksite_fence_1_7.png",
+    "p_worksite_fence_1_8": "props/worksite_fence_1_8.png",
+    "p_worksite_fence_2_1": "props/worksite_fence_2_1.png",
+    "p_worksite_fence_2_2": "props/worksite_fence_2_2.png",
+    "p_worksite_fence_2_3": "props/worksite_fence_2_3.png",
+    "p_worksite_fence_2_4": "props/worksite_fence_2_4.png",
+    "p_worksite_fence_2_5": "props/worksite_fence_2_5.png",
+    "p_worksite_fence_2_6": "props/worksite_fence_2_6.png",
+    "p_worksite_fence_2_7": "props/worksite_fence_2_7.png",
+    "p_worksite_fence_2_8": "props/worksite_fence_2_8.png",
+    "p_worksite_ground_1": "props/worksite_ground_1.png",
+    "p_worksite_ground_2": "props/worksite_ground_2.png",
+    "p_worksite_ground_3": "props/worksite_ground_3.png",
+    "p_worksite_ground_4": "props/worksite_ground_4.png",
+    "p_worksite_ground_5": "props/worksite_ground_5.png",
+    "p_worksite_ground_6": "props/worksite_ground_6.png",
+    "p_worksite_entrance": "props/worksite_entrance.png",
     "p_bed_green": "props/bed_green.png",
     "p_bed_blue": "props/bed_blue.png",
     "p_bed_teal": "props/bed_teal.png",
@@ -1389,6 +1431,258 @@
       "trim": true,
       "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
       "pin": "f2e755eac34726d0c38b37f7986ae574ed04b6476991899eddc07d425af04bbf"
+    },
+    "building_skeleton_1": {
+      "file": "p_building_skeleton_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5c721d7979a035129bdbf6b794e2917725edbc649189f8da5f828bd48615ba53"
+    },
+    "building_skeleton_2": {
+      "file": "p_building_skeleton_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ebb2605a007437ff548913a45a2c4ccf8509082c96515929491bdb66f3b4e121"
+    },
+    "excavator_1": {
+      "file": "p_excavator_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "1a48a9cb3c24e7aa30bd2144b95cd9fc24f0d07de30a6af869a5536256191e32"
+    },
+    "excavator_2": {
+      "file": "p_excavator_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b7899d31574a3e73e65478ae7f9657c832d00a79fe9046841b0be0bb19800fbd"
+    },
+    "excavator_3": {
+      "file": "p_excavator_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0541e7c841e84d1241e72a6bf5a72b579b3ba0452dab0d3e5034ece208d0c70c"
+    },
+    "excavator_4": {
+      "file": "p_excavator_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "7103f040fc3bff226e51ba9e6e0cba3d785aa99abec5c1df9dc649a7ec216ee6"
+    },
+    "scissor_lifter_1": {
+      "file": "p_scissor_lifter_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6e5730b2bf814c7ffce7c56629ac87ea8c7993b2e67ddb15fb240e438b3184fd"
+    },
+    "scissor_lifter_2": {
+      "file": "p_scissor_lifter_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "19edf939a8de1f9d1132e77c08748402915e6a1e3949b8d9f3eb87adc7d21c94"
+    },
+    "light_tower_1": {
+      "file": "p_light_tower_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "cd2a22cba2c4aa987200828a3003b9c2ad6949585bde262a558680e8c35cf781"
+    },
+    "light_tower_2": {
+      "file": "p_light_tower_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a9379046fadefd4f9b643cafc3386f2371b2ee0303804488ee3748a0930c1611"
+    },
+    "stacked_material_1": {
+      "file": "p_stacked_material_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "4708e7cd3078fa62544f25edc885ab61cd4746c10a0c469c8be7e5dd945bacc1"
+    },
+    "stacked_material_2": {
+      "file": "p_stacked_material_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "982a62f346b009a77e90c92fa789d625fbc71acff883f26883c3b23aef36c3a3"
+    },
+    "stacked_material_3": {
+      "file": "p_stacked_material_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "27eaebf27d9389526244da0d9ba1f9e4c073379779419df0930c65b605120454"
+    },
+    "stacked_material_4": {
+      "file": "p_stacked_material_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "eeb99ac84d510dd0b25bcbb041cda626a93f82fa01d8de9e42aef12c08c871e6"
+    },
+    "stacked_material_5": {
+      "file": "p_stacked_material_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "8f1847fda92fc184e5fbf0e1ea50e13857a3f3fa161b141c778bc668a15ea7e5"
+    },
+    "stacked_material_6": {
+      "file": "p_stacked_material_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "2db19ed2bf9f4f180dd789b409055d86e420708989431e39776813644ebb85dd"
+    },
+    "stacked_material_7": {
+      "file": "p_stacked_material_7",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ee1b8cc94c0e84dc9338fb335d3597812edadca1a4f34c8e78465484db9ff55b"
+    },
+    "worksite_cone_1": {
+      "file": "p_worksite_cone_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f7f33e69ed29da66ee6771aa47f5a497104de9621abc7ad76591cee100b9ed82"
+    },
+    "worksite_cone_2": {
+      "file": "p_worksite_cone_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "79d87085173e5a28697c39249c869b76376b8d0791342aa6f6f0f2f575961fb9"
+    },
+    "worksite_fence_1_1": {
+      "file": "p_worksite_fence_1_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "563acd5c496421f17149b4a14154a07e568f5b20c91c608b15ed797541b42caa"
+    },
+    "worksite_fence_1_2": {
+      "file": "p_worksite_fence_1_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "8e5e2390b553e438de87a99ab726487cea8dd7321342418e8e620b17a77e059c"
+    },
+    "worksite_fence_1_3": {
+      "file": "p_worksite_fence_1_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "43d3889aa0e36ccb1014e510c36ea416ab323c272704a80116a42d089081da66"
+    },
+    "worksite_fence_1_4": {
+      "file": "p_worksite_fence_1_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5895f930cd4131c7c59920f0240fe824a51ca664cad1da625464f7aade626115"
+    },
+    "worksite_fence_1_5": {
+      "file": "p_worksite_fence_1_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b398073a01426309bc3aeb01f82fb1c672987d603e5fa1a2d9c0b3201dba42fc"
+    },
+    "worksite_fence_1_6": {
+      "file": "p_worksite_fence_1_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "d97d2815b5854a269eddb66e740529888737556a086b413478817c50889f3b90"
+    },
+    "worksite_fence_1_7": {
+      "file": "p_worksite_fence_1_7",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f77de2887afa25bb71ee8edbeb41e094429e7fed0e6c156938a9921461e0b776"
+    },
+    "worksite_fence_1_8": {
+      "file": "p_worksite_fence_1_8",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c7c0f57e3c872b2dfd1a94c2d6f49c9e042b43bc7eea6bf888e496c2632b5c76"
+    },
+    "worksite_fence_2_1": {
+      "file": "p_worksite_fence_2_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a25bc0dd9efb86050a7c1ac395d5d101a12d5e21b40246d6e86aae9a88117240"
+    },
+    "worksite_fence_2_2": {
+      "file": "p_worksite_fence_2_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "774cd450eb8e22dc43173169f725aa66ea52470662beb422d02bbf3d74a3a142"
+    },
+    "worksite_fence_2_3": {
+      "file": "p_worksite_fence_2_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "8a8203fa90152515e9288f48a2ad1f4e90c6aa8e2c7426ee25c2f1a72a65db2e"
+    },
+    "worksite_fence_2_4": {
+      "file": "p_worksite_fence_2_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "22357fc68d0e8e9c5587306207780e5a90cd431d5f521561543714c23d135944"
+    },
+    "worksite_fence_2_5": {
+      "file": "p_worksite_fence_2_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "310f06077d50b73d673ddf2e40704353a166acd74aa4dd351c207e7ab23bb760"
+    },
+    "worksite_fence_2_6": {
+      "file": "p_worksite_fence_2_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "69f12a936cc5f442229db0a665e96d2a15a941cc247cc32db77752e07c51cc3a"
+    },
+    "worksite_fence_2_7": {
+      "file": "p_worksite_fence_2_7",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "da7d07cff38db55f2de7ca261603267447c48d11cda34a88ef845650694c10d1"
+    },
+    "worksite_fence_2_8": {
+      "file": "p_worksite_fence_2_8",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "37937962de224f1418b011c234655365af8a46bf2c0f38703ce545f78fbd9908"
+    },
+    "worksite_ground_1": {
+      "file": "p_worksite_ground_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c3d1e958d1fc62b3024edc80a0416669691fdc8f7f4f3c63bb4e364c70c8c992"
+    },
+    "worksite_ground_2": {
+      "file": "p_worksite_ground_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "da4de5a1e40c3bdd6f1206eec907e8a449044120dd6fd545dc3631bec16aa507"
+    },
+    "worksite_ground_3": {
+      "file": "p_worksite_ground_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0590674b5324c9f4b1001de9ff1e2e792a384c2b1b4edbe5a4e33c52bc5f1083"
+    },
+    "worksite_ground_4": {
+      "file": "p_worksite_ground_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a1d898588539fe6a230aedf193378466738d59f61f49c34440728ca9da6b4b4f"
+    },
+    "worksite_ground_5": {
+      "file": "p_worksite_ground_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ad86613d5b5d0276c7f95e5c18342bb25f3217c3e484670a0166e8c622e9ce3a"
+    },
+    "worksite_ground_6": {
+      "file": "p_worksite_ground_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "86a0ead484f4739624f9389d10c055d5d32c3a797f084fc2ea37b9865836d1e2"
+    },
+    "worksite_entrance": {
+      "file": "p_worksite_entrance",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "cc4b7b1899ac851cf1fa270e21b5438f455f7cc5daba87d6cea103dad06d68f0"
     },
     "bed_green": {
       "file": "p_bed_green",

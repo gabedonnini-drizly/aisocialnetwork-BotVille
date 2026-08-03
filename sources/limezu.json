@@ -143,7 +143,50 @@
     "condo_9_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_9.png",
     "condo_7_modular_top_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Top.png",
     "condo_7_modular_middle_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Middle.png",
-    "condo_7_modular_bottom_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Bottom.png"
+    "condo_7_modular_bottom_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Bottom.png",
+
+    "building_skeleton_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Building_Skeleton_1.png",
+    "building_skeleton_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Building_Skeleton_2.png",
+    "excavator_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Excavator_1.png",
+    "excavator_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Excavator_2.png",
+    "excavator_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Excavator_3.png",
+    "excavator_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Excavator_4.png",
+    "scissor_lifter_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Scissor_Lifter_1.png",
+    "scissor_lifter_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Scissor_Lifter_2.png",
+    "light_tower_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Light_Tower_1.png",
+    "light_tower_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Light_Tower_2.png",
+    "stacked_material_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Stacked_Material_1.png",
+    "stacked_material_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Stacked_Material_2.png",
+    "stacked_material_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Stacked_Material_3.png",
+    "stacked_material_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Stacked_Material_4.png",
+    "stacked_material_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Stacked_Material_5.png",
+    "stacked_material_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Stacked_Material_6.png",
+    "stacked_material_7_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Stacked_Material_7.png",
+    "worksite_cone_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Cone_1.png",
+    "worksite_cone_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Cone_2.png",
+    "worksite_fence_1_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_1.png",
+    "worksite_fence_1_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_2.png",
+    "worksite_fence_1_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_3.png",
+    "worksite_fence_1_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_4.png",
+    "worksite_fence_1_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_5.png",
+    "worksite_fence_1_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_6.png",
+    "worksite_fence_1_7_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_7.png",
+    "worksite_fence_1_8_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_1_8.png",
+    "worksite_fence_2_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_1.png",
+    "worksite_fence_2_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_2.png",
+    "worksite_fence_2_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_3.png",
+    "worksite_fence_2_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_4.png",
+    "worksite_fence_2_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_5.png",
+    "worksite_fence_2_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_6.png",
+    "worksite_fence_2_7_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_7.png",
+    "worksite_fence_2_8_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Fence_2_8.png",
+    "worksite_ground_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_1.png",
+    "worksite_ground_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_2.png",
+    "worksite_ground_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_3.png",
+    "worksite_ground_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_4.png",
+    "worksite_ground_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_5.png",
+    "worksite_ground_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_6.png",
+    "worksite_entrance_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Entrance_1.png"
   },
   "rects": {
     "grass": {
@@ -1258,6 +1301,175 @@
     },
     "condo_7_modular_bottom": {
       "file": "condo_7_modular_bottom_s",
+      "trim": true
+    },
+
+    "building_skeleton_1": {
+      "file": "building_skeleton_1_s",
+      "trim": true
+    },
+    "building_skeleton_2": {
+      "file": "building_skeleton_2_s",
+      "trim": true
+    },
+    "excavator_1": {
+      "file": "excavator_1_s",
+      "trim": true
+    },
+    "excavator_2": {
+      "file": "excavator_2_s",
+      "trim": true
+    },
+    "excavator_3": {
+      "file": "excavator_3_s",
+      "trim": true
+    },
+    "excavator_4": {
+      "file": "excavator_4_s",
+      "trim": true
+    },
+    "scissor_lifter_1": {
+      "file": "scissor_lifter_1_s",
+      "trim": true
+    },
+    "scissor_lifter_2": {
+      "file": "scissor_lifter_2_s",
+      "trim": true
+    },
+    "light_tower_1": {
+      "file": "light_tower_1_s",
+      "trim": true
+    },
+    "light_tower_2": {
+      "file": "light_tower_2_s",
+      "trim": true
+    },
+    "stacked_material_1": {
+      "file": "stacked_material_1_s",
+      "trim": true
+    },
+    "stacked_material_2": {
+      "file": "stacked_material_2_s",
+      "trim": true
+    },
+    "stacked_material_3": {
+      "file": "stacked_material_3_s",
+      "trim": true
+    },
+    "stacked_material_4": {
+      "file": "stacked_material_4_s",
+      "trim": true
+    },
+    "stacked_material_5": {
+      "file": "stacked_material_5_s",
+      "trim": true
+    },
+    "stacked_material_6": {
+      "file": "stacked_material_6_s",
+      "trim": true
+    },
+    "stacked_material_7": {
+      "file": "stacked_material_7_s",
+      "trim": true
+    },
+    "worksite_cone_1": {
+      "file": "worksite_cone_1_s",
+      "trim": true
+    },
+    "worksite_cone_2": {
+      "file": "worksite_cone_2_s",
+      "trim": true
+    },
+    "worksite_fence_1_1": {
+      "file": "worksite_fence_1_1_s",
+      "trim": true
+    },
+    "worksite_fence_1_2": {
+      "file": "worksite_fence_1_2_s",
+      "trim": true
+    },
+    "worksite_fence_1_3": {
+      "file": "worksite_fence_1_3_s",
+      "trim": true
+    },
+    "worksite_fence_1_4": {
+      "file": "worksite_fence_1_4_s",
+      "trim": true
+    },
+    "worksite_fence_1_5": {
+      "file": "worksite_fence_1_5_s",
+      "trim": true
+    },
+    "worksite_fence_1_6": {
+      "file": "worksite_fence_1_6_s",
+      "trim": true
+    },
+    "worksite_fence_1_7": {
+      "file": "worksite_fence_1_7_s",
+      "trim": true
+    },
+    "worksite_fence_1_8": {
+      "file": "worksite_fence_1_8_s",
+      "trim": true
+    },
+    "worksite_fence_2_1": {
+      "file": "worksite_fence_2_1_s",
+      "trim": true
+    },
+    "worksite_fence_2_2": {
+      "file": "worksite_fence_2_2_s",
+      "trim": true
+    },
+    "worksite_fence_2_3": {
+      "file": "worksite_fence_2_3_s",
+      "trim": true
+    },
+    "worksite_fence_2_4": {
+      "file": "worksite_fence_2_4_s",
+      "trim": true
+    },
+    "worksite_fence_2_5": {
+      "file": "worksite_fence_2_5_s",
+      "trim": true
+    },
+    "worksite_fence_2_6": {
+      "file": "worksite_fence_2_6_s",
+      "trim": true
+    },
+    "worksite_fence_2_7": {
+      "file": "worksite_fence_2_7_s",
+      "trim": true
+    },
+    "worksite_fence_2_8": {
+      "file": "worksite_fence_2_8_s",
+      "trim": true
+    },
+    "worksite_ground_1": {
+      "file": "worksite_ground_1_s",
+      "trim": true
+    },
+    "worksite_ground_2": {
+      "file": "worksite_ground_2_s",
+      "trim": true
+    },
+    "worksite_ground_3": {
+      "file": "worksite_ground_3_s",
+      "trim": true
+    },
+    "worksite_ground_4": {
+      "file": "worksite_ground_4_s",
+      "trim": true
+    },
+    "worksite_ground_5": {
+      "file": "worksite_ground_5_s",
+      "trim": true
+    },
+    "worksite_ground_6": {
+      "file": "worksite_ground_6_s",
+      "trim": true
+    },
+    "worksite_entrance": {
+      "file": "worksite_entrance_s",
       "trim": true
     }
   },

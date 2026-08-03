@@ -160,6 +160,12 @@ export const EMOTE_FRAMES: Record<string, [number, number]> = ${JSON.stringify(
   // The canonical schema travels with the artifact (Conventions table).
   write(join(outDir, 'venues.schema.json'), readFileSync(join(ROOT, 'schemas', 'venues.schema.json')));
 
+  // Plot states (spec §3.2) travel the same way, and for the same reason: the
+  // client cannot read contract/ at runtime. It is DATA — state -> prop
+  // composition — so a fourth visible state is an edit to that file, not to a
+  // scene. Copied, never re-serialised: the authoring copy is the artifact.
+  write(join(outDir, 'plot_states.json'), readFileSync(join(ROOT, 'contract', 'plot_states.json')));
+
   // A lock beside the artifact, so the platform can prove its copy is intact
   // WITHOUT needing this repo on disk. The sibling-repo comparison in Task 33
   // is the stronger check; this one is the check that still works in CI.

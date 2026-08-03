@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "note": "Spec §3.2 / D-75 'Visible construction': a plot's visible state is an ENUM, not a progress bar, and every state is art-backed. This file is DATA the client reads — a fourth state later is a data change, not a client change. Every prop named here is a contract name (I-2); test/plot-states.test.mjs asserts that and fails the build on a typo.",
+  "states": ["vacant", "under_construction", "built"],
+  "composition": {
+    "vacant": {
+      "note": "A fenced empty lot. `claimed` renders identically — ownership is a stored fact about the plot, not a visible difference, so it is not a fourth state. The boundary reuses the shipped 8-piece fence_* corner/edge set, which venues/district/venue.json already renders by prefix (scatter.fence); 1_Terrains_and_Fences offers only an unnamed run of 16x16 pieces whose corner semantics would have to be recovered by eye, which is a worse match, not a better one.",
+      "boundary": { "prefix": "fence_", "layer": "props-above" },
+      "scatter": { "pick": ["bush_1", "bush_2"], "layer": "props-above" }
+    },
+    "under_construction": {
+      "note": "A worksite: the skeleton of the building that is coming, hoarding around the lot, and the plant that implies work. Its own fence set (a solid site hoarding) is deliberately NOT the residential fence_* set — the two states must be distinguishable at a glance, which is the whole point of the enum.",
+      "boundary": {
+        "pick": [
+          "worksite_fence_1_1", "worksite_fence_1_2", "worksite_fence_1_3", "worksite_fence_1_4",
+          "worksite_fence_1_5", "worksite_fence_1_6", "worksite_fence_1_7", "worksite_fence_1_8"
+        ],
+        "layer": "props-above"
+      },
+      "boundaryAlternate": {
+        "pick": [
+          "worksite_fence_2_1", "worksite_fence_2_2", "worksite_fence_2_3", "worksite_fence_2_4",
+          "worksite_fence_2_5", "worksite_fence_2_6", "worksite_fence_2_7", "worksite_fence_2_8"
+        ],
+        "layer": "props-above"
+      },
+      "ground": {
+        "pick": ["worksite_ground_1", "worksite_ground_2", "worksite_ground_3", "worksite_ground_4", "worksite_ground_5", "worksite_ground_6"],
+        "layer": "props-below"
+      },
+      "centre": { "pick": ["building_skeleton_1", "building_skeleton_2"], "layer": "buildings" },
+      "entrance": { "name": "worksite_entrance", "layer": "props-above" },
+      "plant": {
+        "pick": ["excavator_1", "excavator_2", "excavator_3", "excavator_4", "scissor_lifter_1", "scissor_lifter_2"],
+        "layer": "props-above"
+      },
+      "scatter": {
+        "pick": [
+          "stacked_material_1", "stacked_material_2", "stacked_material_3", "stacked_material_4",
+          "stacked_material_5", "stacked_material_6", "stacked_material_7",
+          "worksite_cone_1", "worksite_cone_2", "light_tower_1", "light_tower_2"
+        ],
+        "layer": "props-above"
+      }
+    },
+    "built": {
+      "note": "No composition of its own, and that is the ruling, not an omission: a built plot renders the exterior sprite of whatever archetype stands on it, so the art comes from the archetype rather than from this table. Adding props here would mean a built plot looked the same whatever was built on it.",
+      "exterior": "archetype"
+    }
+  }
+}
