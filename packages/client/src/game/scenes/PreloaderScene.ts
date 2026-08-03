@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { venueRegistry } from '../venueRegistry.js';
+import { DISTRICT_SCENE_KEY, startingDistrict, venueRegistry } from '../venueRegistry.js';
 import { DISTRICT_PROPS, INTERIOR_PROPS, EMOTE_FRAMES } from '../assets.generated.js';
 import { UI, UI_HEX } from '../palette.js';
 import { tr } from '../../i18n/index.js';
@@ -102,7 +102,9 @@ export class PreloaderScene extends Phaser.Scene {
     // baked textures exist in the cache by the time anims.create() runs.
     this.load.once(Phaser.Loader.Events.COMPLETE, () => {
       this.registerAgentAnimations(baked);
-      this.scene.start('DistrictScene');
+      // The district the game boots into comes from the bake, not from a
+      // literal: the outdoor scene draws whichever district its data names.
+      this.scene.start(DISTRICT_SCENE_KEY, { districtId: startingDistrict().id });
     });
     this.load.start();
   }

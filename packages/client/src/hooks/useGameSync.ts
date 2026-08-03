@@ -5,6 +5,7 @@ import { GameBridge } from '../game/GameBridge.js';
 import { GameTime } from '../game/time.js';
 import { fetchAgentLocations, fetchPlatformLocations, PRESENCE_MODE, type PresenceMode } from '../lib/api.js';
 import { LOCATION_POLL_MS } from '../game/config.js';
+import { DISTRICT_SCENE_KEY } from '../game/venueRegistry.js';
 import { flattenSomewhere, presenceModel, warnUnknown } from '../game/presence.js';
 import type { Agent, AgentPresence } from '@botville/shared';
 
@@ -44,7 +45,7 @@ export function useGameSync() {
   const { setScene } = useUIStore();
   const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const agentsRef = useRef<Agent[]>(agents);
-  const sceneKeyRef = useRef('DistrictScene');
+  const sceneKeyRef = useRef(DISTRICT_SCENE_KEY);
 
   // Keep ref current
   useEffect(() => { agentsRef.current = agents; }, [agents]);

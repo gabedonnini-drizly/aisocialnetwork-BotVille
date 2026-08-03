@@ -4,7 +4,7 @@ import { GameBridge } from '../GameBridge.js';
 import { sceneRegistry } from '../SceneRegistry.js';
 import { Pathfinder } from '../Pathfinder.js';
 import { CAMERA, CAMERA_FOCUS, INTERIOR_TILESET, NIGHT_SCHEDULE, SCENE_FADE_MS, snapZoom } from '../config.js';
-import { sceneKeyFor } from '../venueRegistry.js';
+import { sceneKeyFor, sceneTargetFor } from '../venueRegistry.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
 import { ANIMATED_OBJECTS, getVariant } from '../assetManifest.js';
 import { GameTime } from '../time.js';
@@ -134,12 +134,12 @@ export class VenueScene extends Phaser.Scene {
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
       if (typeof p.targetVenue !== 'string') continue;
-      const target = sceneKeyFor(p.targetVenue);
+      const target = sceneTargetFor(p.targetVenue);
       const zone = this.add.zone(o.x! + o.width! / 2, o.y! + o.height! / 2, o.width!, o.height!)
         .setInteractive({ useHandCursor: true });
       zone.on('pointerover', () => doormat?.setTint(0xaaffaa));
       zone.on('pointerout', () => doormat?.clearTint());
-      onTap(zone, () => this.transitionTo(target));
+      onTap(zone, () => this.transitionTo(target.key, target.data));
     }
 
     // spawn and walkability
@@ -239,13 +239,13 @@ export class VenueScene extends Phaser.Scene {
   }
 
   /** Transition to another scene with fade (the doormat door and agent:goto from the HUD). */
-  transitionTo(target: string) {
+  transitionTo(target: string, data?: { districtId: string }) {
     if (this.transitioning) return;
     this.transitioning = true;
     this.cameras.main.fadeOut(SCENE_FADE_MS, 0, 0, 0);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start(target);
-      GameBridge.emit('scene:changed', { scene: target });
+      this.scene.start(target, data);
+      GameBridge.emit('scene:changed', { scene: target, ...data });
     });
   }
 

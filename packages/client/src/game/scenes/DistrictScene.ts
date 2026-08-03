@@ -4,12 +4,15 @@ import { GameBridge } from '../GameBridge.js';
 import { sceneRegistry } from '../SceneRegistry.js';
 import { Pathfinder } from '../Pathfinder.js';
 import {
-  AMBIENT_CAR, CAMERA, CAMERA_FOCUS, DISTRICT, GLOW_DEPTH, GLOW_KINDS,
+  AMBIENT_CAR, CAMERA, CAMERA_FOCUS, districtGeometry, GLOW_DEPTH, GLOW_KINDS,
   GLOW_TEXTURE, LEAVE_WALK_TIMEOUT_MS, NIGHT_SCHEDULE,
-  SCENE_FADE_MS, TINT_OVERLAY_DEPTH, WANDER_RADIUS, type GlowKind,
+  SCENE_FADE_MS, TINT_OVERLAY_DEPTH, WANDER_RADIUS,
+  type DistrictGeometry, type GlowKind,
 } from '../config.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
-import { sceneKeyFor } from '../venueRegistry.js';
+import {
+  DISTRICT_SCENE_KEY, sceneTargetFor, startingDistrict, venueRegistry,
+} from '../venueRegistry.js';
 import { planSync } from '../districtPresence.js';
 import { GameTime } from '../time.js';
 import { isSleepTime, nightIntensity, tintAt } from '../dayNight.js';
@@ -57,7 +60,12 @@ export class DistrictScene extends Phaser.Scene {
   private buildingImages: Map<string, Phaser.GameObjects.Image> = new Map();
   private tintOverlay!: Phaser.GameObjects.Rectangle;
   private glowSprites: Phaser.GameObjects.Image[] = [];
-  /** Points by building doors (waiting spot in front of the entrance), keyed by targetScene. */
+  /**
+   * Points by building doors (waiting spot in front of the entrance), keyed by
+   * TARGET VENUE ID. Not by scene key: every district shares one scene key, so
+   * keying by it would make two districts' doors collide the moment a door led
+   * from one district to another.
+   */
   private doorPoints: Map<string, { x: number; y: number }> = new Map();
   private penSpots: { x: number; y: number; occupiedBy: string | null }[] = [];
   private nightStates: Map<string, NightState> = new Map();
@@ -71,18 +79,38 @@ export class DistrictScene extends Phaser.Scene {
   private cars: { obj: Phaser.GameObjects.Container; vx: number; vy: number; glows: Phaser.GameObjects.Image[]; h: number }[] = [];
   private carTimer = 0;
 
-  constructor() { super({ key: 'DistrictScene' }); }
+  /** Which district this scene is drawing — from scene data, never a literal. */
+  private districtId!: string;
+  private geo!: DistrictGeometry;
+
+  constructor() { super({ key: DISTRICT_SCENE_KEY }); }
+
+  /**
+   * ONE scene, N districts (D-62). `scene.start(DISTRICT_SCENE_KEY, data)`
+   * says which one; no data means the district the game boots into. An id
+   * that is not an outdoor venue throws rather than quietly drawing the wrong
+   * town — I-2: an unresolved name fails loudly, it never renders as nothing.
+   */
+  init(data?: { districtId?: string }) {
+    const requested = data?.districtId;
+    const venue = requested === undefined ? startingDistrict() : venueRegistry.get(requested);
+    if (!venue || venue.indoor) {
+      throw new Error(`DistrictScene: '${requested}' is not an outdoor venue`);
+    }
+    this.districtId = venue.id;
+    this.geo = districtGeometry(venue);
+  }
 
   create() {
-    sceneRegistry.register('DistrictScene', this);
+    sceneRegistry.register(DISTRICT_SCENE_KEY, this);
     this.transitioning = false;
     this.carTimer = AMBIENT_CAR.firstDelaySec + Math.random() * AMBIENT_CAR.firstDelaySec;
     this.cameras.main.fadeIn(SCENE_FADE_MS, 0, 0, 0);
 
-    const map = this.make.tilemap({ key: DISTRICT.mapKey });
+    const map = this.make.tilemap({ key: this.geo.mapKey });
     // I-12: an art-free clone has no tileset texture (the pack dirs are gitignored) —
     // render the layout without ground art rather than crash on createLayer(null).
-    const tileset = map.addTilesetImage(DISTRICT.tilesetName, DISTRICT.tilesetName);
+    const tileset = map.addTilesetImage(this.geo.tilesetName, this.geo.tilesetName);
     if (hasGroundArt(tileset)) {
       map.createLayer('ground', tileset, 0, 0)?.setDepth(0);
       map.createLayer('roads', tileset, 0, 0)?.setDepth(1);
@@ -100,12 +128,12 @@ export class DistrictScene extends Phaser.Scene {
       img.setDepth(o.y! + (o.height ?? img.height));
       this.buildingImages.set(o.name, img);
       if (typeof p.targetVenue === 'string') {
-        const target = sceneKeyFor(p.targetVenue);
-        img.setData('targetScene', target);
+        const target = p.targetVenue;
+        img.setData('targetVenue', target);
         img.setInteractive({ useHandCursor: true });
         img.on('pointerover', () => img.setTint(0xbbccff));
         img.on('pointerout', () => img.clearTint());
-        onTap(img, () => this.transitionTo(target));
+        onTap(img, () => this.transitionToVenue(target));
       }
     }
 
@@ -119,14 +147,14 @@ export class DistrictScene extends Phaser.Scene {
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
       if (typeof p.targetVenue !== 'string') continue;
-      const target = sceneKeyFor(p.targetVenue);
+      const target = p.targetVenue;
       const zone = this.add.zone(o.x! + o.width! / 2, o.y! + o.height! / 2, o.width!, o.height!)
         .setInteractive({ useHandCursor: true });
       const building = [...this.buildingImages.values()].find(b =>
-        b.getData('targetScene') === target) ?? null;
+        b.getData('targetVenue') === target) ?? null;
       zone.on('pointerover', () => building?.setTint(0xbbccff));
       zone.on('pointerout', () => building?.clearTint());
-      onTap(zone, () => this.transitionTo(target));
+      onTap(zone, () => this.transitionToVenue(target));
       this.doorPoints.set(target, { x: o.x! + o.width! / 2, y: o.y! + o.height! + 6 });
     }
 
@@ -137,19 +165,19 @@ export class DistrictScene extends Phaser.Scene {
 
     // --- spawns
     this.spawnPoints = (map.getObjectLayer('spawns')?.objects ?? []).map(o => ({ x: o.x!, y: o.y! }));
-    if (!this.spawnPoints.length) this.spawnPoints = [{ x: DISTRICT.widthPx / 2, y: DISTRICT.heightPx / 2 }];
+    if (!this.spawnPoints.length) this.spawnPoints = [{ x: this.geo.widthPx / 2, y: this.geo.heightPx / 2 }];
 
     // --- collisions -> walkability grid
-    this.pathfinder = new Pathfinder(DISTRICT.widthTiles, DISTRICT.heightTiles);
+    this.pathfinder = new Pathfinder(this.geo.widthTiles, this.geo.heightTiles);
     for (const o of map.getObjectLayer('collision')?.objects ?? []) {
       this.pathfinder.blockRect(o.x!, o.y!, o.width!, o.height!);
     }
 
     // --- camera
     const cam = this.cameras.main;
-    cam.setBounds(0, 0, DISTRICT.widthPx, DISTRICT.heightPx);
+    cam.setBounds(0, 0, this.geo.widthPx, this.geo.heightPx);
     cam.setZoom(CAMERA.initialZoom);
-    cam.centerOn(DISTRICT.widthPx / 2 - 24, DISTRICT.heightPx / 2 - 8);
+    cam.centerOn(this.geo.widthPx / 2 - 24, this.geo.heightPx / 2 - 8);
     cam.setBackgroundColor('#2e4a35');
 
     attachCameraControls(this); // drag/finger pan, pinch, wheel, +/- (TZ-09)
@@ -157,8 +185,8 @@ export class DistrictScene extends Phaser.Scene {
     // --- day/night tinting: an overlay covering the whole world with margin at the edges
     // (world coordinates, not scrollFactor 0 — correct at any zoom level)
     this.tintOverlay = this.add.rectangle(
-      -DISTRICT.widthPx, -DISTRICT.heightPx,
-      DISTRICT.widthPx * 3, DISTRICT.heightPx * 3,
+      -this.geo.widthPx, -this.geo.heightPx,
+      this.geo.widthPx * 3, this.geo.heightPx * 3,
       0x000000, 0,
     ).setOrigin(0, 0).setDepth(TINT_OVERLAY_DEPTH);
 
@@ -189,7 +217,7 @@ export class DistrictScene extends Phaser.Scene {
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       GameBridge.off('agent:focus', onFocusAgent);
-      sceneRegistry.unregister('DistrictScene');
+      sceneRegistry.unregister(DISTRICT_SCENE_KEY);
       this.agentSprites.clear();
       this.buildingImages.clear();
       this.glowSprites = [];
@@ -201,18 +229,29 @@ export class DistrictScene extends Phaser.Scene {
       this.cars = [];
     });
 
-    GameBridge.emit('scene:changed', { scene: 'DistrictScene' });
+    GameBridge.emit('scene:changed', { scene: DISTRICT_SCENE_KEY, districtId: this.districtId });
   }
 
-  /** Transition into an interior with fade (building/door click and agent:goto from the HUD). */
-  transitionTo(targetScene: string) {
+  /**
+   * Transition with fade (building/door click, agent:goto from the HUD).
+   * `data` carries the district id when the target is an outdoor scene —
+   * without it, "go to district B" would restart whichever district is
+   * already drawn.
+   */
+  transitionTo(targetScene: string, data?: { districtId: string }) {
     if (this.transitioning) return;
     this.transitioning = true;
     this.cameras.main.fadeOut(SCENE_FADE_MS, 0, 0, 0);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start(targetScene);
-      GameBridge.emit('scene:changed', { scene: targetScene });
+      this.scene.start(targetScene, data);
+      GameBridge.emit('scene:changed', { scene: targetScene, ...data });
     });
+  }
+
+  /** Where a click on a building or door goes — resolved from the registry. */
+  private transitionToVenue(venueId: string) {
+    const target = sceneTargetFor(venueId);
+    this.transitionTo(target.key, target.data);
   }
 
   // ------- interface for AgentSprite (walking around the map)
@@ -301,7 +340,7 @@ export class DistrictScene extends Phaser.Scene {
       c.obj.y += c.vy * dt;
       c.obj.setDepth(c.obj.y + c.h); // Y-sort: below agents further south, above the road
       for (const g of c.glows) g.setAlpha(night * GLOW_KINDS.headlight.alpha);
-      if (c.obj.x > DISTRICT.widthPx + 16 || c.obj.y > DISTRICT.heightPx + 16) {
+      if (c.obj.x > this.geo.widthPx + 16 || c.obj.y > this.geo.heightPx + 16) {
         c.obj.destroy();
         this.cars.splice(i, 1);
       }
@@ -420,10 +459,11 @@ export class DistrictScene extends Phaser.Scene {
     // testable without Phaser and pinned by test/golden/district-render.json.
     // This method is the EFFECTS half: it only carries the decision out.
     const plan = planSync({
+      districtId: this.districtId,
       fullList,
       drawnIds: [...this.agentSprites.keys()],
       lastLoc: this.lastLoc,
-      hasDoorForScene: (key) => this.doorPoints.has(key),
+      hasDoorFor: (venueId) => this.doorPoints.has(venueId),
       isAsleep: (id) => this.agentSprites.get(id)?.isAsleep ?? false,
       isLeaving: (id) => this.leaving.has(id),
     });
@@ -441,7 +481,7 @@ export class DistrictScene extends Phaser.Scene {
         case 'leaving':
           break; // already walking to the door
         case 'walk-to-door': {
-          const door = this.doorPoints.get(sceneKeyFor(decision.venueId))!;
+          const door = this.doorPoints.get(decision.venueId)!;
           const st = this.nightStates.get(id);
           if (st) this.releaseNightState(id, st);
           this.leaving.set(id, { x: door.x, y: door.y, deadline: this.time.now + LEAVE_WALK_TIMEOUT_MS });
@@ -458,7 +498,7 @@ export class DistrictScene extends Phaser.Scene {
       const spawn = plan.spawn.get(a.id);
       if (!spawn) return; // already drawn
       const door = spawn.atDoorOf !== undefined
-        ? this.doorPoints.get(sceneKeyFor(spawn.atDoorOf))
+        ? this.doorPoints.get(spawn.atDoorOf)
         : undefined;
       const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
       const x = base.x + (Math.random() - 0.5) * 16;
@@ -474,7 +514,7 @@ export class DistrictScene extends Phaser.Scene {
     fullList.forEach(a => this.lastLoc.set(a.id, a.location));
 
     // we came here for a specific agent from the HUD — aim the camera (TZ-16)
-    consumePendingFocus('DistrictScene', id => this.agentSprites.has(id));
+    consumePendingFocus(DISTRICT_SCENE_KEY, id => this.agentSprites.has(id));
     // ?follow= deep-link: the first sync containing the agent goes to them (Plan 03 Task 3)
     consumePendingFollow(fullList);
   }

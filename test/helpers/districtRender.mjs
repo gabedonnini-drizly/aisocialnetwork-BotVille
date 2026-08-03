@@ -28,7 +28,7 @@ import { readFileSync } from 'node:fs';
 import { Pathfinder } from '../../packages/client/src/game/Pathfinder.ts';
 import { planSync } from '../../packages/client/src/game/districtPresence.ts';
 import {
-  CLIENT_INTERNAL_LOCATIONS,
+  CLIENT_INTERNAL_LOCATION_IDS,
   sceneForLocation,
   sceneKeyFor,
   venueRegistry,
@@ -90,10 +90,10 @@ export function captureDistrictRender(districtId = 'district') {
   for (const o of layer(map, 'doors')) {
     const target = propsOf(o).targetVenue;
     if (typeof target !== 'string') continue;
-    const key = sceneKeyFor(target);
+    // Keyed by target venue id — exactly how DistrictScene keys doorPoints.
     const point = { x: o.x + o.width / 2, y: o.y + o.height + 6 };
-    doorPoints.set(key, point);
-    doors.push({ name: o.name, targetVenue: target, key, ...point });
+    doorPoints.set(target, point);
+    doors.push({ name: o.name, targetVenue: target, key: target, ...point });
   }
 
   // --- walkability: the real Pathfinder over the real collision layer
@@ -119,10 +119,11 @@ export function captureDistrictRender(districtId = 'district') {
 
   // --- the fixed tick
   const plan = planSync({
+    districtId,
     fullList: ROSTER,
     drawnIds: DRAWN,
     lastLoc: LAST_LOC,
-    hasDoorForScene: key => doorPoints.has(key),
+    hasDoorFor: venueId => doorPoints.has(venueId),
     isAsleep: id => ASLEEP.has(id),
     isLeaving: id => LEAVING.has(id),
   });
@@ -130,7 +131,7 @@ export function captureDistrictRender(districtId = 'district') {
   const locations = [...new Set([
     ...venueRegistry.all().map(v => v.id),
     ...AGENT_LOCATIONS,
-    ...CLIENT_INTERNAL_LOCATIONS,
+    ...CLIENT_INTERNAL_LOCATION_IDS,
     'no-such-place',
   ])].sort();
 

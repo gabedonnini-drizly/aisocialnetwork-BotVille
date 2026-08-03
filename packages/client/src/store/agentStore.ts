@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Agent, AgentStatus, CreateAgentDto } from '@botville/shared';
 import { apiFetch } from '../lib/api.js';
+import { DISTRICT_SCENE_KEY } from '../game/venueRegistry.js';
 
 // The session is anonymous: httpOnly av_session cookie plus a signed token in
 // localStorage for cross-site (TZ-12, see lib/api.ts). The client neither knows
@@ -158,7 +159,7 @@ export const useUIStore = create<UIStore>((set) => ({
   selectedAgentId: null,
   chatOpen: false,
   profileOpen: false,
-  currentScene: 'DistrictScene',
+  currentScene: DISTRICT_SCENE_KEY,
   meetingOpen: false,
   openProfile: (agentId) => set({ selectedAgentId: agentId, profileOpen: true, chatOpen: false }),
   closeProfile: () => set({ profileOpen: false, selectedAgentId: null }),

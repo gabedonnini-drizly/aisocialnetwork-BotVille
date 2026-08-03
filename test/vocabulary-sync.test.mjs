@@ -3,8 +3,11 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { venueRegistry, CLIENT_INTERNAL_LOCATIONS, sceneForLocation, sceneKeyFor } from '../packages/client/src/game/venueRegistry.ts';
-import { isDrawnHere } from '../packages/client/src/game/districtPresence.ts';
+import {
+  venueRegistry, CLIENT_INTERNAL_LOCATIONS, CLIENT_INTERNAL_LOCATION_IDS, DISTRICT_SCENE_KEY,
+  districtForLocation, sceneForLocation, sceneKeyFor,
+} from '../packages/client/src/game/venueRegistry.ts';
+import { drawnByDistrict } from '../packages/client/src/game/districtPresence.ts';
 import { AGENT_LOCATIONS } from '../packages/shared/src/types/Agent.ts';
 import { resolveSiblingRepo } from './helpers/siblingRepo.mjs';
 import { skipUnless } from './helpers/skip.mjs';
@@ -131,7 +134,7 @@ function clientLocationComparisons() {
  */
 const KNOWN_LOCATIONS = () => new Set([
   ...JSON.parse(readFileSync(OURS, 'utf8')).map(v => v.id),
-  ...CLIENT_INTERNAL_LOCATIONS,
+  ...CLIENT_INTERNAL_LOCATION_IDS,
 ]);
 
 test('every location string the client filters on is published or documented client-internal', () => {
@@ -199,11 +202,11 @@ test('every location label key is published or documented client-internal', () =
  */
 test('every client-internal location maps to a registered scene, not a venue key', () => {
   const sceneKeys = new Set([
-    'DistrictScene',
+    DISTRICT_SCENE_KEY,
     ...venueRegistry.all().map(v => sceneKeyFor(v.id)),
   ]);
-  for (const loc of CLIENT_INTERNAL_LOCATIONS) {
-    assert.equal(sceneForLocation(loc), 'DistrictScene',
+  for (const loc of CLIENT_INTERNAL_LOCATION_IDS) {
+    assert.equal(sceneForLocation(loc), DISTRICT_SCENE_KEY,
       `${loc} is client-internal, so it must be drawn by the scene that owns its geography`);
     assert.ok(sceneKeys.has(sceneForLocation(loc)));
     assert.equal(sceneKeys.has(sceneKeyFor(loc)), false,
@@ -229,13 +232,20 @@ test('every client-internal location maps to a registered scene, not a venue key
  * which does not — so this asks the real function instead of a regex.
  */
 test('the outdoor scene draws every client-internal location, not just the district', () => {
-  for (const loc of CLIENT_INTERNAL_LOCATIONS) {
-    assert.ok(isDrawnHere(loc),
-      `the outdoor scene's present filter drops '${loc}'. It is drawn by that scene and by no `
-      + 'other, so anyone the server puts there stops being rendered — nightly, for every animal.');
+  for (const [loc, districtId] of Object.entries(CLIENT_INTERNAL_LOCATIONS)) {
+    assert.ok(drawnByDistrict(loc, districtId),
+      `the outdoor scene's present filter drops '${loc}'. It is drawn by that district's scene `
+      + 'and by no other, so anyone the server puts there stops being rendered — nightly, for '
+      + 'every animal.');
   }
-  assert.ok(isDrawnHere('district'), 'the district itself must still be drawn');
-  assert.equal(isDrawnHere('cafe'), false, 'an interior is not drawn by the outdoor scene');
+  for (const district of venueRegistry.outdoor()) {
+    assert.ok(drawnByDistrict(district.id, district.id), 'a district must still draw itself');
+    assert.equal(drawnByDistrict('cafe', district.id), false,
+      'an interior is not drawn by the outdoor scene');
+  }
+  // ...and the filter is derived, not enumerated: it says yes to a location it
+  // was never told about, as long as the registry calls that location outdoors.
+  assert.equal(districtForLocation('cafe'), undefined);
 });
 
 // ── plot coverage ────────────────────────────────────────────────────────

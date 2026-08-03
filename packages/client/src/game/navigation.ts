@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GameBridge } from './GameBridge.js';
 import { sceneRegistry } from './SceneRegistry.js';
-import { sceneForLocation } from './venueRegistry.js';
+import { DISTRICT_SCENE_KEY, sceneTargetFor } from './venueRegistry.js';
 import { createPendingFollow, type FollowTarget } from './followParam.js';
 
 /**
@@ -14,27 +14,35 @@ import { createPendingFollow, type FollowTarget } from './followParam.js';
 
 /** A scene that can transition to another scene with a fade (the district and interiors). */
 interface TransitionCapable extends Phaser.Scene {
-  transitionTo(targetScene: string): void;
+  transitionTo(targetScene: string, data?: { districtId: string }): void;
 }
 
 function canTransition(scene: Phaser.Scene | undefined): scene is TransitionCapable {
   return !!scene && typeof (scene as Partial<TransitionCapable>).transitionTo === 'function';
 }
 
-let currentSceneKey = 'DistrictScene';
+let currentSceneKey = DISTRICT_SCENE_KEY;
+/** WHICH district the outdoor scene is currently drawing — its key alone no longer says. */
+let currentDistrictId: string | undefined;
 let pendingFocusId: string | null = null;
 
-GameBridge.on('scene:changed', ({ scene }) => { currentSceneKey = scene; });
+GameBridge.on('scene:changed', ({ scene, districtId }) => {
+  currentSceneKey = scene;
+  currentDistrictId = districtId;
+});
 
 GameBridge.on('agent:goto', ({ agentId, location }) => {
   // The farm is drawn on the district map; it has no venue of its own, so it
   // has no scene of its own either. That mapping used to be an inline special
-  // case here; it now lives in venueRegistry.sceneForLocation, beside the
+  // case here; it now lives in venueRegistry.sceneTargetFor, beside the
   // CLIENT_INTERNAL_LOCATIONS list it depends on, so it can be tested without
   // Phaser and cannot be deleted from one site while presence.ts still
-  // believes in it.
-  const targetScene = sceneForLocation(location);
-  if (targetScene === currentSceneKey) {
+  // believes in it. `data` is what makes the district scene a place rather
+  // than just a key: same key, different district, still a transition.
+  const target = sceneTargetFor(location);
+  const alreadyThere = target.key === currentSceneKey
+    && (target.data === undefined || target.data.districtId === currentDistrictId);
+  if (alreadyThere) {
     pendingFocusId = null;
     GameBridge.emit('agent:focus', { agentId });
     return;
@@ -42,7 +50,7 @@ GameBridge.on('agent:goto', ({ agentId, location }) => {
   const active = sceneRegistry.get(currentSceneKey);
   if (!canTransition(active)) return; // the world is still loading — nobody to transition
   pendingFocusId = agentId;
-  active.transitionTo(targetScene);
+  active.transitionTo(target.key, target.data);
 });
 
 /**
