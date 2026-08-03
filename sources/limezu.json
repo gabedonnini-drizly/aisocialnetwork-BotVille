@@ -186,7 +186,49 @@
     "worksite_ground_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_4.png",
     "worksite_ground_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_5.png",
     "worksite_ground_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_6.png",
-    "worksite_entrance_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Entrance_1.png"
+    "worksite_entrance_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Entrance_1.png",
+
+    "garden_fountain_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Fountain_1_1.png",
+    "garden_arch_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Grass_Arch_1.png",
+    "garden_statue_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Angel_Statue_1.png",
+    "garden_bench_h_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Big_Bench_Horizontal.png",
+    "garden_bench_v_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Big_Bench_Vertical.png",
+    "garden_flower_red_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Big_Red_Flower.png",
+    "garden_flower_pink_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Big_Pink_Flower.png",
+    "garden_flower_blue_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Big_Light_Blue_Flower.png",
+    "garden_bush_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_1.png",
+    "garden_bush_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_2.png",
+    "garden_bush_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Bush_3.png",
+    "market_building_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_1.png",
+    "market_building_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_2.png",
+    "market_building_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Market_Big_3.png",
+    "market_signboard_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/9_Shopping_Center_and_Markets_Singles_16x16/ME_Singles_Shopping_Center_and_Markets_16x16_Mall_Signboard_1.png",
+    "post_office_building_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/22_Post_Office_Singles_16x16/22_Post_Office_16x16_Building_1.png",
+    "post_office_building_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/22_Post_Office_Singles_16x16/22_Post_Office_16x16_Building_2.png",
+    "post_office_building_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/22_Post_Office_Singles_16x16/22_Post_Office_16x16_Building_3.png",
+    "post_office_building_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/22_Post_Office_Singles_16x16/22_Post_Office_16x16_Building_4.png",
+    "mailbox_blue_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/22_Post_Office_Singles_16x16/22_Post_Office_16x16_Blue_Mailbox_1_Front.png",
+    "mailbox_red_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/22_Post_Office_Singles_16x16/22_Post_Office_16x16_Red_Mailbox_1_Front.png",
+    "post_truck_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/22_Post_Office_Singles_16x16/22_Post_Office_16x16_Truck_Front.png",
+    "noticeboard_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/3_City_Props_Singles_16x16/ME_Singles_City_Props_16x16_Billboard_1.png",
+    "school_building_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/13_School_Singles_16x16/ME_Singles_School_16x16_School_1.png",
+    "school_flag_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/13_School_Singles_16x16/ME_Singles_School_16x16_Flag_1.png",
+    "school_clock_tower_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/13_School_Singles_16x16/ME_Singles_School_16x16_Clock_Tower_1.png",
+    "school_basketball_net_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/13_School_Singles_16x16/ME_Singles_School_16x16_Basketball_Net_1.png",
+    "swimming_pool_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/14_Swimming_Pool_Singles_16x16/ME_Singles_Swimming_Pool_16x16_Pool_1.png",
+    "swimming_pool_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/14_Swimming_Pool_Singles_16x16/ME_Singles_Swimming_Pool_16x16_Pool_2.png",
+    "swimming_pool_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/14_Swimming_Pool_Singles_16x16/ME_Singles_Swimming_Pool_16x16_Pool_3.png",
+    "pool_lifeguard_chair_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/14_Swimming_Pool_Singles_16x16/ME_Singles_Swimming_Pool_16x16_Lifeguard_Chair_1.png",
+    "pool_palm_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/14_Swimming_Pool_Singles_16x16/ME_Singles_Swimming_Pool_16x16_Palm_1.png",
+    "museum_ground_floor_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Ground_Floor_Shop_1.png",
+    "museum_ground_floor_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Ground_Floor_Shop_2.png",
+    "museum_ground_floor_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Ground_Floor_Shop_3.png",
+    "museum_middle_floor_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Middle_Floor_1.png",
+    "museum_middle_floor_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Middle_Floor_2.png",
+    "museum_middle_floor_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Middle_Floor_3.png",
+    "museum_roof_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Roof_1.png",
+    "museum_roof_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Roof_2.png",
+    "museum_roof_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/5_Floor_Modular_Building_Singles_16x16/ME_Singles_Floor_Modular_Building_16x16_Roof_3.png"
   },
   "rects": {
     "grass": {
@@ -1470,6 +1512,171 @@
     },
     "worksite_entrance": {
       "file": "worksite_entrance_s",
+      "trim": true
+    },
+
+    "garden_fountain": {
+      "file": "garden_fountain_s",
+      "trim": true
+    },
+    "garden_arch": {
+      "file": "garden_arch_s",
+      "trim": true
+    },
+    "garden_statue": {
+      "file": "garden_statue_s",
+      "trim": true
+    },
+    "garden_bench_h": {
+      "file": "garden_bench_h_s",
+      "trim": true
+    },
+    "garden_bench_v": {
+      "file": "garden_bench_v_s",
+      "trim": true
+    },
+    "garden_flower_red": {
+      "file": "garden_flower_red_s",
+      "trim": true
+    },
+    "garden_flower_pink": {
+      "file": "garden_flower_pink_s",
+      "trim": true
+    },
+    "garden_flower_blue": {
+      "file": "garden_flower_blue_s",
+      "trim": true
+    },
+    "garden_bush_1": {
+      "file": "garden_bush_1_s",
+      "trim": true
+    },
+    "garden_bush_2": {
+      "file": "garden_bush_2_s",
+      "trim": true
+    },
+    "garden_bush_3": {
+      "file": "garden_bush_3_s",
+      "trim": true
+    },
+    "market_building_1": {
+      "file": "market_building_1_s",
+      "trim": true
+    },
+    "market_building_2": {
+      "file": "market_building_2_s",
+      "trim": true
+    },
+    "market_building_3": {
+      "file": "market_building_3_s",
+      "trim": true
+    },
+    "market_signboard": {
+      "file": "market_signboard_s",
+      "trim": true
+    },
+    "post_office_building_1": {
+      "file": "post_office_building_1_s",
+      "trim": true
+    },
+    "post_office_building_2": {
+      "file": "post_office_building_2_s",
+      "trim": true
+    },
+    "post_office_building_3": {
+      "file": "post_office_building_3_s",
+      "trim": true
+    },
+    "post_office_building_4": {
+      "file": "post_office_building_4_s",
+      "trim": true
+    },
+    "mailbox_blue": {
+      "file": "mailbox_blue_s",
+      "trim": true
+    },
+    "mailbox_red": {
+      "file": "mailbox_red_s",
+      "trim": true
+    },
+    "post_truck": {
+      "file": "post_truck_s",
+      "trim": true
+    },
+    "noticeboard": {
+      "file": "noticeboard_s",
+      "trim": true
+    },
+    "school_building": {
+      "file": "school_building_s",
+      "trim": true
+    },
+    "school_flag": {
+      "file": "school_flag_s",
+      "trim": true
+    },
+    "school_clock_tower": {
+      "file": "school_clock_tower_s",
+      "trim": true
+    },
+    "school_basketball_net": {
+      "file": "school_basketball_net_s",
+      "trim": true
+    },
+    "swimming_pool_1": {
+      "file": "swimming_pool_1_s",
+      "trim": true
+    },
+    "swimming_pool_2": {
+      "file": "swimming_pool_2_s",
+      "trim": true
+    },
+    "swimming_pool_3": {
+      "file": "swimming_pool_3_s",
+      "trim": true
+    },
+    "pool_lifeguard_chair": {
+      "file": "pool_lifeguard_chair_s",
+      "trim": true
+    },
+    "pool_palm": {
+      "file": "pool_palm_s",
+      "trim": true
+    },
+    "museum_ground_floor_1": {
+      "file": "museum_ground_floor_1_s",
+      "trim": true
+    },
+    "museum_ground_floor_2": {
+      "file": "museum_ground_floor_2_s",
+      "trim": true
+    },
+    "museum_ground_floor_3": {
+      "file": "museum_ground_floor_3_s",
+      "trim": true
+    },
+    "museum_middle_floor_1": {
+      "file": "museum_middle_floor_1_s",
+      "trim": true
+    },
+    "museum_middle_floor_2": {
+      "file": "museum_middle_floor_2_s",
+      "trim": true
+    },
+    "museum_middle_floor_3": {
+      "file": "museum_middle_floor_3_s",
+      "trim": true
+    },
+    "museum_roof_1": {
+      "file": "museum_roof_1_s",
+      "trim": true
+    },
+    "museum_roof_2": {
+      "file": "museum_roof_2_s",
+      "trim": true
+    },
+    "museum_roof_3": {
+      "file": "museum_roof_3_s",
       "trim": true
     }
   },

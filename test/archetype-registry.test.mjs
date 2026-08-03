@@ -68,9 +68,43 @@ test('no archetype but `house` claims the home role — the role lands after the
       assert.deepEqual(a.roles, ['home'], 'the shipped residence keeps its role');
       continue;
     }
-    assert.deepEqual(a.roles ?? [], [],
-      `${a.file} declares roles ${JSON.stringify(a.roles)} — adding a home-role venue is a `
-      + 'home-reassignment event, not a declaration (kickoff correction 3)');
+    assert.equal((a.roles ?? []).includes('home'), false,
+      `${a.file} claims the home role — adding a home-role venue is a home-reassignment `
+      + 'event, not a declaration (kickoff correction 3)');
+  }
+});
+
+/**
+ * Sharper than the rule above, for the tiers it actually bites on: a ladder
+ * tier is a residence with its role withheld, so it declares NO roles at all
+ * rather than a stand-in. A `hangout` here would quietly make a house a
+ * public candidate the day someone registered its generator.
+ */
+test('the ladder tiers declare no role at all until the backfill lands', () => {
+  for (const a of archetypes) {
+    if (!['mobile_home', 'villa', 'condo'].includes(a.archetype)) continue;
+    assert.deepEqual(a.roles, [],
+      `${a.file} declares roles ${JSON.stringify(a.roles)} — a residence tier's only role is `
+      + '`home`, and `home` is withheld until plan 01- backfills stored assignments');
+  }
+});
+
+/**
+ * The bake's only ground generator is `cityGrid`, and it hard-requires a farm
+ * pen and a gate — so an outdoor venue cannot bake without one it knows. The
+ * garden is declared outdoor (D-75: outdoor only, no interior) and is
+ * therefore not instantiable until an open-ground generator exists. That is a
+ * real gap, and this is where it fails loudly: the day someone registers a
+ * generator for an outdoor archetype without giving it ground, rather than
+ * three tasks later in a bake.
+ */
+test('an outdoor archetype is not instantiable until it names a ground generator', () => {
+  for (const a of archetypes) {
+    if (a.indoor !== false) continue;
+    if (!Object.hasOwn(GENERATORS, a.archetype)) continue;   // declared, dormant: fine
+    assert.ok(a.generator?.name,
+      `${a.file} has a generator registered but names no ground generator — bakeDistrict `
+      + 'would throw. Outdoor venues need one before they can be instantiated.');
   }
 });
 
@@ -101,6 +135,29 @@ test('every archetype references only names the contract declares (I-2, before i
     for (const d of a.doors ?? []) {
       assert.ok(d.targetVenue, `${a.file}: door "${d.name}" leads nowhere`);
     }
+  }
+});
+
+/**
+ * D-75's first-pass building set. Declared here, dormant by absence from the
+ * registry — I-8 holds either way: the art exists and the vocabulary of
+ * NAMES exists, and the unlock state (plan `01-`) decides whether any of them
+ * ever appears.
+ */
+test('the D-75 civic set is declared in full, and every one of them is dormant', () => {
+  const civic = ['garden', 'market', 'post_office', 'school', 'swimming_pool', 'museum'];
+  const declared = archetypes.map(a => a.archetype);
+  for (const name of civic) assert.ok(declared.includes(name), `${name} is not declared`);
+  for (const name of civic) {
+    assert.equal(countFor(name, town), 0, `${name} is instantiated — plan 01- owns that decision`);
+  }
+});
+
+test('no civic archetype affords sleep — only a residence can be slept in (F-12)', () => {
+  for (const a of archetypes) {
+    if (['house', 'mobile_home', 'villa', 'condo'].includes(a.archetype)) continue;
+    assert.equal(a.affords.includes('sleep'), false,
+      `${a.file} affords sleep, which would make it a bed the schedule writer could reach`);
   }
 });
 

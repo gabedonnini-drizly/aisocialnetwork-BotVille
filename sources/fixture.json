@@ -198,6 +198,47 @@
     "p_worksite_ground_5": "props/worksite_ground_5.png",
     "p_worksite_ground_6": "props/worksite_ground_6.png",
     "p_worksite_entrance": "props/worksite_entrance.png",
+    "p_garden_fountain": "props/garden_fountain.png",
+    "p_garden_arch": "props/garden_arch.png",
+    "p_garden_statue": "props/garden_statue.png",
+    "p_garden_bench_h": "props/garden_bench_h.png",
+    "p_garden_bench_v": "props/garden_bench_v.png",
+    "p_garden_flower_red": "props/garden_flower_red.png",
+    "p_garden_flower_pink": "props/garden_flower_pink.png",
+    "p_garden_flower_blue": "props/garden_flower_blue.png",
+    "p_garden_bush_1": "props/garden_bush_1.png",
+    "p_garden_bush_2": "props/garden_bush_2.png",
+    "p_garden_bush_3": "props/garden_bush_3.png",
+    "p_market_building_1": "props/market_building_1.png",
+    "p_market_building_2": "props/market_building_2.png",
+    "p_market_building_3": "props/market_building_3.png",
+    "p_market_signboard": "props/market_signboard.png",
+    "p_post_office_building_1": "props/post_office_building_1.png",
+    "p_post_office_building_2": "props/post_office_building_2.png",
+    "p_post_office_building_3": "props/post_office_building_3.png",
+    "p_post_office_building_4": "props/post_office_building_4.png",
+    "p_mailbox_blue": "props/mailbox_blue.png",
+    "p_mailbox_red": "props/mailbox_red.png",
+    "p_post_truck": "props/post_truck.png",
+    "p_noticeboard": "props/noticeboard.png",
+    "p_school_building": "props/school_building.png",
+    "p_school_flag": "props/school_flag.png",
+    "p_school_clock_tower": "props/school_clock_tower.png",
+    "p_school_basketball_net": "props/school_basketball_net.png",
+    "p_swimming_pool_1": "props/swimming_pool_1.png",
+    "p_swimming_pool_2": "props/swimming_pool_2.png",
+    "p_swimming_pool_3": "props/swimming_pool_3.png",
+    "p_pool_lifeguard_chair": "props/pool_lifeguard_chair.png",
+    "p_pool_palm": "props/pool_palm.png",
+    "p_museum_ground_floor_1": "props/museum_ground_floor_1.png",
+    "p_museum_ground_floor_2": "props/museum_ground_floor_2.png",
+    "p_museum_ground_floor_3": "props/museum_ground_floor_3.png",
+    "p_museum_middle_floor_1": "props/museum_middle_floor_1.png",
+    "p_museum_middle_floor_2": "props/museum_middle_floor_2.png",
+    "p_museum_middle_floor_3": "props/museum_middle_floor_3.png",
+    "p_museum_roof_1": "props/museum_roof_1.png",
+    "p_museum_roof_2": "props/museum_roof_2.png",
+    "p_museum_roof_3": "props/museum_roof_3.png",
     "p_bed_green": "props/bed_green.png",
     "p_bed_blue": "props/bed_blue.png",
     "p_bed_teal": "props/bed_teal.png",
@@ -1683,6 +1724,252 @@
       "trim": true,
       "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
       "pin": "cc4b7b1899ac851cf1fa270e21b5438f455f7cc5daba87d6cea103dad06d68f0"
+    },
+    "garden_fountain": {
+      "file": "p_garden_fountain",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "efdf06fe1aac8c116e6cfdf9ac97cdd521a33d7bf5fd395570c42712c005d7d0"
+    },
+    "garden_arch": {
+      "file": "p_garden_arch",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "33cf30402f060689633e0257b162bcd3d45ac759f4a8bedfae9314f6359da59c"
+    },
+    "garden_statue": {
+      "file": "p_garden_statue",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "13ccc2a52f0be7163ad8abacf97ab480f0f591f8a07d78f7faef151388df45ac"
+    },
+    "garden_bench_h": {
+      "file": "p_garden_bench_h",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ac826f8d6dbb47bc49dea774693a18d97bb4c0a2a50b26d430fae79a03cc0776"
+    },
+    "garden_bench_v": {
+      "file": "p_garden_bench_v",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "1eb38117e96e7e4e30cbcfa0b104e9aabab6fc75fb395349b0371db94eda7aab"
+    },
+    "garden_flower_red": {
+      "file": "p_garden_flower_red",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "d87132658f9403f14611598fbd2c79e298feee9eadee68e456a8e307b425c10c"
+    },
+    "garden_flower_pink": {
+      "file": "p_garden_flower_pink",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "45597cf0be728b389b79af75820096ee9b3fe086016c2661697d78b6634cc324"
+    },
+    "garden_flower_blue": {
+      "file": "p_garden_flower_blue",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c77e1d4c6e8d79c1acc36f014f9ef6adc038a94c3389b841a4231a04c6a56b09"
+    },
+    "garden_bush_1": {
+      "file": "p_garden_bush_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a895b5c1584e7963e8542eae2974568ba74aa47922e8c9a5897f61ae8f077923"
+    },
+    "garden_bush_2": {
+      "file": "p_garden_bush_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b36b151e6dd94a0e62af0348e209d43516deb7bf98d4fa0153f6011be62482aa"
+    },
+    "garden_bush_3": {
+      "file": "p_garden_bush_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6900cd7f247530f0db4e050fb6aa406b055867ec466bfb217b2963ef773bd564"
+    },
+    "market_building_1": {
+      "file": "p_market_building_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "15e774ba9ae99d40c2647d4944bd7e0ed044ca98879a37a9e562db101b7eeb52"
+    },
+    "market_building_2": {
+      "file": "p_market_building_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0b5ee7e82d5c2618a440b35099707110b8949e833e03fe387621d2ed41d27416"
+    },
+    "market_building_3": {
+      "file": "p_market_building_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "706fbe837de24cadfc880653ffd49e1d3e8e29fa4474ba8996f0f5f69586135c"
+    },
+    "market_signboard": {
+      "file": "p_market_signboard",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a8b9c7d6666c921fc3374cf30650f86daae385a08fcd5a24b1a6cfcde171de9b"
+    },
+    "post_office_building_1": {
+      "file": "p_post_office_building_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f7408ad66ba0090af9abb96e3fa246464e7b374e89683905ff19ecbf2ec9f64d"
+    },
+    "post_office_building_2": {
+      "file": "p_post_office_building_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "fec4357cd040da558970e970fafa3ab1fd1f11e3523c1c76e228b718497d1363"
+    },
+    "post_office_building_3": {
+      "file": "p_post_office_building_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0a94a9b5b65074d1aa717deaa07208938db2fc9d44783612345d919a2834c3c9"
+    },
+    "post_office_building_4": {
+      "file": "p_post_office_building_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "4014841f9555d6d4f41a729595eeccf3522f3af758c3af28485fe933a0094183"
+    },
+    "mailbox_blue": {
+      "file": "p_mailbox_blue",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c184c42e3f19399fccf5acb94ddaec22a36d020642d05a65903b477cb39237aa"
+    },
+    "mailbox_red": {
+      "file": "p_mailbox_red",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a10afb84f2e69fb8ac596b241c307e5352d97136a33fd02c972fd8534da92f3a"
+    },
+    "post_truck": {
+      "file": "p_post_truck",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3871f1d087fe9aaf63a870176ff32849fea65f433601924e97b549c80e2d6a91"
+    },
+    "noticeboard": {
+      "file": "p_noticeboard",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "9a1d4ff21c17c29fabd845d22419041e0fc07fbbeff0fc772b55d96480a1b325"
+    },
+    "school_building": {
+      "file": "p_school_building",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "fabd825cd88ada985a6548045294276d3eac09493dc9216bd496f9aeca1065c8"
+    },
+    "school_flag": {
+      "file": "p_school_flag",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0c31f1ebe95ff7f5fe5d5519e71ee504d65ad2469f32676ffec2229780b1b373"
+    },
+    "school_clock_tower": {
+      "file": "p_school_clock_tower",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "cc53668cf5f38f434467383e5a0a9eede64a278be03936a74876cd5cb89b178f"
+    },
+    "school_basketball_net": {
+      "file": "p_school_basketball_net",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "1e54e72ded12e3dd11b447113f58f675c6a46939104a6f8464b93256b2912aed"
+    },
+    "swimming_pool_1": {
+      "file": "p_swimming_pool_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e7b74144c150c9bd9e517657e9a5a6465873761f48f13a518d85c228552224eb"
+    },
+    "swimming_pool_2": {
+      "file": "p_swimming_pool_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "40229b073b5bae9fedb34ce69b7cec171da0efd43ebf78727c66f4a48ccbbea5"
+    },
+    "swimming_pool_3": {
+      "file": "p_swimming_pool_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "7cdb95e8a74509eac5eb2e0169e480842c308aaf7ea3214a1410f9b2da9d67b1"
+    },
+    "pool_lifeguard_chair": {
+      "file": "p_pool_lifeguard_chair",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "03408ef633a7b703247a297ba9b17549daaa347950996dec8e61fdead862e594"
+    },
+    "pool_palm": {
+      "file": "p_pool_palm",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "de06b2855f8d3b21cf02824c481644db2f3fc4f0ee8fbec7b6b9e03e282bd772"
+    },
+    "museum_ground_floor_1": {
+      "file": "p_museum_ground_floor_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6394601d0edd4a4d42b5c19b78aa1d5e513586c03d5e003aed9abd545b5b436e"
+    },
+    "museum_ground_floor_2": {
+      "file": "p_museum_ground_floor_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "62625abdc096949331c2631171459a82c49570831e55ff08cc9e03e059cfc0dd"
+    },
+    "museum_ground_floor_3": {
+      "file": "p_museum_ground_floor_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6db6dd169516f656adf6de7df2504305f66561dd3798b9b693cbc4dd3781f472"
+    },
+    "museum_middle_floor_1": {
+      "file": "p_museum_middle_floor_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "52105ac88a0b84bc0e042dda78f496bb5f46db6722a8b9987ddca392ec82ee99"
+    },
+    "museum_middle_floor_2": {
+      "file": "p_museum_middle_floor_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "314ec52c21e383f76133c9222974157fe90b6c3902db130bb49a63e87de60f0e"
+    },
+    "museum_middle_floor_3": {
+      "file": "p_museum_middle_floor_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "64cc9b99a8df910b94f5d9fc7d14c51631d06c9629649547a43aeb9789137861"
+    },
+    "museum_roof_1": {
+      "file": "p_museum_roof_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "bb4257f029f031435644a6bd54f9181ac23238f5f9b4ca78ece194194da31874"
+    },
+    "museum_roof_2": {
+      "file": "p_museum_roof_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "2984c31edad5be36b07491af3838f1e4b100e952ec9b83961a0b60a08e165f41"
+    },
+    "museum_roof_3": {
+      "file": "p_museum_roof_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e95c0697d2687e26858572856cd257b7d94cd5a455e4f8f35fe7b4514bc78903"
     },
     "bed_green": {
       "file": "p_bed_green",

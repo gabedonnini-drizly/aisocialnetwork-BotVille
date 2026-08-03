@@ -1,0 +1,199 @@
+{
+  "archetype": "museum",
+  "labelPrefix": "Museum",
+  "indoor": true,
+  "sizeTiles": [
+    20,
+    15
+  ],
+  "groundAtlas": "interiors_ground",
+  "capacity": 12,
+  "roles": [
+    "hangout"
+  ],
+  "affords": [
+    "read",
+    "socialize",
+    "idle"
+  ],
+  "hours": [
+    {
+      "open": 9,
+      "close": 18
+    }
+  ],
+  "ground": {
+    "wallA": "wallLibA",
+    "wallB": "wallLibB",
+    "floor": "floorLib"
+  },
+  "furniture": [
+    {
+      "name": "bookshelf_narrow",
+      "at": [
+        2,
+        1.6
+      ]
+    },
+    {
+      "name": "bookshelf_narrow",
+      "at": [
+        5,
+        1.6
+      ]
+    },
+    {
+      "name": "bookshelf_narrow",
+      "at": [
+        14,
+        1.6
+      ]
+    },
+    {
+      "name": "bookshelf_narrow",
+      "at": [
+        17,
+        1.6
+      ]
+    },
+    {
+      "name": "lectern",
+      "at": [
+        9.5,
+        2
+      ]
+    },
+    {
+      "name": "globe",
+      "at": [
+        7.5,
+        2
+      ]
+    },
+    {
+      "name": "whiteboard",
+      "at": [
+        11.5,
+        0.4
+      ]
+    },
+    {
+      "name": "plant_palm",
+      "at": [
+        1,
+        10
+      ]
+    },
+    {
+      "name": "plant_palm",
+      "at": [
+        18,
+        10
+      ]
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        8.5,
+        7.5
+      ]
+    },
+    {
+      "name": "chair_red_r",
+      "at": [
+        6.9,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "chair_red_l",
+      "at": [
+        11.7,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "armchair_grey_r",
+      "at": [
+        3,
+        10.6
+      ]
+    },
+    {
+      "name": "armchair_grey_l",
+      "at": [
+        16,
+        10.6
+      ]
+    },
+    {
+      "name": "rug_pink",
+      "at": [
+        9,
+        10.4
+      ],
+      "collide": false
+    },
+    {
+      "name": "doormat",
+      "at": [
+        9.5,
+        13
+      ]
+    }
+  ],
+  "seats": [
+    {
+      "at": [
+        7.7,
+        9.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        12.5,
+        9.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        3.9,
+        12.2
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        16.9,
+        12.2
+      ],
+      "side": "left",
+      "kind": "chair"
+    }
+  ],
+  "animated": [],
+  "spawns": [
+    [
+      9.8,
+      12.8
+    ]
+  ],
+  "doors": [
+    {
+      "name": "exit",
+      "at": [
+        9.5,
+        14
+      ],
+      "targetVenue": "district"
+    }
+  ],
+  "glows": []
+}

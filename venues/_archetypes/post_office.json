@@ -1,0 +1,147 @@
+{
+  "archetype": "post_office",
+  "labelPrefix": "Post Office",
+  "indoor": true,
+  "sizeTiles": [
+    20,
+    15
+  ],
+  "groundAtlas": "interiors_ground",
+  "capacity": 8,
+  "roles": [
+    "work"
+  ],
+  "affords": [
+    "work",
+    "idle"
+  ],
+  "hours": [
+    {
+      "open": 8,
+      "close": 18
+    }
+  ],
+  "ground": {
+    "wallA": "wallOfficeA",
+    "wallB": "wallOfficeB",
+    "floor": "floorOffice"
+  },
+  "furniture": [
+    {
+      "name": "counter_wide",
+      "at": [
+        8,
+        1.6
+      ]
+    },
+    {
+      "name": "whiteboard",
+      "at": [
+        3,
+        0.4
+      ]
+    },
+    {
+      "name": "workstation_single",
+      "at": [
+        14,
+        2
+      ]
+    },
+    {
+      "name": "office_chair_right",
+      "at": [
+        13.2,
+        3.4
+      ]
+    },
+    {
+      "name": "printer",
+      "at": [
+        17,
+        2
+      ]
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        8.5,
+        8
+      ]
+    },
+    {
+      "name": "chair_red_r",
+      "at": [
+        6.9,
+        8.3
+      ],
+      "collide": false
+    },
+    {
+      "name": "chair_red_l",
+      "at": [
+        11.7,
+        8.3
+      ],
+      "collide": false
+    },
+    {
+      "name": "plant_pot",
+      "at": [
+        1.2,
+        12
+      ]
+    },
+    {
+      "name": "doormat",
+      "at": [
+        9.5,
+        13
+      ]
+    }
+  ],
+  "seats": [
+    {
+      "at": [
+        13.6,
+        4.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        7.7,
+        10.1
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        12.5,
+        10.1
+      ],
+      "side": "left",
+      "kind": "chair"
+    }
+  ],
+  "animated": [],
+  "spawns": [
+    [
+      9.8,
+      12.8
+    ]
+  ],
+  "doors": [
+    {
+      "name": "exit",
+      "at": [
+        9.5,
+        14
+      ],
+      "targetVenue": "district"
+    }
+  ],
+  "glows": []
+}

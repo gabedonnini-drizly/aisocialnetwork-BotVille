@@ -1,0 +1,171 @@
+{
+  "archetype": "swimming_pool",
+  "labelPrefix": "Swimming Pool",
+  "indoor": true,
+  "sizeTiles": [
+    20,
+    15
+  ],
+  "groundAtlas": "interiors_ground",
+  "capacity": 12,
+  "roles": [
+    "hangout"
+  ],
+  "affords": [
+    "socialize",
+    "idle"
+  ],
+  "hours": [
+    {
+      "open": 7,
+      "close": 20
+    }
+  ],
+  "ground": {
+    "wallA": "wallCafeA",
+    "wallB": "wallCafeB",
+    "floor": "floorCafe"
+  },
+  "furniture": [
+    {
+      "name": "counter_wide",
+      "at": [
+        8,
+        1.6
+      ]
+    },
+    {
+      "name": "stool",
+      "at": [
+        7.5,
+        3.4
+      ],
+      "collide": false
+    },
+    {
+      "name": "stool",
+      "at": [
+        10.5,
+        3.4
+      ],
+      "collide": false
+    },
+    {
+      "name": "armchair_blue_r",
+      "at": [
+        2,
+        6.5
+      ]
+    },
+    {
+      "name": "armchair_blue_l",
+      "at": [
+        17,
+        6.5
+      ]
+    },
+    {
+      "name": "armchair_blue_r",
+      "at": [
+        2,
+        10
+      ]
+    },
+    {
+      "name": "armchair_blue_l",
+      "at": [
+        17,
+        10
+      ]
+    },
+    {
+      "name": "plant_palm",
+      "at": [
+        1,
+        1.6
+      ]
+    },
+    {
+      "name": "plant_palm",
+      "at": [
+        18,
+        1.6
+      ]
+    },
+    {
+      "name": "doormat",
+      "at": [
+        9.5,
+        13
+      ]
+    }
+  ],
+  "seats": [
+    {
+      "at": [
+        7.5,
+        4.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        10.5,
+        4.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        2.9,
+        8.1
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        17.9,
+        8.1
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        2.9,
+        11.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        17.9,
+        11.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    }
+  ],
+  "animated": [],
+  "spawns": [
+    [
+      9.8,
+      12.8
+    ]
+  ],
+  "doors": [
+    {
+      "name": "exit",
+      "at": [
+        9.5,
+        14
+      ],
+      "targetVenue": "district"
+    }
+  ],
+  "glows": []
+}

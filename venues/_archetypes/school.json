@@ -1,0 +1,219 @@
+{
+  "archetype": "school",
+  "labelPrefix": "School",
+  "indoor": true,
+  "sizeTiles": [
+    20,
+    15
+  ],
+  "groundAtlas": "interiors_ground",
+  "capacity": 16,
+  "roles": [
+    "work"
+  ],
+  "affords": [
+    "read",
+    "work",
+    "socialize",
+    "idle"
+  ],
+  "hours": [
+    {
+      "open": 8,
+      "close": 16
+    }
+  ],
+  "ground": {
+    "wallA": "wallLibA",
+    "wallB": "wallLibB",
+    "floor": "floorLib"
+  },
+  "furniture": [
+    {
+      "name": "chalkboard",
+      "at": [
+        9,
+        0.4
+      ]
+    },
+    {
+      "name": "lectern",
+      "at": [
+        12,
+        2
+      ]
+    },
+    {
+      "name": "globe",
+      "at": [
+        6,
+        2
+      ]
+    },
+    {
+      "name": "bookshelf_a",
+      "at": [
+        1,
+        1.6
+      ]
+    },
+    {
+      "name": "bookshelf_b",
+      "at": [
+        17,
+        1.6
+      ]
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        4.5,
+        6.5
+      ]
+    },
+    {
+      "name": "chair_blue_r",
+      "at": [
+        2.9,
+        6.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "chair_blue_l",
+      "at": [
+        7.7,
+        6.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        13.5,
+        6.5
+      ]
+    },
+    {
+      "name": "chair_blue_r",
+      "at": [
+        11.9,
+        6.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "chair_blue_l",
+      "at": [
+        16.7,
+        6.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        4.5,
+        10
+      ]
+    },
+    {
+      "name": "chair_yellow_r",
+      "at": [
+        2.9,
+        10.3
+      ],
+      "collide": false
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        13.5,
+        10
+      ]
+    },
+    {
+      "name": "chair_yellow_l",
+      "at": [
+        16.7,
+        10.3
+      ],
+      "collide": false
+    },
+    {
+      "name": "doormat",
+      "at": [
+        9.5,
+        13
+      ]
+    }
+  ],
+  "seats": [
+    {
+      "at": [
+        3.7,
+        8.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        8.5,
+        8.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        12.7,
+        8.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        17.5,
+        8.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        3.7,
+        12.1
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        17.5,
+        12.1
+      ],
+      "side": "left",
+      "kind": "chair"
+    }
+  ],
+  "animated": [],
+  "spawns": [
+    [
+      9.8,
+      12.8
+    ]
+  ],
+  "doors": [
+    {
+      "name": "exit",
+      "at": [
+        9.5,
+        14
+      ],
+      "targetVenue": "district"
+    }
+  ],
+  "glows": []
+}

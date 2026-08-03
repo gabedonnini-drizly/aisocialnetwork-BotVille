@@ -1,0 +1,208 @@
+{
+  "archetype": "market",
+  "labelPrefix": "Market",
+  "indoor": true,
+  "sizeTiles": [
+    20,
+    15
+  ],
+  "groundAtlas": "interiors_ground",
+  "capacity": 12,
+  "roles": [
+    "work",
+    "hangout"
+  ],
+  "affords": [
+    "eat",
+    "work",
+    "socialize",
+    "idle"
+  ],
+  "hours": [
+    {
+      "open": 7,
+      "close": 21
+    }
+  ],
+  "ground": {
+    "wallA": "wallCafeA",
+    "wallB": "wallCafeB",
+    "floor": "floorCafe"
+  },
+  "furniture": [
+    {
+      "name": "counter_wide",
+      "at": [
+        8,
+        1.6
+      ]
+    },
+    {
+      "name": "coffee_machine",
+      "at": [
+        12,
+        1.6
+      ]
+    },
+    {
+      "name": "stool",
+      "at": [
+        7.5,
+        3.4
+      ],
+      "collide": false
+    },
+    {
+      "name": "stool",
+      "at": [
+        9.5,
+        3.4
+      ],
+      "collide": false
+    },
+    {
+      "name": "stool",
+      "at": [
+        11.5,
+        3.4
+      ],
+      "collide": false
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        3.5,
+        7.5
+      ]
+    },
+    {
+      "name": "chair_blue_r",
+      "at": [
+        1.9,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "chair_blue_l",
+      "at": [
+        6.7,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        13.5,
+        7.5
+      ]
+    },
+    {
+      "name": "chair_yellow_r",
+      "at": [
+        11.9,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "chair_yellow_l",
+      "at": [
+        16.7,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "plant_small",
+      "at": [
+        18,
+        2
+      ]
+    },
+    {
+      "name": "doormat",
+      "at": [
+        9.5,
+        13
+      ]
+    }
+  ],
+  "seats": [
+    {
+      "at": [
+        7.5,
+        4.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        9.5,
+        4.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        11.5,
+        4.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        2.7,
+        9.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        7.5,
+        9.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        12.7,
+        9.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        17.5,
+        9.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    }
+  ],
+  "animated": [],
+  "spawns": [
+    [
+      9.8,
+      12.8
+    ]
+  ],
+  "doors": [
+    {
+      "name": "exit",
+      "at": [
+        9.5,
+        14
+      ],
+      "targetVenue": "district"
+    }
+  ],
+  "glows": []
+}
