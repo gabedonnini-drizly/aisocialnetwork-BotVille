@@ -98,6 +98,64 @@
     "p_fence_bottom_left": "props/fence_bottom_left.png",
     "p_fence_bottom_middle": "props/fence_bottom_middle.png",
     "p_fence_bottom_right": "props/fence_bottom_right.png",
+    "p_tent_1": "props/tent_1.png",
+    "p_tent_2": "props/tent_2.png",
+    "p_tent_3": "props/tent_3.png",
+    "p_tent_4": "props/tent_4.png",
+    "p_tent_5": "props/tent_5.png",
+    "p_tent_6": "props/tent_6.png",
+    "p_sleeping_bag_1": "props/sleeping_bag_1.png",
+    "p_sleeping_bag_2": "props/sleeping_bag_2.png",
+    "p_sleeping_bag_3": "props/sleeping_bag_3.png",
+    "p_sleeping_bag_4": "props/sleeping_bag_4.png",
+    "p_sleeping_bag_5": "props/sleeping_bag_5.png",
+    "p_campfire_1": "props/campfire_1.png",
+    "p_campfire_2": "props/campfire_2.png",
+    "p_campfire_3": "props/campfire_3.png",
+    "p_lantern": "props/lantern.png",
+    "p_mobile_home_small": "props/mobile_home_small.png",
+    "p_mobile_home_medium": "props/mobile_home_medium.png",
+    "p_mobile_home_big": "props/mobile_home_big.png",
+    "p_one_story_house": "props/one_story_house.png",
+    "p_terraced_house_1": "props/terraced_house_1.png",
+    "p_terraced_house_2": "props/terraced_house_2.png",
+    "p_terraced_house_3": "props/terraced_house_3.png",
+    "p_terraced_house_4": "props/terraced_house_4.png",
+    "p_terraced_house_5": "props/terraced_house_5.png",
+    "p_terraced_house_6": "props/terraced_house_6.png",
+    "p_terraced_house_modular_1": "props/terraced_house_modular_1.png",
+    "p_terraced_house_modular_2": "props/terraced_house_modular_2.png",
+    "p_terraced_house_modular_3": "props/terraced_house_modular_3.png",
+    "p_terraced_house_modular_4": "props/terraced_house_modular_4.png",
+    "p_terraced_house_modular_5": "props/terraced_house_modular_5.png",
+    "p_terraced_house_modular_6": "props/terraced_house_modular_6.png",
+    "p_country_house": "props/country_house.png",
+    "p_villa_1": "props/villa_1.png",
+    "p_villa_2": "props/villa_2.png",
+    "p_villa_3": "props/villa_3.png",
+    "p_villa_4": "props/villa_4.png",
+    "p_villa_5": "props/villa_5.png",
+    "p_villa_chimney_1": "props/villa_chimney_1.png",
+    "p_villa_chimney_2": "props/villa_chimney_2.png",
+    "p_villa_chimney_3": "props/villa_chimney_3.png",
+    "p_villa_chimney_4": "props/villa_chimney_4.png",
+    "p_villa_chimney_5": "props/villa_chimney_5.png",
+    "p_villa_roof_window_1": "props/villa_roof_window_1.png",
+    "p_villa_roof_window_2": "props/villa_roof_window_2.png",
+    "p_villa_roof_window_3": "props/villa_roof_window_3.png",
+    "p_villa_roof_window_4": "props/villa_roof_window_4.png",
+    "p_villa_roof_window_5": "props/villa_roof_window_5.png",
+    "p_villa_solar_panel_1": "props/villa_solar_panel_1.png",
+    "p_villa_solar_panel_2": "props/villa_solar_panel_2.png",
+    "p_villa_solar_panel_3": "props/villa_solar_panel_3.png",
+    "p_villa_solar_panel_4": "props/villa_solar_panel_4.png",
+    "p_villa_solar_panel_5": "props/villa_solar_panel_5.png",
+    "p_condo_6": "props/condo_6.png",
+    "p_condo_8": "props/condo_8.png",
+    "p_condo_9": "props/condo_9.png",
+    "p_condo_7_modular_top": "props/condo_7_modular_top.png",
+    "p_condo_7_modular_middle": "props/condo_7_modular_middle.png",
+    "p_condo_7_modular_bottom": "props/condo_7_modular_bottom.png",
     "p_bed_green": "props/bed_green.png",
     "p_bed_blue": "props/bed_blue.png",
     "p_bed_teal": "props/bed_teal.png",
@@ -983,6 +1041,354 @@
       "trim": true,
       "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
       "pin": "6c7ed5779179742242e0c6f34eaff13e6616e42f41b6ecc09d6077554c1dacce"
+    },
+    "tent_1": {
+      "file": "p_tent_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "84909395ed2a6bd339e9179179e4479aa7fd7e5c93859a77b43550f638cc246b"
+    },
+    "tent_2": {
+      "file": "p_tent_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "726095b20ae596ff6582a2a5d38a74253b11fd0f3a97a5c541a13a34153a9332"
+    },
+    "tent_3": {
+      "file": "p_tent_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5cdfd91cb8de695d2472b815fb8a8d1b21da1a24e54b5899f3ff63e55cb9081d"
+    },
+    "tent_4": {
+      "file": "p_tent_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "dc0cc988de1da481c26aedde000fb4b7fc9d7e34e48178942d916934f537614b"
+    },
+    "tent_5": {
+      "file": "p_tent_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "7270ac1bc86ff058ee9e9dd115476550da55036c519a4535f04bd0b8b4536030"
+    },
+    "tent_6": {
+      "file": "p_tent_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "65c268a2425f09f379d8f5e126eae959d0ab731de4e6ef4afd39f9d54e3cbf3d"
+    },
+    "sleeping_bag_1": {
+      "file": "p_sleeping_bag_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c0acf4e0dd7b7c0a48b9f3af979085e14317f5a70abb3cb409d4f8ed65a13dab"
+    },
+    "sleeping_bag_2": {
+      "file": "p_sleeping_bag_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "db09509961a9e89584e05ed289714d724bffd99e489a00c4195d219fa3b0aba3"
+    },
+    "sleeping_bag_3": {
+      "file": "p_sleeping_bag_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5c98aab819d0e798af451526fb5540dbfcb67a2c5e2d6b61e829e07a2d366f47"
+    },
+    "sleeping_bag_4": {
+      "file": "p_sleeping_bag_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "ee9abf2442926849fe08f43e5afc48945324286c668e68a30648a96d2e830772"
+    },
+    "sleeping_bag_5": {
+      "file": "p_sleeping_bag_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "40c2e5a0a20f2861101f5c619fb6fb58afcff607f4e6654114d04b96e8278963"
+    },
+    "campfire_1": {
+      "file": "p_campfire_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "807260a1ed633605e614ddc6c4411854be52f4145010c309416bc3674945f981"
+    },
+    "campfire_2": {
+      "file": "p_campfire_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "d7ba22e4d3147eb1df991adab36ec76a6a0b7ac5324bb5575f8fb79b8c1d2a04"
+    },
+    "campfire_3": {
+      "file": "p_campfire_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "e545f2aba33203f22a625548caee6fa29bde616eb1d39f07605da256924e99bc"
+    },
+    "lantern": {
+      "file": "p_lantern",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "10e7b74321c9fc43df77559cd2243444335d6b7e652942a927417545ec07ff2a"
+    },
+    "mobile_home_small": {
+      "file": "p_mobile_home_small",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "8930a219dee53c7a45e14cffac78d657883d8209afe6a07a0664a3bf727ed3b4"
+    },
+    "mobile_home_medium": {
+      "file": "p_mobile_home_medium",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "517ba83a4cc6900abc76d704f1856a176a28b1eaa95aef28fe51e2147b6a92ae"
+    },
+    "mobile_home_big": {
+      "file": "p_mobile_home_big",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a0e1e129f166209c27fcad4c546324f38f00296a68b1bff4aa98431c0f6a493e"
+    },
+    "one_story_house": {
+      "file": "p_one_story_house",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "0c79d990777b9b1b4d8d62c4108a6409706c4b30c9b25cb756f5723cceecb7f0"
+    },
+    "terraced_house_1": {
+      "file": "p_terraced_house_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f668d80854ebec95eaaba0d8f65910d01153df499b735fc79602b4c7382ecbe1"
+    },
+    "terraced_house_2": {
+      "file": "p_terraced_house_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "487318feb9e0689b84c8773859977ae1929600362f706dc1b1141027e79ef176"
+    },
+    "terraced_house_3": {
+      "file": "p_terraced_house_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "3f5a9dc70b5ab3378edf7feab8b17274688fcab5e52df4f0f95a980f17a88dce"
+    },
+    "terraced_house_4": {
+      "file": "p_terraced_house_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "93e2de52c139d33f827cf8cfcdb05611318b12442cca09f6039e03eba6ed65be"
+    },
+    "terraced_house_5": {
+      "file": "p_terraced_house_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5cd1376d05879b0bd10e40063085fadf6c59cd69124a2d9cd18f2904904f3213"
+    },
+    "terraced_house_6": {
+      "file": "p_terraced_house_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "efb4268998d27f1c2bd0d30f07f161d3458e789ba33934092cc847df952781c0"
+    },
+    "terraced_house_modular_1": {
+      "file": "p_terraced_house_modular_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "45bc53cc1add8a28e24bf87a033c9d0ad074775ca8ebd5af4aa26f08440865a8"
+    },
+    "terraced_house_modular_2": {
+      "file": "p_terraced_house_modular_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "15687fb6211bdb429c7347bd9115d6740c6ffbb99d73e21fa6989c8f4eaa3079"
+    },
+    "terraced_house_modular_3": {
+      "file": "p_terraced_house_modular_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "da94fefb022076897931977056c82b320247adfd6f7a6e45afd79ca57e7223b0"
+    },
+    "terraced_house_modular_4": {
+      "file": "p_terraced_house_modular_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "03f3f824d37c6ddbc17b3ee702b9700ff931be604a850b9d3efbf5e011e04776"
+    },
+    "terraced_house_modular_5": {
+      "file": "p_terraced_house_modular_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "305a83d23e34ee30acd21973f39b6feacffd27fdd9275d935d02dbee777d553e"
+    },
+    "terraced_house_modular_6": {
+      "file": "p_terraced_house_modular_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f6e8a3c9bd252c1e19a5d1ab25b0f98eb24ae120fe0d8703070e4a773f0486de"
+    },
+    "country_house": {
+      "file": "p_country_house",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "39ef02e5ec56f90a860390131b25034d2eb2667b2a013f9006de606035c2f97b"
+    },
+    "villa_1": {
+      "file": "p_villa_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "58839818d7b75a34a18fd095d83087f4a73d1791c35e7e3ed7dcefe9aaba8339"
+    },
+    "villa_2": {
+      "file": "p_villa_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c28b3c31f627a4bfd7d765503215054cfeae25929254c58d61e897e179a94764"
+    },
+    "villa_3": {
+      "file": "p_villa_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "9924ec4bfd0f50eff555fa09520db66ee14007dd674a2cdf68ed1afaf64e453b"
+    },
+    "villa_4": {
+      "file": "p_villa_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b1a85a986658d759f01db113ce164db1bd52cdbcaf2065808b382d327efd0efa"
+    },
+    "villa_5": {
+      "file": "p_villa_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "06abb159e402cc510e850792b481998c9b779beb5cfcc44c4ad7502be25fd603"
+    },
+    "villa_chimney_1": {
+      "file": "p_villa_chimney_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "c104166ce063647fbe484d29e5d61e7c59fc30b4f7d70a34c231cf1d7f1eabbd"
+    },
+    "villa_chimney_2": {
+      "file": "p_villa_chimney_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "44a21e938b6c065bad4f71d74b2d6b8ac1d2e31128507d4211298c1ecb53f462"
+    },
+    "villa_chimney_3": {
+      "file": "p_villa_chimney_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "6b0e65fa2f6e0982ed8179728b581bd251368f1c1b8e5ac3e95e3170d36273c9"
+    },
+    "villa_chimney_4": {
+      "file": "p_villa_chimney_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "4887747cb5d61aa94fe1d9f5181d90f05e316ae232097b8f73eeb0c00eb33068"
+    },
+    "villa_chimney_5": {
+      "file": "p_villa_chimney_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "a015ebb8a3a1516ab2f3dc9c6dff7737cc4cf88a1c0c9a2f5f6878f18387c050"
+    },
+    "villa_roof_window_1": {
+      "file": "p_villa_roof_window_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "1fbe32faebe5adf815f8dcf666fbe6105379369d9d3a4df50ccfbb3bdad76ffa"
+    },
+    "villa_roof_window_2": {
+      "file": "p_villa_roof_window_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "b82d9e5b2fc7fa8f20ff84260e095ba140a0e9ee986719d9d8c23f4788ab6c78"
+    },
+    "villa_roof_window_3": {
+      "file": "p_villa_roof_window_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "10b42dc2b19174ffbaf1493e016cbff10097bf0c761bb8b8b47e5cfa24c44d57"
+    },
+    "villa_roof_window_4": {
+      "file": "p_villa_roof_window_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "962af9bc74be560d4cbcf331a8bdc70aaaf742d4770b10deef11750d01d3f3a4"
+    },
+    "villa_roof_window_5": {
+      "file": "p_villa_roof_window_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "34a02cebeae1b8cb5ec56829fea05d085233fb548efe8f18d96b6c85152b53f0"
+    },
+    "villa_solar_panel_1": {
+      "file": "p_villa_solar_panel_1",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "913df70c6a42ff030ad7dc85bf4123fb58eb2330bd64feab5cbe16b5cc679b5f"
+    },
+    "villa_solar_panel_2": {
+      "file": "p_villa_solar_panel_2",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "7f12e29d4cac79a733cc60acb6d23813f8c63c992c36883068c99cd93ceb0c0f"
+    },
+    "villa_solar_panel_3": {
+      "file": "p_villa_solar_panel_3",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "5f1616b86718a6550c36d4a4c073d2d1387510a0861e664b72a5db153cca69ec"
+    },
+    "villa_solar_panel_4": {
+      "file": "p_villa_solar_panel_4",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "993668c210362dfe0ec5e00c984b942fcec9376c65ccd9d47fc06f3c1c0f61bf"
+    },
+    "villa_solar_panel_5": {
+      "file": "p_villa_solar_panel_5",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "398c2d7b220b51c93d3f351861f848ca09f11fe423c38c307751ed536602447a"
+    },
+    "condo_6": {
+      "file": "p_condo_6",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "80c9df5704f3eff5628cf56f6ccf52c4204f17882a54c7c745a6a928784eb74e"
+    },
+    "condo_8": {
+      "file": "p_condo_8",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "7a41c5127e9db9164f4983b8ebcc2c195567387014961eb133dd087bc62408d4"
+    },
+    "condo_9": {
+      "file": "p_condo_9",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "96cd3b3ade5cfc58fb594e08ae08d754fcde111dee393d39fb7c7adde8650480"
+    },
+    "condo_7_modular_top": {
+      "file": "p_condo_7_modular_top",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "127156326077145a2bb4640108e83707808caf7053b015c6236cdc23aab8062d"
+    },
+    "condo_7_modular_middle": {
+      "file": "p_condo_7_modular_middle",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "499b27143c6bee11907d441a97d7c52ca331014003859f08b5e120aa3022e78e"
+    },
+    "condo_7_modular_bottom": {
+      "file": "p_condo_7_modular_bottom",
+      "trim": true,
+      "note": "generated fixture sprite — geometry is derived from the contract, not chosen",
+      "pin": "f2e755eac34726d0c38b37f7986ae574ed04b6476991899eddc07d425af04bbf"
     },
     "bed_green": {
       "file": "p_bed_green",

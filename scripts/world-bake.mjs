@@ -18,7 +18,8 @@ import { loadAdapter } from './lib/sourceAdapter.mjs';
 import { buildAtlas } from './lib/atlasBuilder.mjs';
 import { bakeProps, writeProps } from './lib/propBaker.mjs';
 import { bakeInterior, bakeDistrict } from './lib/venueBaker.mjs';
-import { deriveResidenceInstances } from './lib/residences.mjs';
+import { deriveInstances } from './lib/archetypes.mjs';
+import { countFor } from './lib/generators.mjs';
 import { validate } from './lib/contractValidator.mjs';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
@@ -30,14 +31,15 @@ function write(p, buf) {
 
 /**
  * @param {{pack?: string, srcRoot: string, outDir: string, generatedDir: string,
- *          venuesDirs?: string[], town?: {population: number}}} opts
+ *          venuesDirs?: string[], archetypesDir?: string,
+ *          town?: {population: number}}} opts
  *
  * outDir and generatedDir are REQUIRED. This function has no idea where the
  * repo is and must not: a default of "write into packages/client" turns every
  * caller — including this module's own tests — into a source-tree mutation.
  * The CLI at the bottom of this file is the only place those paths live.
  */
-export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs, town } = {}) {
+export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs, archetypesDir, town } = {}) {
   if (!outDir) throw new Error('worldBake: outDir is required');
   if (!generatedDir) throw new Error('worldBake: generatedDir is required');
 
@@ -51,11 +53,25 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
     .filter(id => !id.startsWith('_') && !id.startsWith('.'))
     .map(id => JSON.parse(readFileSync(join(dir, id, 'venue.json'), 'utf8'))));
 
-  // Residence instances (addendum §I.2/I.3): derived from the town snapshot,
-  // stamped from the archetype, baked exactly like an authored venue.
+  // Archetype instances (addendum §I.2/I.3): derived from the town snapshot,
+  // stamped from the template, baked exactly like an authored venue.
+  //
+  // EVERY archetype under venues/_archetypes/ is loaded; how many of each the
+  // town gets comes from the generator registry, and an archetype with no
+  // generator stamps zero (generators.mjs, ABSENCE IS ZERO). That is what
+  // "declared, not instantiated" means concretely — the loop below is the
+  // same for a residence and for a dormant condo; only `countFor` differs.
+  //
+  // Sorted by filename so the stamping order — and therefore the instance
+  // order inside `venues` before the id sort — is a property of the tree, not
+  // of readdir's.
   const townSnapshot = town ?? JSON.parse(readFileSync(join(ROOT, 'town', 'town.json'), 'utf8'));
-  const houseArchetype = JSON.parse(readFileSync(join(ROOT, 'venues', '_archetypes', 'house.json'), 'utf8'));
-  const instances = deriveResidenceInstances(townSnapshot, houseArchetype);
+  const archDir = archetypesDir ?? join(ROOT, 'venues', '_archetypes');
+  const archetypes = readdirSync(archDir)
+    .filter(f => f.endsWith('.json'))
+    .sort()
+    .map(f => JSON.parse(readFileSync(join(archDir, f), 'utf8')));
+  const instances = archetypes.flatMap(a => deriveInstances(a, countFor(a.archetype, townSnapshot)));
 
   const venues = [...authored, ...instances].sort((a, b) => a.id.localeCompare(b.id));
 

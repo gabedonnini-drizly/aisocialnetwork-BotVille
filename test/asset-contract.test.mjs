@@ -17,10 +17,28 @@ test('ground atlas order reconciles with the scripts it replaces', () => {
   }
 });
 
+/**
+ * The migration claim, and only the migration claim: every name the legacy
+ * lists carried is still declared, under the same spelling.
+ *
+ * This was an equality assertion while the contract's only job was to
+ * reproduce the lists it replaced. It cannot stay one: plan `04-` declares
+ * the housing ladder, the construction states and the civic archetypes, so
+ * the contract now legitimately holds names the legacy pipeline never had.
+ * Equality would make *growth* the failure — the exact thing the contract
+ * exists to make cheap. Containment keeps the half that was ever load-
+ * bearing (nothing was dropped or renamed on the way in) and drops the half
+ * that only ever said "and nothing has been added since".
+ *
+ * The atlas assertion above stays an equality on purpose: tile ORDER defines
+ * GID, so a ground atlas that grows is a different tilemap.
+ */
 test('prop names reconcile with DISTRICT_IMAGES and INTERIOR_IMAGES', () => {
   const c = loadContract();
   for (const [group, legacy] of Object.entries(legacyPropNames())) {
-    assert.deepEqual(Object.keys(c.props[group]).sort(), [...legacy].sort(), group);
+    const declared = new Set(Object.keys(c.props[group]));
+    const lost = [...legacy].filter(n => !declared.has(n)).sort();
+    assert.deepEqual(lost, [], `${group}: the contract no longer declares these legacy names`);
   }
 });
 

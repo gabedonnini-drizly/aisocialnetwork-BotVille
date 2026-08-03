@@ -84,7 +84,66 @@
     "animal_cow_sheet": "farm/16x16/Animals_16x16/Cows/Cow_16x16.png",
     "animal_pig_sheet": "farm/16x16/Animals_16x16/Pigs/Pig_Pink_16x16.png",
     "animal_dog_sheet": "farm/16x16/Animals_16x16/Dogs/Dog_Labrador_Brown_16x16.png",
-    "animal_chicken_sheet": "farm/16x16/Animals_16x16/Chickens_and_Roosters/Chicken_White_16x16.png"
+    "animal_chicken_sheet": "farm/16x16/Animals_16x16/Chickens_and_Roosters/Chicken_White_16x16.png",
+
+    "tent_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_1.png",
+    "tent_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_2.png",
+    "tent_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_3.png",
+    "tent_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_4.png",
+    "tent_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_5.png",
+    "tent_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_6.png",
+    "sleeping_bag_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Sleeping_Bag_1.png",
+    "sleeping_bag_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Sleeping_Bag_2.png",
+    "sleeping_bag_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Sleeping_Bag_3.png",
+    "sleeping_bag_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Sleeping_Bag_4.png",
+    "sleeping_bag_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Sleeping_Bag_5.png",
+    "campfire_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Campfire_1.png",
+    "campfire_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Campfire_2.png",
+    "campfire_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Campfire_3.png",
+    "lantern_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Lantern_1.png",
+    "mobile_home_small_s": "exteriors/Modern_Exteriors_16x16/Modern_Exteriors_Complete_Singles_16x16/ME_Singles_Camping_16x16_Mobile_House_Small_1.png",
+    "mobile_home_medium_s": "exteriors/Modern_Exteriors_16x16/Modern_Exteriors_Complete_Singles_16x16/ME_Singles_Camping_16x16_Mobile_House_Medium_1.png",
+    "mobile_home_big_s": "exteriors/Modern_Exteriors_16x16/Modern_Exteriors_Complete_Singles_16x16/ME_Singles_Camping_16x16_Mobile_House_Big_1.png",
+    "one_story_house_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_One_Story_House_16x16.png",
+    "terraced_house_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_1_16x16.png",
+    "terraced_house_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_2_16x16.png",
+    "terraced_house_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_3_16x16.png",
+    "terraced_house_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_4_16x16.png",
+    "terraced_house_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_5_16x16.png",
+    "terraced_house_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_6_16x16.png",
+    "terraced_house_modular_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_Modular_1_16x16.png",
+    "terraced_house_modular_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_Modular_2_16x16.png",
+    "terraced_house_modular_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_Modular_3_16x16.png",
+    "terraced_house_modular_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_Modular_4_16x16.png",
+    "terraced_house_modular_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_Modular_5_16x16.png",
+    "terraced_house_modular_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Terraced_House_Modular_6_16x16.png",
+    "country_house_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/24_Additional_Houses_Singles_16x16/24_Additional_Houses_Country_House_16x16.png",
+    "villa_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_1.png",
+    "villa_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_2.png",
+    "villa_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_3.png",
+    "villa_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_4.png",
+    "villa_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_5.png",
+    "villa_chimney_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Chimney_1.png",
+    "villa_chimney_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Chimney_2.png",
+    "villa_chimney_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Chimney_3.png",
+    "villa_chimney_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Chimney_4.png",
+    "villa_chimney_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Chimney_5.png",
+    "villa_roof_window_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Roof_Window_1.png",
+    "villa_roof_window_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Roof_Window_2.png",
+    "villa_roof_window_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Roof_Window_3.png",
+    "villa_roof_window_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Roof_Window_4.png",
+    "villa_roof_window_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Roof_Window_5.png",
+    "villa_solar_panel_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Solar_Panel_1.png",
+    "villa_solar_panel_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Solar_Panel_2.png",
+    "villa_solar_panel_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Solar_Panel_3.png",
+    "villa_solar_panel_4_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Solar_Panel_4.png",
+    "villa_solar_panel_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/7_Villas_Singles_16x16/ME_Singles_Villas_16x16_Villa_Solar_Panel_5.png",
+    "condo_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_6.png",
+    "condo_8_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_8.png",
+    "condo_9_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_9.png",
+    "condo_7_modular_top_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Top.png",
+    "condo_7_modular_middle_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Middle.png",
+    "condo_7_modular_bottom_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Bottom.png"
   },
   "rects": {
     "grass": {
@@ -967,6 +1026,239 @@
       "file": "animal_chicken_sheet",
       "note": "interim delivery until Plan 4's composer retires premade variants",
       "pin": "fea3d0bc019de48bcf2486d1111a7253240c23b2aa73b8ed4a87a6140390da85"
+    },
+
+    "tent_1": {
+      "file": "tent_1_s",
+      "trim": true
+    },
+    "tent_2": {
+      "file": "tent_2_s",
+      "trim": true
+    },
+    "tent_3": {
+      "file": "tent_3_s",
+      "trim": true
+    },
+    "tent_4": {
+      "file": "tent_4_s",
+      "trim": true
+    },
+    "tent_5": {
+      "file": "tent_5_s",
+      "trim": true
+    },
+    "tent_6": {
+      "file": "tent_6_s",
+      "trim": true
+    },
+    "sleeping_bag_1": {
+      "file": "sleeping_bag_1_s",
+      "trim": true
+    },
+    "sleeping_bag_2": {
+      "file": "sleeping_bag_2_s",
+      "trim": true
+    },
+    "sleeping_bag_3": {
+      "file": "sleeping_bag_3_s",
+      "trim": true
+    },
+    "sleeping_bag_4": {
+      "file": "sleeping_bag_4_s",
+      "trim": true
+    },
+    "sleeping_bag_5": {
+      "file": "sleeping_bag_5_s",
+      "trim": true
+    },
+    "campfire_1": {
+      "file": "campfire_1_s",
+      "trim": true
+    },
+    "campfire_2": {
+      "file": "campfire_2_s",
+      "trim": true
+    },
+    "campfire_3": {
+      "file": "campfire_3_s",
+      "trim": true
+    },
+    "lantern": {
+      "file": "lantern_s",
+      "trim": true
+    },
+    "mobile_home_small": {
+      "file": "mobile_home_small_s",
+      "trim": true
+    },
+    "mobile_home_medium": {
+      "file": "mobile_home_medium_s",
+      "trim": true
+    },
+    "mobile_home_big": {
+      "file": "mobile_home_big_s",
+      "trim": true
+    },
+    "one_story_house": {
+      "file": "one_story_house_s",
+      "trim": true
+    },
+    "terraced_house_1": {
+      "file": "terraced_house_1_s",
+      "trim": true
+    },
+    "terraced_house_2": {
+      "file": "terraced_house_2_s",
+      "trim": true
+    },
+    "terraced_house_3": {
+      "file": "terraced_house_3_s",
+      "trim": true
+    },
+    "terraced_house_4": {
+      "file": "terraced_house_4_s",
+      "trim": true
+    },
+    "terraced_house_5": {
+      "file": "terraced_house_5_s",
+      "trim": true
+    },
+    "terraced_house_6": {
+      "file": "terraced_house_6_s",
+      "trim": true
+    },
+    "terraced_house_modular_1": {
+      "file": "terraced_house_modular_1_s",
+      "trim": true
+    },
+    "terraced_house_modular_2": {
+      "file": "terraced_house_modular_2_s",
+      "trim": true
+    },
+    "terraced_house_modular_3": {
+      "file": "terraced_house_modular_3_s",
+      "trim": true
+    },
+    "terraced_house_modular_4": {
+      "file": "terraced_house_modular_4_s",
+      "trim": true
+    },
+    "terraced_house_modular_5": {
+      "file": "terraced_house_modular_5_s",
+      "trim": true
+    },
+    "terraced_house_modular_6": {
+      "file": "terraced_house_modular_6_s",
+      "trim": true
+    },
+    "country_house": {
+      "file": "country_house_s",
+      "trim": true
+    },
+    "villa_1": {
+      "file": "villa_1_s",
+      "trim": true
+    },
+    "villa_2": {
+      "file": "villa_2_s",
+      "trim": true
+    },
+    "villa_3": {
+      "file": "villa_3_s",
+      "trim": true
+    },
+    "villa_4": {
+      "file": "villa_4_s",
+      "trim": true
+    },
+    "villa_5": {
+      "file": "villa_5_s",
+      "trim": true
+    },
+    "villa_chimney_1": {
+      "file": "villa_chimney_1_s",
+      "trim": true
+    },
+    "villa_chimney_2": {
+      "file": "villa_chimney_2_s",
+      "trim": true
+    },
+    "villa_chimney_3": {
+      "file": "villa_chimney_3_s",
+      "trim": true
+    },
+    "villa_chimney_4": {
+      "file": "villa_chimney_4_s",
+      "trim": true
+    },
+    "villa_chimney_5": {
+      "file": "villa_chimney_5_s",
+      "trim": true
+    },
+    "villa_roof_window_1": {
+      "file": "villa_roof_window_1_s",
+      "trim": true
+    },
+    "villa_roof_window_2": {
+      "file": "villa_roof_window_2_s",
+      "trim": true
+    },
+    "villa_roof_window_3": {
+      "file": "villa_roof_window_3_s",
+      "trim": true
+    },
+    "villa_roof_window_4": {
+      "file": "villa_roof_window_4_s",
+      "trim": true
+    },
+    "villa_roof_window_5": {
+      "file": "villa_roof_window_5_s",
+      "trim": true
+    },
+    "villa_solar_panel_1": {
+      "file": "villa_solar_panel_1_s",
+      "trim": true
+    },
+    "villa_solar_panel_2": {
+      "file": "villa_solar_panel_2_s",
+      "trim": true
+    },
+    "villa_solar_panel_3": {
+      "file": "villa_solar_panel_3_s",
+      "trim": true
+    },
+    "villa_solar_panel_4": {
+      "file": "villa_solar_panel_4_s",
+      "trim": true
+    },
+    "villa_solar_panel_5": {
+      "file": "villa_solar_panel_5_s",
+      "trim": true
+    },
+    "condo_6": {
+      "file": "condo_6_s",
+      "trim": true
+    },
+    "condo_8": {
+      "file": "condo_8_s",
+      "trim": true
+    },
+    "condo_9": {
+      "file": "condo_9_s",
+      "trim": true
+    },
+    "condo_7_modular_top": {
+      "file": "condo_7_modular_top_s",
+      "trim": true
+    },
+    "condo_7_modular_middle": {
+      "file": "condo_7_modular_middle_s",
+      "trim": true
+    },
+    "condo_7_modular_bottom": {
+      "file": "condo_7_modular_bottom_s",
+      "trim": true
     }
   },
   "emoteFrames": {

@@ -1,0 +1,207 @@
+{
+  "archetype": "mobile_home",
+  "labelPrefix": "Mobile Home",
+  "indoor": true,
+  "sizeTiles": [
+    20,
+    15
+  ],
+  "groundAtlas": "interiors_ground",
+  "capacity": 4,
+  "roles": [],
+  "affords": [
+    "sleep",
+    "idle"
+  ],
+  "hours": [
+    {
+      "open": 0,
+      "close": 24
+    }
+  ],
+  "ground": {
+    "wallA": "wallDormA",
+    "wallB": "wallDormB",
+    "floor": "floorDorm"
+  },
+  "furniture": [
+    {
+      "name": "bed_green",
+      "at": [
+        2,
+        1.6
+      ]
+    },
+    {
+      "name": "bed_blue",
+      "at": [
+        6,
+        1.6
+      ]
+    },
+    {
+      "name": "bed_teal",
+      "at": [
+        12,
+        1.6
+      ]
+    },
+    {
+      "name": "bed_green",
+      "at": [
+        16,
+        1.6
+      ]
+    },
+    {
+      "name": "nightstand",
+      "at": [
+        4.3,
+        2.4
+      ]
+    },
+    {
+      "name": "nightstand",
+      "at": [
+        14.3,
+        2.4
+      ]
+    },
+    {
+      "name": "table_plain",
+      "at": [
+        8.5,
+        7.5
+      ]
+    },
+    {
+      "name": "chair_red_r",
+      "at": [
+        6.9,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "chair_red_l",
+      "at": [
+        11.7,
+        7.8
+      ],
+      "collide": false
+    },
+    {
+      "name": "armchair_grey_r",
+      "at": [
+        2.6,
+        10.6
+      ]
+    },
+    {
+      "name": "rug_pink",
+      "at": [
+        8,
+        10.4
+      ],
+      "collide": false
+    },
+    {
+      "name": "lamp_red",
+      "at": [
+        18,
+        7.6
+      ]
+    },
+    {
+      "name": "plant_pot",
+      "at": [
+        1.2,
+        12
+      ]
+    }
+  ],
+  "seats": [
+    {
+      "at": [
+        2.8,
+        3.4
+      ],
+      "side": "right",
+      "kind": "bed"
+    },
+    {
+      "at": [
+        6.8,
+        3.4
+      ],
+      "side": "right",
+      "kind": "bed"
+    },
+    {
+      "at": [
+        12.8,
+        3.4
+      ],
+      "side": "left",
+      "kind": "bed"
+    },
+    {
+      "at": [
+        16.8,
+        3.4
+      ],
+      "side": "left",
+      "kind": "bed"
+    },
+    {
+      "at": [
+        7.7,
+        9.6
+      ],
+      "side": "right",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        12.5,
+        9.6
+      ],
+      "side": "left",
+      "kind": "chair"
+    },
+    {
+      "at": [
+        3.5,
+        13.2
+      ],
+      "side": "right",
+      "kind": "chair"
+    }
+  ],
+  "animated": [
+    {
+      "name": "tv_news",
+      "at": [
+        9,
+        0.4
+      ]
+    }
+  ],
+  "spawns": [
+    [
+      9.8,
+      12.8
+    ]
+  ],
+  "doors": [
+    {
+      "name": "exit",
+      "at": [
+        9.5,
+        14
+      ],
+      "targetVenue": "district"
+    }
+  ],
+  "glows": []
+}

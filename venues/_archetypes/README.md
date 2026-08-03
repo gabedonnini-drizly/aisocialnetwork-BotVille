@@ -12,6 +12,37 @@ The `_` prefix on this directory is load-bearing: `scripts/world-bake.mjs`
 treats `_`-prefixed entries under `venues/` as archetypes, not as venues, so
 nothing here bakes on its own.
 
+## The generator registry — absence is zero
+
+`scripts/lib/generators.mjs` maps an archetype name to the function that
+counts it. **An archetype with no entry there stamps nothing.** That is the
+whole of "declared, not instantiated": the art is declared, the contract
+names resolve, the template is authored and checked against the contract —
+and the town gets zero of them until a generator says otherwise.
+
+Absence rather than an explicit `0` is deliberate. If dormancy had to be
+written down, forgetting to write it would put a NEW venue into the published
+vocabulary, which for a residence is a home-reassignment event (below). With
+absence-is-zero, forgetting does nothing.
+
+`house` is the only archetype with a generator today. `mobile_home`, `villa`
+and `condo` (D-76) are declared and dormant; instantiating them is plan
+`01-`'s business.
+
+## The `home` role is withheld from every new residence tier
+
+`deriveResidenceVenues` on the platform side selects `roles.includes('home')`
+and orders by numeric id; `deriveHomeVenue` fills that list to published
+capacity with zero stored rows. **Publishing any new `home`-role venue
+therefore re-homes every agent that holds no stored assignment** — simulated
+against the shipped vocabulary, adding one moves 73 of 85.
+
+So the ladder tiers ship with `"roles": []`. The role lands in a follow-up
+bake, *after* plan `01-` backfills one stored home assignment per agent
+against this pre-role vocabulary. `test/archetype-registry.test.mjs` is the
+tripwire; `house` is exempt because it is the shipped residence, not a new
+one.
+
 ## The three-file rule
 
 Adding a building is three files and no new code:
