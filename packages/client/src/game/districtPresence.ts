@@ -52,7 +52,16 @@ export interface SyncInputs<A extends LocatedAgent> {
   districtId: string;
   /** The whole roster PresenceModel placed somewhere (F-3), not just this district's. */
   fullList: readonly A[];
-  /** Ids that currently have a sprite, in the order the scene holds them. */
+  /**
+   * Ids that currently have a sprite, in the order the scene holds them.
+   *
+   * Any iterable, INCLUDING a single-use one: `planSync` materialises it once
+   * before either pass. It is read twice — once to decide each existing
+   * sprite's fate, once to know who is already drawn — and the obvious call
+   * `drawnIds: this.agentSprites.keys()` hands over a MapIterator that the
+   * first pass would exhaust, leaving the second to conclude that nobody is
+   * drawn and to spawn a second sprite for every agent, on every 15s tick.
+   */
   drawnIds: Iterable<string>;
   /** Where each agent was on the previous sync. */
   lastLoc: ReadonlyMap<string, string>;
@@ -97,13 +106,15 @@ export function planSync<A extends LocatedAgent>(inputs: SyncInputs<A>): SyncPla
     resolveDistrict = districtForLocation,
   } = inputs;
   const drawsHere = (location: string) => drawnByDistrict(location, districtId, resolveDistrict);
+  // ONCE: both passes below read it, and a MapIterator survives only the first.
+  const spriteIds = [...drawnIds];
 
   const present = fullList.filter(a => drawsHere(a.location));
   const incoming = new Set(present.map(a => a.id));
   const locOf = new Map(fullList.map(a => [a.id, a.location]));
 
   const drawn = new Map<string, DrawnDecision>();
-  for (const id of drawnIds) {
+  for (const id of spriteIds) {
     if (incoming.has(id)) {
       // came back before reaching the door — the departure is cancelled
       drawn.set(id, { kind: 'stay', cancelLeaving: isLeaving(id) });
@@ -121,7 +132,7 @@ export function planSync<A extends LocatedAgent>(inputs: SyncInputs<A>): SyncPla
     drawn.set(id, { kind: 'remove', reason: asleep ? 'asleep' : 'no-door' });
   }
 
-  const alreadyDrawn = new Set(drawnIds);
+  const alreadyDrawn = new Set(spriteIds);
   const spawn = new Map<string, SpawnDecision>();
   for (const a of present) {
     if (alreadyDrawn.has(a.id)) continue;

@@ -19,9 +19,35 @@
  *     districtPresence.planSync) — one frozen "tick" of syncAgents.
  *
  * What it does NOT cover, stated plainly so nobody reads more into a green:
- * no pixels, no textures, no Phaser at all; nothing about the camera, tints,
- * glow alphas, car ambience, tweens or the night routine's timing; and the
- * spawn-point index (which depends on live sprite count) is out of frame.
+ *
+ *   • no pixels, no textures, no Phaser at all; nothing about the camera,
+ *     tints, glow alphas, car ambience, tweens or the night routine's timing;
+ *   • the spawn-point index (it depends on the live sprite count);
+ *   • the building<->door hover pairing DistrictScene builds from
+ *     `targetVenue` — the doors are captured, which building each highlights
+ *     is not;
+ *   • DistrictScene.init's throw on an id that is not an outdoor venue: the
+ *     scene needs Phaser, so no node test reaches it.
+ *
+ * AND THE BIG ONE — HALF OF THIS FILE IS A REIMPLEMENTATION, not a call into
+ * the scene. `planSync`, `Pathfinder`, `sceneKeyFor` and `sceneForLocation`
+ * are the real modules; but the map-object reading, the door-point offset
+ * (+width/2, +height+6), the depth rule (y + height) and the walkability
+ * construction are TRANSCRIBED from DistrictScene.create (currently :117-172),
+ * with nothing coupling the two. Change the scene's door geometry and this
+ * file agrees with its own past self while the game moves — which is exactly
+ * what Plan 03 Task 3 will do when it generates doors from plot anchors. Task
+ * 3 must re-read this file, not just re-run it.
+ *
+ * ── PROVENANCE ────────────────────────────────────────────────────────────
+ * Captured at a882a79 from the pre-refactor scene. Re-baselined twice since,
+ * both deliberate and both diffed line by line:
+ *   799979f  objects.doors[*].key: 'VenueScene:<venue>' -> '<venue>'.
+ *            doorPoints is keyed by target venue id now that every district
+ *            shares one scene key. Nothing else in the document moved.
+ *   (this)   objects.doors[*].key removed. Since 799979f it was a
+ *            byte-identical duplicate of `targetVenue`, and two fields that
+ *            must agree are a place for them to disagree.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -90,10 +116,11 @@ export function captureDistrictRender(districtId = 'district') {
   for (const o of layer(map, 'doors')) {
     const target = propsOf(o).targetVenue;
     if (typeof target !== 'string') continue;
-    // Keyed by target venue id — exactly how DistrictScene keys doorPoints.
+    // Keyed by target venue id — the same key DistrictScene uses, though
+    // this is a transcription of its keying, not a call into it (see above).
     const point = { x: o.x + o.width / 2, y: o.y + o.height + 6 };
     doorPoints.set(target, point);
-    doors.push({ name: o.name, targetVenue: target, key: target, ...point });
+    doors.push({ name: o.name, targetVenue: target, ...point });
   }
 
   // --- walkability: the real Pathfinder over the real collision layer

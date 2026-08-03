@@ -824,28 +824,24 @@
       {
         "name": "office_door",
         "targetVenue": "office",
-        "key": "office",
         "x": 168,
         "y": 310
       },
       {
         "name": "cafe_door",
         "targetVenue": "cafe",
-        "key": "cafe",
         "x": 520,
         "y": 310
       },
       {
         "name": "villa_door",
         "targetVenue": "dorm",
-        "key": "dorm",
         "x": 144,
         "y": 662
       },
       {
         "name": "library_door",
         "targetVenue": "library",
-        "key": "library",
         "x": 536,
         "y": 582
       }
