@@ -412,9 +412,17 @@ export class DistrictScene extends Phaser.Scene {
   }
 
   syncAgents(fullList: SyncedAgent[]) {
-    // THE KEY FIX of TZ-16: the district draws only those the server says are outside
-    // or at the farm. The player entering/leaving has no effect on agent locations.
-    const present = fullList.filter(a => a.location === 'district' || a.location === 'farm');
+    // THE KEY FIX of TZ-16: the district draws only those the server says are
+    // outside. The player entering/leaving has no effect on agent locations.
+    //
+    // There was a fourth location here, 'farm', and it was never reachable:
+    // resolvePresence only ever asserts a venueId the published vocabulary
+    // vouches for, and `farm` has never been in it — the barn is furniture on
+    // this map labelled "Farm", with no targetVenue. The farm pen IS district
+    // geography (the cityGrid generator's pen/gate), so an agent there is at
+    // 'district'. test/vocabulary-sync.test.mjs now fails on any location
+    // string the client filters on that the vocabulary does not publish.
+    const present = fullList.filter(a => a.location === 'district');
     const incoming = new Set(present.map(a => a.id));
     const locOf = new Map(fullList.map(a => [a.id, a.location]));
     const activityOf = new Map(present.map(a => [a.id, a.activity]));
@@ -431,7 +439,7 @@ export class DistrictScene extends Phaser.Scene {
       if (this.leaving.has(id)) return; // already walking to the door
       // cosmetics: went into a building — walk to its door and "enter" (incl. at night
       // to the dorm — that is exactly the old going-to-bed visual)
-      const door = newLoc !== 'farm' ? this.doorPoints.get(sceneKeyFor(newLoc)) : undefined;
+      const door = this.doorPoints.get(sceneKeyFor(newLoc));
       if (door && !sprite.isAsleep) {
         const st = this.nightStates.get(id);
         if (st) this.releaseNightState(id, st);
@@ -446,7 +454,7 @@ export class DistrictScene extends Phaser.Scene {
       if (this.agentSprites.has(a.id)) return;
       // came out of a building — appears at its door; otherwise at a spawn point
       const from = this.lastLoc.get(a.id);
-      const door = from && from !== 'district' && from !== 'farm'
+      const door = from && from !== 'district'
         ? this.doorPoints.get(sceneKeyFor(from))
         : undefined;
       const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];

@@ -27,9 +27,13 @@ let pendingFocusId: string | null = null;
 GameBridge.on('scene:changed', ({ scene }) => { currentSceneKey = scene; });
 
 GameBridge.on('agent:goto', ({ agentId, location }) => {
-  // the farm is drawn on the district map; it has no venue of its own
-  const sceneFor = (loc: string) => (loc === 'farm' ? 'DistrictScene' : sceneKeyFor(loc));
-  const targetScene = sceneFor(location);
+  // A FOURTH `farm` site, which the plan's three-site anchor missed and the
+  // new vocabulary-sync check found: `loc === 'farm' ? 'DistrictScene' : …`.
+  // It was unreachable for the same reason as the other three — the api only
+  // ever asserts a venueId the published vocabulary vouches for, and `farm`
+  // has never been published. sceneKeyFor already sends 'district' to
+  // DistrictScene, so the special case bought nothing.
+  const targetScene = sceneKeyFor(location);
   if (targetScene === currentSceneKey) {
     pendingFocusId = null;
     GameBridge.emit('agent:focus', { agentId });
