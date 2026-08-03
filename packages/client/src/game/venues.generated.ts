@@ -1145,11 +1145,13 @@ export const VENUES: VenueDescriptor[] = [
     "groundAtlas": "interiors_ground",
     "capacity": 6,
     "roles": [
-      "hangout"
+      "hangout",
+      "home"
     ],
     "affords": [
       "socialize",
-      "idle"
+      "idle",
+      "sleep"
     ],
     "hours": [
       {

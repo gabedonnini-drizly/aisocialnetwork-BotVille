@@ -23,6 +23,42 @@
       "coefficient": 0.10,
       "world_effect": "plaque",
       "candidate_template": "{title} is drawing people to the {venue_label} — stop by."
+    },
+    {
+      "kind": "build",
+      "accrual": {
+        "source": "contributions",
+        "aggregation": "sum_amount",
+        "presence_required": true
+      },
+      "target_unit": "points",
+      "coefficient": 0.12,
+      "world_effect": "build",
+      "candidate_template": "The town is building {title} — head to the site and pitch in."
+    },
+    {
+      "kind": "demolition",
+      "accrual": {
+        "source": "contributions",
+        "aggregation": "sum_amount",
+        "presence_required": true
+      },
+      "target_unit": "points",
+      "coefficient": 0.12,
+      "world_effect": "demolition",
+      "candidate_template": "The town voted to pull down {title} — lend a hand."
+    },
+    {
+      "kind": "charter",
+      "accrual": {
+        "source": "contributions",
+        "aggregation": "sum_amount",
+        "presence_required": false
+      },
+      "target_unit": null,
+      "coefficient": null,
+      "world_effect": "charter",
+      "candidate_template": "{title} stands as the town's law until an election unseats it."
     }
   ],
   "radiant_templates": [
@@ -48,6 +84,18 @@
         "kind": "restore",
         "title_pattern": "Tend the {venue_label}",
         "rationale_pattern": "Nothing got built this season. The {venue_label} could use care."
+      }
+    },
+    {
+      "template_id": "town-needs-homes",
+      "trigger": {
+        "predicate": "unhoused_above_threshold",
+        "params": {}
+      },
+      "instantiates": {
+        "kind": "build",
+        "title_pattern": "Raise homes near the {venue_label}",
+        "rationale_pattern": "People are sleeping rough. The town could raise homes near the {venue_label}."
       }
     }
   ]

@@ -82,18 +82,52 @@ test('venues.json publishes the vocabulary sorted by id (I-8)', () => {
   assert.deepEqual(pub.find(v => v.id === 'cafe').affords, cafe.affords);
 });
 
+/**
+ * Two things that used to be the same set and are not any more.
+ *
+ * RESIDENCE INSTANCES are what the house generator stamps —
+ * `deriveResidenceCount(town)` of them, all archetype `house`.
+ *
+ * HOME-ROLE VENUES are everything the schedule writer can put a sleeping
+ * agent in. D-60's shelter joined that set without being a stamped
+ * residence: it is an authored venue that is a hangout by day and a home by
+ * night. Collapsing the two would either miscount the residences or forbid
+ * the shelter.
+ *
+ * What has NOT changed is the F-12 night rule: only a home-role venue may
+ * afford sleep, so a sleeping agent can never be placed in a public room.
+ */
 test('residence instances join the vocabulary and afford sleep (addendum I.2)', () => {
   const { out } = bake();
   const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
   const town = JSON.parse(readFileSync('town/town.json', 'utf8'));
-  const homes = pub.filter(v => v.roles.includes('home'));
-  assert.equal(homes.length, deriveResidenceCount(town));
-  for (const h of homes) {
-    assert.equal(h.archetype, 'house');
+
+  const stamped = pub.filter(v => v.archetype === 'house');
+  assert.equal(stamped.length, deriveResidenceCount(town),
+    'the house generator stamps the town-derived count');
+  for (const h of stamped) {
+    assert.ok(h.roles.includes('home'), h.id);
     assert.ok(h.affords.includes('sleep'), h.id);
   }
-  // No other venue affords sleep — the schedule writer can only put a
-  // sleeping agent in a residence (the F-12 night rule, by construction).
+
+  const homes = pub.filter(v => v.roles.includes('home'));
+  for (const h of homes) {
+    assert.ok(h.affords.includes('sleep'),
+      `${h.id} carries the home role but affords no sleep — the schedule writer would send `
+      + 'an agent home to a venue it cannot sleep in');
+  }
+
+  // D-60's shelter: a home that is not a stamped residence. Asserted as a
+  // SHAPE, not by id, so it survives the vocabulary changing again.
+  const shelters = homes.filter(v => v.archetype !== 'house');
+  for (const s of shelters) {
+    assert.ok(s.roles.includes('hangout'),
+      `${s.id} is a home but not a residence instance — the only such venue is the shelter, `
+      + 'which stays a daytime hangout too');
+  }
+
+  // The F-12 night rule, by construction: nothing outside the home-role set
+  // affords sleep.
   assert.deepEqual(pub.filter(v => v.affords.includes('sleep')), homes);
 });
 

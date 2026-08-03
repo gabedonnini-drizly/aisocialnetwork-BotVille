@@ -73,11 +73,25 @@ test('the café stays open past midnight — the night-venues window (owner deci
     'the café must carry an after-midnight window (split at midnight, never wrapped) so night-owls have an indoor venue');
 });
 
-test('the dorm is a hangout, not a home — sleep happens in residences (F-12)', () => {
+/**
+ * D-60's shelter rung. The dorm was art-complete for this from the start —
+ * four beds, bed-kind seats, nightstands, capacity 6 — and mislabelled as
+ * data (kickoff correction 3). It is BOTH: a hangout by day and the town's
+ * shelter by night.
+ *
+ * This landed only AFTER plan `01-` Task 3 backfilled a stored home
+ * assignment for every agent. Before that, giving the dorm the home role
+ * re-homed 73 of 85 through `deriveResidenceVenues`'s ordering — `dorm`
+ * sorts before `house_1` — and broke the invariant that get-city-map never
+ * disagrees with a stored routine [R: F-7].
+ */
+test('the dorm is the shelter: a hangout that is also a home (D-60)', () => {
   const dorm = load('dorm');
-  assert.deepEqual(dorm.roles, ['hangout']);
-  assert.equal(dorm.affords.includes('sleep'), false,
-    'the dorm must not afford sleep, or the schedule writer funnels the whole roster back into it');
+  assert.deepEqual(dorm.roles, ['hangout', 'home']);
+  assert.ok(dorm.affords.includes('sleep'),
+    'the shelter must afford sleep, or the unhoused have nowhere the schedule writer can reach');
+  assert.ok(dorm.affords.includes('socialize'), 'it does not stop being a hangout');
+  assert.ok(dorm.seats.some(s => s.kind === 'bed'), 'the art was always a shelter; the data has caught up');
 });
 
 test('descriptor ids match their directory', () => {

@@ -53,11 +53,13 @@
     "capacity": 6,
     "archetype": "dorm",
     "roles": [
-      "hangout"
+      "hangout",
+      "home"
     ],
     "affords": [
       "socialize",
-      "idle"
+      "idle",
+      "sleep"
     ],
     "hours": [
       {
