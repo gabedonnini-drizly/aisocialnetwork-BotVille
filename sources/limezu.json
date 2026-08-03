@@ -85,7 +85,6 @@
     "animal_pig_sheet": "farm/16x16/Animals_16x16/Pigs/Pig_Pink_16x16.png",
     "animal_dog_sheet": "farm/16x16/Animals_16x16/Dogs/Dog_Labrador_Brown_16x16.png",
     "animal_chicken_sheet": "farm/16x16/Animals_16x16/Chickens_and_Roosters/Chicken_White_16x16.png",
-
     "tent_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_1.png",
     "tent_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_2.png",
     "tent_3_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/11_Camping_Singles_16x16/ME_Singles_Camping_16x16_Tent_3.png",
@@ -144,7 +143,6 @@
     "condo_7_modular_top_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Top.png",
     "condo_7_modular_middle_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Middle.png",
     "condo_7_modular_bottom_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/4_Generic_Building_Singles_16x16/ME_Singles_Generic_Building_16x16_Condo_7_Modular_Bottom.png",
-
     "building_skeleton_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Building_Skeleton_1.png",
     "building_skeleton_2_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Building_Skeleton_2.png",
     "excavator_1_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Excavator_1.png",
@@ -187,7 +185,6 @@
     "worksite_ground_5_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_5.png",
     "worksite_ground_6_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Ground_1_6.png",
     "worksite_entrance_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/8_Worksite_Singles_16x16/ME_Singles_Worksite_16x16_Entrance_1.png",
-
     "garden_fountain_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Fountain_1_1.png",
     "garden_arch_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Grass_Arch_1.png",
     "garden_statue_s": "exteriors/Modern_Exteriors_16x16/ME_Theme_Sorter_16x16/17_Garden_Singles_16x16/ME_Singles_Garden_16x16_Angel_Statue_1.png",
@@ -1112,572 +1109,710 @@
       "note": "interim delivery until Plan 4's composer retires premade variants",
       "pin": "fea3d0bc019de48bcf2486d1111a7253240c23b2aa73b8ed4a87a6140390da85"
     },
-
     "tent_1": {
       "file": "tent_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "69b63de3e85988e5003b7ddcb2df84c1b4372cd98cf1d97d93ab8d6216692272"
     },
     "tent_2": {
       "file": "tent_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "31c786bc082120e0786c328f379f5094b3ca374766f9f9614aafe650a168d6fb"
     },
     "tent_3": {
       "file": "tent_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "cf85014747a38748a2150a39b53967e6f98198f49d776dc1e86eb1c48603f1af"
     },
     "tent_4": {
       "file": "tent_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "bea72febb1c8fe635893cfd98e010fe09ea25ef59a507ad1fa24aeca408d9a7c"
     },
     "tent_5": {
       "file": "tent_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "af0106390c9e123840200bc6c1c9bdb300531a7d00883062083df0b067469dbc"
     },
     "tent_6": {
       "file": "tent_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "eec2cca629fcfc2e7fa6caad3fec797a9e206d95e3b6dc005c0159930132f25d"
     },
     "sleeping_bag_1": {
       "file": "sleeping_bag_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "8136c147db2700ee2b5d363d9de1f1352c6e306fcdd5e24dfee8bb2c71fdd12b"
     },
     "sleeping_bag_2": {
       "file": "sleeping_bag_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "0d582dbd83aa86a445d76e8b556c7ba4af6394db669b4ef9e106195510706e68"
     },
     "sleeping_bag_3": {
       "file": "sleeping_bag_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "b2db44c53b8c44cfc16c2f64b9484346dae1bc48a63035b2a409b1bed5dec0e2"
     },
     "sleeping_bag_4": {
       "file": "sleeping_bag_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "2ae41b5df0eb8d990e3fde6dcf0aa419656aa3721fad0151e7f2f845e5c91a2a"
     },
     "sleeping_bag_5": {
       "file": "sleeping_bag_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "0f6491e60e0dff776c8b1b6e7d54b206b13edcb527344073a5b6f1a956052f24"
     },
     "campfire_1": {
       "file": "campfire_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "f92c7c3200254ad33ad31b9b73079791aa583967b25ec4403378175103e947a1"
     },
     "campfire_2": {
       "file": "campfire_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "cedc8789dc9cc06374d0d0a52895cde53f2ca7aa0f2854d6231846a173aa2e97"
     },
     "campfire_3": {
       "file": "campfire_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "8d437686b255d763a3a1b5c3bfb5f53313956e6662b7ba5492eceae6ff5ec593"
     },
     "lantern": {
       "file": "lantern_s",
-      "trim": true
+      "trim": true,
+      "pin": "18bbf4c3d85178be823168e0a7a63602bb763a5e15fa5dc1376c8fe330f5b8f0"
     },
     "mobile_home_small": {
       "file": "mobile_home_small_s",
-      "trim": true
+      "trim": true,
+      "pin": "29989c1cfdb5f3aac476ad2852542a0c1951fef17e79c0a1f457ca316c97ad98"
     },
     "mobile_home_medium": {
       "file": "mobile_home_medium_s",
-      "trim": true
+      "trim": true,
+      "pin": "a310e68edd12faaa1e9546b0034d4a59379b8cb0d4dcc746497f8a862997c1e2"
     },
     "mobile_home_big": {
       "file": "mobile_home_big_s",
-      "trim": true
+      "trim": true,
+      "pin": "d549724e140c610785054d7af03620b0a3ec6a74576052d6874bf13c47f06717"
     },
     "one_story_house": {
       "file": "one_story_house_s",
-      "trim": true
+      "trim": true,
+      "pin": "7027df926f4f04231af551c31871cb7bb7acd2a731ddecc81178df832e8bc5c0"
     },
     "terraced_house_1": {
       "file": "terraced_house_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "c1838c659924d92868db22fd74aec2caa24a2ea301ad321bd405e7f7a9520b31"
     },
     "terraced_house_2": {
       "file": "terraced_house_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "07194860b740817d6e6eec8dba1678f1dbe05a50301faa1d0a808e9b49625b81"
     },
     "terraced_house_3": {
       "file": "terraced_house_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "dc27b95175f79384df0c789feb2f18fcc16a80f765c5a2c09a06501ad7d707da"
     },
     "terraced_house_4": {
       "file": "terraced_house_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "53c635d01d6579c962b4a341f9bc3bb6c1f941ecb15d767f883c279ac40fe369"
     },
     "terraced_house_5": {
       "file": "terraced_house_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "54943ebd7c3ce1c51dd547cd6526024b2e43d5b3b40cbcb8317e4ed013a8d9d4"
     },
     "terraced_house_6": {
       "file": "terraced_house_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "7214781e6c58dc9b5cf72b6a75e488d0f88b484f2e138388cbc46bed825e0e4a"
     },
     "terraced_house_modular_1": {
       "file": "terraced_house_modular_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "8d061d5382841803ff0da456c34bf23df1702bb4bb3d4c1911c72a803bd43d7e"
     },
     "terraced_house_modular_2": {
       "file": "terraced_house_modular_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "7471a7d39ad36d6d0a157370a4f42bd5bd7ec3b8614a461139ecd5e9962dbf10"
     },
     "terraced_house_modular_3": {
       "file": "terraced_house_modular_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "786e6a231e6efb64fa414bfffe4e411420378d647dd3b47dd71f8157c944fed1"
     },
     "terraced_house_modular_4": {
       "file": "terraced_house_modular_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "0e45e917247b522772ee5a7ab9170de89ea1b04f8c95c4166659ba8bfa859a73"
     },
     "terraced_house_modular_5": {
       "file": "terraced_house_modular_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "ba87e1363d3e796557eba52faf9199cc2784d1a18f38b384d90c8c89244743fb"
     },
     "terraced_house_modular_6": {
       "file": "terraced_house_modular_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "35599a365f3c7bfd6e55a52c15f295c784b57f4594b064763081c68add3ef2fa"
     },
     "country_house": {
       "file": "country_house_s",
-      "trim": true
+      "trim": true,
+      "pin": "da4c6a1ca94fe86470ad0cc45a81fbbfd36c698866d216990531525714ff5d9f"
     },
     "villa_1": {
       "file": "villa_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "3aa8fbe5b61536119f19d5d7dc6e3d12b5895fd6b631649b95534b2df7eb2572"
     },
     "villa_2": {
       "file": "villa_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "de568762a2bc3477318e0a06b49bf82d851d6744cbb134eed59b44e1ba389ee3"
     },
     "villa_3": {
       "file": "villa_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "136d2f9c32075779cc0adf0675121687f071a0058c5664af2d535cc1165bee76"
     },
     "villa_4": {
       "file": "villa_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "673c9793f0201de4f4090a9979bf0ca1232395e793c7ddddd4b8a52f6cc2168f"
     },
     "villa_5": {
       "file": "villa_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "027df63a5b2b0ef271195e4c101b2dc99babd59b69ed0ad244b2a6e6cfcb7fdc"
     },
     "villa_chimney_1": {
       "file": "villa_chimney_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "5d3ac658c8e88ac69fdac0350ffe029e76dc818f1f67c19bb0c7b01fd3bfc0a6"
     },
     "villa_chimney_2": {
       "file": "villa_chimney_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "f024f6a2c2c5eda793d00afc4cb6ede0b27268c2a557d61bc493a97dbf74d9e3"
     },
     "villa_chimney_3": {
       "file": "villa_chimney_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "dd639c76d577fccee3cf19150716dbad6f2678b76e4c5d2969e9d0ed10f081c9"
     },
     "villa_chimney_4": {
       "file": "villa_chimney_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "05b177866b25e10ed0732a1cbbc772213fdce37be543700fc1522d69ecc719a1"
     },
     "villa_chimney_5": {
       "file": "villa_chimney_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "dfc66dc79167a7d1958f235a5c6be7ab86739eedb4af0620e22b6d5da5250bca"
     },
     "villa_roof_window_1": {
       "file": "villa_roof_window_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "7834b85970ba7b02fca9a3a38a3b79e2eabaed475a90c7bc27cb71f0e5625651"
     },
     "villa_roof_window_2": {
       "file": "villa_roof_window_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "829592cb7a77b8f22e880909788e4112253c077df012696e236b25ae57245593"
     },
     "villa_roof_window_3": {
       "file": "villa_roof_window_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "3ad545c10022b68153310681fa34c03f2316e9f8d431aa0d132b4c483caaa6d2"
     },
     "villa_roof_window_4": {
       "file": "villa_roof_window_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "4858c80dd0873d3e215a941a984c0d68486fd8b38a0e68a2ce24794327d6efa4"
     },
     "villa_roof_window_5": {
       "file": "villa_roof_window_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "45f0521f1d00c3e2430cf9964aec0ae9e8151b2323678977bcd09f4b4b835cba"
     },
     "villa_solar_panel_1": {
       "file": "villa_solar_panel_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "4be25cdb5554f50a74ca33f070edb3183b831231232c71426031591a6f76490b"
     },
     "villa_solar_panel_2": {
       "file": "villa_solar_panel_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "7f16a5f7854f860767b668815ddc20da0321eb3ecd3c84cce38d4c26a0024239"
     },
     "villa_solar_panel_3": {
       "file": "villa_solar_panel_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "a75106f5bac12332fd0da0a67886cfd02440fb204805ce164d0b36c83a64a257"
     },
     "villa_solar_panel_4": {
       "file": "villa_solar_panel_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "d886708a39ad40eddbbfca1478b9b9e383109cc82a2aadd1f3e7a38bd751b078"
     },
     "villa_solar_panel_5": {
       "file": "villa_solar_panel_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "b64481dbe2deaa6f64784e3afa9cc840fd8936fd27b76679e505ab67ab75e777"
     },
     "condo_6": {
       "file": "condo_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "68f099cbfc40fa4540937f763d9e26c3ee658c6f6fff6c63b49854b69c2bdcad"
     },
     "condo_8": {
       "file": "condo_8_s",
-      "trim": true
+      "trim": true,
+      "pin": "7fbc6361473600f31dbab6e72db3eeffc808c92532c219afc71e8670676a958a"
     },
     "condo_9": {
       "file": "condo_9_s",
-      "trim": true
+      "trim": true,
+      "pin": "f6b54e895a876e548260ea6b3d8a3a6445e34e8a93a3e01e36e419679de6820e"
     },
     "condo_7_modular_top": {
       "file": "condo_7_modular_top_s",
-      "trim": true
+      "trim": true,
+      "pin": "f20acb19857c02247e2bd761a69b96c09d8d3143dec9228fd5ba6697fa1e72ad"
     },
     "condo_7_modular_middle": {
       "file": "condo_7_modular_middle_s",
-      "trim": true
+      "trim": true,
+      "pin": "c7ec9990eab1ed7c8644df53c7d27fdfe8cc66c0d30c5744d706e3bb313ea3b1"
     },
     "condo_7_modular_bottom": {
       "file": "condo_7_modular_bottom_s",
-      "trim": true
+      "trim": true,
+      "pin": "9820a9f82d1042a7603656069f8a63768497bcc835d22808e65086f1dfc5efb6"
     },
-
     "building_skeleton_1": {
       "file": "building_skeleton_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "1991b836fecf1190d5b77a26648eda80606b56f9d7ccb2d5ad4d01f5fdcc4c97"
     },
     "building_skeleton_2": {
       "file": "building_skeleton_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "ef298371bdd42ce63f9fda3755b6c872f1cea03ed9a906ecfc9c3bac6ff6e165"
     },
     "excavator_1": {
       "file": "excavator_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "c2ea46dc1eefb1db07a478763aef25bb8fa143964becb864a833bf49afeed325"
     },
     "excavator_2": {
       "file": "excavator_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "8931bae00c71c06a25f6acdf89add68f7143417b85474c241b1f4d0afb25951c"
     },
     "excavator_3": {
       "file": "excavator_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "ec425488b6c3e64828db06a3d2835187521f92a20fadc57ce9955d06921b5aee"
     },
     "excavator_4": {
       "file": "excavator_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "560b6b8e9dc03fd8a64c1ca8ca4e9af4f036744fae502e50da2f6e9dc944a5fd"
     },
     "scissor_lifter_1": {
       "file": "scissor_lifter_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "078255de416f470615091e818dffe883f627d94bda33767eef017623487e6b60"
     },
     "scissor_lifter_2": {
       "file": "scissor_lifter_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "8bf848d14dbc6e609223a50f8b3321c49b2faa0cd9fb8e22049a5bcd8919f528"
     },
     "light_tower_1": {
       "file": "light_tower_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "521fe24afffce0a7a0871c389f7e4c940400a389d08c4e32ea093687570f0663"
     },
     "light_tower_2": {
       "file": "light_tower_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "2cfe9500dc9f9ddf94242771ae02cc09c674b0d0f359067cec07d1edda80b314"
     },
     "stacked_material_1": {
       "file": "stacked_material_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "7ba5830af7e4152b6cc583a232b518a766e0676fdd1784a59d71a59b4752d894"
     },
     "stacked_material_2": {
       "file": "stacked_material_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "98326c084c3a107b4cd256d8b4c09e7fd0233fa982d88732b44aa50f457677ef"
     },
     "stacked_material_3": {
       "file": "stacked_material_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "2d8ecb232e65db4d6a79812a6795f3fe79f26edc34635246b5e9889130a0a00b"
     },
     "stacked_material_4": {
       "file": "stacked_material_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "6cf15d820d4f8470365116ac02c5efc365ac6aed87db9b85558625e9ceb4093c"
     },
     "stacked_material_5": {
       "file": "stacked_material_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "70e644b96e6db476607d36df6b323617ee53fae0f98f22a1cd8a13a68fe0b3fb"
     },
     "stacked_material_6": {
       "file": "stacked_material_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "54d8e3e89c935a6232bea07afa14d6c4c915451ba1f4d5618554503119767f35"
     },
     "stacked_material_7": {
       "file": "stacked_material_7_s",
-      "trim": true
+      "trim": true,
+      "pin": "93860de933ac94e8e1c9d64b3cbfc91a6e04e84d0b5ec1e1608bd7d53a72754d"
     },
     "worksite_cone_1": {
       "file": "worksite_cone_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "bc06849bcf48b92092aff4440f9baa22dd86eb49cbbb3c10a913edc439d9a6c0"
     },
     "worksite_cone_2": {
       "file": "worksite_cone_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "52e7419831b84f15f1f28de3e48c33b2c95b6fff25ba7bfed0929d8ceee9b8f8"
     },
     "worksite_fence_1_1": {
       "file": "worksite_fence_1_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "62bda750f4a2a5fb7adc172e32fa158d52d5fdd6e760e27aa4f06863fe07c2f4"
     },
     "worksite_fence_1_2": {
       "file": "worksite_fence_1_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "7051a3e1dfa25976d72414724e8c7ed74370862f5b0667641ea768f20dabe736"
     },
     "worksite_fence_1_3": {
       "file": "worksite_fence_1_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "4fabe1159001c0183a5926741be511b3281bf7e0a33c4b23270cb1e83850b2e9"
     },
     "worksite_fence_1_4": {
       "file": "worksite_fence_1_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "1dd16f44fae99591828ac350def8b21fb97002bdcb27a6e6860e68a8e689600f"
     },
     "worksite_fence_1_5": {
       "file": "worksite_fence_1_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "582c9b20cd9b05d45642b65fa29ad9f50fbcf54950fc77c2282e745ff4fbdbf5"
     },
     "worksite_fence_1_6": {
       "file": "worksite_fence_1_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "b7df07a741b2cf211540b16a2f774d6faba5d737f86ccff683be7fb7f311144f"
     },
     "worksite_fence_1_7": {
       "file": "worksite_fence_1_7_s",
-      "trim": true
+      "trim": true,
+      "pin": "56fd9a72dc1124a8201da9a90905b7e84078bbfe5c12c44a005887c6a7ed3d65"
     },
     "worksite_fence_1_8": {
       "file": "worksite_fence_1_8_s",
-      "trim": true
+      "trim": true,
+      "pin": "771743a94dc39f0e55400303832d28512c39737ab1f0b2271e486f85617c10ec"
     },
     "worksite_fence_2_1": {
       "file": "worksite_fence_2_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "636fb13efe70fb1ea1f1d2b3e37a4307be51e1213ca8bf5dbddbfd2b12a6b75d"
     },
     "worksite_fence_2_2": {
       "file": "worksite_fence_2_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "c64a63a68863a2c6107d4b1c365f0720cc4c7245e3352cb7da22044a0c3c623e"
     },
     "worksite_fence_2_3": {
       "file": "worksite_fence_2_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "8bf7028523f57bac477616f3c226efeca8eec2fbff3d328a9062c854495f4da7"
     },
     "worksite_fence_2_4": {
       "file": "worksite_fence_2_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "1dd16f44fae99591828ac350def8b21fb97002bdcb27a6e6860e68a8e689600f"
     },
     "worksite_fence_2_5": {
       "file": "worksite_fence_2_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "bb0dc02dd4b23c546f4f09bdf091366ad6eb14cfc19a285a8a6d79853d299b01"
     },
     "worksite_fence_2_6": {
       "file": "worksite_fence_2_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "e6fce6293c081a89ffe54efc3e12a6cc670bd70512b2778aa21d4fc898fe293d"
     },
     "worksite_fence_2_7": {
       "file": "worksite_fence_2_7_s",
-      "trim": true
+      "trim": true,
+      "pin": "7ff683f6bb57469b3f323ecde35d1e5e3c9b3b97a23f9dc4b38ab082ba0ecbf8"
     },
     "worksite_fence_2_8": {
       "file": "worksite_fence_2_8_s",
-      "trim": true
+      "trim": true,
+      "pin": "771743a94dc39f0e55400303832d28512c39737ab1f0b2271e486f85617c10ec"
     },
     "worksite_ground_1": {
       "file": "worksite_ground_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "23ff6998d480655aa95a6c40615fe52fd620f1834a023714139716e74f6c9e9c"
     },
     "worksite_ground_2": {
       "file": "worksite_ground_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "2aa2c937664acf6ff7ca32b0e8d8484962f1d6e033fb99f910520b77f87866a8"
     },
     "worksite_ground_3": {
       "file": "worksite_ground_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "8866db1c65bcf73e9d601a96a29d02e3569c47c92a10f37e31e63d91731962da"
     },
     "worksite_ground_4": {
       "file": "worksite_ground_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "b66d98c1d20acd695e6d336fe07622a50c392937ad899efc1833eb490d1c75e8"
     },
     "worksite_ground_5": {
       "file": "worksite_ground_5_s",
-      "trim": true
+      "trim": true,
+      "pin": "f7c6236c999d851adb39c6a53b7d7b037a14144ee1c75aa757ce2bd1f7072a0a"
     },
     "worksite_ground_6": {
       "file": "worksite_ground_6_s",
-      "trim": true
+      "trim": true,
+      "pin": "d71d0630c91d9425bb8216de97f4884a2cc22afe24ebc1dacad2aff21e3b286e"
     },
     "worksite_entrance": {
       "file": "worksite_entrance_s",
-      "trim": true
+      "trim": true,
+      "pin": "6c0e5b2bc5a7b3829f68642907db5a8571fd09bedf9d366d1c8cd3ba2efd56b9"
     },
-
     "garden_fountain": {
       "file": "garden_fountain_s",
-      "trim": true
+      "trim": true,
+      "pin": "2329efc328ba68d289a77ba1cee49933048abf3f6ae26fc2296a890cce3be8b7"
     },
     "garden_arch": {
       "file": "garden_arch_s",
-      "trim": true
+      "trim": true,
+      "pin": "e846878c3ea9e6468729ade659e8551d7b15399e34de7a61da933078e63eaa8e"
     },
     "garden_statue": {
       "file": "garden_statue_s",
-      "trim": true
+      "trim": true,
+      "pin": "86e8e7f0d37e95bd5a9a77c84c5d1eec215e01a8ff5db274c38952257a6ff652"
     },
     "garden_bench_h": {
       "file": "garden_bench_h_s",
-      "trim": true
+      "trim": true,
+      "pin": "9447c9b3f1a4796e16d9dd1e4a4a24c9467a4e9bea57d5d2bf8388167601f491"
     },
     "garden_bench_v": {
       "file": "garden_bench_v_s",
-      "trim": true
+      "trim": true,
+      "pin": "fe51b1afc145317e96d290c86d9d46ceb39f686abde6969c38ee09cec77c040a"
     },
     "garden_flower_red": {
       "file": "garden_flower_red_s",
-      "trim": true
+      "trim": true,
+      "pin": "75afd4bddbe851e5d6edeaf81ce7ec1d429125abba31d58f9feaf0f250523c52"
     },
     "garden_flower_pink": {
       "file": "garden_flower_pink_s",
-      "trim": true
+      "trim": true,
+      "pin": "18a1f9025cbbf4cda843a64c4600157ccb3ef2df29f3200e4dbbbf35d9192b4a"
     },
     "garden_flower_blue": {
       "file": "garden_flower_blue_s",
-      "trim": true
+      "trim": true,
+      "pin": "cc2bc7df907859e73d32a0b4b668d4ca364c0971616602d55d77bb1fc88f761e"
     },
     "garden_bush_1": {
       "file": "garden_bush_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "fbd9d1c14e9fa21d7f7fc3956043593d23954a6ff617343bec2fba7d86c92b5b"
     },
     "garden_bush_2": {
       "file": "garden_bush_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "fade5c87ee1d3cfad00573b91bf7e065fb3caa365e8aa49ebff0801cb3938f9b"
     },
     "garden_bush_3": {
       "file": "garden_bush_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "452cbdaacb5f0822875c97113eb89dd5b574f3133e255ab9ddcef71e4e090086"
     },
     "market_building_1": {
       "file": "market_building_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "0867dc1d54a83e9d0f6fe43cf0136632105096498ab9d4dff44f1d76ca9ce837"
     },
     "market_building_2": {
       "file": "market_building_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "781aa2ae8410ef745580659a7ef381a1abc27fe75f64d7290c935ae3631138bb"
     },
     "market_building_3": {
       "file": "market_building_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "0015a699610e7afb4004c15ccfb748dc413b5bc76bdb9fd428289c0fda04b8af"
     },
     "market_signboard": {
       "file": "market_signboard_s",
-      "trim": true
+      "trim": true,
+      "pin": "246c7030e5510e78c0729b24295c9c39fcbdfcacbe2f4358e87e32de891c8f7f"
     },
     "post_office_building_1": {
       "file": "post_office_building_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "89167368cf8281527edca05e2069215fed225bce11de07c1c4f820c548942f55"
     },
     "post_office_building_2": {
       "file": "post_office_building_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "828ffd547b2b98efdf765fc15310b0bb0dd7667cb1917cf194b54992d6b28e99"
     },
     "post_office_building_3": {
       "file": "post_office_building_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "742a2872183d93f5e864feec8cf2e1c8a341ea379031fb59b9da633d71c6491b"
     },
     "post_office_building_4": {
       "file": "post_office_building_4_s",
-      "trim": true
+      "trim": true,
+      "pin": "2f903e0dac3ab9c7bfc9d64e6f83844bd0cd4200da8b096692a9a8c2926f753a"
     },
     "mailbox_blue": {
       "file": "mailbox_blue_s",
-      "trim": true
+      "trim": true,
+      "pin": "5bebb0102f340e5fd32e030b09614c478efda09652aa25904da7790a5729c494"
     },
     "mailbox_red": {
       "file": "mailbox_red_s",
-      "trim": true
+      "trim": true,
+      "pin": "4ca12c22d616cb11fb02bcd5980f57c09eb692d278a69f0cf96b13b760d9c541"
     },
     "post_truck": {
       "file": "post_truck_s",
-      "trim": true
+      "trim": true,
+      "pin": "92d42bf3e5e3f1ecb2b3c447d545eabfb8d99bb2a3a99e25897b1c909c213d05"
     },
     "noticeboard": {
       "file": "noticeboard_s",
-      "trim": true
+      "trim": true,
+      "pin": "515531a5fa93e51a103a012d6bb887f42412fa9396e06c0ddfc870921bd9a20d"
     },
     "school_building": {
       "file": "school_building_s",
-      "trim": true
+      "trim": true,
+      "pin": "a688e61888bdb66090c7b3caa57d6c4fdafa96ded7233bb85f7243679b61414f"
     },
     "school_flag": {
       "file": "school_flag_s",
-      "trim": true
+      "trim": true,
+      "pin": "b815c19d2b962d5754bedd707533d7255568af8a89e982e500866d3a269ee1e2"
     },
     "school_clock_tower": {
       "file": "school_clock_tower_s",
-      "trim": true
+      "trim": true,
+      "pin": "d6a1dac27fb4b5efa7edcba57f535eaa31188df580eaf3da82029fbad533ff56"
     },
     "school_basketball_net": {
       "file": "school_basketball_net_s",
-      "trim": true
+      "trim": true,
+      "pin": "3b508472263f6ce2ab62fe44a8717409646bed26708579f94769418f598a42b8"
     },
     "swimming_pool_1": {
       "file": "swimming_pool_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "59beb997c906b924b125e00203c79df970af2120114bc94529df0e06522c8ba2"
     },
     "swimming_pool_2": {
       "file": "swimming_pool_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "0d728b1f8174716d502ea15b030315eb29913a73757643e1802931af73449ced"
     },
     "swimming_pool_3": {
       "file": "swimming_pool_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "cfbd7c9c95217eddb5ff3cf8b597196842a134bdd07c5688ff214a2d438b0a7e"
     },
     "pool_lifeguard_chair": {
       "file": "pool_lifeguard_chair_s",
-      "trim": true
+      "trim": true,
+      "pin": "b1a1a39edebca0ea6794267e478992c8086c43a83350f6c86147d2d15c1f8232"
     },
     "pool_palm": {
       "file": "pool_palm_s",
-      "trim": true
+      "trim": true,
+      "pin": "532ad7286ac42c9781b06fc233306bc37cf2c3278a73b9e424860cf30e3befd8"
     },
     "museum_ground_floor_1": {
       "file": "museum_ground_floor_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "69aa6e4e8ea35336991f79c7a4b32e486b60de9d0b1ccda7b2728f68f1c6669c"
     },
     "museum_ground_floor_2": {
       "file": "museum_ground_floor_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "e4d48f50b72fbe7a9586e9e53b5095ce59c999bd75b13f0f3b7ae6fa7e6a4edc"
     },
     "museum_ground_floor_3": {
       "file": "museum_ground_floor_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "7c956779e5ac6816ef079d1d6937617979e3777bcdfdc6e46e7680e694ad861c"
     },
     "museum_middle_floor_1": {
       "file": "museum_middle_floor_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "3265d37de00e927fc83a1d5fce54235a721bfa56fc0463bf402c291d7f147ce3"
     },
     "museum_middle_floor_2": {
       "file": "museum_middle_floor_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "4f5ff4a0087398c4b6783b98fbdfa019f066ea83d15809748fb257b0d73ef1c1"
     },
     "museum_middle_floor_3": {
       "file": "museum_middle_floor_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "aa152a8556810b81ae6f5b7bc27d813de864dc8d98ddee805c3798ad22b28a20"
     },
     "museum_roof_1": {
       "file": "museum_roof_1_s",
-      "trim": true
+      "trim": true,
+      "pin": "fc2e7be5d39707f6ad3214345703f219fabf5da4de1ff360cf97404fb019d072"
     },
     "museum_roof_2": {
       "file": "museum_roof_2_s",
-      "trim": true
+      "trim": true,
+      "pin": "bd182cd5249ccfbe729a7aed733b4c42c2f81405bec35021160913e2b013bf88"
     },
     "museum_roof_3": {
       "file": "museum_roof_3_s",
-      "trim": true
+      "trim": true,
+      "pin": "4b561761db6dd30e3fb7c3b75e599709ee2a2b8031bef3b1f8843c40fe3eba49"
     }
   },
   "emoteFrames": {
