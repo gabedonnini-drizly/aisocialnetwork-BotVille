@@ -5,7 +5,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { venueRegistry, CLIENT_INTERNAL_LOCATIONS, sceneForLocation, sceneKeyFor } from '../packages/client/src/game/venueRegistry.ts';
 import { AGENT_LOCATIONS } from '../packages/shared/src/types/Agent.ts';
-import { resolveSiblingRepo } from './helpers/siblingRepo.mjs';
+import { resolveSiblingRepo, envKey } from './helpers/siblingRepo.mjs';
 import { skipUnless } from './helpers/skip.mjs';
 import { checkPlots, collectPlots } from './helpers/plotCoverage.mjs';
 
@@ -28,7 +28,7 @@ test('the lock matches the artifact it locks', () => {
 });
 
 test('the platform copy matches ours (I-8)',
-  skipUnless(!!apiCopy && existsSync(apiCopy), `${API_NAME}/config/venues.json not found — set BOTVILLE_API_REPO to run the cross-repo check`),
+  skipUnless(!!apiCopy && existsSync(apiCopy), `${API_NAME}/config/venues.json not found — set ${envKey(API_NAME)} to run the cross-repo check`),
   () => {
     const theirs = JSON.parse(readFileSync(apiCopy, 'utf8'));
     const ours = JSON.parse(readFileSync(OURS, 'utf8'));
