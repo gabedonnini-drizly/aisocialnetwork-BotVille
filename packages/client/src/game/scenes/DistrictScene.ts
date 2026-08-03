@@ -10,6 +10,7 @@ import {
 } from '../config.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
 import { sceneKeyFor } from '../venueRegistry.js';
+import { planSync } from '../districtPresence.js';
 import { GameTime } from '../time.js';
 import { isSleepTime, nightIntensity, tintAt } from '../dayNight.js';
 import { ensureGlowTexture } from '../glowTexture.js';
@@ -413,52 +414,51 @@ export class DistrictScene extends Phaser.Scene {
 
   syncAgents(fullList: SyncedAgent[]) {
     // THE KEY FIX of TZ-16: the district draws only those the server says are
-    // outside or at the farm. The player entering/leaving has no effect on
-    // agent locations.
-    //
-    // 'farm' IS CLIENT-INTERNAL DISTRICT GEOGRAPHY, not a venue and not drift.
-    // The pen is drawn on this map (the cityGrid generator's pen/gate), so an
-    // agent at the farm is drawn by this scene — which is why it belongs in
-    // `present` alongside 'district' rather than being treated as somewhere
-    // else. The fixture server emits it: agentLife.ts:37 puts 'farm' in the
-    // human daytime pool, :38 in the animal pool, and :100 sends EVERY animal
-    // to the pen at night. Drop it here and the animals vanish nightly and
-    // updateNightBehavior loses its subjects. `packages/shared` AGENT_LOCATIONS
-    // and presence.ts's liveVenueLookup both carry it deliberately.
-    const present = fullList.filter(a => a.location === 'district' || a.location === 'farm');
-    const incoming = new Set(present.map(a => a.id));
-    const locOf = new Map(fullList.map(a => [a.id, a.location]));
-    const activityOf = new Map(present.map(a => [a.id, a.activity]));
-
-    this.agentSprites.forEach((sprite, id) => {
-      if (incoming.has(id)) {
-        // came back before reaching the door — the departure is cancelled
-        if (this.leaving.delete(id)) sprite.cancelGoal();
-        sprite.setActivity(activityOf.get(id));
-        return;
-      }
-      const newLoc = locOf.get(id);
-      if (!newLoc) { this.removeSprite(id); return; } // agent deleted entirely
-      if (this.leaving.has(id)) return; // already walking to the door
-      // cosmetics: went into a building — walk to its door and "enter" (incl. at night
-      // to the dorm — that is exactly the old going-to-bed visual)
-      const door = this.doorPoints.get(sceneKeyFor(newLoc));
-      if (door && !sprite.isAsleep) {
-        const st = this.nightStates.get(id);
-        if (st) this.releaseNightState(id, st);
-        this.leaving.set(id, { x: door.x, y: door.y, deadline: this.time.now + LEAVE_WALK_TIMEOUT_MS });
-        sprite.walkTo(door.x, door.y);
-      } else {
-        this.removeSprite(id); // asleep or no door found (incl. an unknown/absent new location) — no walk-out
-      }
+    // outside or at the farm, and the player entering/leaving has no effect on
+    // agent locations. WHO that is, and what happens to everyone else, is
+    // decided by game/districtPresence.ts — a pure module, so the decision is
+    // testable without Phaser and pinned by test/golden/district-render.json.
+    // This method is the EFFECTS half: it only carries the decision out.
+    const plan = planSync({
+      fullList,
+      drawnIds: [...this.agentSprites.keys()],
+      lastLoc: this.lastLoc,
+      hasDoorForScene: (key) => this.doorPoints.has(key),
+      isAsleep: (id) => this.agentSprites.get(id)?.isAsleep ?? false,
+      isLeaving: (id) => this.leaving.has(id),
     });
+    const activityOf = new Map(plan.present.map(a => [a.id, a.activity]));
 
-    present.forEach((a) => {
-      if (this.agentSprites.has(a.id)) return;
-      // came out of a building — appears at its door; otherwise at a spawn point
-      const from = this.lastLoc.get(a.id);
-      const door = from && from !== 'district'
-        ? this.doorPoints.get(sceneKeyFor(from))
+    for (const [id, decision] of plan.drawn) {
+      const sprite = this.agentSprites.get(id);
+      if (!sprite) continue;
+      switch (decision.kind) {
+        case 'stay':
+          // came back before reaching the door — the departure is cancelled
+          if (decision.cancelLeaving) { this.leaving.delete(id); sprite.cancelGoal(); }
+          sprite.setActivity(activityOf.get(id));
+          break;
+        case 'leaving':
+          break; // already walking to the door
+        case 'walk-to-door': {
+          const door = this.doorPoints.get(sceneKeyFor(decision.venueId))!;
+          const st = this.nightStates.get(id);
+          if (st) this.releaseNightState(id, st);
+          this.leaving.set(id, { x: door.x, y: door.y, deadline: this.time.now + LEAVE_WALK_TIMEOUT_MS });
+          sprite.walkTo(door.x, door.y);
+          break;
+        }
+        case 'remove':
+          this.removeSprite(id);
+          break;
+      }
+    }
+
+    plan.present.forEach((a) => {
+      const spawn = plan.spawn.get(a.id);
+      if (!spawn) return; // already drawn
+      const door = spawn.atDoorOf !== undefined
+        ? this.doorPoints.get(sceneKeyFor(spawn.atDoorOf))
         : undefined;
       const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
       const x = base.x + (Math.random() - 0.5) * 16;

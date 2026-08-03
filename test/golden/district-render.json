@@ -1,0 +1,1167 @@
+{
+  "_readme": "Golden baseline for the outdoor scene. See test/helpers/districtRender.mjs for what it does and does not cover. Regenerate: npm run golden:district",
+  "district": "district",
+  "geometry": {
+    "mapKey": "district",
+    "sizeTiles": [
+      48,
+      46
+    ],
+    "widthPx": 768,
+    "heightPx": 736,
+    "groundAtlas": "district_ground",
+    "mapWidth": 48,
+    "mapHeight": 46
+  },
+  "routing": {
+    "cafe": {
+      "sceneKeyFor": "VenueScene:cafe",
+      "sceneForLocation": "VenueScene:cafe"
+    },
+    "district": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "dorm": {
+      "sceneKeyFor": "VenueScene:dorm",
+      "sceneForLocation": "VenueScene:dorm"
+    },
+    "farm": {
+      "sceneKeyFor": "VenueScene:farm",
+      "sceneForLocation": "DistrictScene"
+    },
+    "house_1": {
+      "sceneKeyFor": "VenueScene:house_1",
+      "sceneForLocation": "VenueScene:house_1"
+    },
+    "house_10": {
+      "sceneKeyFor": "VenueScene:house_10",
+      "sceneForLocation": "VenueScene:house_10"
+    },
+    "house_11": {
+      "sceneKeyFor": "VenueScene:house_11",
+      "sceneForLocation": "VenueScene:house_11"
+    },
+    "house_12": {
+      "sceneKeyFor": "VenueScene:house_12",
+      "sceneForLocation": "VenueScene:house_12"
+    },
+    "house_13": {
+      "sceneKeyFor": "VenueScene:house_13",
+      "sceneForLocation": "VenueScene:house_13"
+    },
+    "house_2": {
+      "sceneKeyFor": "VenueScene:house_2",
+      "sceneForLocation": "VenueScene:house_2"
+    },
+    "house_3": {
+      "sceneKeyFor": "VenueScene:house_3",
+      "sceneForLocation": "VenueScene:house_3"
+    },
+    "house_4": {
+      "sceneKeyFor": "VenueScene:house_4",
+      "sceneForLocation": "VenueScene:house_4"
+    },
+    "house_5": {
+      "sceneKeyFor": "VenueScene:house_5",
+      "sceneForLocation": "VenueScene:house_5"
+    },
+    "house_6": {
+      "sceneKeyFor": "VenueScene:house_6",
+      "sceneForLocation": "VenueScene:house_6"
+    },
+    "house_7": {
+      "sceneKeyFor": "VenueScene:house_7",
+      "sceneForLocation": "VenueScene:house_7"
+    },
+    "house_8": {
+      "sceneKeyFor": "VenueScene:house_8",
+      "sceneForLocation": "VenueScene:house_8"
+    },
+    "house_9": {
+      "sceneKeyFor": "VenueScene:house_9",
+      "sceneForLocation": "VenueScene:house_9"
+    },
+    "library": {
+      "sceneKeyFor": "VenueScene:library",
+      "sceneForLocation": "VenueScene:library"
+    },
+    "no-such-place": {
+      "sceneKeyFor": "VenueScene:no-such-place",
+      "sceneForLocation": "VenueScene:no-such-place"
+    },
+    "office": {
+      "sceneKeyFor": "VenueScene:office",
+      "sceneForLocation": "VenueScene:office"
+    }
+  },
+  "objects": {
+    "propsBelow": [
+      {
+        "name": "soil_left",
+        "x": 592,
+        "y": 208,
+        "depth": 2
+      },
+      {
+        "name": "soil_mid",
+        "x": 608,
+        "y": 208,
+        "depth": 2
+      },
+      {
+        "name": "soil_right",
+        "x": 624,
+        "y": 208,
+        "depth": 2
+      },
+      {
+        "name": "crop_cabbage",
+        "x": 592,
+        "y": 208,
+        "depth": 2
+      },
+      {
+        "name": "crop_cabbage",
+        "x": 608,
+        "y": 208,
+        "depth": 2
+      },
+      {
+        "name": "crop_cabbage",
+        "x": 624,
+        "y": 208,
+        "depth": 2
+      },
+      {
+        "name": "soil_left",
+        "x": 592,
+        "y": 240,
+        "depth": 2
+      },
+      {
+        "name": "soil_mid",
+        "x": 608,
+        "y": 240,
+        "depth": 2
+      },
+      {
+        "name": "soil_right",
+        "x": 624,
+        "y": 240,
+        "depth": 2
+      },
+      {
+        "name": "crop_berry",
+        "x": 592,
+        "y": 240,
+        "depth": 2
+      },
+      {
+        "name": "crop_berry",
+        "x": 608,
+        "y": 240,
+        "depth": 2
+      },
+      {
+        "name": "crop_berry",
+        "x": 624,
+        "y": 240,
+        "depth": 2
+      },
+      {
+        "name": "soil_left",
+        "x": 592,
+        "y": 272,
+        "depth": 2
+      },
+      {
+        "name": "soil_mid",
+        "x": 608,
+        "y": 272,
+        "depth": 2
+      },
+      {
+        "name": "soil_right",
+        "x": 624,
+        "y": 272,
+        "depth": 2
+      },
+      {
+        "name": "crop_cabbage",
+        "x": 592,
+        "y": 272,
+        "depth": 2
+      },
+      {
+        "name": "crop_cabbage",
+        "x": 608,
+        "y": 272,
+        "depth": 2
+      },
+      {
+        "name": "crop_cabbage",
+        "x": 624,
+        "y": 272,
+        "depth": 2
+      }
+    ],
+    "buildings": [
+      {
+        "name": "office_building",
+        "x": 64,
+        "y": 0,
+        "depth": 318,
+        "targetVenue": "office",
+        "targetScene": "VenueScene:office"
+      },
+      {
+        "name": "cafe_building",
+        "x": 464,
+        "y": 112,
+        "depth": 318,
+        "targetVenue": "cafe",
+        "targetScene": "VenueScene:cafe"
+      },
+      {
+        "name": "villa_building",
+        "x": 80,
+        "y": 432,
+        "depth": 670,
+        "targetVenue": "dorm",
+        "targetScene": "VenueScene:dorm"
+      },
+      {
+        "name": "library_building",
+        "x": 480,
+        "y": 432,
+        "depth": 590,
+        "targetVenue": "library",
+        "targetScene": "VenueScene:library"
+      },
+      {
+        "name": "barn",
+        "x": 592,
+        "y": 32,
+        "depth": 206,
+        "targetVenue": null,
+        "targetScene": null
+      }
+    ],
+    "propsAbove": [
+      {
+        "name": "tree_oak_big",
+        "x": 0,
+        "y": 16,
+        "depth": 126
+      },
+      {
+        "name": "tree_oak_big",
+        "x": 272,
+        "y": 192,
+        "depth": 302
+      },
+      {
+        "name": "tree_oak_med",
+        "x": 16,
+        "y": 208,
+        "depth": 302
+      },
+      {
+        "name": "tree_oak_big",
+        "x": 448,
+        "y": 0,
+        "depth": 110
+      },
+      {
+        "name": "tree_birch",
+        "x": 528,
+        "y": 48,
+        "depth": 126
+      },
+      {
+        "name": "tree_oak_med",
+        "x": 0,
+        "y": 416,
+        "depth": 510
+      },
+      {
+        "name": "tree_birch",
+        "x": 256,
+        "y": 432,
+        "depth": 510
+      },
+      {
+        "name": "tree_oak_big",
+        "x": 240,
+        "y": 528,
+        "depth": 638
+      },
+      {
+        "name": "tree_oak_big",
+        "x": 640,
+        "y": 432,
+        "depth": 542
+      },
+      {
+        "name": "tree_oak_med",
+        "x": 704,
+        "y": 496,
+        "depth": 590
+      },
+      {
+        "name": "tree_oak_big",
+        "x": 624,
+        "y": 576,
+        "depth": 686
+      },
+      {
+        "name": "tree_birch",
+        "x": 704,
+        "y": 640,
+        "depth": 718
+      },
+      {
+        "name": "tree_oak_med",
+        "x": 448,
+        "y": 640,
+        "depth": 734
+      },
+      {
+        "name": "tree_oak_big",
+        "x": 32,
+        "y": 640,
+        "depth": 750
+      },
+      {
+        "name": "street_lamp",
+        "x": 96,
+        "y": 288,
+        "depth": 366
+      },
+      {
+        "name": "street_lamp",
+        "x": 240,
+        "y": 288,
+        "depth": 366
+      },
+      {
+        "name": "street_lamp",
+        "x": 480,
+        "y": 288,
+        "depth": 366
+      },
+      {
+        "name": "street_lamp",
+        "x": 640,
+        "y": 288,
+        "depth": 366
+      },
+      {
+        "name": "street_lamp",
+        "x": 96,
+        "y": 416,
+        "depth": 494
+      },
+      {
+        "name": "street_lamp",
+        "x": 240,
+        "y": 416,
+        "depth": 494
+      },
+      {
+        "name": "street_lamp",
+        "x": 528,
+        "y": 416,
+        "depth": 494
+      },
+      {
+        "name": "street_lamp",
+        "x": 704,
+        "y": 416,
+        "depth": 494
+      },
+      {
+        "name": "street_lamp",
+        "x": 304,
+        "y": 80,
+        "depth": 158
+      },
+      {
+        "name": "street_lamp",
+        "x": 304,
+        "y": 512,
+        "depth": 590
+      },
+      {
+        "name": "street_lamp",
+        "x": 432,
+        "y": 192,
+        "depth": 270
+      },
+      {
+        "name": "street_lamp",
+        "x": 432,
+        "y": 608,
+        "depth": 686
+      },
+      {
+        "name": "bench",
+        "x": 528,
+        "y": 304,
+        "depth": 350
+      },
+      {
+        "name": "bench",
+        "x": 192,
+        "y": 384,
+        "depth": 430
+      },
+      {
+        "name": "bench",
+        "x": 672,
+        "y": 528,
+        "depth": 574
+      },
+      {
+        "name": "trash_can",
+        "x": 576,
+        "y": 304,
+        "depth": 350
+      },
+      {
+        "name": "trash_can",
+        "x": 272,
+        "y": 384,
+        "depth": 430
+      },
+      {
+        "name": "hydrant",
+        "x": 272,
+        "y": 288,
+        "depth": 334
+      },
+      {
+        "name": "car_right_1",
+        "x": 128,
+        "y": 361.6,
+        "depth": 423.6
+      },
+      {
+        "name": "car_left_1",
+        "x": 528,
+        "y": 305.6,
+        "depth": 367.6
+      },
+      {
+        "name": "car_right_1",
+        "x": 672,
+        "y": 361.6,
+        "depth": 423.6
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 592,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_middle",
+        "x": 592,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 608,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_middle",
+        "x": 608,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 624,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_middle",
+        "x": 624,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 640,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 656,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 672,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 688,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_middle",
+        "x": 688,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 704,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_middle",
+        "x": 704,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 720,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_middle",
+        "x": 720,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_top_middle",
+        "x": 736,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_middle",
+        "x": 736,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 48,
+        "depth": 78
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 48,
+        "depth": 78
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 64,
+        "depth": 94
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 64,
+        "depth": 94
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 80,
+        "depth": 110
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 80,
+        "depth": 110
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 96,
+        "depth": 126
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 96,
+        "depth": 126
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 112,
+        "depth": 142
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 112,
+        "depth": 142
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 128,
+        "depth": 158
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 128,
+        "depth": 158
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 144,
+        "depth": 174
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 144,
+        "depth": 174
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 160,
+        "depth": 190
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 160,
+        "depth": 190
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 176,
+        "depth": 206
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 176,
+        "depth": 206
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 192,
+        "depth": 222
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 192,
+        "depth": 222
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 208,
+        "depth": 238
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 208,
+        "depth": 238
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 224,
+        "depth": 254
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 224,
+        "depth": 254
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 240,
+        "depth": 270
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 240,
+        "depth": 270
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 256,
+        "depth": 286
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 256,
+        "depth": 286
+      },
+      {
+        "name": "fence_middle_left",
+        "x": 576,
+        "y": 272,
+        "depth": 302
+      },
+      {
+        "name": "fence_middle_right",
+        "x": 752,
+        "y": 272,
+        "depth": 302
+      },
+      {
+        "name": "fence_top_left",
+        "x": 576,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_top_right",
+        "x": 752,
+        "y": 32,
+        "depth": 62
+      },
+      {
+        "name": "fence_bottom_left",
+        "x": 576,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "fence_bottom_right",
+        "x": 752,
+        "y": 288,
+        "depth": 318
+      },
+      {
+        "name": "bush_1",
+        "x": 48,
+        "y": 304,
+        "depth": 334
+      },
+      {
+        "name": "bush_1",
+        "x": 160,
+        "y": 304,
+        "depth": 334
+      },
+      {
+        "name": "bush_2",
+        "x": 448,
+        "y": 304,
+        "depth": 334
+      },
+      {
+        "name": "bush_1",
+        "x": 608,
+        "y": 304,
+        "depth": 334
+      },
+      {
+        "name": "bush_2",
+        "x": 48,
+        "y": 400,
+        "depth": 430
+      },
+      {
+        "name": "bush_2",
+        "x": 256,
+        "y": 416,
+        "depth": 446
+      },
+      {
+        "name": "bush_2",
+        "x": 464,
+        "y": 416,
+        "depth": 446
+      },
+      {
+        "name": "bush_1",
+        "x": 560,
+        "y": 416,
+        "depth": 446
+      },
+      {
+        "name": "bush_2",
+        "x": 736,
+        "y": 320,
+        "depth": 350
+      }
+    ],
+    "doors": [
+      {
+        "name": "office_door",
+        "targetVenue": "office",
+        "key": "VenueScene:office",
+        "x": 168,
+        "y": 310
+      },
+      {
+        "name": "cafe_door",
+        "targetVenue": "cafe",
+        "key": "VenueScene:cafe",
+        "x": 520,
+        "y": 310
+      },
+      {
+        "name": "villa_door",
+        "targetVenue": "dorm",
+        "key": "VenueScene:dorm",
+        "x": 144,
+        "y": 662
+      },
+      {
+        "name": "library_door",
+        "targetVenue": "library",
+        "key": "VenueScene:library",
+        "x": 536,
+        "y": 582
+      }
+    ],
+    "spawns": [
+      {
+        "x": 336,
+        "y": 316
+      },
+      {
+        "x": 430,
+        "y": 316
+      },
+      {
+        "x": 336,
+        "y": 410
+      },
+      {
+        "x": 430,
+        "y": 410
+      },
+      {
+        "x": 180,
+        "y": 318
+      },
+      {
+        "x": 560,
+        "y": 410
+      },
+      {
+        "x": 336,
+        "y": 200
+      },
+      {
+        "x": 420,
+        "y": 520
+      }
+    ],
+    "penSpots": [
+      {
+        "x": 656,
+        "y": 220
+      },
+      {
+        "x": 700,
+        "y": 232
+      },
+      {
+        "x": 672,
+        "y": 258
+      },
+      {
+        "x": 726,
+        "y": 262
+      }
+    ],
+    "glows": [
+      {
+        "kind": "lamp",
+        "x": 117,
+        "y": 302
+      },
+      {
+        "kind": "lamp",
+        "x": 261,
+        "y": 302
+      },
+      {
+        "kind": "lamp",
+        "x": 501,
+        "y": 302
+      },
+      {
+        "kind": "lamp",
+        "x": 661,
+        "y": 302
+      },
+      {
+        "kind": "lamp",
+        "x": 117,
+        "y": 430
+      },
+      {
+        "kind": "lamp",
+        "x": 261,
+        "y": 430
+      },
+      {
+        "kind": "lamp",
+        "x": 549,
+        "y": 430
+      },
+      {
+        "kind": "lamp",
+        "x": 725,
+        "y": 430
+      },
+      {
+        "kind": "lamp",
+        "x": 325,
+        "y": 94
+      },
+      {
+        "kind": "lamp",
+        "x": 325,
+        "y": 526
+      },
+      {
+        "kind": "lamp",
+        "x": 453,
+        "y": 206
+      },
+      {
+        "kind": "lamp",
+        "x": 453,
+        "y": 622
+      },
+      {
+        "kind": "sign",
+        "x": 189,
+        "y": 146
+      },
+      {
+        "kind": "window",
+        "x": 94,
+        "y": 170
+      },
+      {
+        "kind": "window",
+        "x": 154,
+        "y": 170
+      },
+      {
+        "kind": "window",
+        "x": 94,
+        "y": 202
+      },
+      {
+        "kind": "window",
+        "x": 154,
+        "y": 202
+      },
+      {
+        "kind": "window",
+        "x": 94,
+        "y": 234
+      },
+      {
+        "kind": "window",
+        "x": 154,
+        "y": 234
+      },
+      {
+        "kind": "window",
+        "x": 94,
+        "y": 266
+      },
+      {
+        "kind": "window",
+        "x": 154,
+        "y": 266
+      },
+      {
+        "kind": "window",
+        "x": 214,
+        "y": 180
+      },
+      {
+        "kind": "window",
+        "x": 214,
+        "y": 240
+      },
+      {
+        "kind": "sign",
+        "x": 520,
+        "y": 242
+      },
+      {
+        "kind": "window",
+        "x": 489,
+        "y": 270
+      },
+      {
+        "kind": "window",
+        "x": 551,
+        "y": 270
+      },
+      {
+        "kind": "window",
+        "x": 116,
+        "y": 540
+      },
+      {
+        "kind": "window",
+        "x": 180,
+        "y": 540
+      },
+      {
+        "kind": "window",
+        "x": 126,
+        "y": 598
+      },
+      {
+        "kind": "window",
+        "x": 192,
+        "y": 598
+      },
+      {
+        "kind": "sign",
+        "x": 544,
+        "y": 523
+      },
+      {
+        "kind": "window",
+        "x": 500,
+        "y": 560
+      },
+      {
+        "kind": "window",
+        "x": 544,
+        "y": 560
+      },
+      {
+        "kind": "window",
+        "x": 588,
+        "y": 560
+      }
+    ],
+    "collisionRects": 104
+  },
+  "walkability": {
+    "blockedTiles": 870,
+    "sha256": "05da24bd417e0ddb13b66b67a7b88b739d9bf5748696038f2a926a0d5238f549"
+  },
+  "paths": [
+    {
+      "to": "office",
+      "steps": 13,
+      "end": {
+        "x": 152,
+        "y": 328
+      }
+    },
+    {
+      "to": "cafe",
+      "steps": 11,
+      "end": {
+        "x": 504,
+        "y": 328
+      }
+    },
+    {
+      "to": "dorm",
+      "steps": 36,
+      "end": {
+        "x": 136,
+        "y": 680
+      }
+    },
+    {
+      "to": "library",
+      "steps": 29,
+      "end": {
+        "x": 520,
+        "y": 600
+      }
+    }
+  ],
+  "tick": {
+    "present": [
+      "stay-outside",
+      "stay-at-farm",
+      "came-back",
+      "out-of-cafe",
+      "out-of-farm",
+      "brand-new",
+      "to-the-farm"
+    ],
+    "drawn": {
+      "stay-outside": {
+        "kind": "stay",
+        "cancelLeaving": false
+      },
+      "stay-at-farm": {
+        "kind": "stay",
+        "cancelLeaving": false
+      },
+      "went-to-cafe": {
+        "kind": "walk-to-door",
+        "venueId": "cafe"
+      },
+      "went-to-house": {
+        "kind": "remove",
+        "reason": "no-door"
+      },
+      "asleep-to-dorm": {
+        "kind": "remove",
+        "reason": "asleep"
+      },
+      "already-leaving": {
+        "kind": "leaving"
+      },
+      "came-back": {
+        "kind": "stay",
+        "cancelLeaving": true
+      },
+      "deleted-agent": {
+        "kind": "remove",
+        "reason": "deleted"
+      }
+    },
+    "spawn": {
+      "out-of-cafe": "cafe",
+      "out-of-farm": "spawn-point",
+      "brand-new": "spawn-point",
+      "to-the-farm": "spawn-point"
+    }
+  }
+}

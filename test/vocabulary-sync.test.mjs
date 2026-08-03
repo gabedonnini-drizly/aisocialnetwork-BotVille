@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { venueRegistry, CLIENT_INTERNAL_LOCATIONS, sceneForLocation, sceneKeyFor } from '../packages/client/src/game/venueRegistry.ts';
+import { isDrawnHere } from '../packages/client/src/game/districtPresence.ts';
 import { AGENT_LOCATIONS } from '../packages/shared/src/types/Agent.ts';
 import { resolveSiblingRepo } from './helpers/siblingRepo.mjs';
 import { skipUnless } from './helpers/skip.mjs';
@@ -223,21 +224,18 @@ test('every client-internal location maps to a registered scene, not a venue key
  * animal falls out of it nightly (agentLife.ts:100 sends them all to the pen),
  * gets removeSprite'd, and updateNightBehavior loses its subjects.
  *
- * Source-level because syncAgents needs Phaser. Precise, though: it reads the
- * one filter line and requires each client-internal location by name, and it
- * fails loudly if it cannot find the line at all rather than passing.
+ * It used to read the filter line out of DistrictScene.ts as text, because
+ * syncAgents needs Phaser. The decision now lives in game/districtPresence.ts,
+ * which does not — so this asks the real function instead of a regex.
  */
-test('DistrictScene draws every client-internal location, not just the district', () => {
-  const src = stripComments(
-    readFileSync('packages/client/src/game/scenes/DistrictScene.ts', 'utf8'));
-  const filter = src.match(/const present\s*=\s*fullList\.filter\(([\s\S]*?)\);/);
-  assert.ok(filter, "DistrictScene's `present` filter was not found — this check has gone blind");
+test('the outdoor scene draws every client-internal location, not just the district', () => {
   for (const loc of CLIENT_INTERNAL_LOCATIONS) {
-    assert.ok(filter[1].includes(`'${loc}'`),
-      `DistrictScene's present filter drops '${loc}'. It is drawn by this scene and by no other, `
-      + 'so anyone the server puts there stops being rendered — nightly, for every animal.');
+    assert.ok(isDrawnHere(loc),
+      `the outdoor scene's present filter drops '${loc}'. It is drawn by that scene and by no `
+      + 'other, so anyone the server puts there stops being rendered — nightly, for every animal.');
   }
-  assert.ok(filter[1].includes("'district'"), 'the district itself must still be drawn');
+  assert.ok(isDrawnHere('district'), 'the district itself must still be drawn');
+  assert.equal(isDrawnHere('cafe'), false, 'an interior is not drawn by the outdoor scene');
 });
 
 // ── plot coverage ────────────────────────────────────────────────────────
