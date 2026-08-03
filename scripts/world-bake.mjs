@@ -166,6 +166,11 @@ export const EMOTE_FRAMES: Record<string, [number, number]> = ${JSON.stringify(
   // scene. Copied, never re-serialised: the authoring copy is the artifact.
   write(join(outDir, 'plot_states.json'), readFileSync(join(ROOT, 'contract', 'plot_states.json')));
 
+  // Variant pools, same treatment and same reason. Copied byte-for-byte
+  // rather than re-serialised: pool ORDER is load-bearing (the downstream
+  // pick indexes into it by seed hash), and a copy cannot reorder anything.
+  write(join(outDir, 'variant_pools.json'), readFileSync(join(ROOT, 'contract', 'variant_pools.json')));
+
   // A lock beside the artifact, so the platform can prove its copy is intact
   // WITHOUT needing this repo on disk. The sibling-repo comparison in Task 33
   // is the stronger check; this one is the check that still works in CI.
