@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { GameBridge } from './GameBridge.js';
 import { sceneRegistry } from './SceneRegistry.js';
-import { sceneKeyFor } from './venueRegistry.js';
+import { sceneForLocation } from './venueRegistry.js';
 import { createPendingFollow, type FollowTarget } from './followParam.js';
 
 /**
@@ -27,13 +27,13 @@ let pendingFocusId: string | null = null;
 GameBridge.on('scene:changed', ({ scene }) => { currentSceneKey = scene; });
 
 GameBridge.on('agent:goto', ({ agentId, location }) => {
-  // A FOURTH `farm` site, which the plan's three-site anchor missed and the
-  // new vocabulary-sync check found: `loc === 'farm' ? 'DistrictScene' : …`.
-  // It was unreachable for the same reason as the other three — the api only
-  // ever asserts a venueId the published vocabulary vouches for, and `farm`
-  // has never been published. sceneKeyFor already sends 'district' to
-  // DistrictScene, so the special case bought nothing.
-  const targetScene = sceneKeyFor(location);
+  // The farm is drawn on the district map; it has no venue of its own, so it
+  // has no scene of its own either. That mapping used to be an inline special
+  // case here; it now lives in venueRegistry.sceneForLocation, beside the
+  // CLIENT_INTERNAL_LOCATIONS list it depends on, so it can be tested without
+  // Phaser and cannot be deleted from one site while presence.ts still
+  // believes in it.
+  const targetScene = sceneForLocation(location);
   if (targetScene === currentSceneKey) {
     pendingFocusId = null;
     GameBridge.emit('agent:focus', { agentId });

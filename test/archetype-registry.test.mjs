@@ -55,6 +55,53 @@ test('the residence generator is the town-derived count, not a number written do
 });
 
 /**
+ * The reverse direction, which absence-is-zero makes silent on its own: a
+ * generator registered for an archetype that does not exist stamps nothing
+ * and says nothing. Renaming an archetype file without renaming its registry
+ * key would retire the venue it counts — with no error anywhere.
+ */
+test('every generator names an archetype that exists', () => {
+  for (const key of Object.keys(GENERATORS)) {
+    assert.ok(files.includes(`${key}.json`),
+      `GENERATORS has an entry for "${key}" but venues/_archetypes/${key}.json does not exist — `
+      + 'the generator counts nothing and the absence is silent');
+  }
+});
+
+/**
+ * The published schema requires `roles` and `affords` to be non-empty
+ * (schemas/venues.schema.json, minItems 1), and the ladder tiers currently
+ * ship `"roles": []` because `home` is withheld until plan `01-` backfills
+ * stored home assignments. That placeholder is a LATENT schema violation: it
+ * is only harmless while nothing stamps those archetypes.
+ *
+ * This gates it. Registering a generator for a tier without first giving it
+ * its role now fails here instead of publishing a venue that violates the
+ * schema the platform validates against. It passes today because `house` is
+ * the only archetype with a generator — which is exactly the point: it costs
+ * nothing until the moment it matters.
+ *
+ * It deliberately does NOT ask the tiers to declare roles now. `home` is
+ * withheld on purpose, and adding it early is the 73-agent re-homing event.
+ */
+test('an archetype with a generator satisfies the published schema (roles/affords non-empty)', () => {
+  const schema = JSON.parse(readFileSync('schemas/venues.schema.json', 'utf8'));
+  const minRoles = schema.items.properties.roles.minItems;
+  const minAffords = schema.items.properties.affords.minItems;
+  assert.ok(minRoles >= 1 && minAffords >= 1, 'the schema stopped requiring these — re-read this test');
+
+  for (const a of archetypes) {
+    if (!Object.hasOwn(GENERATORS, a.archetype)) continue;   // declared, dormant
+    assert.ok((a.roles ?? []).length >= minRoles,
+      `${a.file} has a generator but declares no roles — every instance it stamps would violate `
+      + 'the published schema. If this is a residence tier, the role lands with plan 01-\'s '
+      + 'stored-home backfill, and the generator must not be registered before it.');
+    assert.ok((a.affords ?? []).length >= minAffords,
+      `${a.file} has a generator but affords nothing — every instance it stamps would violate the schema`);
+  }
+});
+
+/**
  * The kickoff's correction 3 and [R: F-7, S-5]: `deriveResidenceVenues`
  * orders `home`-role venues by numeric id and `deriveHomeVenue` fills them
  * in that order, so publishing ANY new home-role venue re-homes agents who

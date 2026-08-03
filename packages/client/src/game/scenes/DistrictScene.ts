@@ -413,16 +413,19 @@ export class DistrictScene extends Phaser.Scene {
 
   syncAgents(fullList: SyncedAgent[]) {
     // THE KEY FIX of TZ-16: the district draws only those the server says are
-    // outside. The player entering/leaving has no effect on agent locations.
+    // outside or at the farm. The player entering/leaving has no effect on
+    // agent locations.
     //
-    // There was a fourth location here, 'farm', and it was never reachable:
-    // resolvePresence only ever asserts a venueId the published vocabulary
-    // vouches for, and `farm` has never been in it — the barn is furniture on
-    // this map labelled "Farm", with no targetVenue. The farm pen IS district
-    // geography (the cityGrid generator's pen/gate), so an agent there is at
-    // 'district'. test/vocabulary-sync.test.mjs now fails on any location
-    // string the client filters on that the vocabulary does not publish.
-    const present = fullList.filter(a => a.location === 'district');
+    // 'farm' IS CLIENT-INTERNAL DISTRICT GEOGRAPHY, not a venue and not drift.
+    // The pen is drawn on this map (the cityGrid generator's pen/gate), so an
+    // agent at the farm is drawn by this scene — which is why it belongs in
+    // `present` alongside 'district' rather than being treated as somewhere
+    // else. The fixture server emits it: agentLife.ts:37 puts 'farm' in the
+    // human daytime pool, :38 in the animal pool, and :100 sends EVERY animal
+    // to the pen at night. Drop it here and the animals vanish nightly and
+    // updateNightBehavior loses its subjects. `packages/shared` AGENT_LOCATIONS
+    // and presence.ts's liveVenueLookup both carry it deliberately.
+    const present = fullList.filter(a => a.location === 'district' || a.location === 'farm');
     const incoming = new Set(present.map(a => a.id));
     const locOf = new Map(fullList.map(a => [a.id, a.location]));
     const activityOf = new Map(present.map(a => [a.id, a.activity]));

@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { venueRegistry } from '../packages/client/src/game/venueRegistry.ts';
+import { venueRegistry, CLIENT_INTERNAL_LOCATIONS, sceneForLocation, sceneKeyFor } from '../packages/client/src/game/venueRegistry.ts';
+import { AGENT_LOCATIONS } from '../packages/shared/src/types/Agent.ts';
 import { resolveSiblingRepo } from './helpers/siblingRepo.mjs';
 import { skipUnless } from './helpers/skip.mjs';
 import { checkPlots, collectPlots } from './helpers/plotCoverage.mjs';
@@ -92,33 +93,151 @@ function stripComments(src) {
  * `typeof` and skipping it — a type guard is not a location filter.
  */
 function clientLocationComparisons() {
-  const PATTERN = /(typeof\s+)?((?:[\w$]+\.)*(?:location|newLoc|lastLoc|loc|from|venueId))\s*[!=]==\s*'([^']*)'/g;
+  // `[\w$]+\??\.` so optional chaining is part of the LHS: without it,
+  // `typeof entry?.id !== 'string'` parses as a bare `id` comparison and the
+  // `typeof` guard never fires.
+  const PATTERN = /(typeof\s+)?((?:[\w$]+\??\.)*(?:location|newLoc|lastLoc|loc|from|venueId|id))\s*[!=]==\s*([A-Z][\w$]*|'[^']*')/g;
+  // `const FARM = 'farm';` … `id === FARM`. Indirection through a
+  // single-assignment const is the obvious way to write this filter and the
+  // scanner used to be blind to it — presence.ts was written exactly that way.
+  const CONST_PATTERN = /\bconst\s+([A-Z][\w$]*)\s*=\s*'([^']*)'\s*;/g;
   const walk = d => readdirSync(d, { withFileTypes: true }).flatMap(e =>
     e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]);
   const hits = [];
-  for (const file of walk(CLIENT_SRC).filter(f => f.endsWith('.ts') && !f.endsWith('.test.ts'))) {
-    const lines = stripComments(readFileSync(file, 'utf8')).split('\n');
-    lines.forEach((line, i) => {
+  const sources = walk(CLIENT_SRC).filter(f =>
+    (f.endsWith('.ts') || f.endsWith('.tsx')) && !f.endsWith('.test.ts') && !f.endsWith('.test.tsx'));
+  for (const file of sources) {
+    const src = stripComments(readFileSync(file, 'utf8'));
+    const consts = new Map([...src.matchAll(CONST_PATTERN)].map(m => [m[1], m[2]]));
+    src.split('\n').forEach((line, i) => {
       for (const m of line.matchAll(PATTERN)) {
         if (m[1]) continue;                       // `typeof x === 'string'`
-        hits.push({ file, line: i + 1, value: m[3] });
+        const rhs = m[3];
+        const value = rhs.startsWith("'") ? rhs.slice(1, -1) : consts.get(rhs);
+        if (value === undefined) continue;        // an identifier we cannot resolve
+        hits.push({ file, line: i + 1, value });
       }
     });
   }
-  return hits;
+  return { hits, fileCount: sources.length };
 }
 
-test('every location string the client filters on exists in the published vocabulary', () => {
-  const published = new Set(JSON.parse(readFileSync(OURS, 'utf8')).map(v => v.id));
-  const hits = clientLocationComparisons();
+/**
+ * `farm` is the exemption, and it is a DOCUMENTED one rather than a hole:
+ * CLIENT_INTERNAL_LOCATIONS in venueRegistry.ts is the single list, read by
+ * the runtime lookup, by `sceneForLocation`, and here. See that file for why
+ * the farm is district geography rather than drift.
+ */
+const KNOWN_LOCATIONS = () => new Set([
+  ...JSON.parse(readFileSync(OURS, 'utf8')).map(v => v.id),
+  ...CLIENT_INTERNAL_LOCATIONS,
+]);
+
+test('every location string the client filters on is published or documented client-internal', () => {
+  const known = KNOWN_LOCATIONS();
+  const { hits, fileCount } = clientLocationComparisons();
   // A scanner that finds nothing passes for the wrong reason. Assert it works
   // before trusting what it says.
+  assert.ok(fileCount > 0, `${CLIENT_SRC} yielded no source files — the scanner is broken`);
   assert.ok(hits.length > 0, `${CLIENT_SRC} yielded no location comparisons — the scanner is broken`);
-  const unknown = hits.filter(h => !published.has(h.value));
+  const unknown = hits.filter(h => !known.has(h.value));
   assert.deepEqual(unknown.map(h => `${h.file}:${h.line} -> '${h.value}'`), [],
-    'the client filters on a location BotVille does not publish (the `farm` case). Either publish '
-    + 'the venue or delete the branch — a filter on an id nobody can ever have is dead code that '
-    + 'reads as a feature.');
+    'the client filters on a location that is neither published nor a documented client-internal '
+    + 'location. Either publish the venue, add it to CLIENT_INTERNAL_LOCATIONS with the reason, or '
+    + 'delete the branch.');
+});
+
+/**
+ * The scanner above is a heuristic over source text; these two are CLOSED
+ * LISTS, which is what actually makes the coverage exhaustive. Every location
+ * the client can be told about, and every location it can render a label for,
+ * must be a place it knows how to draw.
+ *
+ * This is the check that would have caught the regression the `farm` ruling
+ * caused: AGENT_LOCATIONS carries 'farm' because the fixture server emits it
+ * (agentLife.ts:37/38/100 — D-28, the default dev runtime), so removing the
+ * client's handling of it without removing it here leaves a location that is
+ * announced and never drawn.
+ */
+test('every location the client can be told about is published or documented client-internal', () => {
+  const known = KNOWN_LOCATIONS();
+  const orphans = AGENT_LOCATIONS.filter(l => !known.has(l));
+  assert.deepEqual(orphans, [],
+    'AGENT_LOCATIONS names a location that is neither a published venue nor a documented '
+    + 'client-internal location — the server can emit it and nothing will draw it.');
+});
+
+/**
+ * LOCATION_KEYS is read from SOURCE, not imported: packages/client/src/i18n
+ * touches `document` at module scope, so it cannot load under node --test.
+ * The map is a static object literal, so parsing it is exact — and the parse
+ * asserts it found the map and some keys, so a rename cannot turn this into a
+ * check of nothing.
+ */
+function locationLabelKeys() {
+  const src = readFileSync('packages/client/src/i18n/index.ts', 'utf8');
+  const block = src.match(/LOCATION_KEYS[^=]*=\s*\{([\s\S]*?)\n\};/);
+  assert.ok(block, 'LOCATION_KEYS not found in i18n/index.ts — this check has gone blind');
+  const keys = [...block[1].matchAll(/^\s*([a-z_][\w]*)\s*:/gm)].map(m => m[1]);
+  assert.ok(keys.length > 0, 'LOCATION_KEYS parsed to no keys — the parser is broken');
+  return keys;
+}
+
+test('every location label key is published or documented client-internal', () => {
+  const known = KNOWN_LOCATIONS();
+  const orphans = locationLabelKeys().filter(l => !known.has(l));
+  assert.deepEqual(orphans, [],
+    'i18n LOCATION_KEYS labels a location the client cannot place');
+});
+
+/**
+ * A client-internal location has no scene of its own — that is what makes it
+ * internal. Route one through `sceneKeyFor` and you get a key no scene is
+ * registered under: `transitionTo` fades out into a black screen that never
+ * returns, reachable from a HUD click and from a ?follow= deep link.
+ */
+test('every client-internal location maps to a registered scene, not a venue key', () => {
+  const sceneKeys = new Set([
+    'DistrictScene',
+    ...venueRegistry.all().map(v => sceneKeyFor(v.id)),
+  ]);
+  for (const loc of CLIENT_INTERNAL_LOCATIONS) {
+    assert.equal(sceneForLocation(loc), 'DistrictScene',
+      `${loc} is client-internal, so it must be drawn by the scene that owns its geography`);
+    assert.ok(sceneKeys.has(sceneForLocation(loc)));
+    assert.equal(sceneKeys.has(sceneKeyFor(loc)), false,
+      `sceneKeyFor('${loc}') is not a registered scene — that is exactly why sceneForLocation exists`);
+  }
+  // ...and the mapping is not a blanket redirect: real venues still route to
+  // their own scenes.
+  assert.equal(sceneForLocation('cafe'), 'VenueScene:cafe');
+  assert.equal(sceneForLocation('district'), 'DistrictScene');
+});
+
+/**
+ * The regression this file's own earlier version caused, pinned.
+ *
+ * A location can be "known" to presence, correctly mapped to DistrictScene,
+ * and STILL never drawn — because DistrictScene decides who it draws with its
+ * own `present` filter. Narrow that filter to 'district' alone and every
+ * animal falls out of it nightly (agentLife.ts:100 sends them all to the pen),
+ * gets removeSprite'd, and updateNightBehavior loses its subjects.
+ *
+ * Source-level because syncAgents needs Phaser. Precise, though: it reads the
+ * one filter line and requires each client-internal location by name, and it
+ * fails loudly if it cannot find the line at all rather than passing.
+ */
+test('DistrictScene draws every client-internal location, not just the district', () => {
+  const src = stripComments(
+    readFileSync('packages/client/src/game/scenes/DistrictScene.ts', 'utf8'));
+  const filter = src.match(/const present\s*=\s*fullList\.filter\(([\s\S]*?)\);/);
+  assert.ok(filter, "DistrictScene's `present` filter was not found — this check has gone blind");
+  for (const loc of CLIENT_INTERNAL_LOCATIONS) {
+    assert.ok(filter[1].includes(`'${loc}'`),
+      `DistrictScene's present filter drops '${loc}'. It is drawn by this scene and by no other, `
+      + 'so anyone the server puts there stops being rendered — nightly, for every animal.');
+  }
+  assert.ok(filter[1].includes("'district'"), 'the district itself must still be drawn');
 });
 
 // ── plot coverage ────────────────────────────────────────────────────────
@@ -127,17 +246,50 @@ test('every location string the client filters on exists in the published vocabu
 // until it lands; the fixtures below are what prove they would fire.
 
 const district = JSON.parse(readFileSync('venues/district/venue.json', 'utf8'));
-const siblingPlots = existsSync('venues/district/plots.json')
-  ? JSON.parse(readFileSync('venues/district/plots.json', 'utf8'))
-  : null;
+const PLOTS_FILE = 'venues/district/plots.json';
 const declaredArchetypes = readdirSync('venues/_archetypes')
   .filter(f => f.endsWith('.json'))
   .map(f => f.replace(/\.json$/, ''));
 
+/**
+ * Three outcomes, deliberately distinguished — "no plots authored yet" and
+ * "the plots file is not what this check thinks it is" must not look the
+ * same, or the check quietly stops checking the day the shape changes.
+ */
+function plotSource() {
+  if (!existsSync(PLOTS_FILE)) {
+    return { plots: collectPlots(district, null), where: 'venues/district/venue.json' };
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(readFileSync(PLOTS_FILE, 'utf8'));
+  } catch (e) {
+    return { malformed: `${PLOTS_FILE} is not valid JSON: ${e.message}` };
+  }
+  if (!Array.isArray(parsed?.plots)) {
+    return { malformed: `${PLOTS_FILE} exists but has no \`plots\` array — this check reads a shape it no longer recognises` };
+  }
+  return { plots: collectPlots(district, parsed), where: PLOTS_FILE };
+}
+
 test('every plot fits its district, overlaps no other, and allows only declared archetypes', () => {
-  const plots = collectPlots(district, siblingPlots);
-  const { problems } = checkPlots(plots, district, declaredArchetypes);
+  const source = plotSource();
+  // A plots file in a shape this check cannot read is a HARD failure. Silence
+  // from a check that has stopped reading its input is the failure mode the
+  // whole plot-coverage exercise exists to avoid.
+  assert.equal(source.malformed, undefined, source.malformed);
+
+  const { problems, count } = checkPlots(source.plots, district, declaredArchetypes);
   assert.deepEqual(problems, []);
+
+  // Task 7 authors the plots and is blocked on ⛔ O-1. Until then `count` is
+  // 0 and this test is vacuous — say so out loud rather than reporting a
+  // green that means nothing. `count` is consumed, not discarded, so the day
+  // plots land the message changes without anyone editing this file.
+  if (count === 0) {
+    console.log(`      ℹ no plots authored yet (${source.where}) — plot coverage is VACUOUS. `
+      + 'Task 7 (⛔ O-1) is what gives it input; the fixtures below prove it fires.');
+  }
 });
 
 test('the plot checks fire — vacuously green is not the same as green', () => {
