@@ -40,6 +40,55 @@ test('labelPrefix is authoring metadata: stripped from the instance, used for th
   assert.equal(deriveInstances(unnamed, 1)[0].label, 'kiosk 1');
   // A generator may override it without editing the archetype file.
   assert.equal(deriveInstances(house, 1, { labelPrefix: 'Home' })[0].label, 'Home 1');
+  // ...and the override path strips it just the same. Stripping happens on
+  // the destructure of the CLONE, so a reader could reasonably expect the
+  // opts path to reinstate it; it must not.
+  const [withOpts] = deriveInstances(house, 1, { labelPrefix: 'Home' });
+  assert.equal('labelPrefix' in withOpts, false,
+    'labelPrefix survived into the instance when a generator overrode it');
+});
+
+/**
+ * `opts.labelPrefix` moves the LABEL and nothing else. The id namespace is
+ * `archetype.archetype`, always — so relabelling house instances "Villa"
+ * does not make them villas, it makes them houses wearing a villa's name,
+ * and their ids still collide with the residences. Pinned here because the
+ * option's doc used to invite exactly that reading.
+ */
+test('opts.labelPrefix cannot move the id namespace', () => {
+  const relabelled = deriveInstances(house, 3, { labelPrefix: 'Villa' });
+  assert.deepEqual(relabelled.map(v => v.id), ['house_1', 'house_2', 'house_3']);
+  assert.deepEqual(relabelled.map(v => v.label), ['Villa 1', 'Villa 2', 'Villa 3']);
+  assert.deepEqual(relabelled.map(v => v.archetype), ['house', 'house', 'house']);
+  // Which is to say: it is not a way to stamp a second family alongside the
+  // first. Those ids ARE the residences' ids.
+  assert.deepEqual(relabelled.map(v => v.id),
+    deriveInstances(house, 3).map(v => v.id));
+});
+
+/**
+ * A template that carries `id`/`label` must have them OVERRIDDEN, not
+ * copied. This is a live risk rather than a hypothetical: every
+ * `venues/<id>/venue.json` in the tree carries both, so an archetype
+ * authored by copying one starts out with them. Spread the stamped fields
+ * before the template — `{ id, label, ...template }` — and thirteen
+ * residences all come out as `house` labelled "House", silently.
+ */
+test('a template carrying id and label has both stamped over, not copied', () => {
+  const authoredLikeAVenue = {
+    ...house,
+    id: 'copied_from_a_venue_json',
+    label: 'Copied From A venue.json',
+  };
+  const instances = deriveInstances(authoredLikeAVenue, 3);
+  assert.deepEqual(instances.map(v => v.id), ['house_1', 'house_2', 'house_3']);
+  assert.deepEqual(instances.map(v => v.label), ['House 1', 'House 2', 'House 3']);
+  assert.equal(new Set(instances.map(v => v.id)).size, 3,
+    'stamped ids must stay unique even when the template supplies one');
+  // And the same on the opts path, where the label comes from elsewhere again.
+  assert.deepEqual(
+    deriveInstances(authoredLikeAVenue, 2, { labelPrefix: 'Home' }).map(v => v.label),
+    ['Home 1', 'Home 2']);
 });
 
 test('the instance list is append-only: raising the count never reshuffles the prefix', () => {

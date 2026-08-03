@@ -16,12 +16,21 @@
 /**
  * Stamp `count` concrete venue descriptors out of one archetype.
  *
+ * `id` and `label` are STAMPED, not copied: whatever the template carries
+ * under those keys is overridden, because they are per-instance facts. Every
+ * other field is copied verbatim, so it must be true of all instances.
+ *
  * @param {object} archetype — venues/_archetypes/<name>.json
  * @param {number} count — non-negative integer, derived by the caller
  * @param {{labelPrefix?: string}} [opts] — overrides the archetype's own
- *   `labelPrefix`, for a generator that stamps a template under a different
- *   name. Either way `labelPrefix` is stripped from the instance: it is
- *   authoring metadata, not a field of a published venue.
+ *   `labelPrefix`. THE LABEL ONLY: the id namespace is always
+ *   `archetype.archetype`, and no option changes it. This is not a way to
+ *   stamp a template "under a different name" — `deriveInstances(house, 5,
+ *   { labelPrefix: 'Villa' })` yields ids `house_1..5` labelled "Villa 1..5",
+ *   which would collide with the residences rather than sit beside them. To
+ *   stamp a different family, author a different archetype. Either way
+ *   `labelPrefix` is stripped from the instance: it is authoring metadata,
+ *   not a field of a published venue.
  * @returns {object[]} VenueDescriptor[]
  */
 export function deriveInstances(archetype, count, opts = {}) {

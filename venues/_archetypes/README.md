@@ -59,6 +59,16 @@ Adding a building is three files and no new code:
 I-2 is the guardrail: an unresolved name **fails the build**, never renders
 as a missing texture.
 
+**The third file is not the last step for an archetype.** An authored
+`venue.json` bakes because it exists; an archetype file does not. Writing
+`venues/_archetypes/<name>.json` declares a template and nothing else — it
+needs an entry in the generator registry before the town gets a count, and
+**a file with no generator instantiates nothing at all.** That is not an
+oversight to work around; it *is* the dormant mechanism D-76 asks for, and
+it is why declaring the housing ladder and the six civic archetypes left
+`venues.json` byte-identical. To actually stamp instances, add the fourth
+thing: a generator (see above).
+
 ## The append-only invariant
 
 **The instance list is append-only.** Ids are `<archetype>_1..N` in
@@ -79,8 +89,20 @@ Two consequences for anyone editing an archetype:
 
 ## Fields
 
-An archetype is a `venue.json` with two differences: `archetype` names the
-family (and the id namespace), and `labelPrefix` is authoring metadata —
-stripped from the instance, used to build `label` as `<labelPrefix> <n>`,
-falling back to the archetype name. Everything else is copied to every
-instance verbatim, so it must be true of all of them.
+**An archetype is a `VenueDescriptor` minus `id` and `label`, plus
+`labelPrefix`.**
+
+- `id` and `label` are **per-instance facts, stamped by `deriveInstances`** —
+  `<archetype>_<n>` and `<labelPrefix> <n>`. A template has no business
+  carrying either, and if it does they are overridden rather than copied:
+  thirteen venues sharing one authored id is not a thing the bake can
+  represent.
+- `archetype` names the family, **and the id namespace with it**. That is
+  what lets a second archetype stamp alongside the first without colliding,
+  and it is the only thing that decides an instance's id — no option to
+  `deriveInstances` changes it.
+- `labelPrefix` is authoring metadata: stripped from the instance, used to
+  build `label`, falling back to the archetype name.
+
+Everything else is copied to every instance verbatim, so it must be true of
+all of them.
