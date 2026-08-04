@@ -13,10 +13,21 @@
  * `venues.generated.ts` does, one district at a time. THE IMPORT LIST BELOW IS
  * THE MULTI-DISTRICT SEAM: `venues/<districtId>/plots.json` is the file layout
  * the bake already uses, and a second district adds one line here naming its
- * own file. `test/plot-registry.test.mjs` asserts the list is COMPLETE against
- * what is on disk, so a district whose plots nobody imported fails the build
- * rather than rendering as bare grass (I-2, in spirit: an unresolved parcel is
- * as invisible as an unresolved texture).
+ * own file.
+ *
+ * A static list needs a guard, and it has one — `test/plot-registry.test.mjs`,
+ * which asserts:
+ *
+ *   • REGISTRIES IS COMPLETE against `venues/*​/plots.json` on disk. A district
+ *     whose parcels nobody imported fails there rather than rendering as bare
+ *     grass (I-2 in spirit: an unresolved parcel is as invisible as an
+ *     unresolved texture). The bake and the fixture server SCAN that same
+ *     tree, so this test is the third side of the triangle: all three agree
+ *     about which districts have land, or one of them goes red.
+ *   • EVERY PLOT'S doorAnchor MATCHES ITS PUBLISHED DESCRIPTOR'S `spawns[0]`.
+ *     `derivePlotVenues` copies the anchor into the venue's spawn point, so
+ *     the same number exists twice in two artifacts; the door, the fence gap
+ *     and wherever the api puts an arriving agent all depend on them agreeing.
  *
  * Do not import Phaser: the module is tested under node --test.
  */
@@ -96,6 +107,15 @@ export const plotRegistry = {
   /** The parcels drawn on one district's map, in authoring (append-only) order. */
   inDistrict(districtId: string): Plot[] {
     return PLOTS.filter(p => p.districtId === districtId);
+  },
+  /**
+   * The districts whose plots.json this module actually imported — the list
+   * `test/plot-registry.test.mjs` compares against the tree on disk. Exported
+   * so the guard can read the SEAM rather than infer it from the plots, which
+   * would make a registry entry with an empty `plots` array look absent.
+   */
+  registeredDistricts(): string[] {
+    return REGISTRIES.map(r => r.districtId);
   },
 };
 

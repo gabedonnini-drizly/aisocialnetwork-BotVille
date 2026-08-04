@@ -103,6 +103,9 @@ export const en = {
   'loc.dorm': 'In the dorm',
   'loc.dormSleeping': 'Sleeping (dorm)',
   'loc.farm': 'At the farm',
+  // D-89: a vacant parcel publishes as the tent camp. "On the street" was the
+  // old fallback and it hid exactly the condition the housing arc is about.
+  'loc.camp': 'Camping on a vacant lot',
   'hud.gotoHint': 'Click to find them in town',
 
   // ── HUD ──

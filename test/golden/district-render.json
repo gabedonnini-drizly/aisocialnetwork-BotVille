@@ -1318,14 +1318,14 @@
             "stacked_material_5",
             "worksite_cone_2",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -1333,7 +1333,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "7913f0623a507c0ad383eca6908a769e9e57fadb993d91491897f999a320caac"
+          "sha256": "ac3da7c486d44c178d56dd59d28a6774be1d7e9d9a0d7b7314fc72c255819871"
         },
         "built": {
           "count": 1,
@@ -1493,14 +1493,14 @@
             "stacked_material_7",
             "worksite_cone_1",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -1508,7 +1508,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "3d6697481a2c4a8caf296ac591df3d080a599e530416cf8896ae8f352c5be95e"
+          "sha256": "7c03d6ae987cd2c0615030382f625852c107f43100c44854de6d96c34febc7c1"
         },
         "built": {
           "count": 1,
@@ -1614,8 +1614,8 @@
           "zone": {
             "x": 304,
             "y": 896,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 318,
@@ -1668,14 +1668,14 @@
             "stacked_material_4",
             "stacked_material_6",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -1683,7 +1683,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "e96a1213c278e49557d89f92ec569a614965d6ed4e3659061300ec30972bd347"
+          "sha256": "5182be7b68871992ff2cc88c6d0a15a54dbcb1b25c51d4772254358d9aa7b378"
         },
         "built": {
           "count": 1,
@@ -1701,8 +1701,8 @@
           "zone": {
             "x": 304,
             "y": 1168,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 318,
@@ -1788,8 +1788,8 @@
           "zone": {
             "x": 448,
             "y": 872,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 434,
@@ -1843,14 +1843,14 @@
             "stacked_material_7",
             "worksite_cone_1",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -1858,7 +1858,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "e8f3de45fed4fdc86c48b57a50587db709f1ff65c8fa5e8959d5e51802b9971c"
+          "sha256": "6f3a898b94c9258c4860a35eee7ea604df3ce36430de6689b15cc8a4ed107a66"
         },
         "built": {
           "count": 1,
@@ -1876,8 +1876,8 @@
           "zone": {
             "x": 448,
             "y": 1128,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 434,
@@ -1964,8 +1964,8 @@
           "zone": {
             "x": 656,
             "y": 936,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 642,
@@ -2051,8 +2051,8 @@
           "zone": {
             "x": 656,
             "y": 1192,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 642,
@@ -2106,14 +2106,14 @@
             "stacked_material_6",
             "stacked_material_7",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -2121,7 +2121,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "b1fb8cbf5d5ad3aa530f9c91fe65d382499ee510daf666bebfa70f9ac8019812"
+          "sha256": "85016caf775265991f4e65004eb2572fc2ea31f759312b3f3f425cbf32534f65"
         },
         "built": {
           "count": 1,
@@ -2280,14 +2280,14 @@
             "stacked_material_6",
             "stacked_material_7",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -2295,7 +2295,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "a7cc2560b89bc824e593be8a610df1d9900abed167ce17566edf6f54b3156966"
+          "sha256": "87877a3c79c826fa6efcf09137aec78f9494f8f8dab49f05e8c906a16f4e54de"
         },
         "built": {
           "count": 1,
@@ -2313,8 +2313,8 @@
           "zone": {
             "x": 864,
             "y": 1192,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 850,
@@ -2456,14 +2456,14 @@
             "stacked_material_6",
             "worksite_cone_1",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -2471,7 +2471,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "4c113e246fb5fd4eb37c2cc50aba8a3ac251e8664dd3e8861fad5cccabd4c380"
+          "sha256": "3259f62f7e5503a42b1bc729bf09c4917fa4b4614338de22e0c557b5655bd40e"
         },
         "built": {
           "count": 1,
@@ -2577,8 +2577,8 @@
           "zone": {
             "x": 1072,
             "y": 1336,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 1058,
@@ -2632,14 +2632,14 @@
             "stacked_material_6",
             "worksite_cone_2",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -2647,7 +2647,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "42ef2166f481e2d062a6f54f25b98064fa7eb6558547d6109ffaa299154ac4d1"
+          "sha256": "aa017c0e39518e52b6ea09e3e20e2d05a9e4d6816a823542541147629da1ac8d"
         },
         "built": {
           "count": 1,
@@ -2752,8 +2752,8 @@
           "zone": {
             "x": 304,
             "y": 1360,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 318,
@@ -2807,14 +2807,14 @@
             "stacked_material_7",
             "worksite_cone_1",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -2822,7 +2822,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "1be0584c8e96fe8cad41e5e441a9a0161c423ce32325d37fd5fbb413ef6ab421"
+          "sha256": "5b58e9835bc323c5356b6ff6105180742809ffea58371e9a7f16a0cf271b41e8"
         },
         "built": {
           "count": 1,
@@ -2840,8 +2840,8 @@
           "zone": {
             "x": 448,
             "y": 1312,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 434,
@@ -2894,14 +2894,14 @@
             "worksite_cone_1",
             "worksite_cone_2",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -2909,7 +2909,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "df5503f7daaf4acba196b3cde2f4742a5f941bf87d5cfd971da4d7f1bb14e0ff"
+          "sha256": "13d90913bb7e877b4d290b4fc8f8eb1d8bfffe1be84e770fbb1b7f31274d1094"
         },
         "built": {
           "count": 1,
@@ -2927,8 +2927,8 @@
           "zone": {
             "x": 448,
             "y": 1424,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 434,
@@ -3013,8 +3013,8 @@
           "zone": {
             "x": 528,
             "y": 672,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 514,
@@ -3068,14 +3068,14 @@
             "stacked_material_7",
             "worksite_cone_1",
             "worksite_entrance",
-            "worksite_fence_1_1",
-            "worksite_fence_1_2",
-            "worksite_fence_1_3",
-            "worksite_fence_1_4",
-            "worksite_fence_1_5",
-            "worksite_fence_1_6",
-            "worksite_fence_1_7",
-            "worksite_fence_1_8",
+            "worksite_fence_2_1",
+            "worksite_fence_2_2",
+            "worksite_fence_2_3",
+            "worksite_fence_2_4",
+            "worksite_fence_2_5",
+            "worksite_fence_2_6",
+            "worksite_fence_2_7",
+            "worksite_fence_2_8",
             "worksite_ground_1",
             "worksite_ground_2",
             "worksite_ground_3",
@@ -3083,7 +3083,7 @@
             "worksite_ground_5",
             "worksite_ground_6"
           ],
-          "sha256": "66527ab06158bae440fd80a586ee3eb1b6536244c0435397a1b787ef4da3efd2"
+          "sha256": "ed6b666befaff0dbaf0f6418377a8eb10872ab9c128e83f92cfd50750c5fedcf"
         },
         "built": {
           "count": 1,
@@ -3101,8 +3101,8 @@
           "zone": {
             "x": 192,
             "y": 1360,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 206,
@@ -3188,8 +3188,8 @@
           "zone": {
             "x": 560,
             "y": 1376,
-            "width": 32,
-            "height": 16
+            "width": 16,
+            "height": 32
           },
           "point": {
             "x": 546,

@@ -10,7 +10,9 @@ import {
   applyPlotStates, districtDrawing, resetPlotStates,
 } from '../packages/client/src/game/plotState.ts';
 import { drawnByDistrict, planSync } from '../packages/client/src/game/districtPresence.ts';
-import { sceneTargetFor, DISTRICT_SCENE_KEY } from '../packages/client/src/game/venueRegistry.ts';
+import {
+  sceneTargetFor, DISTRICT_SCENE_KEY, opensASceneFrom,
+} from '../packages/client/src/game/venueRegistry.ts';
 import { Pathfinder } from '../packages/client/src/game/Pathfinder.ts';
 import { districtGeometry } from '../packages/client/src/game/config.ts';
 import { venueRegistry } from '../packages/client/src/game/venueRegistry.ts';
@@ -250,4 +252,55 @@ test('two plots cannot share a door anchor (plot integrity)', () => {
     seen.set(key, plot.id);
   }
   assert.equal(seen.size, PLOTS.length);
+});
+
+// ── the affordance is honest (review finding 5) ──────────────────────────
+
+test('a built parcel’s door opens no scene — and the predicate says so', () => {
+  built(HOME.id);
+  // `opensASceneFrom` is what DistrictScene asks TWICE: once to decide whether
+  // the cursor becomes a hand, once before refusing a fade into the same view.
+  // One predicate, so the cursor and the click cannot disagree — a hand cursor
+  // over a click that does nothing is the dead end this closes.
+  assert.equal(opensASceneFrom(HOME.id, DISTRICT), false,
+    'a built parcel resolves back to the district you are standing in: the door is real, '
+    + 'the room behind it is not baked yet');
+  resetPlotStates();
+});
+
+test('an authored door DOES open a scene, so the predicate is not just always false', () => {
+  for (const id of ['cafe', 'office', 'library', 'dorm']) {
+    assert.equal(opensASceneFrom(id, DISTRICT), true, id);
+  }
+  // ...and a location with no scene of its own, from a DIFFERENT district,
+  // still counts as somewhere to go.
+  assert.equal(opensASceneFrom(DISTRICT, 'somewhere-else'), true);
+  assert.equal(opensASceneFrom(DISTRICT, DISTRICT), false, 'the district you are already in');
+});
+
+test('the scene asks the predicate for the cursor AND for the transition', () => {
+  // Source-level, because no node test in this repo boots Phaser and the
+  // regression is one identifier: a hard-coded `useHandCursor: true` on the
+  // generated door, or a hand-rolled copy of the comparison in
+  // transitionToVenue that drifts from the one the cursor uses.
+  const src = readFileSync('packages/client/src/game/scenes/DistrictScene.ts', 'utf8');
+  const doorFn = src.slice(src.indexOf('private registerPlotDoor'), src.indexOf('private placePlotProp'));
+  assert.match(doorFn, /useHandCursor:\s*opens/,
+    'the generated door promises a destination unconditionally');
+  assert.match(doorFn, /console\.info\(/,
+    'a click with nowhere to go must say so, not return silently');
+  const transition = src.slice(src.indexOf('private transitionToVenue'), src.indexOf('// ------------------------------------------------------ the land'));
+  assert.match(transition, /opensASceneFrom\(venueId, this\.districtId\)/,
+    'transitionToVenue re-implements the comparison instead of asking the shared predicate');
+});
+
+test('a HUD click that lands on nobody says so instead of doing nothing', () => {
+  // Latent today and guaranteed once anything is built: an agent inside a
+  // built parcel is not drawn outdoors (districtDrawing), so agent:goto routes
+  // to this district, finds no sprite, and the camera silently does not move.
+  const src = readFileSync('packages/client/src/game/scenes/DistrictScene.ts', 'utf8');
+  const focus = src.slice(src.indexOf('const onFocusAgent'), src.indexOf('GameBridge.on(\'agent:focus\''));
+  assert.match(focus, /console\.warn\(/,
+    'onFocusAgent swallows a focus that cannot be satisfied — `if (!sprite) return`');
+  assert.match(focus, /agentId/, 'the refusal must name the agent it refused');
 });

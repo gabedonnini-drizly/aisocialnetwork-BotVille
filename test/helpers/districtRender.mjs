@@ -42,8 +42,18 @@
  *   • for the parcels: `composePlot`'s answer is captured, but everything
  *     DistrictScene.renderPlots does WITH it is not — the tile-to-pixel
  *     conversion, the `centre-bottom` offset by a loaded texture's size, the
- *     depth rule, the missing-texture guard, and the redraw-on-change wiring.
- *     Those are Phaser and stay uncovered by any node test.
+ *     depth rule, the missing-texture guard, the door zone's cursor, and the
+ *     redraw-on-change wiring. Those are Phaser and stay uncovered by any
+ *     node test;
+ *   • THE `tick` IS STATE-BLIND, and that is worth saying out loud now that
+ *     state exists. It runs `planSync` with the DEFAULT resolver over a roster
+ *     of authored venues, so it captures the presence filter as it behaves
+ *     when every parcel is vacant — which is the world today. It says nothing
+ *     about `districtDrawing`, i.e. about an agent inside a BUILT parcel
+ *     dropping out of the outdoor scene. That behaviour is real and is tested
+ *     in test/plot-doors.test.mjs against a synthetic built state; capturing
+ *     it here would mean baking a hypothetical world state into the document
+ *     that exists to describe the real one.
  *
  * AND THE BIG ONE — PART OF THIS FILE IS STILL A REIMPLEMENTATION, not a call
  * into the scene. `planSync`, `Pathfinder`, `sceneKeyFor`, `sceneForLocation`,
@@ -157,6 +167,37 @@
  *            route is 34 steps and the longest 121, which is the long walk past
  *            no pavement that town/growth.json's maxDoorAnchorDistanceNote
  *            already predicted and named the road-extension follow-up for.
+ *   (review) TWO FIELDS MOVED, both inside `plots`, and nothing else in the
+ *            document changed — not geometry, camera, routing, objects,
+ *            walkability, paths or tick. Categorised exhaustively:
+ *
+ *            states.under_construction   11 of 23 parcels, and ONLY the
+ *                                        hoarding set: `worksite_fence_1_*`
+ *                                        -> `worksite_fence_2_*`, same count,
+ *                                        same tiles. `boundaryAlternate` was
+ *                                        declared in plot_states.json and read
+ *                                        by nobody, so every worksite in town
+ *                                        wore set 1 and two sites side by side
+ *                                        looked like one site. Which set a
+ *                                        parcel wears is now a per-plot
+ *                                        deterministic pick: 12 keep set 1, 11
+ *                                        take set 2.
+ *            doorWhenBuilt.built         14 of 23, and ONLY the zone: 32x16 ->
+ *                                        16x32. Those 14 are the west- and
+ *                                        east-facing doors; a threshold lies
+ *                                        along the wall it is in, and a fixed
+ *                                        32x16 on a vertical wall stuck two
+ *                                        tiles into the street while spanning
+ *                                        one tile of the wall. `point` and
+ *                                        `pathFromSpawn0` did not move on any
+ *                                        parcel, so nothing about reachability
+ *                                        changed.
+ *
+ *            states.vacant and states.built: ZERO parcels moved. The camp slot
+ *            fan-out only takes effect past the fourth occupant and GOLDEN_CAMP
+ *            is four, which is the capacity — so the change is invisible here
+ *            by construction, and is tested directly instead
+ *            (test/plot-render.test.mjs, eight occupants on an L parcel).
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';

@@ -235,6 +235,27 @@ export function sceneTargetFor(location: string): SceneTarget {
 }
 
 /**
+ * Does going to `location` actually take you to a DIFFERENT scene from the
+ * district currently on screen?
+ *
+ * The question a door has to answer before it promises anything. An authored
+ * door leads to an interior, so this is always true for one; a BUILT PARCEL's
+ * generated door resolves back to the district you are standing in, because
+ * the plot id IS the venue id (D-79) while the bake writes an interior per
+ * authored venue and archetype instance — and a parcel is neither. There is a
+ * real door with no room behind it yet.
+ *
+ * One predicate, two consumers, so they cannot drift: `DistrictScene` asks it
+ * to decide whether the cursor turns into a hand, and `transitionToVenue` asks
+ * it before refusing a fade-out into the same view. A hand cursor over a click
+ * that does nothing is the dead end this exists to stop.
+ */
+export function opensASceneFrom(location: string, currentDistrictId: string): boolean {
+  const target = sceneTargetFor(location);
+  return !(target.key === DISTRICT_SCENE_KEY && target.data?.districtId === currentDistrictId);
+}
+
+/**
  * The district the game boots into: the first outdoor venue in the bake.
  * Unambiguous while one district's content ships (D-62), and a loud failure
  * rather than a black screen if a bake ever ships none.

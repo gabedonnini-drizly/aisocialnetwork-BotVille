@@ -32,7 +32,7 @@ function write(p, buf) {
 
 /**
  * @param {{pack?: string, srcRoot: string, outDir: string, generatedDir: string,
- *          venuesDirs?: string[], archetypesDir?: string, plotsPath?: string,
+ *          venuesDirs?: string[], archetypesDir?: string,
  *          town?: {population: number}}} opts
  *
  * outDir and generatedDir are REQUIRED. This function has no idea where the
@@ -40,7 +40,7 @@ function write(p, buf) {
  * caller — including this module's own tests — into a source-tree mutation.
  * The CLI at the bottom of this file is the only place those paths live.
  */
-export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs, archetypesDir, plotsPath, town } = {}) {
+export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs, archetypesDir, town } = {}) {
   if (!outDir) throw new Error('worldBake: outDir is required');
   if (!generatedDir) throw new Error('worldBake: generatedDir is required');
 
@@ -50,9 +50,13 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
   // `_`-prefixed entries are archetypes (venues/_archetypes/), not venues.
   // Dotfiles (.DS_Store and friends) are not venues either — skip, don't throw.
   const dirs = venuesDirs ?? [join(ROOT, 'venues')];
-  const authored = dirs.flatMap(dir => readdirSync(dir)
+  // ONE walk of the venue tree, and everything a venue directory can hold is
+  // read off it. Two separate walks is how the plot half came to know about
+  // exactly one district while the authored half scanned them all.
+  const venueDirs = dirs.flatMap(dir => readdirSync(dir)
     .filter(id => !id.startsWith('_') && !id.startsWith('.'))
-    .map(id => JSON.parse(readFileSync(join(dir, id, 'venue.json'), 'utf8'))));
+    .map(id => ({ id, path: join(dir, id) })));
+  const authored = venueDirs.map(d => JSON.parse(readFileSync(join(d.path, 'venue.json'), 'utf8')));
 
   // Archetype instances (addendum §I.2/I.3): derived from the town snapshot,
   // stamped from the template, baked exactly like an authored venue.
@@ -81,10 +85,19 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
   // because a VACANT plot has no interior: no TMJ, no scene of its own, just
   // a parcel drawn on the district map. When one is built, plan `03-` gives
   // it the archetype's interior — that is what "state-dependent" buys.
-  const plotsFile = plotsPath ?? join(ROOT, 'venues', 'district', 'plots.json');
-  const plotVenues = existsSync(plotsFile)
-    ? derivePlotVenues(JSON.parse(readFileSync(plotsFile, 'utf8')))
-    : [];
+  //
+  // EVERY district's plots, from the same walk that found the districts —
+  // `venues/<district>/plots.json`, wherever it exists. It used to be a single
+  // hardcoded path to `venues/district/plots.json`, which made "multi-district
+  // is architectural from day one" (D-62) false at the one point it costs
+  // nothing to be true: a second district's parcels would have published ZERO
+  // venues, and every downstream guard would have passed vacuously because
+  // there was nothing to be inconsistent with. A district with no plots.json
+  // is a district with no parcels, which is legitimate and stays legitimate.
+  const plotVenues = venueDirs.flatMap(d => {
+    const file = join(d.path, 'plots.json');
+    return existsSync(file) ? derivePlotVenues(JSON.parse(readFileSync(file, 'utf8'))) : [];
+  });
 
   const allVenues = [...venues, ...plotVenues].sort((a, b) => a.id.localeCompare(b.id));
   const dupes = allVenues.map(v => v.id).filter((id, i, all) => all.indexOf(id) !== i);

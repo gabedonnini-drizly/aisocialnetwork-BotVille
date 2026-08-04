@@ -10,17 +10,17 @@ import {
   SCENE_FADE_MS, TILE_SIZE, TINT_OVERLAY_DEPTH, tintOverlayRect, WANDER_RADIUS,
   type DistrictGeometry, type GlowKind,
 } from '../config.js';
-import { plotRegistry, type Plot, type PlotState } from '../plotRegistry.js';
+import { plotRegistry, type Plot } from '../plotRegistry.js';
 import { districtDrawing, onPlotStatesChanged, plotStatus } from '../plotState.js';
 import { buildingRegistry } from '../buildingRegistry.js';
 import { PLOT_STATES_KEY, VARIANT_POOLS_KEY } from '../plotAssets.js';
 import {
-  campSlotTile, composePlot, plotDoorFor,
-  type Occupant, type Placement, type PlotStatesDoc, type VariantPoolsDoc,
+  campSlotTile, composeDistrict,
+  type Occupant, type Placement, type PlotDoor, type PlotStatesDoc, type VariantPoolsDoc,
 } from '../plotComposition.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
 import {
-  DISTRICT_SCENE_KEY, sceneTargetFor, startingDistrict, venueRegistry,
+  DISTRICT_SCENE_KEY, opensASceneFrom, sceneTargetFor, startingDistrict, venueRegistry,
 } from '../venueRegistry.js';
 import { planSync } from '../districtPresence.js';
 import { GameTime } from '../time.js';
@@ -230,7 +230,16 @@ export class DistrictScene extends Phaser.Scene {
     // clicking an agent in the HUD — the camera smoothly pans onto them
     const onFocusAgent = ({ agentId }: { agentId: string }) => {
       const sprite = this.agentSprites.get(agentId);
-      if (!sprite) return;
+      if (!sprite) {
+        // A HUD click that lands nowhere used to be indistinguishable from a
+        // HUD click that worked. It has a real cause now and will have it more
+        // often: an agent inside a BUILT parcel is not drawn outdoors
+        // (`districtDrawing`), so `agent:goto` routes here, finds no sprite,
+        // and silently does nothing. Name it rather than swallow it.
+        console.warn(`[focus] ${agentId} is not drawn in '${this.districtId}' — `
+          + 'they are indoors, or the roster has not arrived yet; the camera did not move');
+        return;
+      }
       cam.pan(sprite.x, sprite.y, CAMERA_FOCUS.panMs, 'Sine.easeInOut');
       if (cam.zoom < CAMERA_FOCUS.zoom) cam.zoomTo(CAMERA_FOCUS.zoom, CAMERA_FOCUS.panMs);
       sprite.pulseLabel(); // visible confirmation of WHO the camera went to
@@ -285,7 +294,7 @@ export class DistrictScene extends Phaser.Scene {
     // (it is in doorPoints, agents route to it and enter through it); what is
     // not there yet is a room on the other side. Refusing the no-op keeps that
     // honest instead of flashing the screen.
-    if (target.key === DISTRICT_SCENE_KEY && target.data?.districtId === this.districtId) return;
+    if (!opensASceneFrom(venueId, this.districtId)) return;
     this.transitionTo(target.key, target.data);
   }
 
@@ -303,6 +312,14 @@ export class DistrictScene extends Phaser.Scene {
    * Rebuilt wholesale rather than diffed. A parcel changes state a handful of
    * times in the life of a town (D-36: buildings appear at dawn), so a diff
    * would be a cache to keep correct in exchange for nothing.
+   *
+   * NOTHING DRAWN HERE COLLIDES. `this.pathfinder` is built once, from the
+   * .tmj's `collision` layer, before this runs and independently of it — a
+   * V1 ruling with its reasons written out in plotComposition.ts's header
+   * (the grid is the bake's; the golden's walkability sha describes it; and
+   * "every door is reachable" is not the same claim as "no agent anywhere is
+   * ever walled in"). Revisit when built plots gain interiors, and revisit it
+   * IN THE BAKE.
    */
   private renderPlots() {
     for (const o of this.plotObjects) o.destroy();
@@ -322,18 +339,21 @@ export class DistrictScene extends Phaser.Scene {
       return;
     }
 
-    for (const plot of plotRegistry.inDistrict(this.districtId)) {
-      const status = plotStatus(plot.id);
-      const placements = composePlot({
-        plot,
-        state: status.state,
-        states,
-        pools,
-        occupants: this.plotOccupants.get(plot.id) ?? [],
-        ...(status.archetype ? { exterior: buildingRegistry.exteriorFor(status.archetype) } : {}),
-      });
+    // What to draw is `composeDistrict`'s answer — including which parcels to
+    // SKIP, so an undrawable one is a warning and twenty-two neighbours,
+    // never a black screen at boot (the reasoning is on that function).
+    const rendered = composeDistrict({
+      plots: plotRegistry.inDistrict(this.districtId),
+      statusOf: plotStatus,
+      states,
+      pools,
+      occupantsOf: id => this.plotOccupants.get(id) ?? [],
+      exteriorFor: a => buildingRegistry.exteriorFor(a),
+      onSkip: (plotId, reason) => console.warn(`[plots] ${plotId} not drawn: ${reason}`),
+    });
+    for (const { plot, placements, door } of rendered) {
       for (const p of placements) this.placePlotProp(p, plot.id);
-      this.registerPlotDoor(plot, status.state);
+      if (door) this.registerPlotDoor(plot, door);
     }
   }
 
@@ -352,11 +372,16 @@ export class DistrictScene extends Phaser.Scene {
    * "a vacant plot is not enterable". It has a tent camp standing in the open,
    * not a threshold.
    */
-  private registerPlotDoor(plot: Plot, state: PlotState) {
-    const door = plotDoorFor(plot, state);
-    if (!door) return;
+  private registerPlotDoor(plot: Plot, door: PlotDoor) {
+    // THE CURSOR TELLS THE TRUTH. A hand cursor promises somewhere to go, and
+    // a built parcel has nowhere to go yet: the plot id IS the venue id (D-79),
+    // but the bake writes an interior per authored venue and archetype
+    // instance, and a parcel is neither. `opensASceneFrom` is the same
+    // question `transitionToVenue` asks before it refuses the no-op, so the
+    // cursor and the click can never disagree.
+    const opens = opensASceneFrom(plot.id, this.districtId);
     const zone = this.add.zone(door.zone.x, door.zone.y, door.zone.width, door.zone.height)
-      .setInteractive({ useHandCursor: true });
+      .setInteractive({ useHandCursor: opens });
     // The facade this door belongs to is the exterior `composePlot` just
     // placed — the last object pushed for this parcel on the buildings layer.
     const facade = [...this.plotObjects].reverse().find(
@@ -365,7 +390,17 @@ export class DistrictScene extends Phaser.Scene {
     );
     zone.on('pointerover', () => facade?.setTint(0xbbccff));
     zone.on('pointerout', () => facade?.clearTint());
-    onTap(zone, () => this.transitionToVenue(plot.id));
+    onTap(zone, () => {
+      if (!opens) {
+        // Legible refusal rather than a dead click. The door is real — agents
+        // route to it and enter through it — and what is missing is the room
+        // on the other side, so say that instead of doing nothing.
+        console.info(`[plots] ${plot.id} is built, but no interior has been baked for it yet — `
+          + 'nothing to enter');
+        return;
+      }
+      this.transitionToVenue(plot.id);
+    });
     this.doorPoints.set(plot.id, door.point);
     this.plotObjects.push(zone);
   }

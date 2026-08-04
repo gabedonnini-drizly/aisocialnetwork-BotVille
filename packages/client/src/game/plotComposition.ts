@@ -16,6 +16,35 @@
  * INPUTS, so they are static imports (see plotRegistry.ts / buildingRegistry.ts).
  * Neither route adds an output to the bake.
  *
+ * ── V1 PLOT PROPS ARE DECORATIVE: NOTHING HERE COLLIDES ──────────────────
+ *
+ * A ruling, not an oversight, and it is written here because here is where
+ * somebody would look for it. Every placement this module returns becomes an
+ * image and nothing else — no `blockRect`, no walkability. Three reasons:
+ *
+ *   • THE PATHFINDER GRID BELONGS TO THE BAKE. `DistrictScene` builds it from
+ *     the .tmj's `collision` object layer and from nothing else, and that
+ *     layer is world-bake.mjs's output. Adding 23 runtime fence rings would
+ *     make walkability depend on plot STATE, i.e. on a wire that has not
+ *     shipped, and the golden baseline's `walkability` sha — the thing that
+ *     proved the 92x92 growth was non-destructive cell for cell — would stop
+ *     describing the map the agents actually walk.
+ *   • NOTHING ABOUT REACHABILITY DEPENDS ON IT. The gate in the ring is a
+ *     VISUAL opening, so the parcel reads as enterable at the point where its
+ *     door is; agents already walk through the fence line because it is
+ *     scenery. `test/plot-doors.test.mjs` proves the door anchors are reachable
+ *     against the REAL grid, which is the claim that matters, and it would go
+ *     on being true with no ring drawn at all.
+ *   • NO TEST COULD PROVE NOBODY GETS STRANDED. 23 rings with 1-tile margins
+ *     between parcels is a maze; "every door is reachable from spawn 0" is not
+ *     the same as "every agent standing anywhere can leave", and the second is
+ *     what a collision change would need to establish.
+ *
+ * REVISIT WHEN BUILT-PLOT INTERIORS LAND. Once a built parcel has a room
+ * behind its door, a solid building on the map is the thing you cannot walk
+ * through, and the honest home for that is the BAKE — a built structure's
+ * footprint in the collision layer — not a runtime overlay.
+ *
  * EVERYTHING IS IN TILES. Pixel positions depend on the real art's size, which
  * only exists once a texture is loaded, so a placement carries a tile point and
  * an alignment and the scene resolves the pixels. That keeps this module pure,
@@ -54,6 +83,8 @@ export interface PlotStatesDoc {
 
 interface PlotComposition {
   boundary?: { prefix?: string; pick?: string[]; layer: PlotLayer };
+  /** A second, interchangeable boundary set — picked per parcel (see `ring`). */
+  boundaryAlternate?: { prefix?: string; pick?: string[]; layer: PlotLayer };
   ground?: { pick: string[]; layer: PlotLayer };
   centre?: { pick: string[]; layer: PlotLayer };
   entrance?: { name: string; layer: PlotLayer };
@@ -99,8 +130,20 @@ const RING_PARTS = {
 /** Tiles of gap left in the boundary at the door anchor — the pen's own gate width. */
 export const GATE_WIDTH_TILES = 3;
 
-/** Camps hold four (VACANT_PLOT_CAPACITY); four slots, so no two tents collide. */
+/**
+ * Camps hold four (VACANT_PLOT_CAPACITY), so four quadrants around the centre.
+ *
+ * A camp is not GUARANTEED to hold four, though — capacity is the api's
+ * derivation, not a lock, and D-89's whole point is that the camp is wherever
+ * the unhoused are. So the slots FAN OUT past the fourth instead of wrapping
+ * onto the first: occupant 5 takes quadrant 1 one ring further from the
+ * centre, and so on. On a parcel with room that keeps every tent visible; on a
+ * 6x6 the outer rings clamp back onto the inner ones, which is an overfull
+ * camp and looks like one.
+ */
 const CAMP_SLOTS: ReadonlyArray<readonly [number, number]> = [[-2, -1], [2, -1], [-2, 2], [2, 2]];
+/** How far each extra ring of four steps outward, in tiles. */
+const CAMP_RING_STEP = 3;
 
 /** The parcel's tile bounds, half-open in the same convention plots.json uses. */
 function bounds(plot: Plot) {
@@ -245,11 +288,73 @@ function worksiteGround(plot: Plot, spec: { pick: string[]; layer: PlotLayer }):
 export function campSlotTile(plot: Plot, index: number): [number, number] {
   const { ax, ay, x1, y1 } = bounds(plot);
   const [cx, cy] = centreTile(plot);
-  const [dx, dy] = CAMP_SLOTS[index % CAMP_SLOTS.length];
+  const base = CAMP_SLOTS[index % CAMP_SLOTS.length];
+  const ring = Math.floor(index / CAMP_SLOTS.length);
+  const dx = base[0] + Math.sign(base[0]) * ring * CAMP_RING_STEP;
+  const dy = base[1] + Math.sign(base[1]) * ring * CAMP_RING_STEP;
   return [
     Math.min(Math.max(cx + dx, ax + 1), Math.max(x1 - 1, ax + 1)),
     Math.min(Math.max(cy + dy, ay + 1), Math.max(y1 - 1, ay + 1)),
   ];
+}
+
+/** One parcel's whole render: what to draw, and the door if it has one. */
+export interface PlotRender {
+  plot: Plot;
+  placements: Placement[];
+  door?: PlotDoor;
+}
+
+export interface ComposeDistrictInput {
+  plots: readonly Plot[];
+  statusOf: (plotId: string) => { state: PlotState; archetype?: string };
+  states: PlotStatesDoc;
+  pools: VariantPoolsDoc;
+  occupantsOf?: (plotId: string) => readonly Occupant[];
+  exteriorFor?: (archetype: string) => string | undefined;
+  /** Called instead of throwing when one parcel cannot be composed. */
+  onSkip?: (plotId: string, reason: string) => void;
+}
+
+/**
+ * EVERY parcel of one district, and ONE PARCEL NEVER TAKES THE TOWN WITH IT.
+ *
+ * `composePlot` throws on a state no composition declares, which is the right
+ * call for a pure function whose caller might be the bake or a test. It is the
+ * wrong call for the scene: `DistrictScene.renderPlots` runs from `create()`,
+ * so an uncaught throw there is a BLACK SCREEN AT BOOT — reachable from DATA
+ * rather than from code (a stale published `plot_states.json`, or a state the
+ * api starts sending before the copy beside the artifact knows about it).
+ *
+ * `plotState.ts` already states the policy for anything arriving on a wire:
+ * an unknown state "is DROPPED, never rendered". This is the second door into
+ * the same room, and it now behaves the same way — skip the parcel, name it,
+ * draw the other twenty-two. Living in this module rather than in the scene is
+ * what makes it testable without Phaser.
+ */
+export function composeDistrict(input: ComposeDistrictInput): PlotRender[] {
+  const { plots, statusOf, states, pools, occupantsOf, exteriorFor, onSkip } = input;
+  const out: PlotRender[] = [];
+  for (const plot of plots) {
+    const status = statusOf(plot.id);
+    let placements: Placement[];
+    try {
+      placements = composePlot({
+        plot,
+        state: status.state,
+        states,
+        pools,
+        occupants: occupantsOf?.(plot.id) ?? [],
+        ...(status.archetype && exteriorFor ? { exterior: exteriorFor(status.archetype) } : {}),
+      });
+    } catch (err) {
+      onSkip?.(plot.id, err instanceof Error ? err.message : String(err));
+      continue;
+    }
+    const door = plotDoorFor(plot, status.state);
+    out.push(door ? { plot, placements, door } : { plot, placements });
+  }
+  return out;
 }
 
 /** Which way is OUT of the parcel, per door side. */
@@ -318,9 +423,21 @@ export function plotDoor(plot: Plot): PlotDoor {
   const [ox, oy] = OUTWARD[plot.doorSide];
   const cx = dx * 16;
   const cy = dy * 16;
+  // The threshold lies ALONG the wall it is in. A 32x16 zone is right on a
+  // north or south edge and wrong on a west or east one, where it would stick
+  // two tiles out into the street and one tile along a wall it is supposed to
+  // span — clickable where the building is not, and not clickable where it is.
+  const along = 32;
+  const across = 16;
+  const horizontal = oy !== 0;
   return {
     targetVenue: plot.id,
-    zone: { x: cx, y: cy, width: 32, height: 16 },
+    zone: {
+      x: cx,
+      y: cy,
+      width: horizontal ? along : across,
+      height: horizontal ? across : along,
+    },
     point: { x: cx + ox * DOOR_STANDOFF_PX, y: cy + oy * DOOR_STANDOFF_PX },
   };
 }
@@ -369,7 +486,17 @@ export function composePlot(input: ComposeInput): Placement[] {
 
   const out: Placement[] = [];
   if (comp.ground) out.push(...worksiteGround(plot, comp.ground));
-  if (comp.boundary) out.push(...ring(plot, comp.boundary));
+  if (comp.boundary) {
+    // `boundaryAlternate` is a SECOND hoarding set, and it used to be data
+    // nothing read — plot_states.json declared worksite_fence_2_* beside
+    // worksite_fence_1_* and every worksite in town wore set 1. Two sites side
+    // by side looked like one site. Which set a parcel wears is a per-plot
+    // deterministic pick, so it is stable for the life of the build and
+    // different between neighbours; a composition that declares no alternate
+    // behaves exactly as before.
+    const sets = comp.boundaryAlternate ? [comp.boundary, comp.boundaryAlternate] : [comp.boundary];
+    out.push(...ring(plot, pickFrom(sets, plot.id, SEED_SALT.worksiteBoundary)));
+  }
   if (comp.scatter) out.push(...scatter(plot, comp.scatter, SEED_SALT.plotScatter));
   if (comp.centre) {
     out.push({

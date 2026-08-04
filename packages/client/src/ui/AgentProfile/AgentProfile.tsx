@@ -4,7 +4,7 @@ import { ModelSelector } from './ModelSelector.js';
 import { LLM_PROVIDERS } from '@botville/shared';
 import { GameBridge } from '../../game/GameBridge.js';
 import { STATUS_COLORS } from '../../game/palette.js';
-import { useT, STATUS_KEYS, LOCATION_KEYS } from '../../i18n/index.js';
+import { useT, STATUS_KEYS, locationKey } from '../../i18n/index.js';
 import { useWorldStore } from '../../store/worldStore.js';
 import { isSleepTime } from '../../game/dayNight.js';
 import styles from './AgentProfile.module.css';
@@ -26,7 +26,7 @@ export function AgentProfile() {
   // TZ-16: where the agent is right now (at night in the dorm — "Sleeping")
   const locationLabel = isSleepTime(timeOfDay) && agent.location === 'dorm'
     ? t('loc.dormSleeping')
-    : t(LOCATION_KEYS[agent.location] ?? 'loc.district');
+    : t(locationKey(agent.location));
 
   return (
     <div className={styles.overlay} onClick={closeProfile}>

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -26,41 +26,67 @@ export const plotsRouter = Router();
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
-/** The authoring file the bake derives — the same one plotRegistry.ts imports. */
-function plotsFile(): string | null {
-  // dist/api/ -> package -> packages/ -> repo root, and the src/ equivalent
-  // under tsx. Both are tried rather than assumed, so `npm run dev` and a
-  // built server behave identically.
+/**
+ * The repo's `venues/` directory — the tree world-bake.mjs walks.
+ *
+ * dist/api/ -> package -> packages/ -> repo root, and the src/ equivalent
+ * under tsx. Both are tried rather than assumed, so `npm run dev` and a built
+ * server behave identically.
+ */
+function venuesRoot(): string | null {
   for (const up of ['../../../..', '../../..']) {
-    const candidate = resolve(HERE, up, 'venues', 'district', 'plots.json');
+    const candidate = resolve(HERE, up, 'venues');
     if (existsSync(candidate)) return candidate;
   }
-  const cwd = join(process.cwd(), 'venues', 'district', 'plots.json');
+  const cwd = join(process.cwd(), 'venues');
   return existsSync(cwd) ? cwd : null;
 }
 
 export interface PlotStateRow {
   id: string;
   state: 'vacant' | 'under_construction' | 'built';
+  /** Which district's map draws this parcel — the directory it came from. */
+  districtId: string;
 }
 
 /** Read once: the layout is frozen (plots.json's `appendOnlyFrom` header). */
 let cached: PlotStateRow[] | null = null;
 
+/**
+ * EVERY district's parcels, from the same `venues/<district>/plots.json` walk
+ * the bake does. Not one hardcoded path: a second district's plots would have
+ * been served as "there are none", which is indistinguishable from a working
+ * empty town and is exactly the vacuous green D-62 keeps costing us.
+ *
+ * A district directory with no plots.json contributes nothing, which is
+ * legitimate — a district may simply have no parcels.
+ */
 export function listPlots(): PlotStateRow[] {
   if (cached) return cached;
-  const file = plotsFile();
-  if (!file) {
-    // No plots file = a district with no parcels. An empty list, not a 500:
-    // this server must run against a bake that predates the land.
+  const root = venuesRoot();
+  if (!root) {
+    // No venues tree at all. An empty list, not a 500: this server must run
+    // against a bake that predates the land.
     cached = [];
     return cached;
   }
-  const doc = JSON.parse(readFileSync(file, 'utf8')) as { plots?: Array<{ id?: string }> };
-  cached = (doc.plots ?? [])
-    .filter((p): p is { id: string } => typeof p.id === 'string')
-    .map(p => ({ id: p.id, state: 'vacant' as const }));
+  cached = readdirSync(root, { withFileTypes: true })
+    .filter(e => e.isDirectory() && !e.name.startsWith('_') && !e.name.startsWith('.'))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .flatMap(e => {
+      const file = join(root, e.name, 'plots.json');
+      if (!existsSync(file)) return [];
+      const doc = JSON.parse(readFileSync(file, 'utf8')) as { plots?: Array<{ id?: string }> };
+      return (doc.plots ?? [])
+        .filter((p): p is { id: string } => typeof p.id === 'string')
+        .map(p => ({ id: p.id, state: 'vacant' as const, districtId: e.name }));
+    });
   return cached;
+}
+
+/** Test seam: the layout is frozen, but a test may add a synthetic district. */
+export function resetPlotCache(): void {
+  cached = null;
 }
 
 plotsRouter.get('/plots', (_req, res) => {
