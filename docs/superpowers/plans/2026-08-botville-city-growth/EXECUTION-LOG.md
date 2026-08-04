@@ -1146,3 +1146,13 @@ green on its branch:
   snapshot — nothing foreign, tree clean.** Two self-corrections logged
   (the env test measuring the runner instead of the file; a commit-message
   typo caught pre-push).
+
+- 2026-08-04 · **BASELINE ROUND (f2) AUTHORIZED AND LAUNCHED** — zero
+  changes, the R0-a/R0-b same-code envelope pattern (M-062 precedent):
+  a second sample of (f)'s world so M-072 gains a variance envelope
+  before the last-inch intervention is judged against it. Same-code
+  verification required (post-(f) commits are tests + env-seam only —
+  runner must confirm no runtime path moved); live-world delta declared
+  ((f)'s 7 proposals + 1 vote are part of the world now); probe is
+  re-verification only; monitor lesson applied (poll summary.txt, silence
+  is UNKNOWN). Expected fact: M-073.
