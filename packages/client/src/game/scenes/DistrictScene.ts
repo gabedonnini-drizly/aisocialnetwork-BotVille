@@ -10,12 +10,12 @@ import {
   SCENE_FADE_MS, TILE_SIZE, TINT_OVERLAY_DEPTH, tintOverlayRect, WANDER_RADIUS,
   type DistrictGeometry, type GlowKind,
 } from '../config.js';
-import { plotRegistry } from '../plotRegistry.js';
-import { onPlotStatesChanged, plotStatus } from '../plotState.js';
+import { plotRegistry, type Plot, type PlotState } from '../plotRegistry.js';
+import { districtDrawing, onPlotStatesChanged, plotStatus } from '../plotState.js';
 import { buildingRegistry } from '../buildingRegistry.js';
 import { PLOT_STATES_KEY, VARIANT_POOLS_KEY } from '../plotAssets.js';
 import {
-  campSlotTile, composePlot,
+  campSlotTile, composePlot, plotDoorFor,
   type Occupant, type Placement, type PlotStatesDoc, type VariantPoolsDoc,
 } from '../plotComposition.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
@@ -277,6 +277,15 @@ export class DistrictScene extends Phaser.Scene {
   /** Where a click on a building or door goes — resolved from the registry. */
   private transitionToVenue(venueId: string) {
     const target = sceneTargetFor(venueId);
+    // A door whose target resolves to the district already on screen is a
+    // fade-out into the same view. That is what a BUILT PARCEL's generated
+    // door does today: the plot id IS the venue id (D-79), but no interior
+    // tilemap exists for a built plot yet — the bake writes one per authored
+    // venue and archetype instance, and a parcel is neither. The door is real
+    // (it is in doorPoints, agents route to it and enter through it); what is
+    // not there yet is a room on the other side. Refusing the no-op keeps that
+    // honest instead of flashing the screen.
+    if (target.key === DISTRICT_SCENE_KEY && target.data?.districtId === this.districtId) return;
     this.transitionTo(target.key, target.data);
   }
 
@@ -298,6 +307,10 @@ export class DistrictScene extends Phaser.Scene {
   private renderPlots() {
     for (const o of this.plotObjects) o.destroy();
     this.plotObjects = [];
+    // Generated doors go with the objects that generated them. A demolition
+    // (D-67) takes the structure AND the way in; leaving a stale entry in
+    // doorPoints would leave agents walking to a door that is not there.
+    for (const plot of plotRegistry.inDistrict(this.districtId)) this.doorPoints.delete(plot.id);
 
     const states = this.cache.json.get(PLOT_STATES_KEY) as PlotStatesDoc | undefined;
     const pools = this.cache.json.get(VARIANT_POOLS_KEY) as VariantPoolsDoc | undefined;
@@ -319,12 +332,46 @@ export class DistrictScene extends Phaser.Scene {
         occupants: this.plotOccupants.get(plot.id) ?? [],
         ...(status.archetype ? { exterior: buildingRegistry.exteriorFor(status.archetype) } : {}),
       });
-      for (const p of placements) this.placePlotProp(p);
+      for (const p of placements) this.placePlotProp(p, plot.id);
+      this.registerPlotDoor(plot, status.state);
     }
   }
 
+  /**
+   * A door for a built structure, generated from the plot's anchor — Task 3.
+   *
+   * Everything here is the authored-door branch of `create()` (currently the
+   * `doors` object-layer loop) with the .tmj object replaced by `plotDoor`'s
+   * answer. Same zone, same hover pairing with the facade, same `onTap ->
+   * transitionToVenue`, and the same `doorPoints.set(targetVenue, point)` —
+   * which is the entry `planSync`'s `hasDoorFor`, the walk-out, the return
+   * spawn and the pathfinder all read. Nothing downstream can tell the two
+   * apart, which is the claim Task 3 is making.
+   *
+   * A VACANT parcel gets none, and that is the ruling rather than an omission:
+   * "a vacant plot is not enterable". It has a tent camp standing in the open,
+   * not a threshold.
+   */
+  private registerPlotDoor(plot: Plot, state: PlotState) {
+    const door = plotDoorFor(plot, state);
+    if (!door) return;
+    const zone = this.add.zone(door.zone.x, door.zone.y, door.zone.width, door.zone.height)
+      .setInteractive({ useHandCursor: true });
+    // The facade this door belongs to is the exterior `composePlot` just
+    // placed — the last object pushed for this parcel on the buildings layer.
+    const facade = [...this.plotObjects].reverse().find(
+      (o): o is Phaser.GameObjects.Image =>
+        o instanceof Phaser.GameObjects.Image && o.getData('plotId') === plot.id,
+    );
+    zone.on('pointerover', () => facade?.setTint(0xbbccff));
+    zone.on('pointerout', () => facade?.clearTint());
+    onTap(zone, () => this.transitionToVenue(plot.id));
+    this.doorPoints.set(plot.id, door.point);
+    this.plotObjects.push(zone);
+  }
+
   /** One composed placement -> one image, on the layer and depth the map uses. */
-  private placePlotProp(p: Placement) {
+  private placePlotProp(p: Placement, plotId: string) {
     if (!this.textures.exists(p.name)) {
       // I-2's runtime half. plot_states.json is loaded rather than bundled, so
       // an unresolved name reaches here instead of the build; it must be loud
@@ -335,6 +382,7 @@ export class DistrictScene extends Phaser.Scene {
     const img = this.add.image(p.tile[0] * TILE_SIZE, p.tile[1] * TILE_SIZE, p.name).setOrigin(0, 0);
     if (p.align === 'centre-bottom') img.setPosition(img.x - img.width / 2, img.y - img.height);
     img.setDepth(p.layer === 'props-below' ? 2 : img.y + img.height);
+    img.setData('plotId', plotId);
     this.plotObjects.push(img);
   }
 
@@ -586,6 +634,10 @@ export class DistrictScene extends Phaser.Scene {
       hasDoorFor: (venueId) => this.doorPoints.has(venueId),
       isAsleep: (id) => this.agentSprites.get(id)?.isAsleep ?? false,
       isLeaving: (id) => this.leaving.has(id),
+      // State-aware: a BUILT parcel is a building, so somebody at it is
+      // indoors and walks to its generated door instead of standing on the
+      // roof. A vacant one is a camp in the open and draws as it always did.
+      resolveDistrict: districtDrawing,
     });
     const activityOf = new Map(plan.present.map(a => [a.id, a.activity]));
     // Who is camped where. A tent belongs to an AGENT (D-75's per-spriteSeed

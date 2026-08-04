@@ -1255,6 +1255,24 @@
           ],
           "sha256": "1a6f471189a62fe10bce8c0dcb61f1d2b4ce4f0a813cee31aa5f3434fb9e2875"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_1",
+          "zone": {
+            "x": 976,
+            "y": 432,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 976,
+            "y": 418
+          }
+        },
+        "pathFromSpawn0": 47
       }
     },
     {
@@ -1324,6 +1342,24 @@
           ],
           "sha256": "702482a6118d55559339534ed8175a85da3b16e031bef555864dcc45e48d233e"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_2",
+          "zone": {
+            "x": 928,
+            "y": 288,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 928,
+            "y": 302
+          }
+        },
+        "pathFromSpawn0": 44
       }
     },
     {
@@ -1393,6 +1429,24 @@
           ],
           "sha256": "cf710fefd2883041cb3e06ac32658c9efc55e6dc12e9b60adc762ac044ca196b"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_3",
+          "zone": {
+            "x": 1232,
+            "y": 288,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 1232,
+            "y": 302
+          }
+        },
+        "pathFromSpawn0": 63
       }
     },
     {
@@ -1463,6 +1517,24 @@
           ],
           "sha256": "cbe414570fabb74adaff403dc837a1928f7ce02b2e583b52b97e22282cf44e9a"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_4",
+          "zone": {
+            "x": 1328,
+            "y": 432,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 1328,
+            "y": 418
+          }
+        },
+        "pathFromSpawn0": 69
       }
     },
     {
@@ -1533,6 +1605,24 @@
           ],
           "sha256": "5f4f8f13850e50e52dd981308f6b00a2c04e9871aef42c487e2403b30d6b6948"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_5",
+          "zone": {
+            "x": 304,
+            "y": 896,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 318,
+            "y": 896
+          }
+        },
+        "pathFromSpawn0": 39
       }
     },
     {
@@ -1602,6 +1692,24 @@
           ],
           "sha256": "9f48bab8e93ef6a7c4023c1bb9d6785ad564a68a7d8c11c5308aef3423538aaf"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_6",
+          "zone": {
+            "x": 304,
+            "y": 1168,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 318,
+            "y": 1168
+          }
+        },
+        "pathFromSpawn0": 56
       }
     },
     {
@@ -1671,6 +1779,24 @@
           ],
           "sha256": "c7c81fa75858d9ac3a27653146585b3fff7765ca37a66b487d7d5d094e855d3b"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_7",
+          "zone": {
+            "x": 448,
+            "y": 872,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 434,
+            "y": 872
+          }
+        },
+        "pathFromSpawn0": 41
       }
     },
     {
@@ -1741,6 +1867,24 @@
           ],
           "sha256": "66f7f8ee53e039aa123bd4e99d2ed499d8db939ab28a4654c3b55cfaaf8e6a1e"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_8",
+          "zone": {
+            "x": 448,
+            "y": 1128,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 434,
+            "y": 1128
+          }
+        },
+        "pathFromSpawn0": 57
       }
     },
     {
@@ -1811,6 +1955,24 @@
           ],
           "sha256": "119336dab98bbc2e2a04cdcf1cf5cd3c40451ae560ea2482b9e2e09be5ff244c"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_9",
+          "zone": {
+            "x": 656,
+            "y": 936,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 642,
+            "y": 936
+          }
+        },
+        "pathFromSpawn0": 58
       }
     },
     {
@@ -1880,6 +2042,24 @@
           ],
           "sha256": "de8dded924278dda022a21e7c8efb1293f9b799a17fae50cfa0dd0856e42c1e7"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_10",
+          "zone": {
+            "x": 656,
+            "y": 1192,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 642,
+            "y": 1192
+          }
+        },
+        "pathFromSpawn0": 74
       }
     },
     {
@@ -1950,6 +2130,24 @@
           ],
           "sha256": "9dcba5e5a778d369e9cc435d518152b5d42da5ab72d8a3f3e398dbdf93275114"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_11",
+          "zone": {
+            "x": 1280,
+            "y": 704,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 1280,
+            "y": 690
+          }
+        },
+        "pathFromSpawn0": 83
       }
     },
     {
@@ -2019,6 +2217,24 @@
           ],
           "sha256": "cd84862cd734356c2174b85cf9aea779821a65bf84a42255c345999d690e699f"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_12",
+          "zone": {
+            "x": 960,
+            "y": 816,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 960,
+            "y": 802
+          }
+        },
+        "pathFromSpawn0": 70
       }
     },
     {
@@ -2088,6 +2304,24 @@
           ],
           "sha256": "75ffa40922331e505e366bbc92fef97b8c7f32e77c0336a3111552d79bcb9f12"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_13",
+          "zone": {
+            "x": 864,
+            "y": 1192,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 850,
+            "y": 1192
+          }
+        },
+        "pathFromSpawn0": 87
       }
     },
     {
@@ -2158,6 +2392,24 @@
           ],
           "sha256": "ee317bc6daed83f316df2d9ed106fbe7beb75eb4e62280f6a4e0cc8d41268433"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_14",
+          "zone": {
+            "x": 1168,
+            "y": 960,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 1168,
+            "y": 946
+          }
+        },
+        "pathFromSpawn0": 92
       }
     },
     {
@@ -2228,6 +2480,24 @@
           ],
           "sha256": "b21a795bd94c29fffa90433842b7fc1a4370b9b50946b13bdce95fad245be804"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_15",
+          "zone": {
+            "x": 1376,
+            "y": 960,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 1376,
+            "y": 946
+          }
+        },
+        "pathFromSpawn0": 105
       }
     },
     {
@@ -2298,6 +2568,24 @@
           ],
           "sha256": "0203f645f96fd7eaf2f63188e16572dd1c31999eaeece8f1dacddccef00f899c"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_16",
+          "zone": {
+            "x": 1072,
+            "y": 1336,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 1058,
+            "y": 1336
+          }
+        },
+        "pathFromSpawn0": 109
       }
     },
     {
@@ -2368,6 +2656,24 @@
           ],
           "sha256": "3210c275dc7312cb0ed2f4f254e63b212877b088f1f583a89e526638b2a0ab8a"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_17",
+          "zone": {
+            "x": 1376,
+            "y": 1216,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 1376,
+            "y": 1202
+          }
+        },
+        "pathFromSpawn0": 121
       }
     },
     {
@@ -2437,6 +2743,24 @@
           ],
           "sha256": "ec5e077c764c1eb51934f99ea7f81dde5a75de2bfc880ecd922a4b01194498ac"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_18",
+          "zone": {
+            "x": 304,
+            "y": 1360,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 318,
+            "y": 1360
+          }
+        },
+        "pathFromSpawn0": 68
       }
     },
     {
@@ -2507,6 +2831,24 @@
           ],
           "sha256": "76f404df47b21f93611e42e31446a31fbae9025f0c1dd5fa9c7e2ca2abe84eb0"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_19",
+          "zone": {
+            "x": 448,
+            "y": 1312,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 434,
+            "y": 1312
+          }
+        },
+        "pathFromSpawn0": 69
       }
     },
     {
@@ -2576,6 +2918,24 @@
           ],
           "sha256": "5eafe4769144712b891aadf460e1f6280d6e5b0d1e3956b490be534d41ea47e4"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_20",
+          "zone": {
+            "x": 448,
+            "y": 1424,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 434,
+            "y": 1424
+          }
+        },
+        "pathFromSpawn0": 76
       }
     },
     {
@@ -2644,6 +3004,24 @@
           ],
           "sha256": "dec01508a4ac0790bf991c81976e52b66619b9f1932eb038a7dc53ddb7ff74fd"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_21",
+          "zone": {
+            "x": 528,
+            "y": 672,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 514,
+            "y": 672
+          }
+        },
+        "pathFromSpawn0": 34
       }
     },
     {
@@ -2714,6 +3092,24 @@
           ],
           "sha256": "10ec09ee3c530d991f84388eb86ec9c3aec358136f490f88996c83ae99b74ceb"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_22",
+          "zone": {
+            "x": 192,
+            "y": 1360,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 206,
+            "y": 1360
+          }
+        },
+        "pathFromSpawn0": 75
       }
     },
     {
@@ -2783,6 +3179,24 @@
           ],
           "sha256": "ba3a472c435ddbd8d624b552539a1c60459c2cab32f2d9dca0c45e7b3e0fa9e3"
         }
+      },
+      "doorWhenBuilt": {
+        "vacant": null,
+        "under_construction": null,
+        "built": {
+          "targetVenue": "plot_23",
+          "zone": {
+            "x": 560,
+            "y": 1376,
+            "width": 32,
+            "height": 16
+          },
+          "point": {
+            "x": 546,
+            "y": 1376
+          }
+        },
+        "pathFromSpawn0": 80
       }
     }
   ],

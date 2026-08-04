@@ -24,7 +24,7 @@
  *
  * Do not import Phaser: the module is tested under node --test.
  */
-import type { Plot, PlotState } from './plotRegistry.js';
+import type { DoorSide, Plot, PlotState } from './plotRegistry.js';
 import { pickFrom, SEED_SALT } from './plotSeed.js';
 
 /** The three object layers DistrictScene draws, in the .tmj's own vocabulary. */
@@ -250,6 +250,79 @@ export function campSlotTile(plot: Plot, index: number): [number, number] {
     Math.min(Math.max(cx + dx, ax + 1), Math.max(x1 - 1, ax + 1)),
     Math.min(Math.max(cy + dy, ay + 1), Math.max(y1 - 1, ay + 1)),
   ];
+}
+
+/** Which way is OUT of the parcel, per door side. */
+const OUTWARD: Record<DoorSide, readonly [number, number]> = {
+  north: [0, -1],
+  south: [0, 1],
+  west: [-1, 0],
+  east: [1, 0],
+};
+
+/** How far past the threshold the waiting spot sits, px. */
+const DOOR_STANDOFF_PX = 14;
+
+/** A generated door, in the same PIXEL vocabulary an authored .tmj door uses. */
+export interface PlotDoor {
+  /** Target venue — D-79: the plot id IS the venue id. */
+  targetVenue: string;
+  /** The clickable threshold. Centre + size, as the scene's zones want them. */
+  zone: { x: number; y: number; width: number; height: number };
+  /** Where an agent stands to use it — `doorPoints`' value, keyed by target. */
+  point: { x: number; y: number };
+}
+
+/**
+ * THE DOOR OF A BUILT STRUCTURE, GENERATED FROM THE PLOT — plan `03-` Task 3.
+ *
+ * "Doors for built structures are generated from the plot's doorAnchor, not
+ * hand-authored furniture entries. Hand-placement is the pattern this drive
+ * exists to retire." Since the district was founded there has been no house
+ * building and no house door on the map while 85 agents slept in 13 rooms
+ * nightly; `venues/district/venue.json` carries four doors — office, cafe,
+ * dorm, library — and not one of them is a home.
+ *
+ * The output is deliberately the SAME SHAPE an authored door produces in
+ * DistrictScene.create: a centre-and-size zone, and a point keyed by target
+ * venue id in `doorPoints`. Everything downstream — the walk-to-door departure,
+ * spawning at the door on the way back, `planSync`'s `hasDoorFor`, the
+ * pathfinder route, the click that transitions — reads `doorPoints` and knows
+ * nothing about where the entry came from. That is what "route to a generated
+ * door exactly as to an authored one" has to mean to be checkable.
+ *
+ * Two differences from an authored door, both forced and both stated:
+ *   • the standoff is along the door's OWN side. Every authored door faces
+ *     south, so `y + height + 6` was enough; a parcel's anchor can be on any
+ *     of the four edges (plots.json has all four), and a west-facing door
+ *     whose waiting spot is south of it is inside the house.
+ *   • the anchor may be FRACTIONAL (`at + size / 2` — plot_7's is [28, 54.5]),
+ *     and unlike the fence gap a door is a pixel rectangle, so it keeps the
+ *     half-tile instead of flooring it.
+ */
+/**
+ * The door a parcel has IN A GIVEN STATE, or none.
+ *
+ * The whole of "a built plot is navigable; a vacant plot is not enterable"
+ * (plan `03-` Task 3), as one function rather than as a condition inside a
+ * Phaser scene no node test can reach. A vacant parcel is a tent camp standing
+ * in the open — it has no threshold, and its occupants are drawn where they
+ * sleep instead of walking through a door that is not there.
+ */
+export function plotDoorFor(plot: Plot, state: PlotState): PlotDoor | undefined {
+  return state === 'built' ? plotDoor(plot) : undefined;
+}
+
+export function plotDoor(plot: Plot): PlotDoor {
+  const [dx, dy] = plot.doorAnchor;
+  const [ox, oy] = OUTWARD[plot.doorSide];
+  const cx = dx * 16;
+  const cy = dy * 16;
+  return {
+    targetVenue: plot.id,
+    zone: { x: cx, y: cy, width: 32, height: 16 },
+    point: { x: cx + ox * DOOR_STANDOFF_PX, y: cy + oy * DOOR_STANDOFF_PX },
+  };
 }
 
 /**

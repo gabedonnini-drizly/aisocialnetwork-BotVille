@@ -45,15 +45,23 @@
  *     depth rule, the missing-texture guard, and the redraw-on-change wiring.
  *     Those are Phaser and stay uncovered by any node test.
  *
- * AND THE BIG ONE — HALF OF THIS FILE IS A REIMPLEMENTATION, not a call into
- * the scene. `planSync`, `Pathfinder`, `sceneKeyFor` and `sceneForLocation`
- * are the real modules; but the map-object reading, the door-point offset
- * (+width/2, +height+6), the depth rule (y + height) and the walkability
- * construction are TRANSCRIBED from DistrictScene.create (currently :117-172),
- * with nothing coupling the two. Change the scene's door geometry and this
- * file agrees with its own past self while the game moves — which is exactly
- * what Plan 03 Task 3 will do when it generates doors from plot anchors. Task
- * 3 must re-read this file, not just re-run it.
+ * AND THE BIG ONE — PART OF THIS FILE IS STILL A REIMPLEMENTATION, not a call
+ * into the scene. `planSync`, `Pathfinder`, `sceneKeyFor`, `sceneForLocation`,
+ * `districtGeometry`, the four `camera` functions, `composePlot`, `gateTile`
+ * and `plotDoorFor` are the real modules. What remains TRANSCRIBED from
+ * DistrictScene.create, with nothing coupling the two: the map-object reading,
+ * the AUTHORED door-point offset (+width/2, +height+6), the depth rule
+ * (y + height) and the walkability construction. Change those in the scene and
+ * this file goes on agreeing with its own past self while the game moves.
+ *
+ * The previous version of this paragraph warned that Task 3 would widen that
+ * gap when it generated doors from plot anchors. IT DID NOT, and the shape of
+ * why is worth keeping: the generated door's geometry lives in
+ * `plotComposition.plotDoor`, which the scene CALLS and this file CALLS, so
+ * the two cannot disagree. The authored door's geometry is still inline in the
+ * scene, and so is still transcribed here. The transcription surface got
+ * smaller, not larger — but it is not zero, and a green here still does not
+ * mean the authored-door path is what this document says it is.
  *
  * ── PROVENANCE ────────────────────────────────────────────────────────────
  * Captured at a882a79 from the pre-refactor scene. Re-baselined twice since,
@@ -132,6 +140,23 @@
  *            `terraced_house_1` for the same reason: no structure exists yet.
  *            BOTH ARE HYPOTHETICALS, and the golden being green says nothing
  *            about a camp or a house existing in the world.
+ *   (Task 3) ADDITIVE: `doorWhenBuilt` on each of the 23 plot entries. Nothing
+ *            existing moved; in particular `objects.doors` (the four AUTHORED
+ *            .tmj doors) and `paths` are untouched, because the world still has
+ *            exactly four doors.
+ *
+ *            THE WHOLE SECTION IS A HYPOTHETICAL AND ITS NAME SAYS SO. Nothing
+ *            is built, so no generated door exists in the world today; what is
+ *            recorded is what `plotDoorFor` answers for each state. `vacant`
+ *            and `under_construction` are `null` BY RULING ("a vacant plot is
+ *            not enterable"), not by omission — the null is the assertion.
+ *            `built` carries the zone and the waiting spot, and
+ *            `pathFromSpawn0` is the real Pathfinder's route length from spawn
+ *            point 0 to that spot, so a parcel whose door stops being reachable
+ *            moves a line here. All 23 are currently reachable; the shortest
+ *            route is 34 steps and the longest 121, which is the long walk past
+ *            no pavement that town/growth.json's maxDoorAnchorDistanceNote
+ *            already predicted and named the road-extension follow-up for.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -143,7 +168,7 @@ import {
   tintOverlayRect,
 } from '../../packages/client/src/game/config.ts';
 import { Pathfinder } from '../../packages/client/src/game/Pathfinder.ts';
-import { composePlot, gateTile } from '../../packages/client/src/game/plotComposition.ts';
+import { composePlot, gateTile, plotDoorFor } from '../../packages/client/src/game/plotComposition.ts';
 import { plotRegistry } from '../../packages/client/src/game/plotRegistry.ts';
 import { planSync } from '../../packages/client/src/game/districtPresence.ts';
 import {
@@ -245,6 +270,9 @@ export function captureDistrictRender(districtId = 'district') {
     }
     grid.push(row);
   }
+  const spawns = layer(map, 'spawns').map(o => ({ x: o.x, y: o.y }));
+  const spawns0 = spawns[0];
+
   // --- the land: the REAL composePlot over the REAL contract documents, for
   // every parcel this district draws, in every declared state. Not a
   // transcription — this is the module DistrictScene.renderPlots calls.
@@ -269,10 +297,28 @@ export function captureDistrictRender(districtId = 'district') {
         sha256: sha(placements.map(p => `${p.name}|${p.layer}|${p.tile}|${p.align}`).join('\n')),
       };
     }
-    return { id: plot.id, at: plot.at, size: plot.size, gate: gateTile(plot), states: perState };
+    // The DOOR REGISTRY's generated half (Task 3). Recorded for the state
+    // that has one, labelled for the state that has one: `vacant` and
+    // `under_construction` produce `null` here, which is the ruling ("a
+    // vacant plot is not enterable") and not a gap in the capture. The path
+    // is the real Pathfinder's, spawn point 0 to the waiting spot, so a
+    // parcel whose door stops being reachable moves a line.
+    const door = plotDoorFor(plot, 'built');
+    return {
+      id: plot.id,
+      at: plot.at,
+      size: plot.size,
+      gate: gateTile(plot),
+      states: perState,
+      doorWhenBuilt: {
+        vacant: plotDoorFor(plot, 'vacant') ?? null,
+        under_construction: plotDoorFor(plot, 'under_construction') ?? null,
+        built: door,
+        pathFromSpawn0: pathfinder.findPath(spawns0.x, spawns0.y, door.point.x, door.point.y).length,
+      },
+    };
   });
 
-  const spawns = layer(map, 'spawns').map(o => ({ x: o.x, y: o.y }));
   // Fixed routes: spawn point 0 to every door. A geometry change moves them.
   const paths = doors.map(d => {
     const p = pathfinder.findPath(spawns[0].x, spawns[0].y, d.x, d.y);

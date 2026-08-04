@@ -19,6 +19,7 @@
  */
 import type { PlotState } from './plotRegistry.js';
 import { plotRegistry } from './plotRegistry.js';
+import { districtForLocation } from './venueRegistry.js';
 
 /** The state a parcel is in until something says otherwise. */
 export const DEFAULT_PLOT_STATE: PlotState = 'vacant';
@@ -90,6 +91,29 @@ export function resetPlotStates(): void {
   const had = statuses.size > 0;
   statuses.clear();
   if (had) for (const cb of listeners) cb();
+}
+
+/**
+ * Which district DRAWS an agent reported here, once the LAND'S STATE is taken
+ * into account — the outdoor scene's presence filter, state-aware.
+ *
+ * `districtForLocation` answers from the vocabulary alone, and for a parcel it
+ * says "the district", which is right while the parcel is a camp: D-89
+ * publishes a vacant plot as roles:['home'] affords:['sleep'] and the tent
+ * stands in the open, so the sleeper is visible — that is the whole point of
+ * D-60. It stops being right the moment something is BUILT there. A built plot
+ * is a building; somebody at it is INSIDE it, and drawing them standing on the
+ * roof is the same class of error as the farm bug in reverse.
+ *
+ * So this is the one place plot state reaches presence, and it reaches it as a
+ * single subtraction rather than as a branch anywhere in the scene. Passed to
+ * `planSync` as `resolveDistrict`, which the module already accepts precisely
+ * so the answer can be substituted; downstream, a built plot has a DOOR, so an
+ * agent moving into one walks to it and enters, exactly as for the cafe.
+ */
+export function districtDrawing(location: string): string | undefined {
+  if (plotRegistry.has(location) && plotStateOf(location) === 'built') return undefined;
+  return districtForLocation(location);
 }
 
 /** Scenes subscribe so a state change redraws the land without a reload. */
