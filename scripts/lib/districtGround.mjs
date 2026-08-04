@@ -58,11 +58,19 @@ export function cityGrid(params, seed, gid, [W, H]) {
     for (let x = 0; x < W; x++)
       if (inVRoad(x) || inHRoad(y)) roads[y * W + x] = asphalt();
 
-  // centre lines, skipping the junction and the crossings
+  // Centre lines, skipping the junction and the crossings.
+  //
+  // The centre of each carriageway is DERIVED from the road params, not
+  // written down: these were the literals 22 and 23, which happen to be the
+  // middles of hRoad [21,23] and vRoad [22,24] and silently would not be if
+  // either road moved. D-88 promises the district's shape is config-driven;
+  // a hardcoded centre line is that promise being false.
+  const centreRow = Math.floor((hRoad[0] + hRoad[1]) / 2);
+  const centreCol = Math.floor((vRoad[0] + vRoad[1]) / 2);
   for (let x = 0; x < W; x += 2)
-    if (!(x >= vRoad[0] - 3 && x <= vRoad[1] + 3)) roads[22 * W + x] = gid.dashH;
+    if (!(x >= vRoad[0] - 3 && x <= vRoad[1] + 3)) roads[centreRow * W + x] = gid.dashH;
   for (let y = 0; y < H; y += 2)
-    if (!(y >= hRoad[0] - 3 && y <= hRoad[1] + 3)) roads[y * W + 23] = gid.dashV;
+    if (!(y >= hRoad[0] - 3 && y <= hRoad[1] + 3)) roads[y * W + centreCol] = gid.dashV;
 
   // crossings over the vertical road (horizontal stripes), on the sidewalk lines
   for (const [ya, yb] of hSidewalks) {

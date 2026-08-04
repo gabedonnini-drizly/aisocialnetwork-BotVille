@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { resolveSiblingRepo } from './helpers/siblingRepo.mjs';
+import { resolveSiblingRepo, envKey } from './helpers/siblingRepo.mjs';
 import { skipUnless } from './helpers/skip.mjs';
 
 // The civic kind/template registry (civic-drive spec §III; D-32, D-34, D-42).
@@ -26,7 +26,7 @@ test('the authoring copy is well-formed JSON with the two registry sections', ()
 
 test('the platform copy matches ours byte-for-byte (D-42)',
   skipUnless(!!apiCopy && existsSync(apiCopy),
-    `${API_NAME}/config/civic-registry.json not found — expected once the civic-drive Stage A merge deploys it; set BOTVILLE_API_REPO to run the cross-repo check`),
+    `${API_NAME}/config/civic-registry.json not found — expected once the civic-drive Stage A merge deploys it; set ${envKey(API_NAME)} to run the cross-repo check`),
   () => {
     const theirs = readFileSync(apiCopy, 'utf8');
     const ours = readFileSync(OURS, 'utf8');

@@ -181,12 +181,79 @@ test('every generated image is byte-identical to the legacy pipeline (except the
 });
 
 // ── Tier 2: tile layers are byte-exact ───────────────────────────────────
+//
+// ...except where a ruled change makes the legacy pipeline incapable of
+// reproducing the map at all. known-tmj-diffs.json is that list, and it works
+// like known-diffs.json does for pixels: an entry is a DECLARED reason, not a
+// mute. A declared venue still has to prove the part that did not change —
+// its `preserves` object layers must be byte-identical — so "the district
+// grew" cannot quietly become "the district moved".
+const knownTmjDiffs = JSON.parse(readFileSync('test/golden/known-tmj-diffs.json', 'utf8'));
+const tmjDiffFor = id => knownTmjDiffs.find(d => d.name === id) ?? null;
+/**
+ * Object PLACEMENTS — name and position, deliberately not size.
+ *
+ * "Nothing moved" is the claim a declared growth has to keep, and size is not
+ * part of it: a sprite's baked width is a trim question, which Tier 1 already
+ * covers pixel-by-pixel against known-diffs.json. Comparing sizes here would
+ * fold an unrelated pre-existing divergence into this assertion —
+ * `villa_building` bakes 12px narrower than the frozen legacy baseline (140
+ * vs 152 at the same 80,432), because the current propBaker trims to the true
+ * content bbox and build-district.mjs did not.
+ */
+const objectsOf = (m, name) => {
+  const l = m.layers.find(x => x.name === name);
+  return l ? l.objects.map(o => `${o.name}@${o.x},${o.y}`) : null;
+};
+
 test('every tile layer reproduces exactly', GATE, () => {
   const out = bakeOnce();
+  const usedTmjDiffs = new Set();
   for (const id of legacyVenueIds()) {
     const now = readTmj(join(out, 'tilemaps', `${id}.tmj`));
     const was = readTmj(`test/golden/tmj/${id}.tmj`);
     assert.deepEqual(now.layers.map(l => l.name), was.layers.map(l => l.name), `${id}: layer set`);
+
+    const declared = tmjDiffFor(id);
+    if (declared) {
+      usedTmjDiffs.add(id);
+      // The half that must still hold: nothing MOVED. Every object layer the
+      // entry claims to preserve is compared byte for byte against the
+      // baseline, so a "growth" that shifted a building or a door fails here.
+      for (const layerName of declared.preserves) {
+        assert.deepEqual(objectsOf(now, layerName), objectsOf(was, layerName),
+          `${id}/${layerName}: declared preserved in known-tmj-diffs.json, but it moved`);
+      }
+      // ...and growth is growth: the map may get bigger, never smaller.
+      assert.ok(now.width >= was.width && now.height >= was.height,
+        `${id}: declared as grown but is now ${now.width}x${now.height}, was ${was.width}x${was.height}`);
+
+      // The claim the entry actually makes: inside the ORIGINAL region,
+      // nothing moved — only procedural variant choice changed. Skipping tile
+      // data entirely would make that claim unfalsifiable and would let a
+      // moved road through forever (vRoad [22,24] -> [40,42] passes every
+      // other assertion here). So compare the NONZERO MASK cell by cell over
+      // the original rectangle: which tiles are road, which are ground, which
+      // are pen is structure; WHICH grass it picked is the declared diff.
+      for (const l of now.layers.filter(x => x.type === 'tilelayer')) {
+        const w = was.layers.find(x => x.name === l.name);
+        if (!w) continue;
+        const moved = [];
+        for (let y = 0; y < was.height; y++) {
+          for (let x = 0; x < was.width; x++) {
+            const a = l.data[y * now.width + x] !== 0;
+            const b = w.data[y * was.width + x] !== 0;
+            if (a !== b) moved.push(`${x},${y}`);
+          }
+        }
+        assert.deepEqual(moved.slice(0, 8), [],
+          `${id}/${l.name}: the layout MOVED inside the original ${was.width}x${was.height} region `
+          + `(${moved.length} cells differ in occupancy, not just in variant) — a declared growth may `
+          + 'repaint, never rearrange');
+      }
+      continue;
+    }
+
     assert.deepEqual([now.width, now.height], [was.width, was.height], `${id}: size`);
     for (const l of now.layers.filter(l => l.type === 'tilelayer')) {
       const w = was.layers.find(x => x.name === l.name);
@@ -194,6 +261,9 @@ test('every tile layer reproduces exactly', GATE, () => {
         `${id}/${l.name}: tile data drifted — check the PRNG consumption order in cityGrid`);
     }
   }
+  const unused = knownTmjDiffs.map(d => d.name).filter(n => !usedTmjDiffs.has(n));
+  assert.deepEqual(unused, [],
+    `known-tmj-diffs.json has entries nothing matched: ${unused.join(', ')} — the list may only ever shrink`);
 });
 
 // ── Bite-proof: the mechanism actually gates (synthetic, no art needed) ───

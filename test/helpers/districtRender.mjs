@@ -45,9 +45,47 @@
  *   799979f  objects.doors[*].key: 'VenueScene:<venue>' -> '<venue>'.
  *            doorPoints is keyed by target venue id now that every district
  *            shares one scene key. Nothing else in the document moved.
- *   (this)   objects.doors[*].key removed. Since 799979f it was a
+ *   ac3f9da  objects.doors[*].key removed. Since 799979f it was a
  *            byte-identical duplicate of `targetVenue`, and two fields that
  *            must agree are a place for them to disagree.
+ *   (this)   THE MERGE OF plan-04-archetypes-bake (Task 7, D-88/D-89). Four
+ *            fields moved and NOTHING ELSE did; each is accounted for:
+ *
+ *            geometry           48x46 -> 92x92 (widthPx 768 -> 1472,
+ *                               heightPx 736 -> 1472). D-88: the district
+ *                               grows; the size is bake data (town/growth.json
+ *                               districtSizeTiles).
+ *            routing            +23 entries, plot_1..plot_23, every one
+ *                               {sceneKeyFor: DistrictScene, sceneForLocation:
+ *                               DistrictScene}. D-79 publishes a venue per
+ *                               parcel. ZERO pre-existing entries changed.
+ *            objects.propsAbove 6 of 95 scatter bushes swap bush_1 <-> bush_2
+ *                               at IDENTICAL x/y/depth (indices 86, 88, 89,
+ *                               90, 92, 93). The cityGrid generator's PRNG
+ *                               draw order is part of its contract and the
+ *                               grown map re-picks scatter flavour; Task 7
+ *                               declared this and proved buildings, doors,
+ *                               spawns, glows and night byte-identical over
+ *                               the original region. Every other entry, and
+ *                               every other object layer, is unchanged.
+ *            walkability        blockedTiles 870 -> 872, sha256 moves. The
+ *                               ORIGINAL 48x46 REGION IS CELL-FOR-CELL
+ *                               IDENTICAL — verified by diffing the two grids
+ *                               over it: 0 differing cells, still exactly 870
+ *                               blocked. The +2 are (4,46) and (5,46), from
+ *                               ONE prop collision box at tile (4.1875,
+ *                               45.625) size 1.5x1 that the old grid's bottom
+ *                               edge used to clip away. The sha moves because
+ *                               the serialised grid is now 92 rows of 92.
+ *                               The grown region carries no other collision:
+ *                               it is open grass, which is why plot door
+ *                               anchors are a long walk and never a blocked
+ *                               one (growth.json maxDoorAnchorDistanceNote).
+ *
+ *            NOT moved, and worth saying because it is the load-bearing half:
+ *            objects.buildings, .doors, .spawns, .penSpots, .glows,
+ *            .propsBelow, .collisionRects, `paths` (all four spawn-to-door
+ *            routes, step for step) and the whole `tick`.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';

@@ -70,19 +70,17 @@ test('every generator names an archetype that exists', () => {
 
 /**
  * The published schema requires `roles` and `affords` to be non-empty
- * (schemas/venues.schema.json, minItems 1), and the ladder tiers currently
- * ship `"roles": []` because `home` is withheld until plan `01-` backfills
- * stored home assignments. That placeholder is a LATENT schema violation: it
- * is only harmless while nothing stamps those archetypes.
+ * (schemas/venues.schema.json, minItems 1). The ladder tiers used to ship
+ * `"roles": []` — a LATENT schema violation, harmless only while nothing
+ * stamped them — because `home` was withheld until plan `01-` backfilled
+ * stored home assignments.
  *
- * This gates it. Registering a generator for a tier without first giving it
- * its role now fails here instead of publishing a venue that violates the
- * schema the platform validates against. It passes today because `house` is
- * the only archetype with a generator — which is exactly the point: it costs
- * nothing until the moment it matters.
- *
- * It deliberately does NOT ask the tiers to declare roles now. `home` is
- * withheld on purpose, and adding it early is the 73-agent re-homing event.
+ * The backfill landed and the tiers now declare `home`, so this gate is
+ * SATISFIABLE for them: registering a generator for a tier is now a bake
+ * decision rather than a schema violation waiting to happen. The gate stays,
+ * because it is about every future archetype too — a new one declared
+ * without roles and then given a generator would publish a venue the
+ * platform refuses to validate.
  */
 test('an archetype with a generator satisfies the published schema (roles/affords non-empty)', () => {
   const schema = JSON.parse(readFileSync('schemas/venues.schema.json', 'utf8'));
@@ -102,37 +100,50 @@ test('an archetype with a generator satisfies the published schema (roles/afford
 });
 
 /**
- * The kickoff's correction 3 and [R: F-7, S-5]: `deriveResidenceVenues`
- * orders `home`-role venues by numeric id and `deriveHomeVenue` fills them
- * in that order, so publishing ANY new home-role venue re-homes agents who
- * hold no stored assignment. The ladder tiers are therefore declared with
- * the role withheld; plan `01-` Task 3 backfills stored homes, and only then
- * does a follow-up bake add it. This test is the tripwire on that ordering.
+ * THE BACKFILL HAS LANDED, so the role has too [R: F-7, S-5].
+ *
+ * `deriveResidenceVenues` orders `home`-role venues by numeric id and
+ * `deriveHomeVenue` fills them in that order, so publishing any new
+ * home-role venue re-homes every agent who holds NO stored assignment — 73
+ * of 85, measured. The ladder tiers were therefore declared with the role
+ * withheld until plan `01-` Task 3 wrote one stored assignment per agent.
+ *
+ * That backfill ran (85/85 stored, verified re-run: written 0, already
+ * assigned 85), so the derived fallback is unreachable and the ordering is
+ * free to change. The proof is plan `01-`'s empty-home-diff test, which runs
+ * against THIS bake output: with rows stored, adding a home-role venue moves
+ * nobody.
+ *
+ * What this test guards NOW is the other half of the same rule: only a
+ * residence may claim the role. A civic archetype picking up `home` would
+ * put a school in the residence pool.
  */
-test('no archetype but `house` claims the home role — the role lands after the backfill', () => {
+const LADDER = ['house', 'mobile_home', 'villa', 'condo'];
+
+test('the home role belongs to the housing ladder, and to nothing else', () => {
   for (const a of archetypes) {
-    if (a.archetype === 'house') {
-      assert.deepEqual(a.roles, ['home'], 'the shipped residence keeps its role');
-      continue;
-    }
+    if (LADDER.includes(a.archetype)) continue;
     assert.equal((a.roles ?? []).includes('home'), false,
-      `${a.file} claims the home role — adding a home-role venue is a home-reassignment `
-      + 'event, not a declaration (kickoff correction 3)');
+      `${a.file} claims the home role but is not a housing tier — it would join the residence `
+      + 'pool that deriveHomeVenue fills, and agents would be assigned to sleep in it');
   }
 });
 
 /**
- * Sharper than the rule above, for the tiers it actually bites on: a ladder
- * tier is a residence with its role withheld, so it declares NO roles at all
- * rather than a stand-in. A `hangout` here would quietly make a house a
- * public candidate the day someone registered its generator.
+ * The post-backfill state of the tiers themselves. This replaces the
+ * `roles: []` pin, which existed ONLY to hold the withheld state and would
+ * now be asserting the bug: a residence tier with no role is a latent schema
+ * violation (roles minItems 1) waiting for someone to register its
+ * generator.
+ *
+ * A tier's only role is `home` — a `hangout` here would quietly make a house
+ * a public daytime candidate.
  */
-test('the ladder tiers declare no role at all until the backfill lands', () => {
+test('every housing tier declares exactly the home role', () => {
   for (const a of archetypes) {
-    if (!['mobile_home', 'villa', 'condo'].includes(a.archetype)) continue;
-    assert.deepEqual(a.roles, [],
-      `${a.file} declares roles ${JSON.stringify(a.roles)} — a residence tier's only role is `
-      + '`home`, and `home` is withheld until plan 01- backfills stored assignments');
+    if (!LADDER.includes(a.archetype)) continue;
+    assert.deepEqual(a.roles, ['home'],
+      `${a.file} declares roles ${JSON.stringify(a.roles)} — a residence tier's only role is \`home\``);
   }
 });
 

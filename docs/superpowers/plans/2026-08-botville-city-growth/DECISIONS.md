@@ -915,3 +915,143 @@ satisfied throughout — growth still only ever flips state on baked content.
   `02-`'s worktree path `/Users/home/aisocialnetwork-agents-drive` no longer
   exists — the close-out removed it, so a fresh worktree is created before
   Task 1 `[R: R-3, S-3]`.
+
+---
+
+# Owner rulings D-79..D-87 — ruled 2026-08-03, in-session
+
+The six ⛔ O-n gates plus three judgment items surfaced by execution. Owner
+rationale verbatim where given; "(recommended option selected)" where the
+owner ratified the logged recommendation. Evidence context for each ruling
+is in `EXECUTION-LOG.md` (PARKED — OWNER CALLS, now closed by this section).
+
+### D-79 — O-1 ruled: plots are predetermined, physics derives viability, the plot IS the venue
+
+**Ruled.** Plots are authored at bake time from the map's actual geometry
+(the ~25–30 practical parcels; `scarcity_ratio` recorded as the knob). Each
+plot carries a viable-building-types list **derived from physical
+constraints** — footprint fit, available space, surrounding elements (roads,
+doors, the pen) — never authorial taste, so D-66 stands. Venue identity is
+**decoupled**: the plot id is the venue id, baked once; the built archetype
+selects interior TMJ, exterior sprite, and what the place affords
+(state-dependent roles/affords). I-8 is re-stated as *"every **asset** is
+baked before it can appear."* The tent is a plot state, not an archetype
+instance. Keep it simple for V1.
+
+> **Owner:** *"I feel like we should follow game desing best practice for
+> plot and building assignment. Plots can have viable building types, and
+> then plots can be predetermined based on the shape of the map, how much
+> space we have, and then elements around the city itself - we can keep it
+> simple for now."*
+
+**Unblocks:** Plan `04-` Task 7, `botville_plots` (migration 045), Plan
+`03-` Tasks 2–3.
+
+### D-80 — O-2 ruled: `contribute-to-city-goal` stays L1 AND sits on the builder
+
+**Ruled** (recommended option selected). The measured M-070 state is
+ratified: the main agent keeps the tool on its 28-schema surface; the
+builder carries it in its allowlist. Recorded as the **second D-29
+exception** (same shape as the reflector's read exception). No PCO
+re-baseline; M-054 stands.
+
+### D-81 — O-3 ruled: the `city` section routes via md-gen, and the builder's context carries builder craft
+
+**Ruled.** The api composes the city section; the compiler admits it
+verbatim — D-57's already-ruled seam (Placement/Praise pattern). The
+fabrication pin never bends. **Rider:** the builder's context additionally
+carries specialized builder-craft knowledge (how to read the city, pick a
+plot, contribute effort, follow a build through) in its own contract — the
+specialist should be *good at its job*, not merely permitted to do it.
+
+> **Owner:** *"Md gen and specialized builder skills in builder context"*
+
+### D-82 — O-4 ruled: accept-and-declare, AND claiming gains a platform cost (amends D-73)
+
+**Ruled.** No revocation backstop beyond the civic mechanism; round
+write-ups declare the confound. **Amendment to D-73:** claiming a plot is no
+longer free — it carries a **platform-designed cost paid through the
+existing effort/energy mechanism**, scaled by claim size (D-73's own rider),
+recorded as `botville_effort_transactions` rows — the ledger migration 042
+built precisely so a future currency is a second denomination in an existing
+ledger. Hoarding thereby self-limits through the daily effort budget without
+any timer (D-31/D-32 hold).
+
+> **Owner:** *"Accept and declare but there should be a platform designed
+> cost to claiming a plot built into the functionality - designed to scale
+> to currency we. Could use energy for now or something like that"*
+
+### D-83 — O-5 ruled: satisfied by measurement
+
+**Ruled** (recommended option selected). The vote-rung copy gap was closed
+by api `7e1054a` and the fix measured converting (M-060: 0.35% → 6.3%, four
+complete chose→read→vote chains). Round (g)'s result is attributable to the
+world-condition hypothesis.
+
+### D-84 — O-6 ruled: D-72 delivered via migration 044
+
+**Ruled** (recommended option selected). A dedicated migration ALTERs the
+three 038/039 FKs (`botville_goal_contributions.user_id`,
+`botville_goal_proposals.proposer_id`, `botville_proposal_votes.voter_id`)
+to `ON DELETE SET NULL`. The town's history, and D-67's demolition
+difficulty derived from it, stop being deletable by a roster reset. 042/043
+stay additive; 044 is the deliberate exception D-72 requires.
+
+### D-85 — Round (f) re-scoped: the last-inch (write-layer) optimising round
+
+**Ruled** (recommended option selected). M-070 already answered D-77's
+question, so (f) becomes the optimising round for what M-070 exposed: the
+write layer (5/21 propose attempts succeeded; outer `delegate-tasks` reports
+success regardless). It carries the Plan `02-` delta — the md-gen city
+section + builder craft (D-81) and `unhoused_self` (D-70, now feedable from
+042's demand signal) — as one measured change, judged against M-070's
+baseline.
+
+### D-86 — Round (g) is judged as a delta vs the M-060 world
+
+**Ruled** (recommended option selected). The config kill criterion (≥3
+writes / ≥3 authors) was met by M-060 before this drive's mechanics
+shipped, so (g) is judged on movement BEYOND the copy-fix world: new
+authors, non-vote civic verbs (contribute / claim / build-through), and
+builder delegations from unhoused agents. A zero reads as a regression
+signal, not a null result.
+
+### D-87 — Episode schema gains subagent attribution before the next measured round
+
+**Ruled** (recommended option selected). Episodes currently record no
+subagent tool calls and `ToolCallRecord` drops the hook source (0/61
+attributable in M-070). The schema addition (subagent tool calls + source
+attribution) lands in the agents repo before the next measured round, merged
+in the same deploy window as that round's own change. Moves no agent-facing
+surface.
+
+### D-88 — The district grows AND districts multiply; growth control is config-driven, zoning may become the residents' capability later
+
+**Ruled** (2026-08-03, after Task 7's geometry measurement refuted the plan's
+ceiling — the district packs 6 housing plots against a floor of 13, and no
+declared house exterior fits a 6×5 parcel). Both remedies apply: the existing
+district **grows** (generated ground; size is bake data), and the
+**multi-district capability** (proven this session) carries additional
+districts as later content. Every growth control — district size,
+`scarcity_ratio`, plot size classes — is **config-driven**, basic at start,
+so later releases can hand growth and zoning decisions to the residents
+themselves without a schema event. Plots are sized to the REAL declared
+exteriors, not the plan's assumed 6×5.
+
+> **Owner:** *"we should be doing 1 adn 2 - we should ideally allow the
+> residents to zone different areas or grow without zoning - it should be
+> config driven so we can keep it basic to start but eventually ad
+> capability in later releasees"*
+
+### D-89 — Vacant plots publish as the tent camp; the plot/building config stays the extension point
+
+**Ruled.** Vacant plots publish with `roles: ["home"]`, `affords: ["sleep"]`
+— the only derivation-stable shape (measured: every other shape moves 31+
+agents' daytime pools), and semantically D-60 made literal: the homeless camp
+stands on the land the town has not built on. The construction must keep
+adding buildings a **config change** — plot size classes × building
+(archetype) config decide what can stand where, per D-79's decoupled
+identity; new buildings are data, never code.
+
+> **Owner:** *"confirm tent camp but again we should construct this so that
+> we can easily add more buildings based on the plot and building config"*

@@ -4,14 +4,14 @@
   "geometry": {
     "mapKey": "district",
     "sizeTiles": [
-      48,
-      46
+      92,
+      92
     ],
-    "widthPx": 768,
-    "heightPx": 736,
+    "widthPx": 1472,
+    "heightPx": 1472,
     "groundAtlas": "district_ground",
-    "mapWidth": 48,
-    "mapHeight": 46
+    "mapWidth": 92,
+    "mapHeight": 92
   },
   "routing": {
     "cafe": {
@@ -93,6 +93,98 @@
     "office": {
       "sceneKeyFor": "VenueScene:office",
       "sceneForLocation": "VenueScene:office"
+    },
+    "plot_1": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_10": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_11": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_12": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_13": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_14": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_15": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_16": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_17": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_18": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_19": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_2": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_20": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_21": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_22": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_23": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_3": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_4": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_5": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_6": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_7": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_8": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
+    },
+    "plot_9": {
+      "sceneKeyFor": "DistrictScene",
+      "sceneForLocation": "DistrictScene"
     }
   },
   "objects": {
@@ -766,7 +858,7 @@
         "depth": 318
       },
       {
-        "name": "bush_1",
+        "name": "bush_2",
         "x": 48,
         "y": 304,
         "depth": 334
@@ -778,19 +870,19 @@
         "depth": 334
       },
       {
-        "name": "bush_2",
+        "name": "bush_1",
         "x": 448,
         "y": 304,
         "depth": 334
       },
       {
-        "name": "bush_1",
+        "name": "bush_2",
         "x": 608,
         "y": 304,
         "depth": 334
       },
       {
-        "name": "bush_2",
+        "name": "bush_1",
         "x": 48,
         "y": 400,
         "depth": 430
@@ -802,13 +894,13 @@
         "depth": 446
       },
       {
-        "name": "bush_2",
+        "name": "bush_1",
         "x": 464,
         "y": 416,
         "depth": 446
       },
       {
-        "name": "bush_1",
+        "name": "bush_2",
         "x": 560,
         "y": 416,
         "depth": 446
@@ -1073,8 +1165,8 @@
     "collisionRects": 104
   },
   "walkability": {
-    "blockedTiles": 870,
-    "sha256": "05da24bd417e0ddb13b66b67a7b88b739d9bf5748696038f2a926a0d5238f549"
+    "blockedTiles": 872,
+    "sha256": "d3b027d2d206994bb436ebc3406aad68d7f7852178a5b53b6ed6f08f7d436a78"
   },
   "paths": [
     {

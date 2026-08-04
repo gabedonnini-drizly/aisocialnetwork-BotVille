@@ -8,8 +8,9 @@ import {
   districtForLocation, sceneForLocation, sceneKeyFor,
 } from '../packages/client/src/game/venueRegistry.ts';
 import { drawnByDistrict } from '../packages/client/src/game/districtPresence.ts';
+import { plotRegistry } from '../packages/client/src/game/plotRegistry.ts';
 import { AGENT_LOCATIONS } from '../packages/shared/src/types/Agent.ts';
-import { resolveSiblingRepo } from './helpers/siblingRepo.mjs';
+import { resolveSiblingRepo, envKey } from './helpers/siblingRepo.mjs';
 import { skipUnless } from './helpers/skip.mjs';
 import { checkPlots, collectPlots } from './helpers/plotCoverage.mjs';
 
@@ -32,7 +33,7 @@ test('the lock matches the artifact it locks', () => {
 });
 
 test('the platform copy matches ours (I-8)',
-  skipUnless(!!apiCopy && existsSync(apiCopy), `${API_NAME}/config/venues.json not found — set BOTVILLE_API_REPO to run the cross-repo check`),
+  skipUnless(!!apiCopy && existsSync(apiCopy), `${API_NAME}/config/venues.json not found — set ${envKey(API_NAME)} to run the cross-repo check`),
   () => {
     const theirs = JSON.parse(readFileSync(apiCopy, 'utf8'));
     const ours = JSON.parse(readFileSync(OURS, 'utf8'));
@@ -238,10 +239,21 @@ test('the outdoor scene draws every client-internal location, not just the distr
       + 'and by no other, so anyone the server puts there stops being rendered — nightly, for '
       + 'every animal.');
   }
-  for (const district of venueRegistry.outdoor()) {
+  for (const district of venueRegistry.districts()) {
     assert.ok(drawnByDistrict(district.id, district.id), 'a district must still draw itself');
     assert.equal(drawnByDistrict('cafe', district.id), false,
       'an interior is not drawn by the outdoor scene');
+  }
+  // A parcel is drawn by its district and by no other. D-89 publishes vacant
+  // plots as roles:['home'] / affords:['sleep'], so the api WILL place sleepers
+  // in Camp N — drop them from this filter and the whole tent camp is invisible
+  // at exactly the hour it exists to be seen.
+  for (const plot of plotRegistry.all()) {
+    assert.ok(drawnByDistrict(plot.id, plot.districtId),
+      `the outdoor scene's present filter drops '${plot.id}' — everyone sleeping in that camp `
+      + 'stops being rendered');
+    assert.equal(drawnByDistrict(plot.id, plot.id), false,
+      'a parcel is not a district: nothing draws "the plot_N scene"');
   }
   // ...and the filter is derived, not enumerated: it says yes to a location it
   // was never told about, as long as the registry calls that location outdoors.
@@ -290,14 +302,12 @@ test('every plot fits its district, overlaps no other, and allows only declared 
   const { problems, count } = checkPlots(source.plots, district, declaredArchetypes);
   assert.deepEqual(problems, []);
 
-  // Task 7 authors the plots and is blocked on ⛔ O-1. Until then `count` is
-  // 0 and this test is vacuous — say so out loud rather than reporting a
-  // green that means nothing. `count` is consumed, not discarded, so the day
-  // plots land the message changes without anyone editing this file.
-  if (count === 0) {
-    console.log(`      ℹ no plots authored yet (${source.where}) — plot coverage is VACUOUS. `
-      + 'Task 7 (⛔ O-1) is what gives it input; the fixtures below prove it fires.');
-  }
+  // O-1 is ruled (D-79) and Task 7 has authored the plots, so this check is
+  // no longer vacuous and must never quietly become so again: a plots file
+  // that stopped being read would otherwise look exactly like a clean run.
+  assert.ok(count > 0,
+    `no plots found in ${source.where} — the plots are authored now (D-79), so zero means this `
+    + 'check has stopped reading its input, not that the town has no land');
 });
 
 test('the plot checks fire — vacuously green is not the same as green', () => {

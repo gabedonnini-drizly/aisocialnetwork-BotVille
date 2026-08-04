@@ -13,6 +13,7 @@ import {
   startingDistrict,
   venueRegistry,
 } from '../packages/client/src/game/venueRegistry.ts';
+import { isPlot, plotRegistry } from '../packages/client/src/game/plotRegistry.ts';
 
 /**
  * D-62: multi-district is architectural from day one, and one district's
@@ -124,12 +125,22 @@ test('an agent walking out of district B does not appear at district A’s door'
 // ── the live registry ──────────────────────────────────────────────────────
 
 test('scene keys are derived from the registry, not from an id', () => {
-  for (const venue of venueRegistry.outdoor()) {
+  for (const venue of venueRegistry.districts()) {
     assert.equal(sceneKeyFor(venue.id), DISTRICT_SCENE_KEY,
       'every outdoor venue is drawn by the one district scene');
     assert.deepEqual(sceneTargetFor(venue.id), {
       key: DISTRICT_SCENE_KEY, data: { districtId: venue.id },
     }, 'starting the district scene without its id draws whichever district was last up');
+  }
+  // A PARCEL is outdoor too (D-79: the plot id is the venue id) and gets the
+  // same scene — but named as ITS DISTRICT, never as itself. `plot_7` as a
+  // districtId means `make.tilemap({key:'plot_7'})`, a file the bake never
+  // wrote: the farm black screen, re-earned.
+  for (const venue of venueRegistry.outdoor().filter(x => isPlot(x.id))) {
+    assert.equal(sceneKeyFor(venue.id), DISTRICT_SCENE_KEY);
+    assert.deepEqual(sceneTargetFor(venue.id), {
+      key: DISTRICT_SCENE_KEY, data: { districtId: plotRegistry.get(venue.id).districtId },
+    }, 'a parcel must open the district that draws it, not try to be one');
   }
   for (const venue of venueRegistry.indoor()) {
     assert.equal(sceneKeyFor(venue.id), `VenueScene:${venue.id}`);
@@ -153,9 +164,30 @@ test('every client-internal location is owned by a district that exists', () => 
 });
 
 test('the capability ships; a second district’s content does not (D-62)', () => {
-  const outdoor = venueRegistry.outdoor();
-  assert.equal(outdoor.length, 1,
+  const districts = venueRegistry.districts();
+  assert.equal(districts.length, 1,
     'a second district appeared in the bake. That is content, and this plan ships capability '
     + 'only — the measured round stays clean.');
-  assert.equal(startingDistrict().id, outdoor[0].id);
+  assert.equal(startingDistrict().id, districts[0].id);
+  // The parcels are content of the ONE district, not districts of their own.
+  assert.equal(venueRegistry.outdoor().length, districts.length + plotRegistry.all().length,
+    'an outdoor venue that is neither a district nor a parcel has no map and no owner');
+});
+
+test('every parcel is drawn by a district that exists (D-79)', () => {
+  assert.ok(plotRegistry.all().length > 0, 'no parcels — this check is vacuous');
+  for (const plot of plotRegistry.all()) {
+    const owner = venueRegistry.get(plot.districtId);
+    assert.ok(owner && !owner.indoor && !isPlot(owner.id),
+      `'${plot.id}' is drawn by '${plot.districtId}', which is not a district`);
+    assert.equal(districtForLocation(plot.id), plot.districtId);
+    assert.ok(venueRegistry.has(plot.id),
+      `${plot.id} has geometry but no published venue — the plot id IS the venue id (D-79)`);
+  }
+  // ...and no published venue claims to be a parcel without geometry to draw.
+  for (const v of venueRegistry.all()) {
+    if (v.archetype !== 'plot') continue;
+    assert.ok(plotRegistry.has(v.id),
+      `${v.id} is published as a plot but venues/*/plots.json has no rectangle for it`);
+  }
 });

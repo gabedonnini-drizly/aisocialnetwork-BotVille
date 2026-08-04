@@ -10,6 +10,7 @@
  */
 import type { PublishedVenue, VenueDescriptor } from '@botville/shared';
 import { VENUES } from './venues.generated.js';
+import { isPlot, PLOT_DISTRICTS } from './plotRegistry.js';
 
 const byId = new Map<string, VenueDescriptor>(VENUES.map(v => [v.id, v]));
 
@@ -27,12 +28,44 @@ export const venueRegistry = {
     return VENUES.filter(v => v.indoor);
   },
   /**
-   * The outdoor venues — the districts. D-62: multi-district is architectural
-   * from day one, so this is a list and never "the district". One district's
-   * content ships today; that is a fact about the bake, not about the code.
+   * Every venue that is not inside something — the districts AND the parcels
+   * drawn on them. D-79 published 23 plots as `indoor: false`, so "outdoor" is
+   * no longer a synonym for "district": use `districts()` when the question is
+   * "which map is this", and this one only when it is literally "is this
+   * under a roof".
    */
   outdoor(): VenueDescriptor[] {
     return VENUES.filter(v => !v.indoor);
+  },
+  /**
+   * The districts — outdoor venues that have a map of their own. D-62:
+   * multi-district is architectural from day one, so this is a list and never
+   * "the district". One district's content ships today; that is a fact about
+   * the bake, not about the code.
+   *
+   * A PARCEL IS NOT A DISTRICT. A plot is outdoor and published (D-79), but it
+   * is a rectangle ON a district's map: no tilemap, no ground atlas of its own,
+   * no scene. Everything that used to ask `outdoor()` "which map do I draw"
+   * asks this instead, or boots `DistrictScene` with `mapKey: 'plot_7'`.
+   */
+  districts(): VenueDescriptor[] {
+    return VENUES.filter(v => !v.indoor && !isPlot(v.id));
+  },
+  /**
+   * The venues the bake writes a `.tmj` for — F-2.
+   *
+   * `world-bake.mjs` runs its tilemap loop over authored venues and archetype
+   * instances only; plot venues are appended AFTER it, precisely because a
+   * vacant parcel has no interior. Asking the loader for all 41 venues
+   * therefore asks for 23 files that were never written: 23 guaranteed 404s on
+   * every boot, each one a red line in the console and a failed request the
+   * progress bar still waits on. `test/preloader-scene.test.mjs` pins this list
+   * against the baked `tilemaps/` directory in both directions, so the day a
+   * built plot gains an interior the pin fails rather than the map going
+   * missing.
+   */
+  withTilemap(): VenueDescriptor[] {
+    return VENUES.filter(v => !isPlot(v.id));
   },
   published(): PublishedVenue[] {
     // Mirrors the bake's published projection EXACTLY (Plan 2 Task 18),
@@ -110,6 +143,27 @@ export function isClientInternalLocation(location: string): boolean {
   return Object.hasOwn(CLIENT_INTERNAL_LOCATIONS, location);
 }
 
+/**
+ * Every location that is drawn by SOMEBODY ELSE'S map, in one table.
+ *
+ * Two kinds live here for one reason: neither has a map of its own, and both
+ * would otherwise be resolved to themselves.
+ *
+ *  • client-internal geography (the farm pen) — not a venue at all;
+ *  • PARCELS (D-79's plots) — venues, published, `indoor: false`, and still
+ *    rectangles ON a district map. `venues/<district>/plots.json` is where the
+ *    ownership comes from: the directory IS the answer.
+ *
+ * Merging them is what makes the plot case free. `districtForLocation`,
+ * `sceneTargetFor` and the outdoor presence filter all read this one table, so
+ * an agent asleep in Camp 7 is drawn by the district that contains Camp 7 —
+ * and `DistrictScene` is never handed `plot_7` as the map to load.
+ */
+export const DRAWN_BY_DISTRICT: Readonly<Record<string, string>> = Object.freeze({
+  ...CLIENT_INTERNAL_LOCATIONS,
+  ...PLOT_DISTRICTS,
+});
+
 /** Just enough registry for the resolver — so a test can hand it a second district. */
 export interface VenueLookup {
   get(id: string): VenueDescriptor | undefined;
@@ -119,9 +173,10 @@ export interface VenueLookup {
  * Which district DRAWS this location, if any — the single answer both the
  * scene routing and the outdoor scene's presence filter are derived from.
  *
- * An outdoor venue is its own district. A client-internal location belongs to
- * the district declared above. Everything else (an interior, an id nobody
- * knows) is not drawn outdoors at all, and gets `undefined`.
+ * A district is its own answer. Anything in `DRAWN_BY_DISTRICT` — the farm pen,
+ * every parcel — belongs to the district named there. Everything else (an
+ * interior, an id nobody knows) is not drawn outdoors at all, and gets
+ * `undefined`.
  *
  * Injectable on purpose: it is what lets a test stand up a synthetic second
  * district and prove the capability without shipping a second district's
@@ -130,16 +185,16 @@ export interface VenueLookup {
 export function districtForLocationIn(
   location: string,
   venues: VenueLookup,
-  internal: Readonly<Record<string, string>>,
+  drawnBy: Readonly<Record<string, string>>,
 ): string | undefined {
-  const owner = Object.hasOwn(internal, location) ? internal[location] : location;
+  const owner = Object.hasOwn(drawnBy, location) ? drawnBy[location] : location;
   const venue = venues.get(owner);
   return venue && !venue.indoor ? venue.id : undefined;
 }
 
 /** The live resolver, over the shipped registry. */
 export function districtForLocation(location: string): string | undefined {
-  return districtForLocationIn(location, venueRegistry, CLIENT_INTERNAL_LOCATIONS);
+  return districtForLocationIn(location, venueRegistry, DRAWN_BY_DISTRICT);
 }
 
 /**
@@ -185,7 +240,7 @@ export function sceneTargetFor(location: string): SceneTarget {
  * rather than a black screen if a bake ever ships none.
  */
 export function startingDistrict(): VenueDescriptor {
-  const [first] = venueRegistry.outdoor();
-  if (!first) throw new Error('the bake declares no outdoor venue — nothing can draw the world');
+  const [first] = venueRegistry.districts();
+  if (!first) throw new Error('the bake declares no district — nothing can draw the world');
   return first;
 }

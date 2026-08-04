@@ -2,7 +2,7 @@
   "id": "district",
   "label": "District",
   "indoor": false,
-  "sizeTiles": [48, 46],
+  "sizeTiles": [92, 92],
   "groundAtlas": "district_ground",
   "capacity": 96,
   "roles": ["hangout"],
