@@ -24,7 +24,7 @@
  * what keeps "derived" honest.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContract } from './lib/assetContract.mjs';
 
@@ -55,7 +55,22 @@ export function footprints() {
   return out;
 }
 
-/** The tiles a plot may not touch: roads, sidewalks, the pen, buildings, paths. */
+/**
+ * The tiles a plot may not touch: the road/sidewalk network, the pen, the
+ * paved paths, and EVERY SOLID THING ALREADY STANDING THERE.
+ *
+ * The solid things are read from the baked district's own `collision` layer
+ * rather than recomputed here. That is the whole point: `bakeDistrict` emits
+ * collision boxes for buildings AND for tree trunks, street lamps, benches,
+ * trash cans, hydrants, parked cars, the pen fence and the scatter bushes,
+ * each with its own bespoke offset. The first version of this packer knew
+ * only about the buildings layer, and it put the only school-sized parcel on
+ * top of four trees and a bench. A second copy of those rules would have gone
+ * stale the same way; the baker's output cannot.
+ *
+ * The map-bounds rects the baker adds outside the grid are ignored by the
+ * clamp in `mark`.
+ */
 export function occupancy([W, H]) {
   const p = district.generator.params;
   const occ = new Uint8Array(W * H);
@@ -69,15 +84,42 @@ export function occupancy([W, H]) {
   for (const [a, b] of p.hSidewalks) mark(0, a, W - 1, b);
   mark(p.pen[0], p.pen[1], p.pen[2], p.pen[3]);
   for (const [x0, y0, x1, y1] of p.paths) mark(x0, y0, x1, y1);
-  // The five hand-placed buildings, at the footprint their declared art has.
-  for (const f of district.furniture) {
-    if (f.layer !== 'buildings') continue;
-    const def = contract.props.district[f.name];
-    if (!def) continue;
-    const [w, h] = [Math.ceil(def.maxSize[0] / T), Math.ceil(def.maxSize[1] / T)];
-    mark(Math.floor(f.at[0]), Math.floor(f.at[1]), Math.floor(f.at[0]) + w - 1, Math.floor(f.at[1]) + h - 1);
+
+  const tmj = JSON.parse(readFileSync(join(ROOT, 'packages/client/public/assets/tilemaps/district.tmj'), 'utf8'));
+  if (tmj.width !== W || tmj.height !== H) {
+    throw new Error(
+      `derive-plots: the baked district is ${tmj.width}x${tmj.height} but growth.json says ${W}x${H}. `
+      + 'Run `npm run bake:world` first — the packer reads the bake\'s collision layer, so a stale '
+      + 'tilemap would place plots against the wrong obstacles.');
+  }
+  const collision = tmj.layers.find(l => l.name === 'collision');
+  if (!collision) throw new Error('derive-plots: the baked district has no collision layer');
+  for (const o of collision.objects) {
+    mark(Math.floor(o.x / T), Math.floor(o.y / T),
+         Math.ceil((o.x + o.width) / T) - 1, Math.ceil((o.y + o.height) / T) - 1);
   }
   return occ;
+}
+
+/** Every tile of the road/sidewalk network — what a door anchor wants to reach. */
+export function networkTiles([W, H]) {
+  const p = district.generator.params;
+  const tiles = [];
+  const cols = [...range(p.vRoad[0], p.vRoad[1]), ...p.vSidewalks.flatMap(([a, b]) => range(a, b))];
+  const rows = [...range(p.hRoad[0], p.hRoad[1]), ...p.hSidewalks.flatMap(([a, b]) => range(a, b))];
+  for (let y = 0; y < H; y++) for (const x of cols) tiles.push([x, y]);
+  for (let x = 0; x < W; x++) for (const y of rows) tiles.push([x, y]);
+  return tiles;
+}
+
+/** Chebyshev-ish walking distance from a point to the nearest network tile. */
+export function distanceToNetwork([x, y]) {
+  const p = district.generator.params;
+  const cols = [...range(p.vRoad[0], p.vRoad[1]), ...p.vSidewalks.flatMap(([a, b]) => range(a, b))];
+  const rows = [...range(p.hRoad[0], p.hRoad[1]), ...p.hSidewalks.flatMap(([a, b]) => range(a, b))];
+  const dx = Math.min(...cols.map(c => Math.abs(c - x)));
+  const dy = Math.min(...rows.map(r => Math.abs(r - y)));
+  return Math.min(dx, dy);
 }
 
 /** Is the plot's own area free, with the walkable margin clear around it? */
@@ -131,8 +173,20 @@ export function derive() {
   const taken = Uint8Array.from(occ);
   for (const cls of demand) {
     let placed = 0;
-    for (let y = 0; y < H && placed < cls.count; y++) {
-      for (let x = 0; x < W && placed < cls.count; x++) {
+    const [cw, ch] = cls.size;
+    // Nearest the street first. Row-major order put parcels wherever the scan
+    // happened to reach one, which in a district whose new region has no roads
+    // meant door anchors 30 tiles from the nearest pavement. Ordering
+    // candidates by how far the parcel's door would be from the network costs
+    // nothing and makes the anchors as reachable as this geometry allows.
+    const candidates = [];
+    for (let y = 0; y <= H - ch; y++) {
+      for (let x = 0; x <= W - cw; x++) candidates.push([x, y, distanceToNetwork([x + cw / 2, y + ch / 2])]);
+    }
+    candidates.sort((a, b) => a[2] - b[2] || a[1] - b[1] || a[0] - b[0]);
+    for (const [x, y] of candidates) {
+      if (placed >= cls.count) break;
+      {
         const [w, h] = cls.size;
         if (!placeable(taken, size, x, y, w, h, margin)) continue;
         placed++;
@@ -164,7 +218,8 @@ export function derive() {
 
   return {
     schemaVersion: 1,
-    note: 'GENERATED by scripts/derive-plots.mjs from town/growth.json + contract/buildings.json + this district\'s geometry. Do not hand-edit: `node scripts/derive-plots.mjs --check` fails if this file and the derivation disagree. Committed rather than derived at bake time because under D-79 a plot id IS a venue id, and published venue ids are append-only.',
+    note: 'GENERATED by scripts/derive-plots.mjs from town/growth.json + contract/buildings.json + this district\'s geometry and its baked collision layer. Do not hand-edit: `node scripts/derive-plots.mjs --check` fails if this file and the derivation disagree. Committed rather than derived at bake time because under D-79 a plot id IS a venue id, and published venue ids are append-only.',
+    appendOnlyFrom: 'THIS LAYOUT IS FROZEN. Plot ids are venue ids (D-79), so from here they are APPEND-ONLY: a re-derivation that renumbers or repositions an existing plot rehomes whoever is standing on it and orphans any claim, structure or contribution row that names it. The 2026-08-03 re-derivation (F-6: the packer was blind to prop collision boxes and had put the only school-sized parcel on top of four trees and a bench; F-5: the M class was sized against art no building row names) moved all 23 and was the LAST permissible one — it was safe only because nothing referenced a plot id yet: no DB rows, no claims, and the api was holding its hydration for it. Growing the town from here means APPENDING plots, which is what raising a size class count in town/growth.json does; changing an existing one is a migration, not a re-run.',
     derivedFrom: {
       districtSizeTiles: size,
       scarcityRatio: growth.scarcityRatio,
@@ -176,7 +231,10 @@ export function derive() {
 }
 
 const OUT = 'venues/district/plots.json';
-if (import.meta.url === `file://${process.argv[1]}`) {
+// `file://${argv[1]}` is not a URL comparison — a path with a space or any
+// other character URL-encoding touches makes it silently false, and the CLI
+// then does nothing at all. Compare resolved PATHS.
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   const next = JSON.stringify(derive(), null, 2) + '\n';
   if (process.argv.includes('--check')) {
     const have = readFileSync(join(ROOT, OUT), 'utf8');

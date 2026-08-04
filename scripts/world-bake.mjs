@@ -10,7 +10,7 @@
  */
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodePng } from './png-lib.mjs';
 import { loadContract } from './lib/assetContract.mjs';
@@ -209,7 +209,10 @@ export const EMOTE_FRAMES: Record<string, [number, number]> = ${JSON.stringify(
 // uncommitted owner-local bake, and leaves a town that renders perfectly in
 // flat placeholder colours — that is, it looks like a rendering bug rather
 // than a bake mistake, which is exactly how it cost an afternoon once.
-if (import.meta.url === `file://${process.argv[1]}`) {
+// `file://${argv[1]}` is not a URL comparison — a path with a space or any
+// other character URL-encoding touches makes it silently false, and the CLI
+// then does nothing at all. Compare resolved PATHS.
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   const explicit = process.argv[2] && !process.argv[2].startsWith('-') ? process.argv[2] : null;
   const pack = explicit ?? process.env.BOTVILLE_PACK ?? 'fixture';
   const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');

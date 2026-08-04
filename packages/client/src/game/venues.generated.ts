@@ -4517,7 +4517,7 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        52,
+        61,
         27
       ]
     ],
@@ -4530,7 +4530,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 10",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4552,8 +4552,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        28,
-        62.5
+        41,
+        74.5
       ]
     ],
     "animated": [],
@@ -4565,7 +4565,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 11",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4587,8 +4587,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        10,
-        68.5
+        80,
+        44
       ]
     ],
     "animated": [],
@@ -4600,7 +4600,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 12",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4622,8 +4622,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        61,
-        68.5
+        60,
+        51
       ]
     ],
     "animated": [],
@@ -4635,7 +4635,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 13",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4657,8 +4657,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        77,
-        61
+        54,
+        74.5
       ]
     ],
     "animated": [],
@@ -4670,7 +4670,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 14",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4692,8 +4692,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        39,
-        74.5
+        73,
+        60
       ]
     ],
     "animated": [],
@@ -4705,7 +4705,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 15",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4727,8 +4727,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        50,
-        74.5
+        86,
+        60
       ]
     ],
     "animated": [],
@@ -4740,7 +4740,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 16",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4762,8 +4762,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        28,
-        78.5
+        67,
+        83.5
       ]
     ],
     "animated": [],
@@ -4775,7 +4775,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 17",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -4797,8 +4797,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        10,
-        84.5
+        86,
+        76
       ]
     ],
     "animated": [],
@@ -4832,8 +4832,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        28,
-        3
+        19,
+        85
       ]
     ],
     "animated": [],
@@ -4867,8 +4867,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        87,
-        27
+        28,
+        82
       ]
     ],
     "animated": [],
@@ -4903,7 +4903,7 @@ export const VENUES: VenueDescriptor[] = [
     "spawns": [
       [
         58,
-        16
+        18
       ]
     ],
     "animated": [],
@@ -4937,8 +4937,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        87,
-        34
+        28,
+        89
       ]
     ],
     "animated": [],
@@ -4972,8 +4972,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        87,
-        41
+        33,
+        42
       ]
     ],
     "animated": [],
@@ -5007,8 +5007,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        87,
-        48
+        12,
+        85
       ]
     ],
     "animated": [],
@@ -5042,8 +5042,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        87,
-        55
+        35,
+        86
       ]
     ],
     "animated": [],
@@ -5078,7 +5078,7 @@ export const VENUES: VenueDescriptor[] = [
     "spawns": [
       [
         77,
-        16
+        18
       ]
     ],
     "animated": [],
@@ -5112,7 +5112,7 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        74,
+        83,
         27
       ]
     ],
@@ -5147,8 +5147,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        18,
-        52
+        19,
+        56
       ]
     ],
     "animated": [],
@@ -5182,8 +5182,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        74,
-        44
+        19,
+        73
       ]
     ],
     "animated": [],
@@ -5195,7 +5195,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 7",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -5218,7 +5218,7 @@ export const VENUES: VenueDescriptor[] = [
     "spawns": [
       [
         28,
-        46.5
+        54.5
       ]
     ],
     "animated": [],
@@ -5230,7 +5230,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 8",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -5252,8 +5252,8 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        39,
-        58.5
+        28,
+        70.5
       ]
     ],
     "animated": [],
@@ -5265,7 +5265,7 @@ export const VENUES: VenueDescriptor[] = [
     "label": "Camp 9",
     "indoor": false,
     "sizeTiles": [
-      10,
+      12,
       15
     ],
     "groundAtlas": "district_ground",
@@ -5287,7 +5287,7 @@ export const VENUES: VenueDescriptor[] = [
     "seats": [],
     "spawns": [
       [
-        50,
+        41,
         58.5
       ]
     ],

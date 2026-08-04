@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { derivePlotVenues, VACANT_PLOT_CAPACITY } from '../scripts/lib/plots.mjs';
+import { occupancy, distanceToNetwork } from '../scripts/derive-plots.mjs';
 import { deriveResidenceCount } from '../scripts/lib/residences.mjs';
 import { loadContract } from '../scripts/lib/assetContract.mjs';
 
@@ -93,14 +94,80 @@ test('a plot that admits nothing would be a plot nobody can build on', () => {
   }
 });
 
-test('every plot has a door anchor on its own boundary', () => {
+/**
+ * The constraint the housing COUNT was standing in for.
+ *
+ * Counting plots marked `kind: "housing"` proves nothing on its own — a
+ * parcel too small for any dwelling is not housing however it is labelled.
+ * The first derivation sized M against `terraced_house_modular`, art no
+ * building row references, and seven "housing" plots came out admitting no
+ * house. This is the assertion that would have caught it: a housing plot must
+ * fit something somebody can live in, where "live in" is read from the
+ * building config's own tier field rather than from a list here.
+ */
+test('every housing plot admits at least one dwelling', () => {
+  const dwellings = Object.entries(buildings.buildings)
+    .filter(([, b]) => b.tier !== undefined)
+    .map(([n, b]) => b.archetypeVenue ?? n);
+  assert.ok(dwellings.length > 0, 'no building row carries a tier — the dwelling set is empty');
+  for (const p of housing) {
+    const admitted = p.allowedArchetypes.filter(a => dwellings.includes(a));
+    assert.ok(admitted.length > 0,
+      `${p.id} (${p.sizeClass}, ${p.size.join('x')}) is marked housing but admits no dwelling — `
+      + `it allows ${JSON.stringify(p.allowedArchetypes)}`);
+  }
+});
+
+test('the M class clears the house archetype\'s own exterior', () => {
+  // The specific regression: M must fit whatever `house` actually builds.
+  const houseExterior = buildings.buildings.house.exterior;
+  const [w, h] = [Math.ceil(contract.props.district[houseExterior].maxSize[0] / contract.tileSize),
+                  Math.ceil(contract.props.district[houseExterior].maxSize[1] / contract.tileSize)];
+  const m = growth.plotSizeClasses.find(c => c.name === 'M');
+  assert.ok(m.size[0] >= w && m.size[1] >= h,
+    `M is ${m.size.join('x')} but ${houseExterior} is ${w}x${h}`);
+});
+
+test('every plot has a door anchor on its own boundary, on walkable ground', () => {
+  const size = growth.districtSizeTiles;
+  const [W, H] = size;
+  const occ = occupancy(size);
   for (const p of registry.plots) {
     const [dx, dy] = p.doorAnchor;
     const [x, y] = p.at; const [w, h] = p.size;
     const onEdge = dx === x || dx === x + w || dy === y || dy === y + h;
     assert.ok(onEdge, `${p.id}: doorAnchor ${p.doorAnchor} is not on the parcel boundary`);
     assert.ok(dx >= x && dx <= x + w && dy >= y && dy <= y + h, `${p.id}: doorAnchor is off the parcel`);
+    // THE reachability assertion. Open grass is walkable, so distance is a
+    // quality metric; sitting inside a collision box is a blocked door.
+    const ix = Math.min(W - 1, Math.floor(dx));
+    const iy = Math.min(H - 1, Math.floor(dy));
+    assert.equal(occ[iy * W + ix], 0,
+      `${p.id}: doorAnchor ${p.doorAnchor} is inside an obstacle — the door cannot be reached`);
   }
+});
+
+test('no plot overlaps anything already standing on the map', () => {
+  // F-6: the packer used to see only the buildings LAYER, and put the single
+  // school-sized parcel on top of four trees and a bench. Occupancy is read
+  // from the bake's own collision layer now; this is the check that says so.
+  const size = growth.districtSizeTiles;
+  const [W] = size;
+  const occ = occupancy(size);
+  for (const p of registry.plots) {
+    for (let y = p.at[1]; y < p.at[1] + p.size[1]; y++) {
+      for (let x = p.at[0]; x < p.at[0] + p.size[0]; x++) {
+        assert.equal(occ[y * W + x], 0, `${p.id} covers an obstacle at ${x},${y}`);
+      }
+    }
+  }
+});
+
+test('door anchors stay inside the documented distance of the street network', () => {
+  const worst = Math.max(...registry.plots.map(p => distanceToNetwork(p.doorAnchor)));
+  assert.ok(worst <= growth.maxDoorAnchorDistanceTiles,
+    `a door anchor is ${worst} tiles from the network, over the documented `
+    + `${growth.maxDoorAnchorDistanceTiles} — either move the parcel or extend the roads`);
 });
 
 // ── the published shape (D-89) ────────────────────────────────────────────

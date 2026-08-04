@@ -227,6 +227,30 @@ test('every tile layer reproduces exactly', GATE, () => {
       // ...and growth is growth: the map may get bigger, never smaller.
       assert.ok(now.width >= was.width && now.height >= was.height,
         `${id}: declared as grown but is now ${now.width}x${now.height}, was ${was.width}x${was.height}`);
+
+      // The claim the entry actually makes: inside the ORIGINAL region,
+      // nothing moved — only procedural variant choice changed. Skipping tile
+      // data entirely would make that claim unfalsifiable and would let a
+      // moved road through forever (vRoad [22,24] -> [40,42] passes every
+      // other assertion here). So compare the NONZERO MASK cell by cell over
+      // the original rectangle: which tiles are road, which are ground, which
+      // are pen is structure; WHICH grass it picked is the declared diff.
+      for (const l of now.layers.filter(x => x.type === 'tilelayer')) {
+        const w = was.layers.find(x => x.name === l.name);
+        if (!w) continue;
+        const moved = [];
+        for (let y = 0; y < was.height; y++) {
+          for (let x = 0; x < was.width; x++) {
+            const a = l.data[y * now.width + x] !== 0;
+            const b = w.data[y * was.width + x] !== 0;
+            if (a !== b) moved.push(`${x},${y}`);
+          }
+        }
+        assert.deepEqual(moved.slice(0, 8), [],
+          `${id}/${l.name}: the layout MOVED inside the original ${was.width}x${was.height} region `
+          + `(${moved.length} cells differ in occupancy, not just in variant) — a declared growth may `
+          + 'repaint, never rearrange');
+      }
       continue;
     }
 

@@ -11,15 +11,18 @@
 
   "plotSizeClasses": [
     { "name": "S", "size": [6, 6], "count": 6 },
-    { "name": "M", "size": [10, 15], "count": 7 },
+    { "name": "M", "size": [12, 15], "count": 7 },
     { "name": "L", "size": [18, 16], "count": 4 }
   ],
   "civicPlots": [
     { "name": "XL", "size": [24, 23], "count": 1 },
     { "name": "L", "size": [18, 16], "count": 1 },
-    { "name": "M", "size": [10, 15], "count": 4 }
+    { "name": "M", "size": [12, 15], "count": 4 }
   ],
-  "plotSizeClassesNote": "Sizes come from the REAL declared exteriors (D-88), not from a round number: S is mobile_home_small (6x6), M clears villa (9x13) and terraced_house_modular (10x15), L clears country_house (18x16) and condo_6 (13x16), XL clears the school (24x23). The housing counts sum to 17 = ceil(1.3 * 13). What each plot ADMITS is never listed here — scripts/derive-plots.mjs computes it from footprint fit against contract/buildings.json (D-66: physics constrains, law regulates; there is no zone field).",
+  "plotSizeClassesNote": "Sizes come from the REAL declared exteriors named in contract/buildings.json (D-88), not from round numbers, and every one of them is an exterior a BUILDING ROW actually references: S is mobile_home_small (6x6); M is terraced_house_1 (12x15), the `house` archetype's own exterior, and therefore also clears villa (9x13), condo_9 (6x12), market (7x12), post_office (8x13) and museum (7x13); L clears country_house (18x16), condo_6 (13x16) and one_story_house (16x14); XL clears the school (24x23). M was 10x15 in the first derivation, sized against terraced_house_modular — art no building row names — so seven housing plots admitted no house at all. The housing counts sum to 17 = ceil(1.3 * 13). What each plot ADMITS is never listed here — scripts/derive-plots.mjs computes it from footprint fit against contract/buildings.json (D-66: physics constrains, law regulates; there is no zone field).",
+
+  "maxDoorAnchorDistanceTiles": 52,
+  "maxDoorAnchorDistanceNote": "How far a plot's door may sit from the road/sidewalk network. The grown region has no roads of its own — cityGrid draws one cross, whose arms extend as the grid grows — so parcels out in the new quarters are genuinely far from pavement. The packer places every class nearest-the-street first, so this bound is the MEASURED worst case (51 tiles, plot mean 13) rather than a budget anyone is spending. It is a quality metric, not a reachability one: open grass is walkable, so a far anchor is a long walk past no pavement, never a blocked door — the assertion that matters, and is enforced, is that no anchor sits inside a collision box. extending the road grid into the grown region is the follow-up that shrinks it, and is config-driven like everything else here (D-88).",
 
   "walkableMarginTiles": 1,
   "walkableMarginNote": "Kept clear around every plot so the town does not pack itself into a solid block with no way between the parcels."
