@@ -7,9 +7,17 @@ import {
   AMBIENT_CAR, CAMERA, CAMERA_FOCUS, cameraBounds, carCullBounds, districtGeometry,
   districtViewCentre, GLOW_DEPTH, GLOW_KINDS,
   GLOW_TEXTURE, LEAVE_WALK_TIMEOUT_MS, NIGHT_SCHEDULE,
-  SCENE_FADE_MS, TINT_OVERLAY_DEPTH, tintOverlayRect, WANDER_RADIUS,
+  SCENE_FADE_MS, TILE_SIZE, TINT_OVERLAY_DEPTH, tintOverlayRect, WANDER_RADIUS,
   type DistrictGeometry, type GlowKind,
 } from '../config.js';
+import { plotRegistry } from '../plotRegistry.js';
+import { onPlotStatesChanged, plotStatus } from '../plotState.js';
+import { buildingRegistry } from '../buildingRegistry.js';
+import { PLOT_STATES_KEY, VARIANT_POOLS_KEY } from '../plotAssets.js';
+import {
+  campSlotTile, composePlot,
+  type Occupant, type Placement, type PlotStatesDoc, type VariantPoolsDoc,
+} from '../plotComposition.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
 import {
   DISTRICT_SCENE_KEY, sceneTargetFor, startingDistrict, venueRegistry,
@@ -83,6 +91,12 @@ export class DistrictScene extends Phaser.Scene {
   /** Which district this scene is drawing — from scene data, never a literal. */
   private districtId!: string;
   private geo!: DistrictGeometry;
+
+  /** Everything drawn for the parcels — destroyed and rebuilt on a state change. */
+  private plotObjects: Phaser.GameObjects.GameObject[] = [];
+  /** Who is camped where, as of the last sync. Composition input, so a change redraws. */
+  private plotOccupants: Map<string, Occupant[]> = new Map();
+  private offPlotStates: (() => void) | null = null;
 
   constructor() { super({ key: DISTRICT_SCENE_KEY }); }
 
@@ -159,6 +173,10 @@ export class DistrictScene extends Phaser.Scene {
       this.doorPoints.set(target, { x: o.x! + o.width! / 2, y: o.y! + o.height! + 6 });
     }
 
+    // --- the land: one parcel per plot, composed from plot_states.json
+    this.renderPlots();
+    this.offPlotStates = onPlotStatesChanged(() => this.renderPlots());
+
     // --- animal sleeping spots (the farm pen)
     this.penSpots = (map.getObjectLayer('night')?.objects ?? [])
       .filter(o => o.name === 'animal_sleep')
@@ -221,6 +239,10 @@ export class DistrictScene extends Phaser.Scene {
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       GameBridge.off('agent:focus', onFocusAgent);
+      this.offPlotStates?.();
+      this.offPlotStates = null;
+      this.plotObjects = [];
+      this.plotOccupants.clear();
       sceneRegistry.unregister(DISTRICT_SCENE_KEY);
       this.agentSprites.clear();
       this.buildingImages.clear();
@@ -256,6 +278,64 @@ export class DistrictScene extends Phaser.Scene {
   private transitionToVenue(venueId: string) {
     const target = sceneTargetFor(venueId);
     this.transitionTo(target.key, target.data);
+  }
+
+  // ------------------------------------------------------ the land (Task 2)
+
+  /**
+   * Draw every parcel this district contains, from its CURRENT state.
+   *
+   * The whole method is an effects carrier, exactly like syncAgents: what to
+   * draw is `composePlot`'s answer (a pure module over plot_states.json), and
+   * the only things decided here are which cache the documents come from and
+   * how a tile point plus an alignment becomes a pixel origin — which needs
+   * the loaded texture's size and therefore cannot be pure.
+   *
+   * Rebuilt wholesale rather than diffed. A parcel changes state a handful of
+   * times in the life of a town (D-36: buildings appear at dawn), so a diff
+   * would be a cache to keep correct in exchange for nothing.
+   */
+  private renderPlots() {
+    for (const o of this.plotObjects) o.destroy();
+    this.plotObjects = [];
+
+    const states = this.cache.json.get(PLOT_STATES_KEY) as PlotStatesDoc | undefined;
+    const pools = this.cache.json.get(VARIANT_POOLS_KEY) as VariantPoolsDoc | undefined;
+    if (!states || !pools) {
+      // The bake writes both beside the artifact; missing means a broken
+      // deployment, not a state of the world. Say so once, draw no land, and
+      // leave everything else working.
+      console.warn('[plots] plot_states.json / variant_pools.json not loaded — the land is not drawn');
+      return;
+    }
+
+    for (const plot of plotRegistry.inDistrict(this.districtId)) {
+      const status = plotStatus(plot.id);
+      const placements = composePlot({
+        plot,
+        state: status.state,
+        states,
+        pools,
+        occupants: this.plotOccupants.get(plot.id) ?? [],
+        ...(status.archetype ? { exterior: buildingRegistry.exteriorFor(status.archetype) } : {}),
+      });
+      for (const p of placements) this.placePlotProp(p);
+    }
+  }
+
+  /** One composed placement -> one image, on the layer and depth the map uses. */
+  private placePlotProp(p: Placement) {
+    if (!this.textures.exists(p.name)) {
+      // I-2's runtime half. plot_states.json is loaded rather than bundled, so
+      // an unresolved name reaches here instead of the build; it must be loud
+      // and it must not draw Phaser's green "missing" square on the town.
+      console.error(`[plots] '${p.name}' is not a loaded texture — nothing drawn`);
+      return;
+    }
+    const img = this.add.image(p.tile[0] * TILE_SIZE, p.tile[1] * TILE_SIZE, p.name).setOrigin(0, 0);
+    if (p.align === 'centre-bottom') img.setPosition(img.x - img.width / 2, img.y - img.height);
+    img.setDepth(p.layer === 'props-below' ? 2 : img.y + img.height);
+    this.plotObjects.push(img);
   }
 
   // ------- interface for AgentSprite (walking around the map)
@@ -456,6 +536,41 @@ export class DistrictScene extends Phaser.Scene {
     this.agentSprites.delete(id);
   }
 
+  /**
+   * Recompute "who is camped on which parcel" from the roster. Returns true
+   * only if the answer moved, so the caller can skip a redraw.
+   */
+  private updateCampOccupancy(present: readonly SyncedAgent[]): boolean {
+    const next = new Map<string, Occupant[]>();
+    for (const a of present) {
+      if (!plotRegistry.has(a.location)) continue;
+      const list = next.get(a.location) ?? [];
+      // spriteSeed is the platform identity the pick is defined on (D-25).
+      // Fixture agents carry none; their own id is the stable stand-in, and
+      // it is stable for exactly as long as the agent is.
+      list.push({ id: a.id, spriteSeed: a.spriteSeed ?? a.id });
+      next.set(a.location, list);
+    }
+    const key = (m: Map<string, Occupant[]>) => JSON.stringify(
+      [...m.entries()].sort(([x], [y]) => x.localeCompare(y))
+        .map(([id, os]) => [id, [...os].sort((p, q) => p.id.localeCompare(q.id))]),
+    );
+    if (key(next) === key(this.plotOccupants)) return false;
+    this.plotOccupants = next;
+    return true;
+  }
+
+  /** The pixel spot of an agent's own camp slot, if they are on a parcel here. */
+  private campSpotFor(agentId: string, location: string): { x: number; y: number } | undefined {
+    const plot = plotRegistry.get(location);
+    if (!plot || plot.districtId !== this.districtId) return undefined;
+    const occupants = this.plotOccupants.get(location) ?? [];
+    const index = [...occupants].sort((a, b) => a.id.localeCompare(b.id))
+      .findIndex(o => o.id === agentId);
+    const [tx, ty] = campSlotTile(plot, index < 0 ? 0 : index);
+    return { x: tx * TILE_SIZE, y: ty * TILE_SIZE };
+  }
+
   syncAgents(fullList: SyncedAgent[]) {
     // THE KEY FIX of TZ-16: the district draws only those the server says are
     // outside or at the farm, and the player entering/leaving has no effect on
@@ -473,6 +588,11 @@ export class DistrictScene extends Phaser.Scene {
       isLeaving: (id) => this.leaving.has(id),
     });
     const activityOf = new Map(plan.present.map(a => [a.id, a.activity]));
+    // Who is camped where. A tent belongs to an AGENT (D-75's per-spriteSeed
+    // pick), so the camp's composition moves when the roster does — recompose
+    // only when the answer actually changed, or every 15s poll redraws 23
+    // parcels for nothing.
+    if (this.updateCampOccupancy(plan.present)) this.renderPlots();
 
     for (const [id, decision] of plan.drawn) {
       const sprite = this.agentSprites.get(id);
@@ -505,7 +625,11 @@ export class DistrictScene extends Phaser.Scene {
       const door = spawn.atDoorOf !== undefined
         ? this.doorPoints.get(spawn.atDoorOf)
         : undefined;
-      const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
+      // Somebody the api put in Camp 7 appears AT Camp 7, beside their own
+      // tent — the same slot `composePlot` pitched it on, from the same
+      // function, so a sprite can never stand across town from its shelter.
+      const camp = door ? undefined : this.campSpotFor(a.id, a.location);
+      const base = door ?? camp ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
       const x = base.x + (Math.random() - 0.5) * 16;
       const y = base.y + (door ? 8 + Math.random() * 8 : (Math.random() - 0.5) * 8);
       const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y,

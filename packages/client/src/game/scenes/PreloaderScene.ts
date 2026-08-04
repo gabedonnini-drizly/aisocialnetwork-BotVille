@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 import { DISTRICT_SCENE_KEY, startingDistrict, venueRegistry } from '../venueRegistry.js';
+import {
+  PLOT_STATES_KEY, PLOT_STATES_PATH, VARIANT_POOLS_KEY, VARIANT_POOLS_PATH,
+} from '../plotAssets.js';
 import { DISTRICT_PROPS, INTERIOR_PROPS, EMOTE_FRAMES } from '../assets.generated.js';
 import { UI, UI_HEX } from '../palette.js';
 import { tr } from '../../i18n/index.js';
@@ -87,6 +90,15 @@ export class PreloaderScene extends Phaser.Scene {
       frameWidth: EMOTES.icons.frameWidth,
       frameHeight: EMOTES.icons.frameHeight,
     });
+
+    // The two data files the bake copies beside the artifact for the client to
+    // read at runtime (world-bake.mjs:179 and :186, with their reasons). Plot
+    // state -> prop composition, and the variant pools the tent pick indexes
+    // into. Fetched rather than bundled ON PURPOSE: "a fourth visible state is
+    // an edit to that file, not to a scene" only means anything if the file
+    // travels with the artifact instead of with the JavaScript.
+    this.load.json(PLOT_STATES_KEY, PLOT_STATES_PATH);
+    this.load.json(VARIANT_POOLS_KEY, VARIANT_POOLS_PATH);
 
     // Baked appearance sheets (on the volume, not in the image — see spec §7.2).
     // The manifest lists which hashes have been built; a missing file is not an

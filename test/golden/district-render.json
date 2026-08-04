@@ -1186,6 +1186,1606 @@
     ],
     "collisionRects": 104
   },
+  "plots": [
+    {
+      "id": "plot_1",
+      "at": [
+        49,
+        27
+      ],
+      "size": [
+        24,
+        23
+      ],
+      "gate": [
+        61,
+        27
+      ],
+      "states": {
+        "vacant": {
+          "count": 95,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "7c3d944aafd3c941cbc2c557d5ffe611e5d196e0a7095dd3c3f09ffcf74a583d"
+        },
+        "under_construction": {
+          "count": 119,
+          "names": [
+            "building_skeleton_2",
+            "scissor_lifter_2",
+            "stacked_material_1",
+            "stacked_material_4",
+            "stacked_material_5",
+            "stacked_material_7",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "8ffeccaa38d87a6d4f91ebcd1aa1cfb26cea5e5394a5a614f40083cc25e369cc"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "1a6f471189a62fe10bce8c0dcb61f1d2b4ce4f0a813cee31aa5f3434fb9e2875"
+        }
+      }
+    },
+    {
+      "id": "plot_2",
+      "at": [
+        49,
+        2
+      ],
+      "size": [
+        18,
+        16
+      ],
+      "gate": [
+        58,
+        17
+      ],
+      "states": {
+        "vacant": {
+          "count": 69,
+          "names": [
+            "bush_1",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "031c7874bb8d35019cfbc02ac9454666f420b6eca53d8a2e79dccf43fd3a62d0"
+        },
+        "under_construction": {
+          "count": 93,
+          "names": [
+            "building_skeleton_1",
+            "excavator_3",
+            "stacked_material_1",
+            "stacked_material_3",
+            "stacked_material_5",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "7913f0623a507c0ad383eca6908a769e9e57fadb993d91491897f999a320caac"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "702482a6118d55559339534ed8175a85da3b16e031bef555864dcc45e48d233e"
+        }
+      }
+    },
+    {
+      "id": "plot_3",
+      "at": [
+        68,
+        2
+      ],
+      "size": [
+        18,
+        16
+      ],
+      "gate": [
+        77,
+        17
+      ],
+      "states": {
+        "vacant": {
+          "count": 69,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "d21e25cf2b9647c1d0b0abf8eb8e9acb14af2faff7cd7e9d4454b30ede09fb8d"
+        },
+        "under_construction": {
+          "count": 93,
+          "names": [
+            "building_skeleton_2",
+            "excavator_2",
+            "light_tower_2",
+            "stacked_material_7",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "a9f7d43b65d5c78d9c627594435c7c97e18cece29683cb821202db642262d7bd"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "cf710fefd2883041cb3e06ac32658c9efc55e6dc12e9b60adc762ac044ca196b"
+        }
+      }
+    },
+    {
+      "id": "plot_4",
+      "at": [
+        74,
+        27
+      ],
+      "size": [
+        18,
+        16
+      ],
+      "gate": [
+        83,
+        27
+      ],
+      "states": {
+        "vacant": {
+          "count": 69,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "014817164a3372a6bc56b1bfd6328df6aa44497d7231c6afcea99a7b8949b32f"
+        },
+        "under_construction": {
+          "count": 93,
+          "names": [
+            "building_skeleton_1",
+            "excavator_3",
+            "light_tower_1",
+            "stacked_material_2",
+            "stacked_material_7",
+            "worksite_cone_1",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "3d6697481a2c4a8caf296ac591df3d080a599e530416cf8896ae8f352c5be95e"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "cbe414570fabb74adaff403dc837a1928f7ce02b2e583b52b97e22282cf44e9a"
+        }
+      }
+    },
+    {
+      "id": "plot_5",
+      "at": [
+        1,
+        48
+      ],
+      "size": [
+        18,
+        16
+      ],
+      "gate": [
+        18,
+        56
+      ],
+      "states": {
+        "vacant": {
+          "count": 69,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "0b254ba952f4cf525b0c142d1be5f2eac52acda7ea83a91b23c15612fb45c3bd"
+        },
+        "under_construction": {
+          "count": 93,
+          "names": [
+            "building_skeleton_2",
+            "excavator_2",
+            "light_tower_2",
+            "stacked_material_1",
+            "stacked_material_2",
+            "stacked_material_3",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "ab408b986a39e63220fe3792a28eb174a356168a8b85f1c21978c8ecf162ad10"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "5f4f8f13850e50e52dd981308f6b00a2c04e9871aef42c487e2403b30d6b6948"
+        }
+      }
+    },
+    {
+      "id": "plot_6",
+      "at": [
+        1,
+        65
+      ],
+      "size": [
+        18,
+        16
+      ],
+      "gate": [
+        18,
+        73
+      ],
+      "states": {
+        "vacant": {
+          "count": 69,
+          "names": [
+            "bush_1",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "a8fe95aad1ad9623cdf4bf6d7902e52ec7be28b0e8204b555599d3c0dbbd9c36"
+        },
+        "under_construction": {
+          "count": 93,
+          "names": [
+            "building_skeleton_1",
+            "scissor_lifter_1",
+            "stacked_material_1",
+            "stacked_material_2",
+            "stacked_material_4",
+            "stacked_material_6",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "e96a1213c278e49557d89f92ec569a614965d6ed4e3659061300ec30972bd347"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "9f48bab8e93ef6a7c4023c1bb9d6785ad564a68a7d8c11c5308aef3423538aaf"
+        }
+      }
+    },
+    {
+      "id": "plot_7",
+      "at": [
+        28,
+        47
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        28,
+        54
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "a89be7d4b5dbc2f4feef7f4453b38328290d11f2ddf93f9a70b9777872bec63a"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_2",
+            "excavator_4",
+            "light_tower_2",
+            "stacked_material_1",
+            "worksite_cone_1",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "581a1b3cefe726e0616e98d26c871d17969513ca7d784984af6aca15450175b9"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "c7c81fa75858d9ac3a27653146585b3fff7765ca37a66b487d7d5d094e855d3b"
+        }
+      }
+    },
+    {
+      "id": "plot_8",
+      "at": [
+        28,
+        63
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        28,
+        70
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "8e21ad1bcfdc7f9ce374bb93b731e59cba890d314ca1cb8e2540cb4a722e4fb3"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_1",
+            "light_tower_1",
+            "scissor_lifter_1",
+            "stacked_material_1",
+            "stacked_material_7",
+            "worksite_cone_1",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "e8f3de45fed4fdc86c48b57a50587db709f1ff65c8fa5e8959d5e51802b9971c"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "66f7f8ee53e039aa123bd4e99d2ed499d8db939ab28a4654c3b55cfaaf8e6a1e"
+        }
+      }
+    },
+    {
+      "id": "plot_9",
+      "at": [
+        41,
+        51
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        41,
+        58
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "bed5658b0cebd268e552db772a896d8cd4fd636ff35f4681abf6b6305f88e846"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_2",
+            "excavator_4",
+            "stacked_material_3",
+            "stacked_material_6",
+            "stacked_material_7",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "56c3cb79591792dabdfd1972744e33ebe890a261d8799649a4048bda5397c5fa"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "119336dab98bbc2e2a04cdcf1cf5cd3c40451ae560ea2482b9e2e09be5ff244c"
+        }
+      }
+    },
+    {
+      "id": "plot_10",
+      "at": [
+        41,
+        67
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        41,
+        74
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "22794770d4c252e30ad712fc2e86dc55598269dd0bd38dfc0e6097a35143848e"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_2",
+            "scissor_lifter_2",
+            "stacked_material_2",
+            "stacked_material_4",
+            "stacked_material_6",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "2af40dbc5869d0b8195ffb362ee5a8bc065059a02b3846ce4ab6f18a7acac9a0"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "de8dded924278dda022a21e7c8efb1293f9b799a17fae50cfa0dd0856e42c1e7"
+        }
+      }
+    },
+    {
+      "id": "plot_11",
+      "at": [
+        74,
+        44
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        80,
+        44
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "814b4c1d0350299f3bf9b9a1b4501a3d7062cb368bbba7cac596b14ff4e43346"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_1",
+            "excavator_1",
+            "stacked_material_2",
+            "stacked_material_5",
+            "stacked_material_6",
+            "stacked_material_7",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "b1fb8cbf5d5ad3aa530f9c91fe65d382499ee510daf666bebfa70f9ac8019812"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "9dcba5e5a778d369e9cc435d518152b5d42da5ab72d8a3f3e398dbdf93275114"
+        }
+      }
+    },
+    {
+      "id": "plot_12",
+      "at": [
+        54,
+        51
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        60,
+        51
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "a0c64d52324e3902e648582f6db33a43fab6ac242111cb1d1055bc199146baf5"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_2",
+            "excavator_4",
+            "stacked_material_1",
+            "stacked_material_4",
+            "worksite_cone_1",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "6a51ed7e50d73017a0b11b8e3acdd981a26ec12bde1f5e69b36b9e91638c0928"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "cd84862cd734356c2174b85cf9aea779821a65bf84a42255c345999d690e699f"
+        }
+      }
+    },
+    {
+      "id": "plot_13",
+      "at": [
+        54,
+        67
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        54,
+        74
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "d2ec533a666b252f4e77a8075fea633fc1d0b6870a027cf1376555ca61cbb7d2"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_1",
+            "light_tower_2",
+            "scissor_lifter_1",
+            "stacked_material_3",
+            "stacked_material_6",
+            "stacked_material_7",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "a7cc2560b89bc824e593be8a610df1d9900abed167ce17566edf6f54b3156966"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "75ffa40922331e505e366bbc92fef97b8c7f32e77c0336a3111552d79bcb9f12"
+        }
+      }
+    },
+    {
+      "id": "plot_14",
+      "at": [
+        67,
+        60
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        73,
+        60
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "038a7741105c4cda2ca6412b6add5d85bf43fa071a446b33a17b3745fcc13d72"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_2",
+            "excavator_2",
+            "light_tower_1",
+            "stacked_material_1",
+            "stacked_material_2",
+            "stacked_material_7",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "71d6edb29c627cb37aeda4cebbeb28178f1031d0e127bc11a570fcf518833001"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "ee317bc6daed83f316df2d9ed106fbe7beb75eb4e62280f6a4e0cc8d41268433"
+        }
+      }
+    },
+    {
+      "id": "plot_15",
+      "at": [
+        80,
+        60
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        86,
+        60
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "fb3ebabf2de9ac0ad62458586e93d7ec1374275a6edbe71e5c12fc059da4725b"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_1",
+            "excavator_3",
+            "stacked_material_2",
+            "stacked_material_5",
+            "stacked_material_6",
+            "worksite_cone_1",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "4c113e246fb5fd4eb37c2cc50aba8a3ac251e8664dd3e8861fad5cccabd4c380"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "b21a795bd94c29fffa90433842b7fc1a4370b9b50946b13bdce95fad245be804"
+        }
+      }
+    },
+    {
+      "id": "plot_16",
+      "at": [
+        67,
+        76
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        67,
+        83
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "8a1d0f6951512b685d4ccefebc554727dd4d994074bd3977d69647a96813931d"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_2",
+            "light_tower_2",
+            "scissor_lifter_2",
+            "stacked_material_3",
+            "worksite_cone_1",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "2d627e1043b4fb62f18eb15ae3316b5ba79c99c30958a1a97da5064bed679bc2"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "0203f645f96fd7eaf2f63188e16572dd1c31999eaeece8f1dacddccef00f899c"
+        }
+      }
+    },
+    {
+      "id": "plot_17",
+      "at": [
+        80,
+        76
+      ],
+      "size": [
+        12,
+        15
+      ],
+      "gate": [
+        86,
+        76
+      ],
+      "states": {
+        "vacant": {
+          "count": 55,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "5296aebec78d65b5311285bd884e5d752aab322b5cd08a975fe1a80602b6b355"
+        },
+        "under_construction": {
+          "count": 79,
+          "names": [
+            "building_skeleton_1",
+            "excavator_1",
+            "stacked_material_3",
+            "stacked_material_5",
+            "stacked_material_6",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "42ef2166f481e2d062a6f54f25b98064fa7eb6558547d6109ffaa299154ac4d1"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "3210c275dc7312cb0ed2f4f254e63b212877b088f1f583a89e526638b2a0ab8a"
+        }
+      }
+    },
+    {
+      "id": "plot_18",
+      "at": [
+        13,
+        82
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "gate": [
+        18,
+        85
+      ],
+      "states": {
+        "vacant": {
+          "count": 25,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "bdeaa1575769ae2646bc90850c7a12adfba7e9d134eb9aad09d00977b03ead43"
+        },
+        "under_construction": {
+          "count": 40,
+          "names": [
+            "building_skeleton_2",
+            "excavator_2",
+            "stacked_material_2",
+            "stacked_material_5",
+            "stacked_material_6",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "1a385a5765a9b0af62ee2be5912ce0db6e77a4985b3b2b1a4e477fc7c4578655"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "ec5e077c764c1eb51934f99ea7f81dde5a75de2bfc880ecd922a4b01194498ac"
+        }
+      }
+    },
+    {
+      "id": "plot_19",
+      "at": [
+        28,
+        79
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "gate": [
+        28,
+        82
+      ],
+      "states": {
+        "vacant": {
+          "count": 25,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "bfe080f44f026a1c34f35438c9659264f38c7d20c8c527057fdccd3cf1ca3a14"
+        },
+        "under_construction": {
+          "count": 40,
+          "names": [
+            "building_skeleton_1",
+            "excavator_3",
+            "stacked_material_4",
+            "stacked_material_5",
+            "stacked_material_7",
+            "worksite_cone_1",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "1be0584c8e96fe8cad41e5e441a9a0161c423ce32325d37fd5fbb413ef6ab421"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "76f404df47b21f93611e42e31446a31fbae9025f0c1dd5fa9c7e2ca2abe84eb0"
+        }
+      }
+    },
+    {
+      "id": "plot_20",
+      "at": [
+        28,
+        86
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "gate": [
+        28,
+        89
+      ],
+      "states": {
+        "vacant": {
+          "count": 25,
+          "names": [
+            "bush_1",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "4e4c7603ef2482ee35e20e169fcfa8d7333b5873c257ec6c3129dd7dda738f56"
+        },
+        "under_construction": {
+          "count": 40,
+          "names": [
+            "building_skeleton_1",
+            "excavator_3",
+            "stacked_material_1",
+            "stacked_material_6",
+            "worksite_cone_1",
+            "worksite_cone_2",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "df5503f7daaf4acba196b3cde2f4742a5f941bf87d5cfd971da4d7f1bb14e0ff"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "5eafe4769144712b891aadf460e1f6280d6e5b0d1e3956b490be534d41ea47e4"
+        }
+      }
+    },
+    {
+      "id": "plot_21",
+      "at": [
+        33,
+        39
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "gate": [
+        33,
+        42
+      ],
+      "states": {
+        "vacant": {
+          "count": 25,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "ee83b9b65cf77b8099819206028d2b6b681f1d77bd25f4a2d388ec7c85859272"
+        },
+        "under_construction": {
+          "count": 40,
+          "names": [
+            "building_skeleton_2",
+            "excavator_2",
+            "stacked_material_1",
+            "stacked_material_4",
+            "stacked_material_5",
+            "stacked_material_6",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "c660d6e940d6ed7da5249047e89d1a473d2e818e564d2edf2ae34a63a641d5cb"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "dec01508a4ac0790bf991c81976e52b66619b9f1932eb038a7dc53ddb7ff74fd"
+        }
+      }
+    },
+    {
+      "id": "plot_22",
+      "at": [
+        6,
+        82
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "gate": [
+        11,
+        85
+      ],
+      "states": {
+        "vacant": {
+          "count": 25,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "fbee5892537f3ba093bf2fce1faae622ad3da3daff0973a2e5aa5780177d8e50"
+        },
+        "under_construction": {
+          "count": 40,
+          "names": [
+            "building_skeleton_1",
+            "excavator_1",
+            "light_tower_1",
+            "stacked_material_2",
+            "stacked_material_7",
+            "worksite_cone_1",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "66527ab06158bae440fd80a586ee3eb1b6536244c0435397a1b787ef4da3efd2"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "10ec09ee3c530d991f84388eb86ec9c3aec358136f490f88996c83ae99b74ceb"
+        }
+      }
+    },
+    {
+      "id": "plot_23",
+      "at": [
+        35,
+        83
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "gate": [
+        35,
+        86
+      ],
+      "states": {
+        "vacant": {
+          "count": 25,
+          "names": [
+            "bush_1",
+            "bush_2",
+            "fence_bottom_left",
+            "fence_bottom_middle",
+            "fence_bottom_right",
+            "fence_middle_left",
+            "fence_middle_right",
+            "fence_top_left",
+            "fence_top_middle",
+            "fence_top_right",
+            "tent_1",
+            "tent_2",
+            "tent_5"
+          ],
+          "sha256": "df8cbb678b9bf7d328716de8c87f8a7ae1c9261c4392682c409ebcd09c5303b4"
+        },
+        "under_construction": {
+          "count": 40,
+          "names": [
+            "building_skeleton_2",
+            "scissor_lifter_2",
+            "stacked_material_3",
+            "stacked_material_4",
+            "stacked_material_7",
+            "worksite_entrance",
+            "worksite_fence_1_1",
+            "worksite_fence_1_2",
+            "worksite_fence_1_3",
+            "worksite_fence_1_4",
+            "worksite_fence_1_5",
+            "worksite_fence_1_6",
+            "worksite_fence_1_7",
+            "worksite_fence_1_8",
+            "worksite_ground_1",
+            "worksite_ground_2",
+            "worksite_ground_3",
+            "worksite_ground_4",
+            "worksite_ground_5",
+            "worksite_ground_6"
+          ],
+          "sha256": "671ddb8ad88ec33b3a1554d7f1519f1ebc0978bc850760c3f4a41e4b222bc561"
+        },
+        "built": {
+          "count": 1,
+          "names": [
+            "terraced_house_1"
+          ],
+          "sha256": "ba3a472c435ddbd8d624b552539a1c60459c2cab32f2d9dca0c45e7b3e0fa9e3"
+        }
+      }
+    }
+  ],
   "walkability": {
     "blockedTiles": 872,
     "sha256": "d3b027d2d206994bb436ebc3406aad68d7f7852178a5b53b6ed6f08f7d436a78"

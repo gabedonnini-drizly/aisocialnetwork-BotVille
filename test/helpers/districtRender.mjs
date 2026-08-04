@@ -38,7 +38,12 @@
  *     `targetVenue` — the doors are captured, which building each highlights
  *     is not;
  *   • DistrictScene.init's throw on an id that is not an outdoor venue: the
- *     scene needs Phaser, so no node test reaches it.
+ *     scene needs Phaser, so no node test reaches it;
+ *   • for the parcels: `composePlot`'s answer is captured, but everything
+ *     DistrictScene.renderPlots does WITH it is not — the tile-to-pixel
+ *     conversion, the `centre-bottom` offset by a loaded texture's size, the
+ *     depth rule, the missing-texture guard, and the redraw-on-change wiring.
+ *     Those are Phaser and stay uncovered by any node test.
  *
  * AND THE BIG ONE — HALF OF THIS FILE IS A REIMPLEMENTATION, not a call into
  * the scene. `planSync`, `Pathfinder`, `sceneKeyFor` and `sceneForLocation`
@@ -108,6 +113,25 @@
  *            48x46 map the two answers were (360, 360) and (378.5, 362.5):
  *            about one tile apart, which is why this was never visible before
  *            the district grew.
+ *   (Task 2) ADDITIVE: a new top-level `plots` section, 23 entries. Nothing
+ *            existing moved. Per parcel: its rectangle, its gate tile, and for
+ *            EACH of the three declared states the placement count, the
+ *            distinct prop names, and a sha of the full ordered placement list
+ *            (name|layer|tile|align). It is a CALL into `composePlot` over the
+ *            real `contract/plot_states.json` and `contract/variant_pools.json`
+ *            — not a transcription — so re-running it after an edit to either
+ *            document moves these lines, which is the whole claim Task 2
+ *            makes ("the mapping is data").
+ *
+ *            `vacant` is captured with a synthetic four-agent camp
+ *            (GOLDEN_CAMP) because NOBODY IS HOUSED ON A PARCEL TODAY —
+ *            derived capacity is 97 against a roster of 85, so the town's
+ *            real answer is "fenced empty lots" and the tent pick, which is
+ *            the one thing D-75 actually rules, would go unrecorded. Four is
+ *            the camp's published capacity. `built` is captured against
+ *            `terraced_house_1` for the same reason: no structure exists yet.
+ *            BOTH ARE HYPOTHETICALS, and the golden being green says nothing
+ *            about a camp or a house existing in the world.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -119,6 +143,8 @@ import {
   tintOverlayRect,
 } from '../../packages/client/src/game/config.ts';
 import { Pathfinder } from '../../packages/client/src/game/Pathfinder.ts';
+import { composePlot, gateTile } from '../../packages/client/src/game/plotComposition.ts';
+import { plotRegistry } from '../../packages/client/src/game/plotRegistry.ts';
 import { planSync } from '../../packages/client/src/game/districtPresence.ts';
 import {
   CLIENT_INTERNAL_LOCATION_IDS,
@@ -172,6 +198,19 @@ export const LEAVING = new Set(['already-leaving', 'came-back']);
 
 /** `deleted-agent` has a sprite and is absent from the roster entirely. */
 
+/**
+ * A fixed camp for the golden's `vacant` composition. Nobody is housed on a
+ * parcel today (capacity 97 > roster 85), so without a synthetic camp the
+ * baseline would record the tent pick as "absent" and say nothing about the
+ * one thing D-75 rules — the same seed giving the same tent, forever.
+ */
+export const GOLDEN_CAMP = [
+  { id: 'camper-a', spriteSeed: 'noah_klein' },
+  { id: 'camper-b', spriteSeed: 'the_strategist' },
+  { id: 'camper-c', spriteSeed: 'archivist' },
+  { id: 'camper-d', spriteSeed: 'ada_lovelace' },
+];
+
 export function captureDistrictRender(districtId = 'district') {
   const venue = venueRegistry.get(districtId);
   if (!venue) throw new Error(`no such venue: ${districtId}`);
@@ -206,6 +245,33 @@ export function captureDistrictRender(districtId = 'district') {
     }
     grid.push(row);
   }
+  // --- the land: the REAL composePlot over the REAL contract documents, for
+  // every parcel this district draws, in every declared state. Not a
+  // transcription — this is the module DistrictScene.renderPlots calls.
+  const plotStates = JSON.parse(readFileSync('contract/plot_states.json', 'utf8'));
+  const plotPools = JSON.parse(readFileSync('contract/variant_pools.json', 'utf8'));
+  const plots = plotRegistry.inDistrict(districtId).map(plot => {
+    const perState = {};
+    for (const state of plotStates.states) {
+      const placements = composePlot({
+        plot,
+        state,
+        states: plotStates,
+        pools: plotPools,
+        // A fixed camp, so the tent pick is in the baseline rather than
+        // rendering only when the api eventually houses somebody.
+        occupants: state === 'vacant' ? GOLDEN_CAMP : [],
+        ...(state === 'built' ? { exterior: 'terraced_house_1' } : {}),
+      });
+      perState[state] = {
+        count: placements.length,
+        names: [...new Set(placements.map(p => p.name))].sort(),
+        sha256: sha(placements.map(p => `${p.name}|${p.layer}|${p.tile}|${p.align}`).join('\n')),
+      };
+    }
+    return { id: plot.id, at: plot.at, size: plot.size, gate: gateTile(plot), states: perState };
+  });
+
   const spawns = layer(map, 'spawns').map(o => ({ x: o.x, y: o.y }));
   // Fixed routes: spawn point 0 to every door. A geometry change moves them.
   const paths = doors.map(d => {
@@ -276,6 +342,7 @@ export function captureDistrictRender(districtId = 'district') {
       glows: layer(map, 'glows').map(o => ({ kind: o.name, x: o.x, y: o.y })),
       collisionRects: layer(map, 'collision').length,
     },
+    plots,
     walkability: { blockedTiles: blocked, sha256: sha(grid.join('\n')) },
     paths,
     tick: {

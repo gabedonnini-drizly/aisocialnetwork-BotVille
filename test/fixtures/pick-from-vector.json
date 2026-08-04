@@ -1,0 +1,4614 @@
+{
+  "note": "SHARED FIXTURE for the one deterministic variant pick (D-75). Every value here was PRODUCED BY api/src/utils/agentSeed.js (pickFrom/hashString) and is reproduced by the client mirror in packages/client/src/game/plotSeed.ts. test/plot-seed.test.mjs checks both sides against it, so neither can move alone. Regenerating this file is a decision about every agent art assignment in the town, not a chore: see contract/variant_pools.json appendOnly.",
+  "producedBy": "aisocialnetwork-api src/utils/agentSeed.js pickFrom(list, seed, salt) / hashString(str, salt)",
+  "cases": [
+    {
+      "seed": "noah_klein",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 2115635962,
+      "poolName": "tent"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 2115635962,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 2115635962,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 2115635962,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 2115635962,
+      "poolName": "house"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 2115635962,
+      "poolName": "villa"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 2115635962,
+      "poolName": "condo"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 1427123738,
+      "poolName": "tent"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 1427123738,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 1427123738,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 1427123738,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 1427123738,
+      "poolName": "house"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 1427123738,
+      "poolName": "villa"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 1427123738,
+      "poolName": "condo"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 2079236386,
+      "poolName": "tent"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 2079236386,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 2079236386,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 2079236386,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 2079236386,
+      "poolName": "house"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 2079236386,
+      "poolName": "villa"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 2079236386,
+      "poolName": "condo"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 3593233850,
+      "poolName": "tent"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 3593233850,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 3593233850,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 3593233850,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 3593233850,
+      "poolName": "house"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 3593233850,
+      "poolName": "villa"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 3593233850,
+      "poolName": "condo"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 237011830,
+      "poolName": "tent"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 237011830,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 237011830,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 237011830,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_6",
+      "hash": 237011830,
+      "poolName": "house"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 237011830,
+      "poolName": "villa"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 237011830,
+      "poolName": "condo"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 1837109317,
+      "poolName": "tent"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 1837109317,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 1837109317,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 1837109317,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_5",
+      "hash": 1837109317,
+      "poolName": "house"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 1837109317,
+      "poolName": "villa"
+    },
+    {
+      "seed": "noah_klein",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 1837109317,
+      "poolName": "condo"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 2209567816,
+      "poolName": "tent"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 2209567816,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 2209567816,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 2209567816,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "one_story_house",
+      "hash": 2209567816,
+      "poolName": "house"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 2209567816,
+      "poolName": "villa"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 2209567816,
+      "poolName": "condo"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 427561064,
+      "poolName": "tent"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 427561064,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 427561064,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 427561064,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "one_story_house",
+      "hash": 427561064,
+      "poolName": "house"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 427561064,
+      "poolName": "villa"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 427561064,
+      "poolName": "condo"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_1",
+      "hash": 645498624,
+      "poolName": "tent"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 645498624,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 645498624,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 645498624,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "one_story_house",
+      "hash": 645498624,
+      "poolName": "house"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 645498624,
+      "poolName": "villa"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 645498624,
+      "poolName": "condo"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_1",
+      "hash": 3723897096,
+      "poolName": "tent"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 3723897096,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 3723897096,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 3723897096,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "one_story_house",
+      "hash": 3723897096,
+      "poolName": "house"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 3723897096,
+      "poolName": "villa"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 3723897096,
+      "poolName": "condo"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 4155127924,
+      "poolName": "tent"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 4155127924,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 4155127924,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 4155127924,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_4",
+      "hash": 4155127924,
+      "poolName": "house"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 4155127924,
+      "poolName": "villa"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 4155127924,
+      "poolName": "condo"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_4",
+      "hash": 1657474719,
+      "poolName": "tent"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 1657474719,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 1657474719,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 1657474719,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 1657474719,
+      "poolName": "house"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 1657474719,
+      "poolName": "villa"
+    },
+    {
+      "seed": "the_strategist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 1657474719,
+      "poolName": "condo"
+    },
+    {
+      "seed": "archivist",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 447166591,
+      "poolName": "tent"
+    },
+    {
+      "seed": "archivist",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 447166591,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "archivist",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 447166591,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "archivist",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 447166591,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "archivist",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 447166591,
+      "poolName": "house"
+    },
+    {
+      "seed": "archivist",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 447166591,
+      "poolName": "villa"
+    },
+    {
+      "seed": "archivist",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 447166591,
+      "poolName": "condo"
+    },
+    {
+      "seed": "archivist",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 336823007,
+      "poolName": "tent"
+    },
+    {
+      "seed": "archivist",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 336823007,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "archivist",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 336823007,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "archivist",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 336823007,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "archivist",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 336823007,
+      "poolName": "house"
+    },
+    {
+      "seed": "archivist",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 336823007,
+      "poolName": "villa"
+    },
+    {
+      "seed": "archivist",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 336823007,
+      "poolName": "condo"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 3522199079,
+      "poolName": "tent"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 3522199079,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 3522199079,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 3522199079,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 3522199079,
+      "poolName": "house"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 3522199079,
+      "poolName": "villa"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 3522199079,
+      "poolName": "condo"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 1948929343,
+      "poolName": "tent"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 1948929343,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 1948929343,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 1948929343,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 1948929343,
+      "poolName": "house"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 1948929343,
+      "poolName": "villa"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 1948929343,
+      "poolName": "condo"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 548960755,
+      "poolName": "tent"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 548960755,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 548960755,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 548960755,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_3",
+      "hash": 548960755,
+      "poolName": "house"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 548960755,
+      "poolName": "villa"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 548960755,
+      "poolName": "condo"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 2183233622,
+      "poolName": "tent"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 2183233622,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2183233622,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2183233622,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_6",
+      "hash": 2183233622,
+      "poolName": "house"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 2183233622,
+      "poolName": "villa"
+    },
+    {
+      "seed": "archivist",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2183233622,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 2554062587,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 2554062587,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2554062587,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2554062587,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_3",
+      "hash": 2554062587,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 2554062587,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2554062587,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 152319899,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 152319899,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 152319899,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 152319899,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_3",
+      "hash": 152319899,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 152319899,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 152319899,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 4169867635,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 4169867635,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 4169867635,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 4169867635,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_3",
+      "hash": 4169867635,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 4169867635,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 4169867635,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_4",
+      "hash": 3780557883,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 3780557883,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 3780557883,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 3780557883,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_3",
+      "hash": 3780557883,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 3780557883,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 3780557883,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 2117766431,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 2117766431,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2117766431,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2117766431,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 2117766431,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 2117766431,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2117766431,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_1",
+      "hash": 467618604,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 467618604,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 467618604,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 467618604,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_4",
+      "hash": 467618604,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 467618604,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_7:12,34",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 467618604,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 2390668015,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 2390668015,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 2390668015,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 2390668015,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 2390668015,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 2390668015,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 2390668015,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 1273283983,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 1273283983,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 1273283983,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 1273283983,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 1273283983,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 1273283983,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 1273283983,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 3317094551,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 3317094551,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 3317094551,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 3317094551,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 3317094551,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 3317094551,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 3317094551,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 3820775087,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 3820775087,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 3820775087,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 3820775087,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 3820775087,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 3820775087,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 3820775087,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_4",
+      "hash": 1841839371,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 1841839371,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 1841839371,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 1841839371,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_3",
+      "hash": 1841839371,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 1841839371,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 1841839371,
+      "poolName": "condo"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 914114338,
+      "poolName": "tent"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 914114338,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 914114338,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 914114338,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 914114338,
+      "poolName": "house"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 914114338,
+      "poolName": "villa"
+    },
+    {
+      "seed": "plot_23:80,80",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 914114338,
+      "poolName": "condo"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_1",
+      "hash": 91949844,
+      "poolName": "tent"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 91949844,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 91949844,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 91949844,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_4",
+      "hash": 91949844,
+      "poolName": "house"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 91949844,
+      "poolName": "villa"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 91949844,
+      "poolName": "condo"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 389178164,
+      "poolName": "tent"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 389178164,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 389178164,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 389178164,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_4",
+      "hash": 389178164,
+      "poolName": "house"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 389178164,
+      "poolName": "villa"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 389178164,
+      "poolName": "condo"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 2078643212,
+      "poolName": "tent"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 2078643212,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2078643212,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2078643212,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_4",
+      "hash": 2078643212,
+      "poolName": "house"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 2078643212,
+      "poolName": "villa"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2078643212,
+      "poolName": "condo"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 2699458900,
+      "poolName": "tent"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 2699458900,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 2699458900,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 2699458900,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_4",
+      "hash": 2699458900,
+      "poolName": "house"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 2699458900,
+      "poolName": "villa"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 2699458900,
+      "poolName": "condo"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 365504960,
+      "poolName": "tent"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 365504960,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 365504960,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 365504960,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "one_story_house",
+      "hash": 365504960,
+      "poolName": "house"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 365504960,
+      "poolName": "villa"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 365504960,
+      "poolName": "condo"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_4",
+      "hash": 2231303025,
+      "poolName": "tent"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 2231303025,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_1",
+      "hash": 2231303025,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_small",
+      "hash": 2231303025,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_1",
+      "hash": 2231303025,
+      "poolName": "house"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 2231303025,
+      "poolName": "villa"
+    },
+    {
+      "seed": "agent_0",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_6",
+      "hash": 2231303025,
+      "poolName": "condo"
+    },
+    {
+      "seed": "",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 375674798,
+      "poolName": "tent"
+    },
+    {
+      "seed": "",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 375674798,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 375674798,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 375674798,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_6",
+      "hash": 375674798,
+      "poolName": "house"
+    },
+    {
+      "seed": "",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 375674798,
+      "poolName": "villa"
+    },
+    {
+      "seed": "",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 375674798,
+      "poolName": "condo"
+    },
+    {
+      "seed": "",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 3598537358,
+      "poolName": "tent"
+    },
+    {
+      "seed": "",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 3598537358,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 3598537358,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 3598537358,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_6",
+      "hash": 3598537358,
+      "poolName": "house"
+    },
+    {
+      "seed": "",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 3598537358,
+      "poolName": "villa"
+    },
+    {
+      "seed": "",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 3598537358,
+      "poolName": "condo"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 2353041110,
+      "poolName": "tent"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 2353041110,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2353041110,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2353041110,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_6",
+      "hash": 2353041110,
+      "poolName": "house"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 2353041110,
+      "poolName": "villa"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2353041110,
+      "poolName": "condo"
+    },
+    {
+      "seed": "",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 2002602350,
+      "poolName": "tent"
+    },
+    {
+      "seed": "",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 2002602350,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2002602350,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2002602350,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_6",
+      "hash": 2002602350,
+      "poolName": "house"
+    },
+    {
+      "seed": "",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 2002602350,
+      "poolName": "villa"
+    },
+    {
+      "seed": "",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2002602350,
+      "poolName": "condo"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 1458568570,
+      "poolName": "tent"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 1458568570,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 1458568570,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 1458568570,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 1458568570,
+      "poolName": "house"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 1458568570,
+      "poolName": "villa"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 1458568570,
+      "poolName": "condo"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_6",
+      "hash": 3277993445,
+      "poolName": "tent"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_1",
+      "hash": 3277993445,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 3277993445,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 3277993445,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_5",
+      "hash": 3277993445,
+      "poolName": "house"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_1",
+      "hash": 3277993445,
+      "poolName": "villa"
+    },
+    {
+      "seed": "",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 3277993445,
+      "poolName": "condo"
+    },
+    {
+      "seed": "x",
+      "salt": "tent",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 368461282,
+      "poolName": "tent"
+    },
+    {
+      "seed": "x",
+      "salt": "tent",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_3",
+      "hash": 368461282,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "x",
+      "salt": "tent",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 368461282,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "x",
+      "salt": "tent",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 368461282,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "x",
+      "salt": "tent",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 368461282,
+      "poolName": "house"
+    },
+    {
+      "seed": "x",
+      "salt": "tent",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_3",
+      "hash": 368461282,
+      "poolName": "villa"
+    },
+    {
+      "seed": "x",
+      "salt": "tent",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 368461282,
+      "poolName": "condo"
+    },
+    {
+      "seed": "x",
+      "salt": "plotScatter",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 2638846274,
+      "poolName": "tent"
+    },
+    {
+      "seed": "x",
+      "salt": "plotScatter",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_5",
+      "hash": 2638846274,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "x",
+      "salt": "plotScatter",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2638846274,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "x",
+      "salt": "plotScatter",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2638846274,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "x",
+      "salt": "plotScatter",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 2638846274,
+      "poolName": "house"
+    },
+    {
+      "seed": "x",
+      "salt": "plotScatter",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_5",
+      "hash": 2638846274,
+      "poolName": "villa"
+    },
+    {
+      "seed": "x",
+      "salt": "plotScatter",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2638846274,
+      "poolName": "condo"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteCentre",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 2007014378,
+      "poolName": "tent"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteCentre",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 2007014378,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteCentre",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 2007014378,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteCentre",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 2007014378,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteCentre",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 2007014378,
+      "poolName": "house"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteCentre",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 2007014378,
+      "poolName": "villa"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteCentre",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 2007014378,
+      "poolName": "condo"
+    },
+    {
+      "seed": "x",
+      "salt": "worksitePlant",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_5",
+      "hash": 4258925986,
+      "poolName": "tent"
+    },
+    {
+      "seed": "x",
+      "salt": "worksitePlant",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 4258925986,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "x",
+      "salt": "worksitePlant",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 4258925986,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "x",
+      "salt": "worksitePlant",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 4258925986,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "x",
+      "salt": "worksitePlant",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_2",
+      "hash": 4258925986,
+      "poolName": "house"
+    },
+    {
+      "seed": "x",
+      "salt": "worksitePlant",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 4258925986,
+      "poolName": "villa"
+    },
+    {
+      "seed": "x",
+      "salt": "worksitePlant",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 4258925986,
+      "poolName": "condo"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteGround",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_3",
+      "hash": 3721087526,
+      "poolName": "tent"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteGround",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_2",
+      "hash": 3721087526,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteGround",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_3",
+      "hash": 3721087526,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteGround",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_big",
+      "hash": 3721087526,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteGround",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "terraced_house_6",
+      "hash": 3721087526,
+      "poolName": "house"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteGround",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_2",
+      "hash": 3721087526,
+      "poolName": "villa"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteGround",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_9",
+      "hash": 3721087526,
+      "poolName": "condo"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "tent_1",
+        "tent_2",
+        "tent_3",
+        "tent_4",
+        "tent_5",
+        "tent_6"
+      ],
+      "pick": "tent_2",
+      "hash": 815425063,
+      "poolName": "tent"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "sleeping_bag_1",
+        "sleeping_bag_2",
+        "sleeping_bag_3",
+        "sleeping_bag_4",
+        "sleeping_bag_5"
+      ],
+      "pick": "sleeping_bag_4",
+      "hash": 815425063,
+      "poolName": "sleeping_bag"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "campfire_1",
+        "campfire_2",
+        "campfire_3"
+      ],
+      "pick": "campfire_2",
+      "hash": 815425063,
+      "poolName": "campfire"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "mobile_home_small",
+        "mobile_home_medium",
+        "mobile_home_big"
+      ],
+      "pick": "mobile_home_medium",
+      "hash": 815425063,
+      "poolName": "mobile_home"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "one_story_house",
+        "terraced_house_1",
+        "terraced_house_2",
+        "terraced_house_3",
+        "terraced_house_4",
+        "terraced_house_5",
+        "terraced_house_6",
+        "country_house"
+      ],
+      "pick": "country_house",
+      "hash": 815425063,
+      "poolName": "house"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "villa_1",
+        "villa_2",
+        "villa_3",
+        "villa_4",
+        "villa_5"
+      ],
+      "pick": "villa_4",
+      "hash": 815425063,
+      "poolName": "villa"
+    },
+    {
+      "seed": "x",
+      "salt": "worksiteBoundary",
+      "pool": [
+        "condo_6",
+        "condo_8",
+        "condo_9"
+      ],
+      "pick": "condo_8",
+      "hash": 815425063,
+      "poolName": "condo"
+    }
+  ]
+}
