@@ -1128,3 +1128,21 @@ green on its branch:
   poll `summary.txt` for `Pass rate:` every turn; never treat absence of
   a completion event as evidence of progress.
   **Flag stays ON.** Next free fact id: **M-073**.
+
+- 2026-08-04 · **dotenv-by-construction DONE — the drive's queued work is
+  complete** · api `fa18d04` pushed · `src/config/env.js` owns env loading;
+  cached-env modules require the seam (civicConfig, presenceService,
+  mcpRateLimit fixed; workers/scripts exempt-by-ownership; per-call gates
+  safe); bare-require proof (child with no prior dotenv reads .env);
+  ELEVEN entry points verified identical posture by replaying each require
+  prefix; precedence (real env beats .env) asserted separately. The fix
+  exposed FIVE more require-order-luck tests — all now construct their
+  posture in a child and assert both sides; one had been asserting the
+  D-78 bug as correct (`hasPlots` on page 1 — camps paging rather than
+  displacing public venues IS the design; corrected). Standing guard:
+  cached-at-load without the seam fails, fire-proofed against per-call
+  false positives. Both postures 1403/1403 exit 0; world byte-identity
+  holds. **The "unknown session" files were the agent's own stale
+  snapshot — nothing foreign, tree clean.** Two self-corrections logged
+  (the env test measuring the runner instead of the file; a commit-message
+  typo caught pre-push).
