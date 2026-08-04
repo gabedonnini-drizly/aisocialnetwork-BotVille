@@ -1073,3 +1073,25 @@ after round (f), one step at a time.
 > specialist later"* — after raising the ToM consideration that main-agent
 > and specialist civic capability need not be mutually exclusive, resolved as
 > deliberation-delegates-stance-does-not.
+
+### D-91 — System-seeded goals do not consume election seats
+
+**Ruled** (2026-08-04, after round (f)'s probe halt). The founding goal's
+seating consumed the season's last civic seat and switched off
+`city_propose` town-wide (0/85 — the only trigger that has ever produced a
+builder delegation). Ruling: goals with `source='system' AND proposal_id
+IS NULL` are excluded from `seatedCount`. The founding goal bypasses
+elections by design (D-64); it exists to guarantee the accrual chain a
+target, not to spend the town's civic bandwidth. Elected goals still
+compete for the season's seats; D-74's "an empty board is legitimate"
+stands. Fixes the class — any future system seed.
+
+> **Owner:** selected the recommended option: *"System goals don't take
+> seats."*
+
+**Companion implementation note (not a new ruling):** round (f)'s probe
+also found `claim-plot` had landed on the principal's L1 surface (absent
+from both the builder allowlist and EXCLUDED_TOOLS) — implementation drift
+against D-82/D-90, which place the claim verb on the builder. Corrected as
+already ruled: `claim-plot` enters EXCLUDED_TOOLS and the builder's
+`tools:`; L1 returns to its M-054 shape.
