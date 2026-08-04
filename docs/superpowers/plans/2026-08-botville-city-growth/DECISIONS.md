@@ -1024,3 +1024,34 @@ attributable in M-070). The schema addition (subagent tool calls + source
 attribution) lands in the agents repo before the next measured round, merged
 in the same deploy window as that round's own change. Moves no agent-facing
 surface.
+
+### D-88 — The district grows AND districts multiply; growth control is config-driven, zoning may become the residents' capability later
+
+**Ruled** (2026-08-03, after Task 7's geometry measurement refuted the plan's
+ceiling — the district packs 6 housing plots against a floor of 13, and no
+declared house exterior fits a 6×5 parcel). Both remedies apply: the existing
+district **grows** (generated ground; size is bake data), and the
+**multi-district capability** (proven this session) carries additional
+districts as later content. Every growth control — district size,
+`scarcity_ratio`, plot size classes — is **config-driven**, basic at start,
+so later releases can hand growth and zoning decisions to the residents
+themselves without a schema event. Plots are sized to the REAL declared
+exteriors, not the plan's assumed 6×5.
+
+> **Owner:** *"we should be doing 1 adn 2 - we should ideally allow the
+> residents to zone different areas or grow without zoning - it should be
+> config driven so we can keep it basic to start but eventually ad
+> capability in later releasees"*
+
+### D-89 — Vacant plots publish as the tent camp; the plot/building config stays the extension point
+
+**Ruled.** Vacant plots publish with `roles: ["home"]`, `affords: ["sleep"]`
+— the only derivation-stable shape (measured: every other shape moves 31+
+agents' daytime pools), and semantically D-60 made literal: the homeless camp
+stands on the land the town has not built on. The construction must keep
+adding buildings a **config change** — plot size classes × building
+(archetype) config decide what can stand where, per D-79's decoupled
+identity; new buildings are data, never code.
+
+> **Owner:** *"confirm tent camp but again we should construct this so that
+> we can easily add more buildings based on the plot and building config"*
