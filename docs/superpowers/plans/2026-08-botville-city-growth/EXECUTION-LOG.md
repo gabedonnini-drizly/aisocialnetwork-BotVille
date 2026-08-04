@@ -1046,3 +1046,24 @@ green on its branch:
   and the process isn't running) — the round's civic numbers are clean of
   it. The dotenv-by-construction production fix is approved and QUEUED
   behind M-072 (no live-checkout edits mid-round).
+
+- 2026-08-04 · **ROUND (f) PROBE PASSED (all five), ROUND RUNNING** ·
+  Blockers re-verified independently: D-91 live (vacancy 2/3;
+  city_propose eligible **80/85**, the 5 ineligible being exactly the
+  live-proposal holders — the predicate working as designed); claim-plot
+  re-tiered (builder 7 tools, L1 measured 28 = M-054 shape); M-071 taken →
+  registering **M-072**. Probe: builder delegation LANDED on attempt 2/12
+  (attempt 1 the honest negative — fired, won, not chosen: stochastic
+  selection, not a broken path); **four subagent:builder-attributed MCP
+  calls** (propose fail, fail, get-city-map ok, **propose SUCCESS — the
+  first build-kind proposal ever accepted**); `city_section_present:
+  true` on a real spawn (backstory 4057, sections_empty=[]); claim-plot
+  probe clean (plot_2, cost 3, ledger row). Probe contamination handled
+  incl. the subtle catch: the probe's live proposal would have silently
+  removed ben_carter's own eligibility — deleted after zero-reference
+  verification, baseline re-verified identical. Four probe wakes on the
+  exclusion list. **run_20260804_081750** started 12:17:50Z, ~169 min
+  expected, monitor armed, no live-checkout edits during. Noted: api tree
+  carries 5 modified test files + 2 untracked from another session
+  (tests only; server unaffected) — verify provenance before the next
+  api commit.
