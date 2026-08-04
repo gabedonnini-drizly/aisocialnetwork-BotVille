@@ -386,6 +386,360 @@ Parked owner calls and rotted anchors are also logged here.
   `BOTVILLE_AISOCIALNETWORK_API_REPO=/Users/home/api-wt-01-plots`; both
   resolve themselves when the branches merge.
 
+- 2026-08-03 · **Task 7 geometry measurement REFUTES the plan's ceiling
+  (owner ruled D-88/D-89 in response).** The plan's "~25–30 practical plots"
+  subtracted roads/pen (813) but not the five existing buildings (718 of
+  the 1,395 "free" tiles) — actual greedy packing with 1-tile margin: **6
+  housing plots vs the floor of 13**, and ZERO declared house exteriors
+  (9×13..18×16) fit the assumed 6×5 parcel. `scarcity_ratio` had no valid
+  value. Owner ruled **D-88** (grow the district AND multi-district later;
+  all growth controls config-driven, residents may zone in later releases;
+  plots sized to real exteriors) and **D-89** (vacant plots publish as the
+  tent camp — roles home / affords sleep, the only derivation-stable shape,
+  measured: shapes A/B/D move 31+ agents' daytime pools; home protected by
+  stored rows, 0/85 move, append-only order verified). Task 7 re-dispatched
+  under D-88/D-89.
+- 2026-08-03 · **api: 044 + revocation + claim cost DONE** · `9d081f9`
+  (migration 044: 038/039 FKs → SET NULL, verified confdeltype n; anchor
+  correction: the table is `botville_goal_votes`, not
+  `botville_proposal_votes` — schema followed, not prose; NOT NULL dropped
+  where SET NULL would error; **NULL-contributor difficulty preserved** —
+  anonymised rows count one-per-row, direction chosen against the griefing
+  case, fire-proofed vs a real rolled-back DELETE; quorum filter fixed for
+  NULL≠NULL self-vote false-positive) · `d2e784b` (revocation IS the
+  demolition path — one kind, target decided by what stands on the plot;
+  release-not-delete, idempotent across boots; exemptions + floor apply by
+  construction; /revoke/i pin replaced with no-revoke-TOOL assertion) ·
+  `e8c7c11` (claim cost per D-82: size-classed 1/2/3 vs 3-point day, config
+  knobs, signed ledger rows, budget reads the ledger, named in-fiction
+  refusal on exhaustion; live fire-proofs with probe rows cleaned). Suite
+  **1291/1291 exit 0**. Found: a pre-existing DB trigger already blocks
+  deleting users WITH episode history — the D-72 ops exposure is narrower
+  than assumed (logged, ruling unaffected).
+- 2026-08-03 · **agents: Plan `02-` delta + D-87 DONE** · branch
+  `growth-builder-delta` @ `5e46c78` (worktree `agents-wt-growth`), five
+  commits: city section admitted via md-gen verbatim (D-57 pin UNBENT,
+  renders into subagent backstory only — soul_prompt_hash/render_hash do
+  not move, pinned); builder gains `city` + craft instructions (D-80
+  verified in code: contribute-to-city-goal on L1 AND builder, catalog
+  bytes untouched — no re-pin needed); `unhoused_self` end-to-end
+  (frozen-set + evaluator + CityState.unhoused, fail-closed; follow-on
+  triggers stay comments, pinned); episode attribution (D-87 premise HALF
+  WRONG, measured: subagent calls were always recorded — `extra='ignore'`
+  dropped the hooks' `source` stamp; one additive field fixes it; QA-L17
+  registered with live positive: 355/5331 episodes carry delegate-tasks,
+  0/355 attributed, 19,660 calls unstamped; Langfuse `specialist_id`
+  dead-read fixed). **Seam contract documented** at
+  `docs/superpowers/specs/2026-08-03-city-section-seam-contract.md`
+  (Startup.md `## City` ≤600 chars whole-heading interpolation;
+  `unhoused` boolean on agent-affordances, fail-closed). Suite 3069→3095
+  exit 0; act.md diff 0 lines. **Builder's missing verb named: a claim-plot
+  MCP tool (D-82-priced) — api-side, lands with 045.**
+
+- 2026-08-03 · **Plan `04-` Task 7 DONE (under D-79/D-88/D-89)** · commit
+  `828b2a8` on `plan-04-archetypes-bake` · District **92×92** — derived: the
+  smallest square packing the band's TOP (1.4 → 19 housing) plus all six
+  civic archetypes at REAL exteriors with 1-tile margin; sizing to the top
+  is what lets `scarcityRatio` move in 1.2–1.4 without a map re-size.
+  Growth verified non-destructive empirically: buildings/doors/spawns/
+  props/glows/night byte-identical, ground/road nonzero masks identical
+  over the original 48×46 region (only grass/asphalt flavour + scatter
+  re-pick — cityGrid PRNG order is part of its contract, honestly
+  declared). **23 plots: 17 housing + 6 civic**, size classes S 6×6 / M
+  10×15 / L 18×16 / XL 24×23 derived from declared art;
+  `allowedArchetypes` COMPUTED by footprint fit (D-66 stands);
+  `scarcity_ratio` 1.3 as config. File shape ruling:
+  `venues/district/plots.json`, derived-then-committed because plot ids are
+  venue ids and venue ids are append-only (a re-derived layout would
+  renumber parcels and silently rehome the town). venues.json **18 → 41**
+  (11,391 bytes — api page-1 budget must re-size). Derivation proof re-run
+  structural + pinned: all daytime pools UNMOVED, residence list
+  append-only 14→37, 0/85 derived homes move (capacity 97 > 85 pre-plots).
+  `sceneForLocation` routes any outdoor venue to DistrictScene (pre-empts
+  the plot_N black-screen variant of the farm bug). Golden TMJ handled via
+  new `known-tmj-diffs.json` (declared reason + `preserves` layers verified
+  placement-by-placement — surfaced a PRE-EXISTING villa trim divergence,
+  Tier-1-owned). Four fire-proofs restored. Gates all exit 0 except the
+  predicted cross-repo venues-copy red (api must sync — not weakened).
+
+- 2026-08-03 · **Adversarial review of the agents delta: deep claims HELD**
+  (D-57 pin unbent with every leak path enumerated — `_section_builders`
+  has exactly one caller and it is the subagent path; catalog renderers
+  consume only catalog_order/name/use_when/goal/limitation, so the new
+  bytes move nothing; unhoused_self fail-closed on every garbage path;
+  episode `source` back-compatible; EXCLUDED_TOOLS hand-counted 23).
+  **Four findings, fix pass dispatched:** QA-L17 would fire forever on the
+  355 pre-schema episodes with a misattributed cause (skip no-source
+  episodes as `pre_schema`); QA-L17 id collides with the live
+  action-diversity spec's reservation (→ QA-L19); no live-run artifact can
+  prove the city section rendered — the ZERO_EXPECTED_OUTPUT_SLICE shape —
+  (→ spawn log + rendered-sections stamp on the record so (f)'s analyzer
+  can segment); seam-contract sentence falsely clears builder instructions
+  that promise "claim a plot" with no claim tool (phrase removed until the
+  D-82 tool ships; ledgered I-4 cited). **Two owner-line flags carried
+  toward round (f): `vote-city-goal` sits on the builder allowlist
+  (SP-round inheritance) in tension with D-68's "you cast your own vote";
+  and unhoused_self's ~85/85 lottery dilution must be declared in (f)'s
+  write-up.**
+
+- 2026-08-03 · **Adversarial review of Task 7 (`828b2a8`): core held, six
+  findings, one cross-repo critical.** Held: append-only ordering verified
+  structurally (correction: the roster>97 overflow fallback is `plot_23`,
+  not `plot_17` — numeric collation; documented nowhere, now logged);
+  original-region growth confirmed structural (all cityGrid predicates
+  absolute in (x,y)); all 23 rectangles, allowlists and schema conformance
+  hand-verified; scene routing correct. Findings → fix passes dispatched:
+  **F-6 packer ignored collision-carrying props** (trees/bench inside
+  plot_1, the only school-sized parcel) → ONE-TIME re-derivation authorized
+  now, before anything references plot ids; api told to HOLD 045 hydration;
+  **F-3 camp beds counted as housing api-side** (capacity 97→189, spareBeds
+  +92, camp sleepers read housed, housing template self-suppresses,
+  arrivals would get camps as housed:true) → semantics split ROOFED vs CAMP
+  per D-60/D-64: a tent is visible unhoused-ness, place ≠ condition;
+  F-5 M-class sized against art the config doesn't name (7/17 housing
+  plots admit no `house`; assertion added: every housing plot admits ≥1
+  home-role archetype); F-4 the mask-preservation claim exists nowhere as
+  code and the declared-TMJ branch skips tile data forever (→ cell-by-cell
+  original-region mask comparison; golden suite's assets-src gate
+  re-verified to RUN); F-7 doorAnchor reachability unchecked (plot_23
+  anchor 30 tiles from a sidewalk; grown region has no roads); F-8 cityGrid
+  road centres hardcoded vs D-88's config-driven promise; F-9 --check has
+  no fire-proof + a self-erasing import.meta.url guard. **F-1/F-2 are
+  client-stream scope:** the plan-04 branch's client still pins 48×46
+  camera/Pathfinder (Stage C's descriptor-driven geometry resolves it at
+  merge — must be VERIFIED at 92×92) and the preloader 404s on 23 plot
+  tilemaps. Nobody owned F-1 until now — assigned to Stage C Tasks 2–3.
+
+- 2026-08-03 · **Task 7 fix pass DONE** · `067e45d` on
+  `plan-04-archetypes-bake` · F-6: `occupancy()` now reads the bake's OWN
+  collision layer from district.tmj (structural — the packer can never know
+  less than the baker) and refuses a size-mismatched tilemap; plots
+  re-derived ONCE (23 moved, 11 resized, ids stable, classes unchanged,
+  0 obstacle overlaps asserted); `plots.json` carries an `appendOnlyFrom`
+  header recording the last permissible renumbering. F-5: M resized to
+  12×15 so `house` fits; two new assertions (every housing plot admits ≥1
+  DWELLING read from config tiers; M clears whatever `house` builds). F-4:
+  declared-TMJ branch now compares original-region nonzero masks
+  cell-by-cell — the vRoad-move mutant now fails with a named 258-cell
+  diff; golden suite RUN (3 pass / 1 skip), symlink intact. F-7: packer
+  candidates ordered nearest-street-first (mean anchor distance 13 tiles,
+  max 51 documented), anchors asserted outside all collision boxes;
+  road-extension follow-up named in growth.json. F-8: road centre lines
+  derived from params (district.tmj byte-identical — correct by
+  construction now, not coincidence). F-9: resolved-path entry guards +
+  --check fire-proof (exit 1 on hand-edit, named file). **venues.json
+  UNCHANGED (41 @ `4bc3822…`)** — plot geometry is outside the published
+  projection, so the api copy stands and **plot ids are FINAL**; api hold
+  lifted. All gates exit 0, cross-repo green, tree clean.
+
+- 2026-08-03 · **Agents fix pass DONE** · `growth-builder-delta` @ `d1e4a44`
+  (8 commits) · QA check renumbered **QA-L19** (L17/L18 reserved by the
+  live action-diversity spec; a reserved-id collision test added and
+  fire-proofed with the exact collision nearly shipped); the probe now
+  classifies three ways — source-stamped / pre-D-87 (4148 excluded, 355
+  delegating) / zero-call indeterminate (1183) — reconciling to the full
+  5331-episode pool, `fired=False` on the real pool, 11 fixtures incl. the
+  exclusion-is-not-amnesty case; **city-section render proof** landed both
+  halves: spawn log (rendered/empty sections + WARNING on configured-but-
+  empty) and `episode.subagent_spawns` entries with
+  `city_section_present` — recorded BEFORE kickoff so a timeout still
+  leaves the proof; the four wrong-heading cases each pin a distinct
+  rendered set; the api's acceptance signal is documented (deploy composer,
+  one delegating dev wake, read `city_section_present`). "claim a plot"
+  removed from builder `system_instructions` (renderers verified unmoved,
+  no re-pin; a conditional guard test retires itself when the api ships
+  the claim verb). Spec gains "(f)'s write-up must declare": lottery
+  dilution (segment by `delegation.fired` before comparing) and the
+  `vote-city-goal`-on-builder owner line. Self-caught: a stray `.py.tmp`
+  from a staged rename, removed. Gates: heartbeat 3109/11skip, qa 146,
+  docs 99, lint 0 errors, catalog+28-schema+D-57 pins 42, all exit 0;
+  act.md diff 0 lines across the branch.
+
+- 2026-08-03 · **api final batch DONE** · `9a7edcd` (vocab sync 18→41;
+  budget FROZEN at 6730 — growth pages rather than growing the call: page 1
+  at 41 venues = 6396 bytes / 17 relevance-ordered venues; D-78 floor
+  verified WITH a plot as the caller's home; 0/85 resolved or derived homes
+  moved; map-vs-routine disagreements 0) · `dae291d`+`47cf3fe` (migration
+  045: hydration is runtime INSERT-if-absent ordered BEFORE the
+  founding-goal trigger in the same resolveSeasonIfDue; geometry drift
+  REPORTED never rewritten; authoritative geometry = `config/plots.json`
+  with a 5-check sync incl. the appendOnlyFrom freeze; **founding goal
+  SEATED on dev**: "Raise the first homes", plot_18 6×6, target 62,
+  season 1, system-source, idempotent across ticks) · `ae5ce89`
+  (plotsService completed; allowedArchetypes enforced at createStructure) ·
+  `7125e21` (## City composer + `unhoused` + claim-plot tool, ALL behind
+  `BOTVILLE_GROWTH_SURFACES=on` default-off; flag-off proofs: no heading,
+  key ABSENT not false, runtime catalog exactly eight; child-process
+  fire-proof with flag on) · `64c6a46` (**F-3 semantics: roofed is what
+  housing means; camps are where the unhoused are PLACED** — keyed on
+  published `archetype:"plot"`, pinned; camp dweller counted unhoused while
+  visibly placed; arrival with roofs full lands `housed:false,
+  sheltered:true` replacing the no-vacancy refusal; template fires at
+  97-roofed/23-camped, silent today). Four measured catches: SMALLINT
+  rejected half-tile door anchors (NUMERIC(6,2)); founding goal first
+  seated on the XL CIVIC parcel at target 939 — candidates now order by
+  housing-fit→smallest→id (ordering, not filter: a civic-only town still
+  seats); claim-cost thresholds were degenerate against real parcels (all
+  priced 3) — re-keyed to the bake's own S/M/L/XL = 1/2/3/3 with a
+  costs-vary test; the 8-tool assertion grepped SOURCE and would have
+  reported a flag-gated tool that doesn't exist at runtime — now reads the
+  real catalog. Suite **1355/1355 exit 0**; `qa:integrity` **3 ok / 0
+  failed / 0 skipped** (unlock- and plot-integrity ran for the first
+  time); placement region byte-identical to main (3161 = 3161). Seam
+  contract wording amendment owed agents-side: `unhoused` = no live
+  ROOFED row (camp dwellers are unhoused — matches D-60 and fires
+  unhoused_self for them).
+
+- 2026-08-03 · **Adversarial review of the api final batch: flag mechanics /
+  roofed-core / migrations / claim-cost HELD, but the merge is NOT
+  byte-frozen and the world-effect layer is dead code. Final fix pass
+  dispatched.** CRITICAL: get-city-map serves + pages the 41-venue
+  vocabulary unflagged (page 1's id-ordered rank-3 block lets 11 other
+  agents' houses displace a reachable public venue); founding-goal seating
+  runs unflagged inside resolveSeasonIfDue's seven entry points (first
+  read after merge seats a goal + a candidate into every agent's lottery);
+  plus mine on top: build/demolition become PROPOSABLE through the live
+  tool once the registry syncs, flag notwithstanding. IMPORTANT:
+  `growthService` has ZERO production callers — a completed build goal
+  produces no structure, no state flip, no dawn appearance (D-71 unwired;
+  unlock/plot-integrity are bulbless); `botville_plots.state` has no
+  writer (two sources of truth); elected build goals ignore plot size
+  (D-73 delivered only for the founding goal — two pricings for one
+  kind); `listUnhousedDisplayNames` not converted to roofed semantics
+  (beneficiaries never named in exactly the founding state §6.4.3 exists
+  for); founding goal dies permanently if its first season ends
+  `unfinished` (status-blind probe over-fires); placement's camp branch
+  (F-8 fourth branch) still missing — LATENT until any camp assignment
+  exists, pinned as a Task 9 tripwire, placement line untouched;
+  cityMapPaging comment describes a guard that was removed (self-erasing
+  comment). The fix pass's deliverable is the **"what merges with flags
+  off" table** — the deploy decision document.
+
+- 2026-08-03 · **api merge-freeze fix pass DONE — the branch is
+  deploy-decision-ready** · `ed6b884` (C1: the world/shown split —
+  `loadVenues()` is the WORLD (41, camps included: presence/housing/
+  schedule writer), `loadPublishedVenues()` is what an agent is SHOWN (18
+  flag-off); every reader enumerated and ruled; rank-3 fixed: home-role
+  venues rank below every public venue, floor test added — every open
+  public venue survives page 1 at 41; `unhousedCount` + `limit`/`offset`
+  gated AT THE SCHEMA so the catalog doesn't move) · `c7b2a46` (C2 seating
+  flagged, hydration deliberately not — the round's flip becomes a config
+  change; C3 CONFIRMED: growth kinds were proposable through the live tool
+  flag-off — now refused with a repairable message; both fire-proofed in
+  child processes against the real dev DB, both directions) · I1 roofed
+  beneficiary names · I2 world-effect layer WIRED (completes →
+  under_construction; dawn → structure + built; failures logged, never
+  rolling back an election; unlock/plot-integrity get their bulb) · I3
+  ruled: the plot row IS the authority (deriving cannot express
+  under_construction), every writer sets state+linkage in one transaction,
+  plot-integrity checks agreement · I4 one pricing function both
+  provenances (D-73 delivered for elected goals) · I5 F-8 camp-placement
+  tripwire pinned, line untouched · I6 `unfinished` no longer blocks
+  re-seating + **migration 046** partial unique index sharing one clause
+  list with the service predicate, pinned · I7 comments/calibration
+  honest. Suite **1371/1371 exit 0**. **"What merges with flags off":
+  byte-identical to main on every enumerated surface except 15 raw JSON
+  bytes — the dorm's deliberate D-60 home/sleep edit, empty-diff-proven,
+  pinned in a test AS the named merge delta.** Agent's own lesson,
+  logged verbatim: "a test asserting new behaviour is only as good as the
+  question of whether that behaviour should be reachable yet."
+
+- 2026-08-03 · **Plan `03-` Tasks 2–3 DONE** · `plan-03-client` @
+  `4610e98` (merge `02b29e2`, F-1 `0a1b7ca`, F-2 `c65e5c9`, T2 `e242453`,
+  T3 `4610e98`) · Merge: one conflict; the real work was what neither
+  branch could see — **a parcel is not a district**: `plotRegistry.ts` +
+  `DRAWN_BY_DISTRICT` (farm AND all parcels drawn by the district's map),
+  `districts()` = outdoor minus parcels; pre-empted `plot_7`-as-district
+  loading a tilemap the bake never wrote. F-1 verified per site — and
+  found `cam.centerOn` encoding map-centre=town-centre (one tile off at
+  48×46, the far corner at 92×92; now spawn-centroid); geometry-IS-the-
+  tilemap assertion added + fire-proofed; car lanes hand-checked
+  unchanged, written down. F-2: `withTilemap()` loader, both-direction
+  set-equality pin (404s AND orphan maps), deliberately not written as
+  "parcels excluded" so a future built-plot interior forces a decision.
+  T2: three states render data-driven from plot_states.json (vacant =
+  fenced lot + gate + per-agent tents via mirrored `pickFrom` pinned by a
+  336-case vector file PRODUCED BY the api's own helper + live-sibling
+  comparison; under_construction = distinct hoarding; built = archetype
+  exterior from the same file derive-plots reads); fourth-state
+  data-change proof; plot state is on NO client wire (measured) — default
+  vacant (true), fixture server serves the authoring file. T3: generated
+  doors provenance-blind (identical planSync decisions through authored
+  vs generated door, in and back out); all 23 anchors reachable from
+  spawn (34–121 steps); built parcels drawn-by-district minus. Golden:
+  added camera+plots, zero moved, zero deleted; hypotheticals labelled.
+  Gates: **385/385**, typecheck, build, test:bake exit 0; venues.json
+  byte-unchanged. Named for other streams: plot-state wire shape the
+  client accepts; built-plot interiors need a bake pass; road-extension
+  now measurable; plot boundaries deliberately non-colliding.
+
+- 2026-08-03 · **Adversarial review of client Tasks 2–3: seams HELD** (merge
+  intent preserved incl. farm re-ruling + night behaviour; `districts()`
+  membership-keyed; zero phantom campers, leak paths enumerated; `pickFrom`
+  mirror character-equivalent; fractional anchors verified on real data;
+  door-key collision impossible via the bake's duplicate rejection).
+  **Five importants → fix pass dispatched:** plotRegistry's comments name a
+  nonexistent test + two nonexistent guards (write the real ones); the
+  per-district seam is three hardcoded single-district points — the bake
+  never scans `venues/*/plots.json`, so a second district's parcels would
+  publish zero venues while every guard passes vacuously; plot props add
+  no walkability (deliberate deferral, undocumented, test messages
+  oversell); published `plot_states.json` has no equality pin AND a stale
+  copy + one wire row is a BOOT CRASH where stated policy says
+  drop-and-warn; built-plot clicks dead-end silently on two paths (hand
+  cursor promises navigation; HUD click on a housed agent inert). Five
+  minors (side-blind door zone, HUD camp label fallback, camp-slot modulo
+  stacking, golden state-blind note, boundaryAlternate dead data).
+  Reviewer had no shell — gates + golden-diff-across-SHAs + pickFrom
+  mutant + sibling-branch execution owed and assigned to the fix pass.
+
+- 2026-08-03 · **Client fix pass DONE — all streams complete** · `5dad79b`
+  on `plan-03-client` · Real guards written (6 registry tests incl.
+  both-direction completeness + doorAnchor-vs-spawns[0] + three-way
+  client/bake/fixture agreement); the bake now WALKS `venues/*` for
+  plots.json (output proven byte-identical via temp-dir bake comparison;
+  synthetic second district publishes; reverting to the hardcoded path
+  reddens 2 tests); no-collision ruling documented with its three reasons;
+  published `plot_states.json` equality-pinned + unknown-state now
+  skip-and-warn (boot-crash path closed, both fire-proofed);
+  `opensASceneFrom` — one predicate for cursor AND click, HUD focus warns
+  by name; all five minors incl. side-derived door zones (the fixed size
+  stuck into the street on 14 doors), `loc.camp` label ("Camping on a
+  vacant lot" — the fallback had labelled all 23 camps "On the street",
+  hiding exactly what D-89 exists to show), camp fan-out past 4,
+  boundaryAlternate consumed (12/11 split). **Executed verification:**
+  403/403 + 25 vitest exit 0, typecheck/build/test:bake exit 0; golden
+  chain confirmed key-by-key across all seven commits (zero unexplained
+  movement anywhere); walkability re-measured (0 differing cells in the
+  48×46 region, 870/870, +2 named); pickFrom mutant correctly attributed
+  to the mirror; sibling comparison ran the LIVE branch (0 skips).
+  venues.json sha unchanged. api HEAD moved to `f0407f2` mid-run — the
+  api agent's own I2/I3 world-effect commit, verified, not a foreign
+  writer.
+
+- 2026-08-04 · **DEPLOY AUTHORIZED by the owner** ("you can deploy
+  everything, let's proceed to testing and other layers"). **D-90 RULED**
+  (recorded, `5efd845`): the vote is the agent's own — `vote-city-goal`
+  leaves the builder (labour only: propose/contribute/claim); main agent
+  keeps the vote on L1; a civics specialist (deliberates, never votes) is
+  accepted in principle as its OWN measured change after (f). Deploy window
+  opened: api + BotVille merge running (flag-off verification item by
+  item); agents merges after the D-90 strip lands.
+
+- 2026-08-04 · **D-90 strip DONE** · agents `6359d8a` · builder allowlist
+  7→6 (`vote-city-goal` out; tools now map/goals/propose/contribute/
+  go-to-venue/leave-note); catalog byte-stability MEASURED (both renderer
+  shas identical before/after); asymmetric re-pin deliberate — the
+  seven-tool `CITY_TOOLS` set survives as "the city surface" so
+  `test_reflector_city_route_is_removed` keeps its teeth, builder list
+  derived from it (cannot drift); L1 verified unchanged (vote absent from
+  EXCLUDED_TOOLS, 28-schema pins pass — the principal casts its own vote);
+  seam contract's owner-line paragraph REPLACED with the ruling + the (f)
+  comparability declaration (M-070's builder could vote, this one cannot —
+  never compare write mixes without declaring it) + explicit "the civics
+  specialist does not exist". Gates: 3110 pass/11 skip, tool-exclusion 12,
+  qa+docs 245, lint 0 errors, all exit 0. **Branch merge-ready.**
+
 ## SESSION TERMINAL STATE — 2026-08-03
 
 **Halting because nothing unblocked remains** (EXECUTION-PROMPT §3: that is

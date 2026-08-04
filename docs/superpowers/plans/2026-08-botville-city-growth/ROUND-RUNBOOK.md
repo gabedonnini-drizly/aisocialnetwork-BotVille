@@ -6,13 +6,14 @@ resume from here without re-reading the build history.
 
 ## Trees / branches / suites
 
-| tree | branch | base | purpose | suite command | last known state (2026-08-03 EOD) |
+| tree | branch | base | purpose | suite command | last known state (2026-08-03, post D-79..D-89 execution) |
 |---|---|---|---|---|---|
-| `/Users/home/aisocialnetwork-BotVille` | `main` @ `fb6f068` | — | canonical + docs/log; **do not develop here** | `npm test` | clean, green (Gate −1) |
-| `/Users/home/botville-wt-04-bake` | `plan-04-archetypes-bake` @ `a3d0214` | `fb6f068` | Plan `04-` T1–6, 8 + B′ home-role commit + hardenings | `BOTVILLE_AISOCIALNETWORK_API_REPO=/Users/home/api-wt-01-plots npm test && npm run test:bake` | **COMPLETE** — 314/314 + bake 42/42, exit 0 |
-| `/Users/home/botville-wt-03-client` | `plan-03-client` @ `ac3f9da` | `3828f7c` | Plan `03-` Task 1 (multi-district) | `npm test` (node ≥24) | **COMPLETE** — 325/325 + 22 vitest, exit 0 |
-| `/Users/home/api-wt-01-plots` | `plan-01-plots-housing` @ `53d4ff1` | api `d5b11c1` | Plan `01-` unblocked scope; migrations **042 + 043** (both applied to dev DB) | `BOTVILLE_REPO=/Users/home/botville-wt-04-bake npm test` | **COMPLETE** — 1256/1256, exit 0 |
-| `/Users/home/api-wt-04-sync` | `plan-04-sync-tests` @ `8480935` | api `d5b11c1` | api half of `04-` Task 6 sync tests | `node --test tests/venueVocabularySync.test.js` | **COMPLETE** — exit 0; merge FIRST, then plan-01 rebased |
+| `/Users/home/aisocialnetwork-BotVille` | `main` @ `6a8ddd5` | — | canonical + docs/log (D-79..D-89 committed); **do not develop here** | `npm test` | clean, green |
+| `/Users/home/botville-wt-04-bake` | `plan-04-archetypes-bake` @ `067e45d` | `fb6f068` | Plan `04-` COMPLETE incl. Task 7 (92×92 district, 23 plots, D-88/D-89) | `BOTVILLE_AISOCIALNETWORK_API_REPO=/Users/home/api-wt-01-plots npm test && npm run test:bake` | **COMPLETE + reviewed + hardened** |
+| `/Users/home/botville-wt-03-client` | `plan-03-client` @ `5dad79b` | merged `067e45d` | Plan `03-` Tasks 1–3 COMPLETE (multi-district, plot states, generated doors) | same env; `npm test` (node ≥24) | **COMPLETE + reviewed + hardened** — 403/403 + 25 |
+| `/Users/home/api-wt-01-plots` | `plan-01-plots-housing` @ `f0407f2` | api `d5b11c1` | Plan `01-` COMPLETE; migrations **042–046** applied to dev DB; merge-frozen behind `BOTVILLE_GROWTH_SURFACES` | `BOTVILLE_REPO=/Users/home/botville-wt-04-bake npm test` | **COMPLETE + reviewed + hardened** — 1371+/exit 0 |
+| `/Users/home/api-wt-04-sync` | `plan-04-sync-tests` @ `8480935` | api `d5b11c1` | api half of `04-` Task 6 sync tests | `node --test tests/venueVocabularySync.test.js` | **COMPLETE** — merge FIRST, then plan-01 rebased |
+| `/Users/home/agents-wt-growth` | `growth-builder-delta` @ `8df5783` | agents `cfb23e1` | Plan `02-` delta (city section, builder craft, unhoused_self, episode attribution QA-L19) | venv `pytest tests/heartbeat/ -q` | **COMPLETE + reviewed + hardened** — 3109/11skip |
 | `/Users/home/aisocialnetwork-agents` | `main` @ `cfb23e1` | — | **LIVE RUNTIME** (nodemon); awareness program at owner-deferred checkpoint | `python -m pytest tests/heartbeat/` | untouched by this drive |
 
 ## Live runtimes — do not edit in place
@@ -59,7 +60,14 @@ cd /Users/home/api-wt-01-plots && git log --oneline main..HEAD && npm test
    target** — the cross-repo sync tests need the env vars in the table
    above (the branch copies lead their siblings' mains). Merging both
    branches restores default resolution.
-7. **Merging `plan-01-plots-housing` into the live api is a deploy-window
-   event**: it moves `get-city-map`'s MCP schema (limit/offset) and the
-   dorm's role reaches the served vocabulary — re-baseline per C8 before
-   any subsequent measured round.
+7. **Merging `plan-01-plots-housing` into the live api is now
+   flag-frozen** (post `ed6b884`/`c7b2a46`): with `BOTVILLE_GROWTH_SURFACES`
+   unset, every agent-visible surface is byte-identical to main EXCEPT 15
+   raw JSON bytes — the dorm's deliberate D-60 `home`/`sleep` vocabulary
+   edit (empty-home-diff proven, pinned in a test as the named merge
+   delta). The schema params, unhousedCount, 41-venue map, founding goal,
+   growth-kind proposals, ## City, `unhoused`, and claim-plot ALL wake
+   together when the flag flips — which is round (f)'s one change.
+   Deploy sequence: merge branches → run migrations 042–046 on the target
+   DB → nodemon restarts flag-off (inert) → round (f) window: flip flag,
+   probe, round, analyze, register M-071.
