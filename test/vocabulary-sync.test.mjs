@@ -282,14 +282,12 @@ test('every plot fits its district, overlaps no other, and allows only declared 
   const { problems, count } = checkPlots(source.plots, district, declaredArchetypes);
   assert.deepEqual(problems, []);
 
-  // Task 7 authors the plots and is blocked on ⛔ O-1. Until then `count` is
-  // 0 and this test is vacuous — say so out loud rather than reporting a
-  // green that means nothing. `count` is consumed, not discarded, so the day
-  // plots land the message changes without anyone editing this file.
-  if (count === 0) {
-    console.log(`      ℹ no plots authored yet (${source.where}) — plot coverage is VACUOUS. `
-      + 'Task 7 (⛔ O-1) is what gives it input; the fixtures below prove it fires.');
-  }
+  // O-1 is ruled (D-79) and Task 7 has authored the plots, so this check is
+  // no longer vacuous and must never quietly become so again: a plots file
+  // that stopped being read would otherwise look exactly like a clean run.
+  assert.ok(count > 0,
+    `no plots found in ${source.where} — the plots are authored now (D-79), so zero means this `
+    + 'check has stopped reading its input, not that the town has no land');
 });
 
 test('the plot checks fire — vacuously green is not the same as green', () => {

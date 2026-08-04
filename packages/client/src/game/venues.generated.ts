@@ -280,8 +280,8 @@ export const VENUES: VenueDescriptor[] = [
     "label": "District",
     "indoor": false,
     "sizeTiles": [
-      48,
-      46
+      92,
+      92
     ],
     "groundAtlas": "district_ground",
     "capacity": 96,
@@ -4488,6 +4488,811 @@ export const VENUES: VenueDescriptor[] = [
         "targetVenue": "district"
       }
     ],
+    "glows": []
+  },
+  {
+    "id": "plot_1",
+    "label": "Camp 1",
+    "indoor": false,
+    "sizeTiles": [
+      24,
+      23
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        52,
+        27
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_10",
+    "label": "Camp 10",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        28,
+        62.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_11",
+    "label": "Camp 11",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        10,
+        68.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_12",
+    "label": "Camp 12",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        61,
+        68.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_13",
+    "label": "Camp 13",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        77,
+        61
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_14",
+    "label": "Camp 14",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        39,
+        74.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_15",
+    "label": "Camp 15",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        50,
+        74.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_16",
+    "label": "Camp 16",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        28,
+        78.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_17",
+    "label": "Camp 17",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        10,
+        84.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_18",
+    "label": "Camp 18",
+    "indoor": false,
+    "sizeTiles": [
+      6,
+      6
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        28,
+        3
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_19",
+    "label": "Camp 19",
+    "indoor": false,
+    "sizeTiles": [
+      6,
+      6
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        87,
+        27
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_2",
+    "label": "Camp 2",
+    "indoor": false,
+    "sizeTiles": [
+      18,
+      16
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        58,
+        16
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_20",
+    "label": "Camp 20",
+    "indoor": false,
+    "sizeTiles": [
+      6,
+      6
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        87,
+        34
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_21",
+    "label": "Camp 21",
+    "indoor": false,
+    "sizeTiles": [
+      6,
+      6
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        87,
+        41
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_22",
+    "label": "Camp 22",
+    "indoor": false,
+    "sizeTiles": [
+      6,
+      6
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        87,
+        48
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_23",
+    "label": "Camp 23",
+    "indoor": false,
+    "sizeTiles": [
+      6,
+      6
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        87,
+        55
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_3",
+    "label": "Camp 3",
+    "indoor": false,
+    "sizeTiles": [
+      18,
+      16
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        77,
+        16
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_4",
+    "label": "Camp 4",
+    "indoor": false,
+    "sizeTiles": [
+      18,
+      16
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        74,
+        27
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_5",
+    "label": "Camp 5",
+    "indoor": false,
+    "sizeTiles": [
+      18,
+      16
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        18,
+        52
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_6",
+    "label": "Camp 6",
+    "indoor": false,
+    "sizeTiles": [
+      18,
+      16
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        74,
+        44
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_7",
+    "label": "Camp 7",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        28,
+        46.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_8",
+    "label": "Camp 8",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        39,
+        58.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
+    "glows": []
+  },
+  {
+    "id": "plot_9",
+    "label": "Camp 9",
+    "indoor": false,
+    "sizeTiles": [
+      10,
+      15
+    ],
+    "groundAtlas": "district_ground",
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ],
+    "furniture": [],
+    "seats": [],
+    "spawns": [
+      [
+        50,
+        58.5
+      ]
+    ],
+    "animated": [],
+    "doors": [],
     "glows": []
   }
 ];

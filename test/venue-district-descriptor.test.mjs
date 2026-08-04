@@ -6,10 +6,14 @@ import { loadContract } from '../scripts/lib/assetContract.mjs';
 const v = JSON.parse(readFileSync('venues/district/venue.json', 'utf8'));
 const c = loadContract();
 
-test('the district is a 48x46 outdoor venue', () => {
+test('the district is an outdoor venue whose size is bake data (D-88)', () => {
   assert.equal(v.id, 'district');
   assert.equal(v.indoor, false);
-  assert.deepEqual(v.sizeTiles, [48, 46]);
+  // Size is CONFIG (D-88: the district grows; growth controls are
+  // config-driven), so this asserts the descriptor agrees with the config
+  // rather than pinning a number that a ruled growth would falsify.
+  const growth = JSON.parse(readFileSync('town/growth.json', 'utf8'));
+  assert.deepEqual(v.sizeTiles, growth.districtSizeTiles);
   assert.equal(v.groundAtlas, 'district_ground');
 });
 

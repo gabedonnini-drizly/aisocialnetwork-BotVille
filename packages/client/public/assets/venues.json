@@ -368,5 +368,442 @@
         "close": 20
       }
     ]
+  },
+  {
+    "id": "plot_1",
+    "label": "Camp 1",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_10",
+    "label": "Camp 10",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_11",
+    "label": "Camp 11",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_12",
+    "label": "Camp 12",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_13",
+    "label": "Camp 13",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_14",
+    "label": "Camp 14",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_15",
+    "label": "Camp 15",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_16",
+    "label": "Camp 16",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_17",
+    "label": "Camp 17",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_18",
+    "label": "Camp 18",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_19",
+    "label": "Camp 19",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_2",
+    "label": "Camp 2",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_20",
+    "label": "Camp 20",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_21",
+    "label": "Camp 21",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_22",
+    "label": "Camp 22",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_23",
+    "label": "Camp 23",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_3",
+    "label": "Camp 3",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_4",
+    "label": "Camp 4",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_5",
+    "label": "Camp 5",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_6",
+    "label": "Camp 6",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_7",
+    "label": "Camp 7",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_8",
+    "label": "Camp 8",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
+  },
+  {
+    "id": "plot_9",
+    "label": "Camp 9",
+    "indoor": false,
+    "capacity": 4,
+    "archetype": "plot",
+    "roles": [
+      "home"
+    ],
+    "affords": [
+      "sleep"
+    ],
+    "hours": [
+      {
+        "open": 0,
+        "close": 24
+      }
+    ]
   }
 ]

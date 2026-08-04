@@ -117,13 +117,27 @@ test('residence instances join the vocabulary and afford sleep (addendum I.2)', 
       + 'an agent home to a venue it cannot sleep in');
   }
 
-  // D-60's shelter: a home that is not a stamped residence. Asserted as a
-  // SHAPE, not by id, so it survives the vocabulary changing again.
-  const shelters = homes.filter(v => v.archetype !== 'house');
-  for (const s of shelters) {
-    assert.ok(s.roles.includes('hangout'),
-      `${s.id} is a home but not a residence instance — the only such venue is the shelter, `
-      + 'which stays a daytime hangout too');
+  // Homes that are not stamped residences. Asserted as SHAPES, not by id, so
+  // this survives the vocabulary changing again — as it just did.
+  //
+  // There are now two kinds, and they are opposites on the daytime side:
+  //   - D-60's shelter keeps its `hangout` role, so it stays a daytime
+  //     destination as well as a place to sleep;
+  //   - D-89's vacant PLOTS carry `home`/`sleep` and nothing else. That is
+  //     the whole reason they can be published at all: a public role would
+  //     put 23 parcels into the hangout and affordance pools and move 31+
+  //     agents' daytime derivations. `test/plots.test.mjs` proves the
+  //     unmoved half; this is the guard that stops one acquiring a role.
+  for (const h of homes.filter(v => v.archetype !== 'house')) {
+    if (h.archetype === 'plot') {
+      assert.deepEqual(h.roles, ['home'],
+        `${h.id} is a vacant plot and must carry no role but home (D-89) — a public role would `
+        + 'move the daytime candidate pools');
+      continue;
+    }
+    assert.ok(h.roles.includes('hangout'),
+      `${h.id} is a home, not a residence instance and not a plot — the only such venue is the `
+      + 'shelter, which stays a daytime hangout too');
   }
 
   // The F-12 night rule, by construction: nothing outside the home-role set

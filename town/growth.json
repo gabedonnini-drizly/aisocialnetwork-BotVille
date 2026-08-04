@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "note": "Growth controls (D-88). Every knob the town's shape depends on lives here, basic at start, so a later release can hand growth and zoning to the residents without a schema event. Changing a value here and re-running scripts/derive-plots.mjs is the whole procedure.",
+
+  "districtSizeTiles": [92, 92],
+  "districtSizeDerivation": "MEASURED, not picked. The floor is ceil(population / RESIDENCE_OCCUPANCY_TARGET_AGENTS) = ceil(85/7) = 13 housing plots (residences.mjs). The 48x46 district packs SIX at the smallest real house footprint and ZERO at any full-size one — the plan's ~25-30 ceiling assumed a 6x5 parcel and omitted the 718 tiles the five existing buildings occupy, which is more than half the 1395 free. 92x92 is the smallest square that packs the TOP of the ruled scarcity band (1.4 -> 19 housing plots) plus all six civic archetypes including the 24x23 school, at the real declared exteriors with a one-tile walkable margin. Sizing to the top of the band means scarcityRatio can move anywhere inside 1.2-1.4 without re-sizing the map.",
+
+  "scarcityRatio": 1.3,
+  "scarcityRatioBand": [1.2, 1.4],
+  "scarcityRatioNote": "The knob, recorded as a RATIO rather than an integer because a bare count hides which end of the constraint moved. plots = ceil(scarcity_ratio * floor). At 1.0 there is zero slack and one hoarded plot is instantly fatal; above ~1.4 the district has no room left for the civic set. 1.3 -> ceil(1.3 * 13) = 17 housing plots.",
+
+  "plotSizeClasses": [
+    { "name": "S", "size": [6, 6], "count": 6 },
+    { "name": "M", "size": [10, 15], "count": 7 },
+    { "name": "L", "size": [18, 16], "count": 4 }
+  ],
+  "civicPlots": [
+    { "name": "XL", "size": [24, 23], "count": 1 },
+    { "name": "L", "size": [18, 16], "count": 1 },
+    { "name": "M", "size": [10, 15], "count": 4 }
+  ],
+  "plotSizeClassesNote": "Sizes come from the REAL declared exteriors (D-88), not from a round number: S is mobile_home_small (6x6), M clears villa (9x13) and terraced_house_modular (10x15), L clears country_house (18x16) and condo_6 (13x16), XL clears the school (24x23). The housing counts sum to 17 = ceil(1.3 * 13). What each plot ADMITS is never listed here — scripts/derive-plots.mjs computes it from footprint fit against contract/buildings.json (D-66: physics constrains, law regulates; there is no zone field).",
+
+  "walkableMarginTiles": 1,
+  "walkableMarginNote": "Kept clear around every plot so the town does not pack itself into a solid block with no way between the parcels."
+}

@@ -91,5 +91,15 @@ export function isClientInternalLocation(location: string): boolean {
  * deep link.
  */
 export function sceneForLocation(location: string): string {
-  return isClientInternalLocation(location) ? 'DistrictScene' : sceneKeyFor(location);
+  if (isClientInternalLocation(location)) return 'DistrictScene';
+  // An OUTDOOR venue has no scene of its own either — only interiors get a
+  // VenueScene (see `indoor()`, which is what the scene factory walks). Plot
+  // venues (D-79: the plot id IS the venue id) are the case that made this
+  // matter: 23 of them are published, they are parcels drawn on the district
+  // map, and routing one through sceneKeyFor would hand transitionTo a
+  // 'VenueScene:plot_7' that no scene is registered under — the same black
+  // screen the farm produced.
+  const venue = byId.get(location);
+  if (venue && !venue.indoor) return 'DistrictScene';
+  return sceneKeyFor(location);
 }
