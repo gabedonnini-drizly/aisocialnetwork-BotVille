@@ -740,6 +740,48 @@ Parked owner calls and rotted anchors are also logged here.
   specialist does not exist". Gates: 3110 pass/11 skip, tool-exclusion 12,
   qa+docs 245, lint 0 errors, all exit 0. **Branch merge-ready.**
 
+- 2026-08-04 · **DEPLOY STOPPED AT THE MERGE GATE — correctly.** Pre-flight
+  passed (flag verified OFF in the live process env via a proven-non-vacuous
+  ps check; suites green; migrations 0-pending; pre-merge get-city-map
+  captured: 8 tools / 18 venues / 3193 bytes) — but pre-flight step 2
+  itself MUTATED THE LIVE WORLD: `growthSurfacesFlag.test.js`'s C2
+  fire-proof runs child processes against the real dev DB, DELETEs world
+  rows, runs its flag-ON leg LAST, and never cleans up — every `npm test`
+  leaves a REAL seated founding goal (observed: `62405a82…`, "Raise the
+  first homes", plot_18, 10:05 today), agent-visible via activeGoals
+  (pointing at a venue the deployed map doesn't publish), and PRE-EMPTING
+  round (f) via the once-ever guard. Post-merge it would also mean `npm
+  test` on the live checkout deletes world rows. Fix pass dispatched:
+  hygienic fire-proofs (scratch DB preferred), full-branch audit of
+  real-pool tests (the bar: after npm test, the world the agents
+  experience is byte-identical), verified deletion of the stray goal (only
+  if zero contributions/votes reference it), double-run byte-identity
+  proof. The "concurrent session" dirtying BotVille main was THIS
+  session's own uncommitted log edits — committed as `9123c5a`. Deploy
+  re-launches on the fix report.
+
+- 2026-08-04 · **Test-hygiene fix DONE — deploy unblocked** · api `d65d4d3`
+  · Fix shape: NO database at all — `childWithFlag.js` pre-seeds
+  require.cache with an in-memory pool + points DB_NAME at a nonexistent
+  DB before any service loads ("nothing connects, so there is nothing to
+  clean up" — survives whatever the next person edits in); the property
+  itself asserted (helper must replace the pool; no deletes against module
+  tables; no dotenv load). **Audit by blocking hook** (every real
+  pool.query THROWS under NODE_OPTIONS): zero category-(c) remaining, two
+  read-only leaks of its own found and mocked, one deliberate read-only
+  canary documented; the suite passes with ALL real DB access blocked.
+  Stray goal `62405a82…` DELETED after verification (contributions 0,
+  proposal_id null, completion traces 0). Clean baseline: 23 plots / 85
+  live assignments / 0 system build goals / activeGoals carries no build
+  goal. **Double-run byte-identity proof**: full snapshot (15 table counts
+  + full row contents of goals/plots/assignments) identical
+  before/between/after two consecutive full-suite runs. Suite 1372/1372
+  exit 0. Agent's own post-mortem logged: the child process "felt like a
+  different kind of thing" — it was the same live pool behind execFileSync;
+  the blocking audit hook is now the tool for that class. Noted: plot rows'
+  created_at continuity restarted today (deleted/recreated by the bad
+  test before the fix).
+
 ## SESSION TERMINAL STATE — 2026-08-03
 
 **Halting because nothing unblocked remains** (EXECUTION-PROMPT §3: that is
