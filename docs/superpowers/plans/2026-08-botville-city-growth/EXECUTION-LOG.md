@@ -782,6 +782,39 @@ Parked owner calls and rotted anchors are also logged here.
   created_at continuity restarted today (deleted/recreated by the bad
   test before the fix).
 
+- 2026-08-04 · **DEPLOY WINDOW EXECUTED (api + BotVille).** api main:
+  ff to `8480935` (sync tests) then merge `7a1065b`
+  (plan-01-plots-housing @ `d65d4d3`), zero conflicts; nodemon restarted
+  (pid 58436), /health 200, flag confirmed absent from the restarted
+  process env. **Flag-off verification ALL PASS**: 8-tool catalog, 18
+  venues (the filter demonstrably working — registry loads 41, emits 18),
+  key sets identical, no unhousedCount/moreVenues/unhoused/## City; one
+  real tick via natural traffic: 23 plots (fingerprint unchanged), 0
+  system build goals. **Byte delta exactly 15** (3193→3208): the dorm's
+  home/sleep, as pinned. BotVille main: merges `b6e0e8b` + `7111f7d`,
+  zero conflicts; suites re-run with `--force` after catching a turbo
+  cache replay masquerading as proof — genuinely green (403/403 + 25;
+  bake exit 0 after this session's log edit was committed). Fix
+  re-verified by its finder: plots fingerprint md5 identical
+  before/after a full suite run — provably not deleted-and-recreated.
+- 2026-08-04 · **Emergent D-21 red on merged main FIXED** · api `f2b0b37`
+  (live checkout, single surgical commit) · `hydratePlotsFromRegistry`
+  takes NO district argument: district set derived structurally from the
+  vocabulary (outdoor ∧ not-parcel — deliberately NOT keyed on the
+  district archetype name, which is the same hardcode in a different
+  hat); attribution ladder (registry attribution wins → sole district
+  resolves → ambiguous skips-and-reports); loader carries district
+  attribution through the day the bake aggregates `venues/*/plots.json`
+  (it does not yet — measured, not assumed). Six regression tests; suite
+  **1382/1382 exit 0**; hydration fingerprint identical before/after/
+  after-tick; world byte-identity holds. Sharp edge logged: the D-21
+  scanner is line-based and does not skip comments — a comment naming a
+  venue id reds the suite. **Push to origin blocked by the session's
+  permission classifier (twice, self-described transient)** — api main
+  is 31 ahead / 0 behind, clean fast-forward; owner can push or add a
+  permission rule; NOT load-bearing (the live api runs from this
+  checkout).
+
 ## SESSION TERMINAL STATE — 2026-08-03
 
 **Halting because nothing unblocked remains** (EXECUTION-PROMPT §3: that is
