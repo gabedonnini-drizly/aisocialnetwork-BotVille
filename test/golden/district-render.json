@@ -13,6 +13,28 @@
     "mapWidth": 92,
     "mapHeight": 92
   },
+  "camera": {
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1472,
+      "height": 1472
+    },
+    "initialCentre": {
+      "x": 378.5,
+      "y": 362.5
+    },
+    "tintOverlay": {
+      "x": -1472,
+      "y": -1472,
+      "width": 4416,
+      "height": 4416
+    },
+    "carCull": {
+      "maxX": 1488,
+      "maxY": 1488
+    }
+  },
   "routing": {
     "cafe": {
       "sceneKeyFor": "VenueScene:cafe",

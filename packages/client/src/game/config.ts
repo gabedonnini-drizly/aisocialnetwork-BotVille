@@ -50,6 +50,63 @@ export function districtGeometry(venue: VenueDescriptor): DistrictGeometry {
   };
 }
 
+/** A rectangle in world pixels. */
+export interface Rect { x: number; y: number; width: number; height: number }
+
+/**
+ * The camera's world bounds: the whole map. Trivial, and here rather than
+ * inline in the scene so the golden baseline can CALL it instead of
+ * transcribing it (F-1 named `cam.setBounds` as a site to verify, and a
+ * transcribed check verifies the transcription).
+ */
+export function cameraBounds(geo: DistrictGeometry): Rect {
+  return { x: 0, y: 0, width: geo.widthPx, height: geo.heightPx };
+}
+
+/**
+ * The day/night tint overlay: the world, plus a full map of margin on every
+ * side, in WORLD coordinates (not scrollFactor 0 — correct at any zoom).
+ */
+export function tintOverlayRect(geo: DistrictGeometry): Rect {
+  return { x: -geo.widthPx, y: -geo.heightPx, width: geo.widthPx * 3, height: geo.heightPx * 3 };
+}
+
+/**
+ * Where an ambient car stops existing. Derived from the map, so a bigger
+ * district does not cull cars while they are still on screen.
+ */
+export function carCullBounds(geo: DistrictGeometry): { maxX: number; maxY: number } {
+  return { maxX: geo.widthPx + 16, maxY: geo.heightPx + 16 };
+}
+
+/**
+ * WHERE THE CAMERA OPENS — F-1's one real defect, and the reason "derived"
+ * is not the same as "correct".
+ *
+ * This used to be `centerOn(widthPx / 2 - 24, heightPx / 2 - 8)`: derived from
+ * the geometry, and therefore not on the review's list of literals — but the
+ * two hand-tuned offsets encoded an ASSUMPTION, that the middle of the map is
+ * the middle of the town. On 48x46 that held (the formula gave 360,360 against
+ * a spawn centroid of 378,362 — one tile out, invisible at zoom 2). D-88 grew
+ * the district to 92x92 by extending it with open grass, and the assumption
+ * died: the same expression now yields (712,728), which is the far CORNER of
+ * the built town, so the game would open on more empty grass than city.
+ *
+ * The town is where the bake put the spawn points. That is the definition the
+ * map itself carries, it needs no tuning, and it grows with the town rather
+ * than with the map. A district that declares none falls back to the map
+ * centre — the same fallback `spawnPoints` already uses, and the only honest
+ * answer when nothing says where anybody starts.
+ */
+export function districtViewCentre(
+  geo: DistrictGeometry,
+  spawns: ReadonlyArray<{ x: number; y: number }>,
+): { x: number; y: number } {
+  if (spawns.length === 0) return { x: geo.widthPx / 2, y: geo.heightPx / 2 };
+  const sum = spawns.reduce((a, s) => ({ x: a.x + s.x, y: a.y + s.y }), { x: 0, y: 0 });
+  return { x: sum.x / spawns.length, y: sum.y / spawns.length };
+}
+
 export const WALK_SPEED = 48; // px/sec (16px tile, speed ~3 tiles/sec)
 
 /**

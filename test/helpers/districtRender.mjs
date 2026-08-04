@@ -20,8 +20,19 @@
  *
  * What it does NOT cover, stated plainly so nobody reads more into a green:
  *
- *   • no pixels, no textures, no Phaser at all; nothing about the camera,
- *     tints, glow alphas, car ambience, tweens or the night routine's timing;
+ *   • no pixels, no textures, no Phaser at all; nothing about glow alphas,
+ *     tweens or the night routine's timing. THE CAMERA CAVEAT IS NARROWER
+ *     THAN IT WAS: `camera` now captures the bounds, the opening centre, the
+ *     tint overlay rect and the car-cull box — by CALLING config.ts's
+ *     `cameraBounds` / `districtViewCentre` / `tintOverlayRect` /
+ *     `carCullBounds`, which are the same functions DistrictScene.create
+ *     calls (F-1). What is still uncovered: zoom behaviour, pan inertia,
+ *     `cam.pan` on agent:focus, tint COLOUR over the hour curve, and the car
+ *     spawn cadence and lane positions — `AMBIENT_CAR.rightLaneY` /
+ *     `.downLaneX` remain hand-tuned pixel constants, verified by hand
+ *     against the 92x92 roads layer (row 21 is road for all 92 columns;
+ *     column 21 is the west sidewalk beside vRoad 22..24, which it also was
+ *     at 48x46 — unchanged, not re-derived);
  *   • the spawn-point index (it depends on the live sprite count);
  *   • the building<->door hover pairing DistrictScene builds from
  *     `targetVenue` — the doors are captured, which building each highlights
@@ -86,9 +97,27 @@
  *            objects.buildings, .doors, .spawns, .penSpots, .glows,
  *            .propsBelow, .collisionRects, `paths` (all four spawn-to-door
  *            routes, step for step) and the whole `tick`.
+ *   (F-1)    ADDITIVE: a new top-level `camera` section. Nothing existing
+ *            moved. It exists because the review's six F-1 sites included
+ *            four the golden explicitly did not cover, so "the golden is
+ *            green" said nothing about them. `initialCentre` is the one that
+ *            is a BEHAVIOUR CHANGE and not just newly-recorded: the scene used
+ *            to open at `(widthPx/2 - 24, heightPx/2 - 8)`, which on the grown
+ *            map is (712, 728) — the far corner of the built town. It now
+ *            opens at the spawn-point centroid, (378.5, 362.5). On the OLD
+ *            48x46 map the two answers were (360, 360) and (378.5, 362.5):
+ *            about one tile apart, which is why this was never visible before
+ *            the district grew.
  */
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import {
+  cameraBounds,
+  carCullBounds,
+  districtGeometry,
+  districtViewCentre,
+  tintOverlayRect,
+} from '../../packages/client/src/game/config.ts';
 import { Pathfinder } from '../../packages/client/src/game/Pathfinder.ts';
 import { planSync } from '../../packages/client/src/game/districtPresence.ts';
 import {
@@ -161,14 +190,16 @@ export function captureDistrictRender(districtId = 'district') {
     doors.push({ name: o.name, targetVenue: target, ...point });
   }
 
-  // --- walkability: the real Pathfinder over the real collision layer
-  const pathfinder = new Pathfinder(venue.sizeTiles[0], venue.sizeTiles[1]);
+  // --- walkability: the real Pathfinder, sized by the REAL districtGeometry
+  // (the scene's own sizing function), over the real collision layer.
+  const geo = districtGeometry(venue);
+  const pathfinder = new Pathfinder(geo.widthTiles, geo.heightTiles);
   for (const o of layer(map, 'collision')) pathfinder.blockRect(o.x, o.y, o.width, o.height);
   const grid = [];
   let blocked = 0;
-  for (let ty = 0; ty < venue.sizeTiles[1]; ty++) {
+  for (let ty = 0; ty < geo.heightTiles; ty++) {
     let row = '';
-    for (let tx = 0; tx < venue.sizeTiles[0]; tx++) {
+    for (let tx = 0; tx < geo.widthTiles; tx++) {
       const walkable = pathfinder.isWalkable(tx, ty);
       if (!walkable) blocked++;
       row += walkable ? '.' : '#';
@@ -212,6 +243,17 @@ export function captureDistrictRender(districtId = 'district') {
       groundAtlas: venue.groundAtlas,
       mapWidth: map.width,
       mapHeight: map.height,
+    },
+    // F-1. The review named six sites that must follow the descriptor rather
+    // than a literal, and the golden's own caveat said it covered "nothing
+    // about the camera, tints [or] car ambience". These are the real
+    // functions DistrictScene calls, not a transcription of them, so a
+    // re-hardcoded dimension moves a line here.
+    camera: {
+      bounds: cameraBounds(geo),
+      initialCentre: districtViewCentre(geo, spawns),
+      tintOverlay: tintOverlayRect(geo),
+      carCull: carCullBounds(geo),
     },
     routing: Object.fromEntries(locations.map(id => [id, {
       sceneKeyFor: sceneKeyFor(id),

@@ -4,9 +4,10 @@ import { GameBridge } from '../GameBridge.js';
 import { sceneRegistry } from '../SceneRegistry.js';
 import { Pathfinder } from '../Pathfinder.js';
 import {
-  AMBIENT_CAR, CAMERA, CAMERA_FOCUS, districtGeometry, GLOW_DEPTH, GLOW_KINDS,
+  AMBIENT_CAR, CAMERA, CAMERA_FOCUS, cameraBounds, carCullBounds, districtGeometry,
+  districtViewCentre, GLOW_DEPTH, GLOW_KINDS,
   GLOW_TEXTURE, LEAVE_WALK_TIMEOUT_MS, NIGHT_SCHEDULE,
-  SCENE_FADE_MS, TINT_OVERLAY_DEPTH, WANDER_RADIUS,
+  SCENE_FADE_MS, TINT_OVERLAY_DEPTH, tintOverlayRect, WANDER_RADIUS,
   type DistrictGeometry, type GlowKind,
 } from '../config.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
@@ -173,22 +174,25 @@ export class DistrictScene extends Phaser.Scene {
       this.pathfinder.blockRect(o.x!, o.y!, o.width!, o.height!);
     }
 
-    // --- camera
+    // --- camera. Bounds and opening centre both come from config.ts, which
+    // derives them from the descriptor and the map's own spawn points — see
+    // districtViewCentre for why "map centre" stopped being "town centre" at
+    // 92x92 (F-1).
     const cam = this.cameras.main;
-    cam.setBounds(0, 0, this.geo.widthPx, this.geo.heightPx);
+    const bounds = cameraBounds(this.geo);
+    cam.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
     cam.setZoom(CAMERA.initialZoom);
-    cam.centerOn(this.geo.widthPx / 2 - 24, this.geo.heightPx / 2 - 8);
+    const centre = districtViewCentre(this.geo, this.spawnPoints);
+    cam.centerOn(centre.x, centre.y);
     cam.setBackgroundColor('#2e4a35');
 
     attachCameraControls(this); // drag/finger pan, pinch, wheel, +/- (TZ-09)
 
     // --- day/night tinting: an overlay covering the whole world with margin at the edges
     // (world coordinates, not scrollFactor 0 — correct at any zoom level)
-    this.tintOverlay = this.add.rectangle(
-      -this.geo.widthPx, -this.geo.heightPx,
-      this.geo.widthPx * 3, this.geo.heightPx * 3,
-      0x000000, 0,
-    ).setOrigin(0, 0).setDepth(TINT_OVERLAY_DEPTH);
+    const tint = tintOverlayRect(this.geo);
+    this.tintOverlay = this.add.rectangle(tint.x, tint.y, tint.width, tint.height, 0x000000, 0)
+      .setOrigin(0, 0).setDepth(TINT_OVERLAY_DEPTH);
 
     // --- night light sources: glow sprites from the map's glows layer
     ensureGlowTexture(this);
@@ -328,6 +332,7 @@ export class DistrictScene extends Phaser.Scene {
   }
 
   private updateCars(dt: number, night: number) {
+    const cull = carCullBounds(this.geo);
     this.carTimer -= dt;
     if (this.carTimer <= 0) {
       this.spawnCar();
@@ -340,7 +345,7 @@ export class DistrictScene extends Phaser.Scene {
       c.obj.y += c.vy * dt;
       c.obj.setDepth(c.obj.y + c.h); // Y-sort: below agents further south, above the road
       for (const g of c.glows) g.setAlpha(night * GLOW_KINDS.headlight.alpha);
-      if (c.obj.x > this.geo.widthPx + 16 || c.obj.y > this.geo.heightPx + 16) {
+      if (c.obj.x > cull.maxX || c.obj.y > cull.maxY) {
         c.obj.destroy();
         this.cars.splice(i, 1);
       }
