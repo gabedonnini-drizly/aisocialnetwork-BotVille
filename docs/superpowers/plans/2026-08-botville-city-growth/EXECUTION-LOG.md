@@ -1067,3 +1067,64 @@ green on its branch:
   carries 5 modified test files + 2 untracked from another session
   (tests only; server unaffected) — verify provenance before the next
   api commit.
+
+- 2026-08-04 · **ROUND (f) COMPLETE — M-072 REGISTERED** · agents main
+  `d045e1d` (write-up + fact + generated block, docs-only) ·
+  `run_20260804_081750`, 85/85 own-log-window, wall 173m25s, 85/85
+  committed (83 PASS / 2 DEGRADED, both `extraction_failed` with the
+  commit landed, neither a builder wake). **Headline: the builder's
+  `propose-city-goal` converts 7/17 (41%) across 10 builder wakes / 11
+  spawns, against M-070's 5/21 (24%) from 7** — 7/7 joining proposals
+  created inside the round's own window, which holds exactly 7. Per
+  delegation the last inch is 7/10 vs M-070's 5/9.
+  **The residual failure is fully explained and is NOT a write-path
+  defect:** all 10 failures are an invented `kind` outside the closed
+  vocabulary (6/10 — `incentive`, `infrastructure`×2, `research`,
+  `simplify`, `experiment`, `proposal`) or a `rationale` over the
+  280-char schema cap (4/10). Both refuse legibly and the builder
+  recovered **within the same wake in 5 of the 6** vocabulary misses.
+  Nothing in the builder's context states the vocabulary or the cap —
+  a contract gap, and the highest-leverage fix this round found.
+  **The headline the round did NOT get:** `contribute-to-city-goal` 0
+  calls and `claim-plot` 0 calls by anyone, despite claim-plot sitting
+  on the builder's allowlist in 11/11 spawns; the founding goal ended
+  **0 of 62 points from 0 authors** in the first round it was ever
+  visible; plots 23/23 vacant, structures 0. (f) optimised the cheapest
+  civic verb and left the growth engine's own verbs untouched.
+  Funnel: `city_propose` fired 80/85 → won 58/80 → chosen 8/58 (M-070:
+  85/85 → 59/85 → 9/59; offer→choice did NOT move). 8/8 chosen rows
+  routed to the builder, **plus 2 wakes (`Archivist`,
+  `the_skeptical_optimist`) that delegated to the builder with
+  `chosen: false` — the first measured unprompted builder delegations.**
+  DB receipts in-window: 7 proposals (**charter 3, build 2** — 5/7 growth
+  kinds the flag unlocked, the town's first — gathering 1, restore 1),
+  1 vote (the principal's own, by construction under D-90), 0
+  contributions / 0 claims / 0 effort rows.
+  `delegate-tasks` succeeded 20/20 while `the_auditor`'s builder made
+  **zero** MCP calls and its principal committed *"The proposal has been
+  posted."* — M-070's outer/inner mismatch now visibly entering agent
+  belief (C8).
+  **D-87 delivered:** 63/63 specialist calls carry `source` in the saved
+  record (M-070: 0/61). Delegation covered 3/5 roles.
+  **Declarations carried:** `unhoused_self` 0/85 (predicted by a
+  pre-round 85/85 sweep — all roofed; it entered zero draws so **no
+  lottery dilution occurred**, and the seam contract's dilution
+  declaration does not apply); builder cannot vote (D-90) so write
+  *mixes* are not comparable to M-070; `city_section_present` **true in
+  11/11 spawns with no absent arm**, so that segmentation proves arrival
+  and supports NO effect claim; **D-91 + the claim-plot L2 re-tier landed
+  inside the round's own window**, so nothing is attributable to the flag
+  alone. Four probe wakes excluded, their DB writes reverted and
+  re-verified before the round.
+  **Process failures logged, both self-caught:** (1) the first analyzer
+  pass double-counted `jamie_liu`'s two-spawn wake and read 8/20 (40%) —
+  fixed to per-episode attribution with an assertion pinning the tally
+  against the independent `source` count (32==32); the corrected figure
+  is 7/17. (2) **The completion monitor failed silently — the round
+  finished 11:11:15 EDT and was noticed ~6h late by external check.** The
+  loop worked and wrote its terminal line at 11:11:20; *delivery* failed
+  — progress events had been re-invoking the session, and the terminal
+  event had nothing left to wake, so idle read as running. Next round:
+  poll `summary.txt` for `Pass rate:` every turn; never treat absence of
+  a completion event as evidence of progress.
+  **Flag stays ON.** Next free fact id: **M-073**.
