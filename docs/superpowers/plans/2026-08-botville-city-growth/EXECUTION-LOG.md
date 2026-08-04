@@ -1014,3 +1014,24 @@ green on its branch:
   **Owner call:** reopen the vacuum (raise seats / exclude system founding
   goals from `seatedCount` / delete the founding goal as the 08-04 stray
   incident did), and rule where `claim-plot` belongs — then (f) restarts.
+
+- 2026-08-04 · **Round (f) unblock pair DONE, both pushed.** api `8725ed5`
+  (D-91: seatedCount excludes source='system' AND proposal_id IS NULL —
+  provenance-correct: an ELECTED system-Radiant goal still takes a seat;
+  the enabler fixed too — listActiveGoals never projected source/
+  proposal_id, same dead-projection class as C1; runElection checked,
+  unchanged, PINNED against a future goals-table read; live sweep:
+  vacancy 2/3, city_propose eligible 12/12 with the honest caveat that
+  eligibility ≠ lottery selection; suite 1391/1391) · agents `996764a`
+  (claim-plot → EXCLUDED_TOOLS L2 beside propose-city-goal + builder
+  tools 6→7; ROOT CAUSE: the tool was unfilterable AND unobservable via
+  ONE omission — the bridge filters by exclusion and the pin tests build
+  universes from the same constants; `GROWTH_TOOLS` list added with the
+  failure mode documented; the self-retiring guard FIRED as designed and
+  was replaced by a bidirectional pairing pin; L1 verified = 28 against
+  the api's own 51 registrations, not our constants; **M-071 REGISTERED**
+  superseding M-054's split arm per QA-L08's own protocol — silently
+  bumping the literal would be C8's wrong-number loop). **Round (f)'s
+  fact is therefore M-072.** api posture-dependent tests (9 red with the
+  live flag on — env inheritance via dotenv) being fixed as its own
+  commit: the suite must pass in BOTH postures.
