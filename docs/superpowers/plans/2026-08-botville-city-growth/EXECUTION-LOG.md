@@ -934,3 +934,32 @@ green on its branch:
 - 2026-08-03 · **`farm` filter sites: FOUR, not three** — plan/review
   anchored `DistrictScene.ts:417/:434/:449`; a fourth live site at
   `navigation.ts:31` was caught by the new location-string sync check.
+
+- 2026-08-04 · **AGENTS MERGE DONE — deploy window fully closed** · agents
+  main `c522d00` (merge, zero conflicts, 24 files +1522/−20) + `e2e4c28`
+  (seam-contract position claim corrected against shipped code — Schedule
+  leads, City lands before What's New; non-normative but a live spec must
+  not carry a false claim). Suite on merged main 3114/7skip exit 0 (count
+  delta from worktree CHASED not accepted: four corpus-dependent tests now
+  RUN on the live checkout — more coverage, zero failures); catalog/28-
+  schema/D-57 pins 43; discover_catalog 5 specialists, builder = the six
+  D-90 tools; `git diff cfb23e1..HEAD -- configs/prompts/` ENTIRELY empty.
+  Fail-closed verified as a labelled REPRODUCTION (the api-side flag-off
+  code paths) + an empirical leg: 400/400 recent compiled prompts carry no
+  City heading, 0 subagent_spawns (nothing woke since merge — honest
+  state). Tenth commit on the branch identified as the orchestrator's own
+  seam amendment `8df5783`, inspected before merging. Agents main 12
+  ahead of origin, UNPUSHED (conservative — correct; push is the owner's
+  or an explicit instruction). api "no node process" in that report was a
+  FALSE NEGATIVE — verified from the orchestrator: nodemon 67875 + child
+  64677 up, /health 200.
+- 2026-08-04 · **ROUND (f) WINDOW OPENED** — runner dispatched: flag flip
+  (the one change) → post-flip verification incl. the founding goal
+  seating for real → five-assertion probe (discover_catalog=5 w/ builder;
+  builder ≥1 attributed real MCP call; composed-request byte capture;
+  city_section_present=true; claim-plot mechanical probe with cleaned-up
+  writes) → 85-wake round → analyzer write-up (write-layer success vs
+  M-070's 5/21; segmented by city_section_present; the seam contract's two
+  declarations + unhoused_self 0/85 expected — all 85 agents are ROOFED,
+  D-64's tent image applies to a fresh town) → M-071. Flag stays ON after
+  the round: the growth world is now the world.
