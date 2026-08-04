@@ -412,8 +412,19 @@ export class DistrictScene extends Phaser.Scene {
   }
 
   syncAgents(fullList: SyncedAgent[]) {
-    // THE KEY FIX of TZ-16: the district draws only those the server says are outside
-    // or at the farm. The player entering/leaving has no effect on agent locations.
+    // THE KEY FIX of TZ-16: the district draws only those the server says are
+    // outside or at the farm. The player entering/leaving has no effect on
+    // agent locations.
+    //
+    // 'farm' IS CLIENT-INTERNAL DISTRICT GEOGRAPHY, not a venue and not drift.
+    // The pen is drawn on this map (the cityGrid generator's pen/gate), so an
+    // agent at the farm is drawn by this scene — which is why it belongs in
+    // `present` alongside 'district' rather than being treated as somewhere
+    // else. The fixture server emits it: agentLife.ts:37 puts 'farm' in the
+    // human daytime pool, :38 in the animal pool, and :100 sends EVERY animal
+    // to the pen at night. Drop it here and the animals vanish nightly and
+    // updateNightBehavior loses its subjects. `packages/shared` AGENT_LOCATIONS
+    // and presence.ts's liveVenueLookup both carry it deliberately.
     const present = fullList.filter(a => a.location === 'district' || a.location === 'farm');
     const incoming = new Set(present.map(a => a.id));
     const locOf = new Map(fullList.map(a => [a.id, a.location]));
@@ -431,7 +442,7 @@ export class DistrictScene extends Phaser.Scene {
       if (this.leaving.has(id)) return; // already walking to the door
       // cosmetics: went into a building — walk to its door and "enter" (incl. at night
       // to the dorm — that is exactly the old going-to-bed visual)
-      const door = newLoc !== 'farm' ? this.doorPoints.get(sceneKeyFor(newLoc)) : undefined;
+      const door = this.doorPoints.get(sceneKeyFor(newLoc));
       if (door && !sprite.isAsleep) {
         const st = this.nightStates.get(id);
         if (st) this.releaseNightState(id, st);
@@ -446,7 +457,7 @@ export class DistrictScene extends Phaser.Scene {
       if (this.agentSprites.has(a.id)) return;
       // came out of a building — appears at its door; otherwise at a spawn point
       const from = this.lastLoc.get(a.id);
-      const door = from && from !== 'district' && from !== 'farm'
+      const door = from && from !== 'district'
         ? this.doorPoints.get(sceneKeyFor(from))
         : undefined;
       const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];

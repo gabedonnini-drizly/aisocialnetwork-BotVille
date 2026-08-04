@@ -5,8 +5,8 @@
   "sizeTiles": [20, 15],
   "groundAtlas": "interiors_ground",
   "capacity": 6,
-  "roles": ["hangout"],
-  "affords": ["socialize", "idle"],
+  "roles": ["hangout", "home"],
+  "affords": ["socialize", "idle", "sleep"],
   "hours": [{ "open": 0, "close": 24 }],
   "ground": { "wallA": "wallDormA", "wallB": "wallDormB", "floor": "floorDorm" },
   "furniture": [

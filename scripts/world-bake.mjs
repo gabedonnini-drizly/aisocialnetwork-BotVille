@@ -10,7 +10,7 @@
  */
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { encodePng } from './png-lib.mjs';
 import { loadContract } from './lib/assetContract.mjs';
@@ -18,7 +18,9 @@ import { loadAdapter } from './lib/sourceAdapter.mjs';
 import { buildAtlas } from './lib/atlasBuilder.mjs';
 import { bakeProps, writeProps } from './lib/propBaker.mjs';
 import { bakeInterior, bakeDistrict } from './lib/venueBaker.mjs';
-import { deriveResidenceInstances } from './lib/residences.mjs';
+import { deriveInstances } from './lib/archetypes.mjs';
+import { countFor } from './lib/generators.mjs';
+import { derivePlotVenues } from './lib/plots.mjs';
 import { validate } from './lib/contractValidator.mjs';
 
 const ROOT = join(fileURLToPath(import.meta.url), '..', '..');
@@ -30,14 +32,15 @@ function write(p, buf) {
 
 /**
  * @param {{pack?: string, srcRoot: string, outDir: string, generatedDir: string,
- *          venuesDirs?: string[], town?: {population: number}}} opts
+ *          venuesDirs?: string[], archetypesDir?: string, plotsPath?: string,
+ *          town?: {population: number}}} opts
  *
  * outDir and generatedDir are REQUIRED. This function has no idea where the
  * repo is and must not: a default of "write into packages/client" turns every
  * caller — including this module's own tests — into a source-tree mutation.
  * The CLI at the bottom of this file is the only place those paths live.
  */
-export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs, town } = {}) {
+export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, venuesDirs, archetypesDir, plotsPath, town } = {}) {
   if (!outDir) throw new Error('worldBake: outDir is required');
   if (!generatedDir) throw new Error('worldBake: generatedDir is required');
 
@@ -51,15 +54,40 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
     .filter(id => !id.startsWith('_') && !id.startsWith('.'))
     .map(id => JSON.parse(readFileSync(join(dir, id, 'venue.json'), 'utf8'))));
 
-  // Residence instances (addendum §I.2/I.3): derived from the town snapshot,
-  // stamped from the archetype, baked exactly like an authored venue.
+  // Archetype instances (addendum §I.2/I.3): derived from the town snapshot,
+  // stamped from the template, baked exactly like an authored venue.
+  //
+  // EVERY archetype under venues/_archetypes/ is loaded; how many of each the
+  // town gets comes from the generator registry, and an archetype with no
+  // generator stamps zero (generators.mjs, ABSENCE IS ZERO). That is what
+  // "declared, not instantiated" means concretely — the loop below is the
+  // same for a residence and for a dormant condo; only `countFor` differs.
+  //
+  // Sorted by filename so the stamping order — and therefore the instance
+  // order inside `venues` before the id sort — is a property of the tree, not
+  // of readdir's.
   const townSnapshot = town ?? JSON.parse(readFileSync(join(ROOT, 'town', 'town.json'), 'utf8'));
-  const houseArchetype = JSON.parse(readFileSync(join(ROOT, 'venues', '_archetypes', 'house.json'), 'utf8'));
-  const instances = deriveResidenceInstances(townSnapshot, houseArchetype);
+  const archDir = archetypesDir ?? join(ROOT, 'venues', '_archetypes');
+  const archetypes = readdirSync(archDir)
+    .filter(f => f.endsWith('.json'))
+    .sort()
+    .map(f => JSON.parse(readFileSync(join(archDir, f), 'utf8')));
+  const instances = archetypes.flatMap(a => deriveInstances(a, countFor(a.archetype, townSnapshot)));
 
   const venues = [...authored, ...instances].sort((a, b) => a.id.localeCompare(b.id));
 
-  const dupes = venues.map(v => v.id).filter((id, i, all) => all.indexOf(id) !== i);
+  // Plot venues (D-79: the plot id IS the venue id). They are published and
+  // they are in the runtime registry, but they are NOT in `venues` above,
+  // because a VACANT plot has no interior: no TMJ, no scene of its own, just
+  // a parcel drawn on the district map. When one is built, plan `03-` gives
+  // it the archetype's interior — that is what "state-dependent" buys.
+  const plotsFile = plotsPath ?? join(ROOT, 'venues', 'district', 'plots.json');
+  const plotVenues = existsSync(plotsFile)
+    ? derivePlotVenues(JSON.parse(readFileSync(plotsFile, 'utf8')))
+    : [];
+
+  const allVenues = [...venues, ...plotVenues].sort((a, b) => a.id.localeCompare(b.id));
+  const dupes = allVenues.map(v => v.id).filter((id, i, all) => all.indexOf(id) !== i);
   if (dupes.length) throw new Error(`duplicate venue id across venue directories: ${[...new Set(dupes)].join(', ')}`);
 
   // I-2: an unresolved name fails the BUILD, never renders as a missing texture.
@@ -98,7 +126,7 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
   // ── published vocabulary (I-8): BotVille is the only authority ─────────
   // The affordance fields (addendum §I.1) are the payload: the platform's
   // schedule writer places agents by querying roles/affords/hours, never ids.
-  const published = venues.map(v => ({
+  const published = allVenues.map(v => ({
     id: v.id,
     label: v.label,
     indoor: v.indoor,
@@ -117,7 +145,7 @@ export function worldBake({ pack = 'fixture', srcRoot, outDir, generatedDir, ven
   const generated = `// GENERATED by scripts/world-bake.mjs — do not edit.
 import type { VenueDescriptor } from '@botville/shared';
 
-export const VENUES: VenueDescriptor[] = ${JSON.stringify(venues, null, 2)};
+export const VENUES: VenueDescriptor[] = ${JSON.stringify(allVenues, null, 2)};
 `;
   write(join(generatedDir, 'venues.generated.ts'), generated);
 
@@ -143,6 +171,17 @@ export const EMOTE_FRAMES: Record<string, [number, number]> = ${JSON.stringify(
 
   // The canonical schema travels with the artifact (Conventions table).
   write(join(outDir, 'venues.schema.json'), readFileSync(join(ROOT, 'schemas', 'venues.schema.json')));
+
+  // Plot states (spec §3.2) travel the same way, and for the same reason: the
+  // client cannot read contract/ at runtime. It is DATA — state -> prop
+  // composition — so a fourth visible state is an edit to that file, not to a
+  // scene. Copied, never re-serialised: the authoring copy is the artifact.
+  write(join(outDir, 'plot_states.json'), readFileSync(join(ROOT, 'contract', 'plot_states.json')));
+
+  // Variant pools, same treatment and same reason. Copied byte-for-byte
+  // rather than re-serialised: pool ORDER is load-bearing (the downstream
+  // pick indexes into it by seed hash), and a copy cannot reorder anything.
+  write(join(outDir, 'variant_pools.json'), readFileSync(join(ROOT, 'contract', 'variant_pools.json')));
 
   // A lock beside the artifact, so the platform can prove its copy is intact
   // WITHOUT needing this repo on disk. The sibling-repo comparison in Task 33
@@ -170,7 +209,10 @@ export const EMOTE_FRAMES: Record<string, [number, number]> = ${JSON.stringify(
 // uncommitted owner-local bake, and leaves a town that renders perfectly in
 // flat placeholder colours — that is, it looks like a rendering bug rather
 // than a bake mistake, which is exactly how it cost an afternoon once.
-if (import.meta.url === `file://${process.argv[1]}`) {
+// `file://${argv[1]}` is not a URL comparison — a path with a space or any
+// other character URL-encoding touches makes it silently false, and the CLI
+// then does nothing at all. Compare resolved PATHS.
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
   const explicit = process.argv[2] && !process.argv[2].startsWith('-') ? process.argv[2] : null;
   const pack = explicit ?? process.env.BOTVILLE_PACK ?? 'fixture';
   const srcRoot = process.argv[3] ?? (pack === 'fixture' ? 'test/fixtures/pack-src' : 'assets-src');

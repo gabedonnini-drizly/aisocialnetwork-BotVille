@@ -5,24 +5,27 @@
  *
  * 'farm' is not a venue (no VenueScene instance, no entry in the venue
  * registry) — it is cosmetic geography drawn inside DistrictScene (see
- * venueRegistry.sceneKeyFor and navigation.ts's own farm special-case) — but
- * it IS a legitimate place an agent can be, so the live lookup treats it as
- * known alongside every registered venue.
+ * venueRegistry.CLIENT_INTERNAL_LOCATIONS and sceneForLocation) — but it IS a
+ * legitimate place an agent can be, so the live lookup treats it as known
+ * alongside every registered venue.
  *
  * Does not import Phaser: tested under node --test.
  */
 import type { AgentPresence } from '@botville/shared';
 import { PresenceModel } from './PresenceModel.js';
-import { venueRegistry } from './venueRegistry.js';
-
-const FARM = 'farm';
+import { isClientInternalLocation, venueRegistry } from './venueRegistry.js';
 
 interface VenueLookup { has(id: string): boolean }
 
-/** venueRegistry + the farm pen. The one place that knows farm isn't a "real" venue. */
+/**
+ * venueRegistry + the client-internal locations. The exemption itself lives
+ * in venueRegistry (CLIENT_INTERNAL_LOCATIONS), so this lookup, the scene
+ * mapping and the vocabulary-sync check cannot disagree about what is a
+ * legitimate non-venue place.
+ */
 export const liveVenueLookup: VenueLookup = {
   has(id: string): boolean {
-    return id === FARM || venueRegistry.has(id);
+    return isClientInternalLocation(id) || venueRegistry.has(id);
   },
 };
 

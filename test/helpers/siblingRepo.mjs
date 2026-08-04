@@ -2,7 +2,11 @@
  * Locating a sibling repo, without ever hardcoding a path.
  *
  * Resolution order, first hit wins:
- *   1. $BOTVILLE_<NAME>_REPO      explicit, e.g. BOTVILLE_API_REPO
+ *   1. $BOTVILLE_<NAME>_REPO      explicit — <NAME> is the repo name upcased
+ *      with non-alphanumerics collapsed to _, so `aisocialnetwork-api` reads
+ *      $BOTVILLE_AISOCIALNETWORK_API_REPO (use envKey() in messages; a
+ *      hand-written wrong name here silently resolves to the side-by-side
+ *      checkout instead, which may be stale)
  *   2. $BOTVILLE_REPOS_ROOT/<name> a directory holding all the repos
  *   3. <this repo>/../<name>       the conventional side-by-side checkout
  *
@@ -32,7 +36,7 @@ function mainCheckoutRoot() {
   }
 }
 
-const envKey = name => `BOTVILLE_${name.replace(/[^a-z0-9]+/gi, '_').toUpperCase()}_REPO`;
+export const envKey = name => `BOTVILLE_${name.replace(/[^a-z0-9]+/gi, '_').toUpperCase()}_REPO`;
 
 export function resolveSiblingRepo(name) {
   const candidates = [

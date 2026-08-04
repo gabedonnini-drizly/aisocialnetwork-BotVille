@@ -1,0 +1,8 @@
+[
+  {
+    "name": "district",
+    "reason": "D-88 (2026-08-03) grew the district from 48x46 to 92x92. Task 7's geometry measurement refuted the plan's ~25-30 plot ceiling: 48x46 packs SIX housing plots against a floor of ceil(85/7)=13, and ZERO at any real declared house exterior — the estimate assumed a 6x5 parcel and omitted the 718 tiles the five existing buildings occupy, more than half the 1395 free. The owner ruled that the district grows and that growth controls are config-driven (town/growth.json). Growing the map is therefore a DELIBERATE geometry change, and the frozen legacy pipeline can never reproduce it: build-district.mjs is hardcoded to the old size. GEOMETRY IS PRESERVED, and that is asserted rather than claimed — the buildings, doors, spawns, props-below, glows and night object layers are byte-identical to the pre-growth bake, and the ground/roads nonzero masks match tile for tile across the original 48x46 region, so nothing MOVED. What changed is procedural VARIANT choice: cityGrid draws its grass/asphalt/sidewalk flavours from one seeded stream in row-major order over the whole grid (the module's own docstring calls the consumption order part of the contract), so a wider grid re-picks 176 of 2208 ground tiles and 154 road tiles inside the old region, and the scatter that continues the same stream re-picks its bushes.",
+    "plan-ref": "Plan 04- Task 7 (D-79 plots, D-88 district growth, D-89 tent-camp plot shape)",
+    "preserves": ["buildings", "doors", "spawns", "props-below", "glows", "night"]
+  }
+]

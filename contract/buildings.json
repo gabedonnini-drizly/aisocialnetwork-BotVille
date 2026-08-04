@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "note": "The building config (D-89): archetype -> the declared art whose real footprint decides where it can stand. THIS IS THE EXTENSION POINT. Adding a building to the town is a data change — declare its art (contract + rects), add a row here, re-run scripts/derive-plots.mjs. No code moves. Footprints are DERIVED from contract/assets.contract.json maxSize (ceil to tiles), never written down here, so a prop that grows cannot silently keep a plot it no longer fits (D-79: physics constrains, and physics is read, not transcribed).",
+  "buildings": {
+    "mobile_home": {
+      "tier": 1,
+      "exterior": "mobile_home_small",
+      "note": "T1 of D-65's ladder. The smallest real dwelling the pack ships, and therefore the archetype that decides the smallest useful housing plot."
+    },
+    "house": {
+      "tier": 2,
+      "exterior": "terraced_house_1",
+      "note": "T2. The terraced house is the representative footprint; one_story_house and country_house are larger members of the same tier and are listed separately so a plot that fits only the smaller one says so."
+    },
+    "house_detached": {
+      "tier": 2,
+      "exterior": "one_story_house",
+      "archetypeVenue": "house",
+      "note": "Same venue archetype as `house`, a bigger exterior. Kept a separate row because footprint fit is per-EXTERIOR, not per-venue: a plot may admit a terraced house and not a detached one."
+    },
+    "villa": {
+      "tier": 3,
+      "exterior": "villa_1"
+    },
+    "condo": {
+      "tier": 3,
+      "exterior": "condo_9",
+      "note": "D-76: authored, dormant. condo_9 is the smallest of the three whole-building condos; condo_6 (13x16) needs an L plot."
+    },
+    "market": { "civic": true, "exterior": "market_building_1" },
+    "post_office": { "civic": true, "exterior": "post_office_building_1" },
+    "museum": {
+      "civic": true,
+      "exterior": "museum_middle_floor_1",
+      "footprintTiles": [7, 13],
+      "note": "Composed facade (ground floor + middle floor + roof), so no single sprite carries its height. The footprint is authored from the composition the archetype describes: 112px wide, 48+64+96 = 208px tall."
+    },
+    "school": { "civic": true, "exterior": "school_building" },
+    "swimming_pool": {
+      "civic": true,
+      "exterior": "swimming_pool_1",
+      "footprintTiles": [12, 10],
+      "note": "The pool is modular 16x16 water pieces plus deck furniture, not one sprite, so its footprint is an authored composition rather than a bitmap bound. 12x10 is the pool the archetype's furniture describes."
+    },
+    "garden": {
+      "civic": true,
+      "exterior": "garden_arch",
+      "footprintTiles": [16, 14],
+      "note": "Outdoor composition (D-75: no interior). The footprint is the archetype's own sizeTiles — venues/_archetypes/garden.json — because a park is the parcel, not a building on it."
+    }
+  }
+}

@@ -10,7 +10,11 @@
  *
  * The occupancy target is defined HERE and nowhere else. It reaches the api
  * as each instance's published `capacity` — data, not a mirrored constant.
+ *
+ * The stamping itself is not residence-specific and lives in archetypes.mjs;
+ * what is residence-specific is the count.
  */
+import { deriveInstances } from './archetypes.mjs';
 
 /** Addendum §I.2: target ≈ 6–8 agents per residence. */
 export const RESIDENCE_OCCUPANCY_TARGET_AGENTS = 7;
@@ -25,7 +29,8 @@ export function deriveResidenceCount(town) {
 }
 
 /**
- * Stamp concrete venue descriptors out of an archetype.
+ * Stamp concrete residence descriptors out of an archetype: the residence
+ * generator, i.e. the town-driven count plus the general stamper.
  * One archetype in v1; when `apartment`/`hotel` land, this is where the
  * seeded per-archetype mix goes — deterministic in (townId, index), per the
  * addendum. With one archetype a weight table would have one row.
@@ -35,15 +40,5 @@ export function deriveResidenceCount(town) {
  * @returns {object[]} VenueDescriptor[]
  */
 export function deriveResidenceInstances(town, archetype) {
-  const count = deriveResidenceCount(town);
-  return Array.from({ length: count }, (_, i) => {
-    // structuredClone is a Node global (≥17): each instance must be an
-    // independent copy — the "instances are independent copies" test pins it.
-    const { labelPrefix, ...template } = structuredClone(archetype);
-    return {
-      ...template,
-      id: `${archetype.archetype}_${i + 1}`,
-      label: `${labelPrefix ?? archetype.archetype} ${i + 1}`,
-    };
-  });
+  return deriveInstances(archetype, deriveResidenceCount(town));
 }
