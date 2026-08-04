@@ -8,7 +8,7 @@ import { GameBridge } from '../../game/GameBridge.js';
 import { isSleepTime } from '../../game/dayNight.js';
 import { FREE_SLOT_LIMIT } from '@botville/shared';
 import { STATUS_COLORS } from '../../game/palette.js';
-import { useT, STATUS_KEYS, LOCATION_KEYS } from '../../i18n/index.js';
+import { useT, STATUS_KEYS, locationKey } from '../../i18n/index.js';
 import styles from './HUD.module.css';
 
 export function HUD() {
@@ -32,7 +32,7 @@ export function HUD() {
   // TZ-16: the agent's location in the HUD; at night in the dorm — "Sleeping (dorm)"
   const night = isSleepTime(useWorldStore(s => s.timeOfDay));
   const locationLabel = (location: string) =>
-    night && location === 'dorm' ? t('loc.dormSleeping') : t(LOCATION_KEYS[location] ?? 'loc.district');
+    night && location === 'dorm' ? t('loc.dormSleeping') : t(locationKey(location));
 
   return (
     <>

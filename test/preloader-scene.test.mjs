@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+import { venueRegistry } from '../packages/client/src/game/venueRegistry.ts';
+import { isPlot } from '../packages/client/src/game/plotRegistry.ts';
 
 /**
  * Final review Critical Finding 1: PreloaderScene.ts registered baked-hash
@@ -62,6 +64,72 @@ test('registerAgentAnimations(baked) runs strictly inside the loader COMPLETE ha
   const eagerCallBeforeComplete = createBody.slice(0, completeIdx).includes('this.registerAgentAnimations(baked)');
   assert.equal(eagerCallBeforeComplete, false,
     'registerAgentAnimations(baked) must not be called before the COMPLETE listener is attached');
+});
+
+/**
+ * F-2. The preloader asked the loader for a tilemap per VENUE, and D-79 made
+ * 23 of the 41 venues parcels — rectangles on the district map with no
+ * interior and therefore no baked .tmj. Result: 23 requests per boot that
+ * could only ever 404.
+ *
+ * The pin is a SET EQUALITY against the baked directory, in both directions,
+ * because each direction catches a different bug:
+ *
+ *   load list \ disk   a request that can only 404 (the bug being fixed);
+ *   disk \ load list   a map the bake wrote and the client never asks for —
+ *                      which is how a venue becomes unreachable in silence.
+ *
+ * It is also deliberately NOT a check that "plots are excluded". The day a
+ * built plot gains an interior TMJ, this fails and someone has to decide,
+ * rather than the map quietly going missing.
+ */
+const TILEMAP_DIR = 'packages/client/public/assets/tilemaps';
+
+test('the tilemaps the preloader requests are exactly the tilemaps the bake wrote (F-2)', () => {
+  const onDisk = readdirSync(TILEMAP_DIR)
+    .filter(f => f.endsWith('.tmj'))
+    .map(f => f.replace(/\.tmj$/, ''))
+    .sort();
+  const requested = venueRegistry.withTilemap().map(v => v.id).sort();
+
+  assert.ok(onDisk.length > 0, `${TILEMAP_DIR} is empty — this check is vacuous`);
+
+  const missing = requested.filter(id => !onDisk.includes(id));
+  assert.deepEqual(missing, [],
+    `the preloader would request ${missing.length} tilemap(s) the bake never wrote: `
+    + `${missing.join(', ')} — one 404 per boot, each one counted toward the progress bar`);
+
+  const unrequested = onDisk.filter(id => !requested.includes(id));
+  assert.deepEqual(unrequested, [],
+    `the bake wrote ${unrequested.join(', ')} and nothing loads them — those venues open black`);
+});
+
+test('every parcel is excluded, and excluded for being a parcel (F-2)', () => {
+  // The count is the finding, restated as an assertion: 41 published venues,
+  // 18 with a map. If a future bake bakes a plot interior this fails HERE
+  // first, with a name, rather than at the set-equality check above.
+  const parcels = venueRegistry.all().filter(v => isPlot(v.id));
+  assert.ok(parcels.length > 0, 'no parcels — this check is vacuous');
+  assert.equal(venueRegistry.withTilemap().length + parcels.length, venueRegistry.all().length);
+  for (const p of parcels) {
+    assert.equal(venueRegistry.withTilemap().some(v => v.id === p.id), false,
+      `${p.id} is a parcel and has no interior — asking for its tilemap is a guaranteed 404`);
+  }
+});
+
+test('preload() sizes its tilemap loop by withTilemap(), not by all() (F-2)', () => {
+  // Source-level, in the same spirit as the pins above: the 404s came back
+  // the moment somebody wrote `for (const v of venueRegistry.all())` beside a
+  // `load.tilemapTiledJSON`, and no runtime test in this repo boots Phaser.
+  const preloadBody = src.slice(src.indexOf('preload()'), createStart);
+  const upto = preloadBody.slice(0, preloadBody.indexOf('tilemapTiledJSON'));
+  // The `for` header immediately above the load call — not the prose above
+  // it, which legitimately names `all()` while explaining why it is wrong.
+  const header = upto.slice(upto.lastIndexOf('for ('));
+  assert.ok(header.includes('venueRegistry.withTilemap()'),
+    `the tilemap loop must iterate venueRegistry.withTilemap(); it iterates: ${header.trim()}`);
+  assert.equal(header.includes('venueRegistry.all()'), false,
+    'the tilemap loop iterates every venue again — 23 of them have no map (F-2)');
 });
 
 test('registerAgentAnimations keeps its idempotency guard (anims.exists) — baked anims are safe to re-register', () => {

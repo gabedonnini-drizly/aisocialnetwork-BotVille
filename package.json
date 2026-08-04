@@ -16,6 +16,7 @@
     "test:all": "npm test && npm run test:bake && node -e \"const d=require('child_process').execSync('git status --porcelain',{encoding:'utf8'}).split('\\n').filter(Boolean);if(d.length){console.error('tests left the tree dirty (modified or untracked):\\n'+d.join('\\n'));process.exit(1)}\"",
     "golden:names": "node scripts/snapshot-legacy-names.mjs",
     "golden:capture": "node scripts/capture-golden-baseline.mjs",
+    "golden:district": "node --import ./test/ts-resolve.mjs scripts/capture-district-baseline.mjs",
     "pack:index": "node scripts/index-pack.mjs",
     "pin": "node scripts/pin.mjs",
     "contact": "node scripts/contact-sheet.mjs",

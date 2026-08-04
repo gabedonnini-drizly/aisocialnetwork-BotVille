@@ -4,12 +4,25 @@ import { GameBridge } from '../GameBridge.js';
 import { sceneRegistry } from '../SceneRegistry.js';
 import { Pathfinder } from '../Pathfinder.js';
 import {
-  AMBIENT_CAR, CAMERA, CAMERA_FOCUS, DISTRICT, GLOW_DEPTH, GLOW_KINDS,
+  AMBIENT_CAR, CAMERA, CAMERA_FOCUS, cameraBounds, carCullBounds, districtGeometry,
+  districtViewCentre, GLOW_DEPTH, GLOW_KINDS,
   GLOW_TEXTURE, LEAVE_WALK_TIMEOUT_MS, NIGHT_SCHEDULE,
-  SCENE_FADE_MS, TINT_OVERLAY_DEPTH, WANDER_RADIUS, type GlowKind,
+  SCENE_FADE_MS, TILE_SIZE, TINT_OVERLAY_DEPTH, tintOverlayRect, WANDER_RADIUS,
+  type DistrictGeometry, type GlowKind,
 } from '../config.js';
+import { plotRegistry, type Plot } from '../plotRegistry.js';
+import { districtDrawing, onPlotStatesChanged, plotStatus } from '../plotState.js';
+import { buildingRegistry } from '../buildingRegistry.js';
+import { PLOT_STATES_KEY, VARIANT_POOLS_KEY } from '../plotAssets.js';
+import {
+  campSlotTile, composeDistrict,
+  type Occupant, type Placement, type PlotDoor, type PlotStatesDoc, type VariantPoolsDoc,
+} from '../plotComposition.js';
 import { attachCameraControls, onTap } from '../cameraControls.js';
-import { sceneKeyFor } from '../venueRegistry.js';
+import {
+  DISTRICT_SCENE_KEY, opensASceneFrom, sceneTargetFor, startingDistrict, venueRegistry,
+} from '../venueRegistry.js';
+import { planSync } from '../districtPresence.js';
 import { GameTime } from '../time.js';
 import { isSleepTime, nightIntensity, tintAt } from '../dayNight.js';
 import { ensureGlowTexture } from '../glowTexture.js';
@@ -56,7 +69,12 @@ export class DistrictScene extends Phaser.Scene {
   private buildingImages: Map<string, Phaser.GameObjects.Image> = new Map();
   private tintOverlay!: Phaser.GameObjects.Rectangle;
   private glowSprites: Phaser.GameObjects.Image[] = [];
-  /** Points by building doors (waiting spot in front of the entrance), keyed by targetScene. */
+  /**
+   * Points by building doors (waiting spot in front of the entrance), keyed by
+   * TARGET VENUE ID. Not by scene key: every district shares one scene key, so
+   * keying by it would make two districts' doors collide the moment a door led
+   * from one district to another.
+   */
   private doorPoints: Map<string, { x: number; y: number }> = new Map();
   private penSpots: { x: number; y: number; occupiedBy: string | null }[] = [];
   private nightStates: Map<string, NightState> = new Map();
@@ -70,18 +88,44 @@ export class DistrictScene extends Phaser.Scene {
   private cars: { obj: Phaser.GameObjects.Container; vx: number; vy: number; glows: Phaser.GameObjects.Image[]; h: number }[] = [];
   private carTimer = 0;
 
-  constructor() { super({ key: 'DistrictScene' }); }
+  /** Which district this scene is drawing — from scene data, never a literal. */
+  private districtId!: string;
+  private geo!: DistrictGeometry;
+
+  /** Everything drawn for the parcels — destroyed and rebuilt on a state change. */
+  private plotObjects: Phaser.GameObjects.GameObject[] = [];
+  /** Who is camped where, as of the last sync. Composition input, so a change redraws. */
+  private plotOccupants: Map<string, Occupant[]> = new Map();
+  private offPlotStates: (() => void) | null = null;
+
+  constructor() { super({ key: DISTRICT_SCENE_KEY }); }
+
+  /**
+   * ONE scene, N districts (D-62). `scene.start(DISTRICT_SCENE_KEY, data)`
+   * says which one; no data means the district the game boots into. An id
+   * that is not an outdoor venue throws rather than quietly drawing the wrong
+   * town — I-2: an unresolved name fails loudly, it never renders as nothing.
+   */
+  init(data?: { districtId?: string }) {
+    const requested = data?.districtId;
+    const venue = requested === undefined ? startingDistrict() : venueRegistry.get(requested);
+    if (!venue || venue.indoor) {
+      throw new Error(`DistrictScene: '${requested}' is not an outdoor venue`);
+    }
+    this.districtId = venue.id;
+    this.geo = districtGeometry(venue);
+  }
 
   create() {
-    sceneRegistry.register('DistrictScene', this);
+    sceneRegistry.register(DISTRICT_SCENE_KEY, this);
     this.transitioning = false;
     this.carTimer = AMBIENT_CAR.firstDelaySec + Math.random() * AMBIENT_CAR.firstDelaySec;
     this.cameras.main.fadeIn(SCENE_FADE_MS, 0, 0, 0);
 
-    const map = this.make.tilemap({ key: DISTRICT.mapKey });
+    const map = this.make.tilemap({ key: this.geo.mapKey });
     // I-12: an art-free clone has no tileset texture (the pack dirs are gitignored) —
     // render the layout without ground art rather than crash on createLayer(null).
-    const tileset = map.addTilesetImage(DISTRICT.tilesetName, DISTRICT.tilesetName);
+    const tileset = map.addTilesetImage(this.geo.tilesetName, this.geo.tilesetName);
     if (hasGroundArt(tileset)) {
       map.createLayer('ground', tileset, 0, 0)?.setDepth(0);
       map.createLayer('roads', tileset, 0, 0)?.setDepth(1);
@@ -99,12 +143,12 @@ export class DistrictScene extends Phaser.Scene {
       img.setDepth(o.y! + (o.height ?? img.height));
       this.buildingImages.set(o.name, img);
       if (typeof p.targetVenue === 'string') {
-        const target = sceneKeyFor(p.targetVenue);
-        img.setData('targetScene', target);
+        const target = p.targetVenue;
+        img.setData('targetVenue', target);
         img.setInteractive({ useHandCursor: true });
         img.on('pointerover', () => img.setTint(0xbbccff));
         img.on('pointerout', () => img.clearTint());
-        onTap(img, () => this.transitionTo(target));
+        onTap(img, () => this.transitionToVenue(target));
       }
     }
 
@@ -118,16 +162,20 @@ export class DistrictScene extends Phaser.Scene {
     for (const o of map.getObjectLayer('doors')?.objects ?? []) {
       const p = propsOf(o);
       if (typeof p.targetVenue !== 'string') continue;
-      const target = sceneKeyFor(p.targetVenue);
+      const target = p.targetVenue;
       const zone = this.add.zone(o.x! + o.width! / 2, o.y! + o.height! / 2, o.width!, o.height!)
         .setInteractive({ useHandCursor: true });
       const building = [...this.buildingImages.values()].find(b =>
-        b.getData('targetScene') === target) ?? null;
+        b.getData('targetVenue') === target) ?? null;
       zone.on('pointerover', () => building?.setTint(0xbbccff));
       zone.on('pointerout', () => building?.clearTint());
-      onTap(zone, () => this.transitionTo(target));
+      onTap(zone, () => this.transitionToVenue(target));
       this.doorPoints.set(target, { x: o.x! + o.width! / 2, y: o.y! + o.height! + 6 });
     }
+
+    // --- the land: one parcel per plot, composed from plot_states.json
+    this.renderPlots();
+    this.offPlotStates = onPlotStatesChanged(() => this.renderPlots());
 
     // --- animal sleeping spots (the farm pen)
     this.penSpots = (map.getObjectLayer('night')?.objects ?? [])
@@ -136,30 +184,33 @@ export class DistrictScene extends Phaser.Scene {
 
     // --- spawns
     this.spawnPoints = (map.getObjectLayer('spawns')?.objects ?? []).map(o => ({ x: o.x!, y: o.y! }));
-    if (!this.spawnPoints.length) this.spawnPoints = [{ x: DISTRICT.widthPx / 2, y: DISTRICT.heightPx / 2 }];
+    if (!this.spawnPoints.length) this.spawnPoints = [{ x: this.geo.widthPx / 2, y: this.geo.heightPx / 2 }];
 
     // --- collisions -> walkability grid
-    this.pathfinder = new Pathfinder(DISTRICT.widthTiles, DISTRICT.heightTiles);
+    this.pathfinder = new Pathfinder(this.geo.widthTiles, this.geo.heightTiles);
     for (const o of map.getObjectLayer('collision')?.objects ?? []) {
       this.pathfinder.blockRect(o.x!, o.y!, o.width!, o.height!);
     }
 
-    // --- camera
+    // --- camera. Bounds and opening centre both come from config.ts, which
+    // derives them from the descriptor and the map's own spawn points — see
+    // districtViewCentre for why "map centre" stopped being "town centre" at
+    // 92x92 (F-1).
     const cam = this.cameras.main;
-    cam.setBounds(0, 0, DISTRICT.widthPx, DISTRICT.heightPx);
+    const bounds = cameraBounds(this.geo);
+    cam.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
     cam.setZoom(CAMERA.initialZoom);
-    cam.centerOn(DISTRICT.widthPx / 2 - 24, DISTRICT.heightPx / 2 - 8);
+    const centre = districtViewCentre(this.geo, this.spawnPoints);
+    cam.centerOn(centre.x, centre.y);
     cam.setBackgroundColor('#2e4a35');
 
     attachCameraControls(this); // drag/finger pan, pinch, wheel, +/- (TZ-09)
 
     // --- day/night tinting: an overlay covering the whole world with margin at the edges
     // (world coordinates, not scrollFactor 0 — correct at any zoom level)
-    this.tintOverlay = this.add.rectangle(
-      -DISTRICT.widthPx, -DISTRICT.heightPx,
-      DISTRICT.widthPx * 3, DISTRICT.heightPx * 3,
-      0x000000, 0,
-    ).setOrigin(0, 0).setDepth(TINT_OVERLAY_DEPTH);
+    const tint = tintOverlayRect(this.geo);
+    this.tintOverlay = this.add.rectangle(tint.x, tint.y, tint.width, tint.height, 0x000000, 0)
+      .setOrigin(0, 0).setDepth(TINT_OVERLAY_DEPTH);
 
     // --- night light sources: glow sprites from the map's glows layer
     ensureGlowTexture(this);
@@ -179,7 +230,16 @@ export class DistrictScene extends Phaser.Scene {
     // clicking an agent in the HUD — the camera smoothly pans onto them
     const onFocusAgent = ({ agentId }: { agentId: string }) => {
       const sprite = this.agentSprites.get(agentId);
-      if (!sprite) return;
+      if (!sprite) {
+        // A HUD click that lands nowhere used to be indistinguishable from a
+        // HUD click that worked. It has a real cause now and will have it more
+        // often: an agent inside a BUILT parcel is not drawn outdoors
+        // (`districtDrawing`), so `agent:goto` routes here, finds no sprite,
+        // and silently does nothing. Name it rather than swallow it.
+        console.warn(`[focus] ${agentId} is not drawn in '${this.districtId}' — `
+          + 'they are indoors, or the roster has not arrived yet; the camera did not move');
+        return;
+      }
       cam.pan(sprite.x, sprite.y, CAMERA_FOCUS.panMs, 'Sine.easeInOut');
       if (cam.zoom < CAMERA_FOCUS.zoom) cam.zoomTo(CAMERA_FOCUS.zoom, CAMERA_FOCUS.panMs);
       sprite.pulseLabel(); // visible confirmation of WHO the camera went to
@@ -188,7 +248,11 @@ export class DistrictScene extends Phaser.Scene {
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       GameBridge.off('agent:focus', onFocusAgent);
-      sceneRegistry.unregister('DistrictScene');
+      this.offPlotStates?.();
+      this.offPlotStates = null;
+      this.plotObjects = [];
+      this.plotOccupants.clear();
+      sceneRegistry.unregister(DISTRICT_SCENE_KEY);
       this.agentSprites.clear();
       this.buildingImages.clear();
       this.glowSprites = [];
@@ -200,18 +264,161 @@ export class DistrictScene extends Phaser.Scene {
       this.cars = [];
     });
 
-    GameBridge.emit('scene:changed', { scene: 'DistrictScene' });
+    GameBridge.emit('scene:changed', { scene: DISTRICT_SCENE_KEY, districtId: this.districtId });
   }
 
-  /** Transition into an interior with fade (building/door click and agent:goto from the HUD). */
-  transitionTo(targetScene: string) {
+  /**
+   * Transition with fade (building/door click, agent:goto from the HUD).
+   * `data` carries the district id when the target is an outdoor scene —
+   * without it, "go to district B" would restart whichever district is
+   * already drawn.
+   */
+  transitionTo(targetScene: string, data?: { districtId: string }) {
     if (this.transitioning) return;
     this.transitioning = true;
     this.cameras.main.fadeOut(SCENE_FADE_MS, 0, 0, 0);
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-      this.scene.start(targetScene);
-      GameBridge.emit('scene:changed', { scene: targetScene });
+      this.scene.start(targetScene, data);
+      GameBridge.emit('scene:changed', { scene: targetScene, ...data });
     });
+  }
+
+  /** Where a click on a building or door goes — resolved from the registry. */
+  private transitionToVenue(venueId: string) {
+    const target = sceneTargetFor(venueId);
+    // A door whose target resolves to the district already on screen is a
+    // fade-out into the same view. That is what a BUILT PARCEL's generated
+    // door does today: the plot id IS the venue id (D-79), but no interior
+    // tilemap exists for a built plot yet — the bake writes one per authored
+    // venue and archetype instance, and a parcel is neither. The door is real
+    // (it is in doorPoints, agents route to it and enter through it); what is
+    // not there yet is a room on the other side. Refusing the no-op keeps that
+    // honest instead of flashing the screen.
+    if (!opensASceneFrom(venueId, this.districtId)) return;
+    this.transitionTo(target.key, target.data);
+  }
+
+  // ------------------------------------------------------ the land (Task 2)
+
+  /**
+   * Draw every parcel this district contains, from its CURRENT state.
+   *
+   * The whole method is an effects carrier, exactly like syncAgents: what to
+   * draw is `composePlot`'s answer (a pure module over plot_states.json), and
+   * the only things decided here are which cache the documents come from and
+   * how a tile point plus an alignment becomes a pixel origin — which needs
+   * the loaded texture's size and therefore cannot be pure.
+   *
+   * Rebuilt wholesale rather than diffed. A parcel changes state a handful of
+   * times in the life of a town (D-36: buildings appear at dawn), so a diff
+   * would be a cache to keep correct in exchange for nothing.
+   *
+   * NOTHING DRAWN HERE COLLIDES. `this.pathfinder` is built once, from the
+   * .tmj's `collision` layer, before this runs and independently of it — a
+   * V1 ruling with its reasons written out in plotComposition.ts's header
+   * (the grid is the bake's; the golden's walkability sha describes it; and
+   * "every door is reachable" is not the same claim as "no agent anywhere is
+   * ever walled in"). Revisit when built plots gain interiors, and revisit it
+   * IN THE BAKE.
+   */
+  private renderPlots() {
+    for (const o of this.plotObjects) o.destroy();
+    this.plotObjects = [];
+    // Generated doors go with the objects that generated them. A demolition
+    // (D-67) takes the structure AND the way in; leaving a stale entry in
+    // doorPoints would leave agents walking to a door that is not there.
+    for (const plot of plotRegistry.inDistrict(this.districtId)) this.doorPoints.delete(plot.id);
+
+    const states = this.cache.json.get(PLOT_STATES_KEY) as PlotStatesDoc | undefined;
+    const pools = this.cache.json.get(VARIANT_POOLS_KEY) as VariantPoolsDoc | undefined;
+    if (!states || !pools) {
+      // The bake writes both beside the artifact; missing means a broken
+      // deployment, not a state of the world. Say so once, draw no land, and
+      // leave everything else working.
+      console.warn('[plots] plot_states.json / variant_pools.json not loaded — the land is not drawn');
+      return;
+    }
+
+    // What to draw is `composeDistrict`'s answer — including which parcels to
+    // SKIP, so an undrawable one is a warning and twenty-two neighbours,
+    // never a black screen at boot (the reasoning is on that function).
+    const rendered = composeDistrict({
+      plots: plotRegistry.inDistrict(this.districtId),
+      statusOf: plotStatus,
+      states,
+      pools,
+      occupantsOf: id => this.plotOccupants.get(id) ?? [],
+      exteriorFor: a => buildingRegistry.exteriorFor(a),
+      onSkip: (plotId, reason) => console.warn(`[plots] ${plotId} not drawn: ${reason}`),
+    });
+    for (const { plot, placements, door } of rendered) {
+      for (const p of placements) this.placePlotProp(p, plot.id);
+      if (door) this.registerPlotDoor(plot, door);
+    }
+  }
+
+  /**
+   * A door for a built structure, generated from the plot's anchor — Task 3.
+   *
+   * Everything here is the authored-door branch of `create()` (currently the
+   * `doors` object-layer loop) with the .tmj object replaced by `plotDoor`'s
+   * answer. Same zone, same hover pairing with the facade, same `onTap ->
+   * transitionToVenue`, and the same `doorPoints.set(targetVenue, point)` —
+   * which is the entry `planSync`'s `hasDoorFor`, the walk-out, the return
+   * spawn and the pathfinder all read. Nothing downstream can tell the two
+   * apart, which is the claim Task 3 is making.
+   *
+   * A VACANT parcel gets none, and that is the ruling rather than an omission:
+   * "a vacant plot is not enterable". It has a tent camp standing in the open,
+   * not a threshold.
+   */
+  private registerPlotDoor(plot: Plot, door: PlotDoor) {
+    // THE CURSOR TELLS THE TRUTH. A hand cursor promises somewhere to go, and
+    // a built parcel has nowhere to go yet: the plot id IS the venue id (D-79),
+    // but the bake writes an interior per authored venue and archetype
+    // instance, and a parcel is neither. `opensASceneFrom` is the same
+    // question `transitionToVenue` asks before it refuses the no-op, so the
+    // cursor and the click can never disagree.
+    const opens = opensASceneFrom(plot.id, this.districtId);
+    const zone = this.add.zone(door.zone.x, door.zone.y, door.zone.width, door.zone.height)
+      .setInteractive({ useHandCursor: opens });
+    // The facade this door belongs to is the exterior `composePlot` just
+    // placed — the last object pushed for this parcel on the buildings layer.
+    const facade = [...this.plotObjects].reverse().find(
+      (o): o is Phaser.GameObjects.Image =>
+        o instanceof Phaser.GameObjects.Image && o.getData('plotId') === plot.id,
+    );
+    zone.on('pointerover', () => facade?.setTint(0xbbccff));
+    zone.on('pointerout', () => facade?.clearTint());
+    onTap(zone, () => {
+      if (!opens) {
+        // Legible refusal rather than a dead click. The door is real — agents
+        // route to it and enter through it — and what is missing is the room
+        // on the other side, so say that instead of doing nothing.
+        console.info(`[plots] ${plot.id} is built, but no interior has been baked for it yet — `
+          + 'nothing to enter');
+        return;
+      }
+      this.transitionToVenue(plot.id);
+    });
+    this.doorPoints.set(plot.id, door.point);
+    this.plotObjects.push(zone);
+  }
+
+  /** One composed placement -> one image, on the layer and depth the map uses. */
+  private placePlotProp(p: Placement, plotId: string) {
+    if (!this.textures.exists(p.name)) {
+      // I-2's runtime half. plot_states.json is loaded rather than bundled, so
+      // an unresolved name reaches here instead of the build; it must be loud
+      // and it must not draw Phaser's green "missing" square on the town.
+      console.error(`[plots] '${p.name}' is not a loaded texture — nothing drawn`);
+      return;
+    }
+    const img = this.add.image(p.tile[0] * TILE_SIZE, p.tile[1] * TILE_SIZE, p.name).setOrigin(0, 0);
+    if (p.align === 'centre-bottom') img.setPosition(img.x - img.width / 2, img.y - img.height);
+    img.setDepth(p.layer === 'props-below' ? 2 : img.y + img.height);
+    img.setData('plotId', plotId);
+    this.plotObjects.push(img);
   }
 
   // ------- interface for AgentSprite (walking around the map)
@@ -288,6 +495,7 @@ export class DistrictScene extends Phaser.Scene {
   }
 
   private updateCars(dt: number, night: number) {
+    const cull = carCullBounds(this.geo);
     this.carTimer -= dt;
     if (this.carTimer <= 0) {
       this.spawnCar();
@@ -300,7 +508,7 @@ export class DistrictScene extends Phaser.Scene {
       c.obj.y += c.vy * dt;
       c.obj.setDepth(c.obj.y + c.h); // Y-sort: below agents further south, above the road
       for (const g of c.glows) g.setAlpha(night * GLOW_KINDS.headlight.alpha);
-      if (c.obj.x > DISTRICT.widthPx + 16 || c.obj.y > DISTRICT.heightPx + 16) {
+      if (c.obj.x > cull.maxX || c.obj.y > cull.maxY) {
         c.obj.destroy();
         this.cars.splice(i, 1);
       }
@@ -411,56 +619,104 @@ export class DistrictScene extends Phaser.Scene {
     this.agentSprites.delete(id);
   }
 
+  /**
+   * Recompute "who is camped on which parcel" from the roster. Returns true
+   * only if the answer moved, so the caller can skip a redraw.
+   */
+  private updateCampOccupancy(present: readonly SyncedAgent[]): boolean {
+    const next = new Map<string, Occupant[]>();
+    for (const a of present) {
+      if (!plotRegistry.has(a.location)) continue;
+      const list = next.get(a.location) ?? [];
+      // spriteSeed is the platform identity the pick is defined on (D-25).
+      // Fixture agents carry none; their own id is the stable stand-in, and
+      // it is stable for exactly as long as the agent is.
+      list.push({ id: a.id, spriteSeed: a.spriteSeed ?? a.id });
+      next.set(a.location, list);
+    }
+    const key = (m: Map<string, Occupant[]>) => JSON.stringify(
+      [...m.entries()].sort(([x], [y]) => x.localeCompare(y))
+        .map(([id, os]) => [id, [...os].sort((p, q) => p.id.localeCompare(q.id))]),
+    );
+    if (key(next) === key(this.plotOccupants)) return false;
+    this.plotOccupants = next;
+    return true;
+  }
+
+  /** The pixel spot of an agent's own camp slot, if they are on a parcel here. */
+  private campSpotFor(agentId: string, location: string): { x: number; y: number } | undefined {
+    const plot = plotRegistry.get(location);
+    if (!plot || plot.districtId !== this.districtId) return undefined;
+    const occupants = this.plotOccupants.get(location) ?? [];
+    const index = [...occupants].sort((a, b) => a.id.localeCompare(b.id))
+      .findIndex(o => o.id === agentId);
+    const [tx, ty] = campSlotTile(plot, index < 0 ? 0 : index);
+    return { x: tx * TILE_SIZE, y: ty * TILE_SIZE };
+  }
+
   syncAgents(fullList: SyncedAgent[]) {
     // THE KEY FIX of TZ-16: the district draws only those the server says are
-    // outside or at the farm. The player entering/leaving has no effect on
-    // agent locations.
-    //
-    // 'farm' IS CLIENT-INTERNAL DISTRICT GEOGRAPHY, not a venue and not drift.
-    // The pen is drawn on this map (the cityGrid generator's pen/gate), so an
-    // agent at the farm is drawn by this scene — which is why it belongs in
-    // `present` alongside 'district' rather than being treated as somewhere
-    // else. The fixture server emits it: agentLife.ts:37 puts 'farm' in the
-    // human daytime pool, :38 in the animal pool, and :100 sends EVERY animal
-    // to the pen at night. Drop it here and the animals vanish nightly and
-    // updateNightBehavior loses its subjects. `packages/shared` AGENT_LOCATIONS
-    // and presence.ts's liveVenueLookup both carry it deliberately.
-    const present = fullList.filter(a => a.location === 'district' || a.location === 'farm');
-    const incoming = new Set(present.map(a => a.id));
-    const locOf = new Map(fullList.map(a => [a.id, a.location]));
-    const activityOf = new Map(present.map(a => [a.id, a.activity]));
-
-    this.agentSprites.forEach((sprite, id) => {
-      if (incoming.has(id)) {
-        // came back before reaching the door — the departure is cancelled
-        if (this.leaving.delete(id)) sprite.cancelGoal();
-        sprite.setActivity(activityOf.get(id));
-        return;
-      }
-      const newLoc = locOf.get(id);
-      if (!newLoc) { this.removeSprite(id); return; } // agent deleted entirely
-      if (this.leaving.has(id)) return; // already walking to the door
-      // cosmetics: went into a building — walk to its door and "enter" (incl. at night
-      // to the dorm — that is exactly the old going-to-bed visual)
-      const door = this.doorPoints.get(sceneKeyFor(newLoc));
-      if (door && !sprite.isAsleep) {
-        const st = this.nightStates.get(id);
-        if (st) this.releaseNightState(id, st);
-        this.leaving.set(id, { x: door.x, y: door.y, deadline: this.time.now + LEAVE_WALK_TIMEOUT_MS });
-        sprite.walkTo(door.x, door.y);
-      } else {
-        this.removeSprite(id); // asleep or no door found (incl. an unknown/absent new location) — no walk-out
-      }
+    // outside or at the farm, and the player entering/leaving has no effect on
+    // agent locations. WHO that is, and what happens to everyone else, is
+    // decided by game/districtPresence.ts — a pure module, so the decision is
+    // testable without Phaser and pinned by test/golden/district-render.json.
+    // This method is the EFFECTS half: it only carries the decision out.
+    const plan = planSync({
+      districtId: this.districtId,
+      fullList,
+      drawnIds: [...this.agentSprites.keys()],
+      lastLoc: this.lastLoc,
+      hasDoorFor: (venueId) => this.doorPoints.has(venueId),
+      isAsleep: (id) => this.agentSprites.get(id)?.isAsleep ?? false,
+      isLeaving: (id) => this.leaving.has(id),
+      // State-aware: a BUILT parcel is a building, so somebody at it is
+      // indoors and walks to its generated door instead of standing on the
+      // roof. A vacant one is a camp in the open and draws as it always did.
+      resolveDistrict: districtDrawing,
     });
+    const activityOf = new Map(plan.present.map(a => [a.id, a.activity]));
+    // Who is camped where. A tent belongs to an AGENT (D-75's per-spriteSeed
+    // pick), so the camp's composition moves when the roster does — recompose
+    // only when the answer actually changed, or every 15s poll redraws 23
+    // parcels for nothing.
+    if (this.updateCampOccupancy(plan.present)) this.renderPlots();
 
-    present.forEach((a) => {
-      if (this.agentSprites.has(a.id)) return;
-      // came out of a building — appears at its door; otherwise at a spawn point
-      const from = this.lastLoc.get(a.id);
-      const door = from && from !== 'district'
-        ? this.doorPoints.get(sceneKeyFor(from))
+    for (const [id, decision] of plan.drawn) {
+      const sprite = this.agentSprites.get(id);
+      if (!sprite) continue;
+      switch (decision.kind) {
+        case 'stay':
+          // came back before reaching the door — the departure is cancelled
+          if (decision.cancelLeaving) { this.leaving.delete(id); sprite.cancelGoal(); }
+          sprite.setActivity(activityOf.get(id));
+          break;
+        case 'leaving':
+          break; // already walking to the door
+        case 'walk-to-door': {
+          const door = this.doorPoints.get(decision.venueId)!;
+          const st = this.nightStates.get(id);
+          if (st) this.releaseNightState(id, st);
+          this.leaving.set(id, { x: door.x, y: door.y, deadline: this.time.now + LEAVE_WALK_TIMEOUT_MS });
+          sprite.walkTo(door.x, door.y);
+          break;
+        }
+        case 'remove':
+          this.removeSprite(id);
+          break;
+      }
+    }
+
+    plan.present.forEach((a) => {
+      const spawn = plan.spawn.get(a.id);
+      if (!spawn) return; // already drawn
+      const door = spawn.atDoorOf !== undefined
+        ? this.doorPoints.get(spawn.atDoorOf)
         : undefined;
-      const base = door ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
+      // Somebody the api put in Camp 7 appears AT Camp 7, beside their own
+      // tent — the same slot `composePlot` pitched it on, from the same
+      // function, so a sprite can never stand across town from its shelter.
+      const camp = door ? undefined : this.campSpotFor(a.id, a.location);
+      const base = door ?? camp ?? this.spawnPoints[this.agentSprites.size % this.spawnPoints.length];
       const x = base.x + (Math.random() - 0.5) * 16;
       const y = base.y + (door ? 8 + Math.random() * 8 : (Math.random() - 0.5) * 8);
       const sprite = new AgentSprite(this, a.id, a.name, a.avatarVariant, x, y,
@@ -474,7 +730,7 @@ export class DistrictScene extends Phaser.Scene {
     fullList.forEach(a => this.lastLoc.set(a.id, a.location));
 
     // we came here for a specific agent from the HUD — aim the camera (TZ-16)
-    consumePendingFocus('DistrictScene', id => this.agentSprites.has(id));
+    consumePendingFocus(DISTRICT_SCENE_KEY, id => this.agentSprites.has(id));
     // ?follow= deep-link: the first sync containing the agent goes to them (Plan 03 Task 3)
     consumePendingFollow(fullList);
   }

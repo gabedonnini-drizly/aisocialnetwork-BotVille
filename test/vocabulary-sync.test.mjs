@@ -3,7 +3,12 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { venueRegistry, CLIENT_INTERNAL_LOCATIONS, sceneForLocation, sceneKeyFor } from '../packages/client/src/game/venueRegistry.ts';
+import {
+  venueRegistry, CLIENT_INTERNAL_LOCATIONS, CLIENT_INTERNAL_LOCATION_IDS, DISTRICT_SCENE_KEY,
+  districtForLocation, sceneForLocation, sceneKeyFor,
+} from '../packages/client/src/game/venueRegistry.ts';
+import { drawnByDistrict } from '../packages/client/src/game/districtPresence.ts';
+import { plotRegistry } from '../packages/client/src/game/plotRegistry.ts';
 import { AGENT_LOCATIONS } from '../packages/shared/src/types/Agent.ts';
 import { resolveSiblingRepo, envKey } from './helpers/siblingRepo.mjs';
 import { skipUnless } from './helpers/skip.mjs';
@@ -130,7 +135,7 @@ function clientLocationComparisons() {
  */
 const KNOWN_LOCATIONS = () => new Set([
   ...JSON.parse(readFileSync(OURS, 'utf8')).map(v => v.id),
-  ...CLIENT_INTERNAL_LOCATIONS,
+  ...CLIENT_INTERNAL_LOCATION_IDS,
 ]);
 
 test('every location string the client filters on is published or documented client-internal', () => {
@@ -198,11 +203,11 @@ test('every location label key is published or documented client-internal', () =
  */
 test('every client-internal location maps to a registered scene, not a venue key', () => {
   const sceneKeys = new Set([
-    'DistrictScene',
+    DISTRICT_SCENE_KEY,
     ...venueRegistry.all().map(v => sceneKeyFor(v.id)),
   ]);
-  for (const loc of CLIENT_INTERNAL_LOCATIONS) {
-    assert.equal(sceneForLocation(loc), 'DistrictScene',
+  for (const loc of CLIENT_INTERNAL_LOCATION_IDS) {
+    assert.equal(sceneForLocation(loc), DISTRICT_SCENE_KEY,
       `${loc} is client-internal, so it must be drawn by the scene that owns its geography`);
     assert.ok(sceneKeys.has(sceneForLocation(loc)));
     assert.equal(sceneKeys.has(sceneKeyFor(loc)), false,
@@ -223,21 +228,36 @@ test('every client-internal location maps to a registered scene, not a venue key
  * animal falls out of it nightly (agentLife.ts:100 sends them all to the pen),
  * gets removeSprite'd, and updateNightBehavior loses its subjects.
  *
- * Source-level because syncAgents needs Phaser. Precise, though: it reads the
- * one filter line and requires each client-internal location by name, and it
- * fails loudly if it cannot find the line at all rather than passing.
+ * It used to read the filter line out of DistrictScene.ts as text, because
+ * syncAgents needs Phaser. The decision now lives in game/districtPresence.ts,
+ * which does not — so this asks the real function instead of a regex.
  */
-test('DistrictScene draws every client-internal location, not just the district', () => {
-  const src = stripComments(
-    readFileSync('packages/client/src/game/scenes/DistrictScene.ts', 'utf8'));
-  const filter = src.match(/const present\s*=\s*fullList\.filter\(([\s\S]*?)\);/);
-  assert.ok(filter, "DistrictScene's `present` filter was not found — this check has gone blind");
-  for (const loc of CLIENT_INTERNAL_LOCATIONS) {
-    assert.ok(filter[1].includes(`'${loc}'`),
-      `DistrictScene's present filter drops '${loc}'. It is drawn by this scene and by no other, `
-      + 'so anyone the server puts there stops being rendered — nightly, for every animal.');
+test('the outdoor scene draws every client-internal location, not just the district', () => {
+  for (const [loc, districtId] of Object.entries(CLIENT_INTERNAL_LOCATIONS)) {
+    assert.ok(drawnByDistrict(loc, districtId),
+      `the outdoor scene's present filter drops '${loc}'. It is drawn by that district's scene `
+      + 'and by no other, so anyone the server puts there stops being rendered — nightly, for '
+      + 'every animal.');
   }
-  assert.ok(filter[1].includes("'district'"), 'the district itself must still be drawn');
+  for (const district of venueRegistry.districts()) {
+    assert.ok(drawnByDistrict(district.id, district.id), 'a district must still draw itself');
+    assert.equal(drawnByDistrict('cafe', district.id), false,
+      'an interior is not drawn by the outdoor scene');
+  }
+  // A parcel is drawn by its district and by no other. D-89 publishes vacant
+  // plots as roles:['home'] / affords:['sleep'], so the api WILL place sleepers
+  // in Camp N — drop them from this filter and the whole tent camp is invisible
+  // at exactly the hour it exists to be seen.
+  for (const plot of plotRegistry.all()) {
+    assert.ok(drawnByDistrict(plot.id, plot.districtId),
+      `the outdoor scene's present filter drops '${plot.id}' — everyone sleeping in that camp `
+      + 'stops being rendered');
+    assert.equal(drawnByDistrict(plot.id, plot.id), false,
+      'a parcel is not a district: nothing draws "the plot_N scene"');
+  }
+  // ...and the filter is derived, not enumerated: it says yes to a location it
+  // was never told about, as long as the registry calls that location outdoors.
+  assert.equal(districtForLocation('cafe'), undefined);
 });
 
 // ── plot coverage ────────────────────────────────────────────────────────

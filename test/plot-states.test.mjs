@@ -4,8 +4,28 @@ import { readFileSync } from 'node:fs';
 import { loadContract } from '../scripts/lib/assetContract.mjs';
 
 const OURS = 'contract/plot_states.json';
+const PUBLISHED = 'packages/client/public/assets/plot_states.json';
 const registry = JSON.parse(readFileSync(OURS, 'utf8'));
 const contract = loadContract();
+
+/**
+ * The equality pin `variant_pools.json` has had all along and this file did
+ * not — and the asymmetry mattered, because the two are copied side by side
+ * by the same three lines of world-bake.mjs and read at RUNTIME by the client.
+ *
+ * A stale copy is not a cosmetic drift here. The published file is the one the
+ * client fetches and `composePlot` composes against; a state declared in
+ * `contract/` and missing from the copy is a plot the client cannot draw, and
+ * a state in the copy that `contract/` has retired is a prop name nothing
+ * validates. `test/plot-render.test.mjs`'s I-2 checks all read `contract/`, so
+ * without this test they were checking a file the game never opens.
+ */
+test('the published state registry is this file, byte for byte', () => {
+  assert.equal(readFileSync(PUBLISHED, 'utf8'), readFileSync(OURS, 'utf8'),
+    'plot_states.json is stale — run npm run bake:world. The client fetches the PUBLISHED copy '
+    + 'at runtime, so a drift here means the checks in this file are validating a document '
+    + 'nothing renders from.');
+});
 
 /** Every prop name the registry references, wherever it hides in the shape. */
 function referencedProps(node, into = []) {

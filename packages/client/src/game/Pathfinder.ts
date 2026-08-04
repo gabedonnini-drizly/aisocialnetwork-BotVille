@@ -6,7 +6,18 @@ import { TILE_SIZE } from './config.js';
  */
 export class Pathfinder {
   private walkable: boolean[];
-  constructor(private width: number, private height: number) {
+  /**
+   * Explicit fields, not parameter properties: `node --test` strips types but
+   * cannot generate the assignment (ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX), and
+   * the golden district baseline builds a real grid under node. Same reason
+   * InteriorScene declares its `venue` field the long way.
+   */
+  private readonly width: number;
+  private readonly height: number;
+
+  constructor(width: number, height: number) {
+    this.width = width;
+    this.height = height;
     this.walkable = new Array(width * height).fill(true);
   }
 

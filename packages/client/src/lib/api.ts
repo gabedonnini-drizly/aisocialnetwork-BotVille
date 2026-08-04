@@ -136,6 +136,33 @@ export async function fetchAgentLocations(): Promise<AgentLocationsSnapshot | nu
   }
 }
 
+// ── Plot state (plan 03- Task 2) ─────────────────────────────────────────────
+// The state source, as a wire call. Fixture mode answers from this repo's own
+// server (GET /api/world/plots, every parcel `vacant` — which is TRUE, not a
+// stub). Integrated mode has NO plot state on any client-consumed surface yet:
+// `LocationsSnapshot` carries schemaVersion/gameHour/roster and nothing else,
+// and the api's /locations serves exactly that. Measured, not assumed — see
+// game/plotState.ts. When it lands, it lands here and nowhere else.
+
+export interface PlotStateWireRow {
+  id?: unknown;
+  state?: unknown;
+  archetype?: unknown;
+}
+
+/** null = "no source answered"; the caller keeps whatever it already had. */
+export async function fetchPlotStates(): Promise<PlotStateWireRow[] | null> {
+  if (PRESENCE_MODE === 'integrated') return null; // not on the wire yet
+  try {
+    const res = await apiFetch('/api/world/plots', {}, { timeoutMs: 10_000 });
+    const json = await res.json();
+    const rows = json?.data?.plots;
+    return Array.isArray(rows) ? (rows as PlotStateWireRow[]) : null;
+  } catch {
+    return null;
+  }
+}
+
 // ── Integrated mode (world addendum II.1/II.2): the platform presence seam ──
 // The platform api owns presence; this client renders nothing the platform
 // did not assert (restated I-11). fetchAgentLocations() above stays the

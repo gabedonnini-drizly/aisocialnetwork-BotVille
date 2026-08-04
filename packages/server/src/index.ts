@@ -10,6 +10,7 @@ import { chatRouter } from './api/chat.js';
 import { meetingRouter } from './api/meeting.js';
 import { keysRouter } from './api/keys.js';
 import { modelsRouter } from './api/models.js';
+import { plotsRouter } from './api/plots.js';
 import { adminStatsRouter } from './api/adminStats.js';
 import { createWSSServer } from './ws/stateSync.js';
 import { getDb } from './db/schema.js';
@@ -86,6 +87,9 @@ app.use('/api/keys', keysRouter);
 app.use('/api/models', modelsRouter);
 app.use('/api/chat', chatLimiter, chatRouter);
 app.use('/api/meeting', meetingLimiter, meetingRouter);
+// World data the client needs but the bake does not publish as an asset:
+// plot state (plan 03- Task 2's fixture-mode state source).
+app.use('/api/world', plotsRouter);
 
 // TZ-16, non-production only: set the world clock (acceptance testing of night
 // behavior). The client-side __setGameHour hits this endpoint in dev so that the

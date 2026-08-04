@@ -3,8 +3,12 @@ import { useAgentStore, useUIStore } from '../store/agentStore.js';
 import { sceneRegistry } from '../game/SceneRegistry.js';
 import { GameBridge } from '../game/GameBridge.js';
 import { GameTime } from '../game/time.js';
-import { fetchAgentLocations, fetchPlatformLocations, PRESENCE_MODE, type PresenceMode } from '../lib/api.js';
+import {
+  fetchAgentLocations, fetchPlatformLocations, fetchPlotStates, PRESENCE_MODE, type PresenceMode,
+} from '../lib/api.js';
+import { applyPlotStates } from '../game/plotState.js';
 import { LOCATION_POLL_MS } from '../game/config.js';
+import { DISTRICT_SCENE_KEY } from '../game/venueRegistry.js';
 import { flattenSomewhere, presenceModel, warnUnknown } from '../game/presence.js';
 import type { Agent, AgentPresence } from '@botville/shared';
 
@@ -44,7 +48,7 @@ export function useGameSync() {
   const { setScene } = useUIStore();
   const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const agentsRef = useRef<Agent[]>(agents);
-  const sceneKeyRef = useRef('DistrictScene');
+  const sceneKeyRef = useRef(DISTRICT_SCENE_KEY);
 
   // Keep ref current
   useEffect(() => { agentsRef.current = agents; }, [agents]);
@@ -60,6 +64,11 @@ export function useGameSync() {
   useEffect(() => {
     let stopped = false;
     const poll = async () => {
+      // Plot state rides the existing tick rather than adding a timer: a
+      // parcel changes state at dawn (D-36), so 15s is already far finer than
+      // the world moves, and `applyPlotStates` is a no-op unless something
+      // actually moved. A null answer means no source spoke; keep what we had.
+      void fetchPlotStates().then(rows => { if (rows && !stopped) applyPlotStates(rows); });
       if (presenceMode === 'integrated') {
         const result = await fetchPlatformLocations();
         if (stopped) return;

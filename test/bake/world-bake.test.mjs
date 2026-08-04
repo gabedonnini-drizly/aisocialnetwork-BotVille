@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, existsSync, readdirSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, existsSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { worldBake } from '../../scripts/world-bake.mjs';
@@ -177,4 +177,81 @@ test('the bake reports what it wrote, and the report matches the contract', () =
   assert.equal(result.props,
     Object.values(c.props).reduce((n, g) => n + Object.keys(g).length, 0));
   assert.equal(result.venues, readdirSync(join(out, 'tilemaps')).length);
+});
+
+/**
+ * The plot half of the venue walk (review finding 2).
+ *
+ * `worldBake` used to read ONE hardcoded path — `venues/district/plots.json` —
+ * while the authored half scanned every directory under `venues/`. Under D-62
+ * ("multi-district is architectural from day one") that made the seam false at
+ * the one point where being true costs nothing: a `venues/north/plots.json`
+ * would have published ZERO venues, and every downstream plot check would have
+ * passed vacuously, because a parcel that does not exist cannot be
+ * inconsistent with anything.
+ *
+ * Two assertions, and it takes both. The first is the regression guard on the
+ * town that ships; the second is the capability, on a district that exists
+ * only inside this test (the synthetic-district pattern — capability, never
+ * content).
+ */
+test('scanning for plots reproduces the shipped vocabulary byte for byte', () => {
+  const { out } = bake();
+  assert.deepEqual(
+    readFileSync(join(out, 'venues.json')),
+    readFileSync('packages/client/public/assets/venues.json'),
+    'the venue walk changed what the bake publishes. venues.json is the platform contract and '
+    + 'the api holds a copy of it — a scan of the one existing plots.json must produce the '
+    + 'identical bytes it produced from the hardcoded path.',
+  );
+});
+
+test('a SECOND district’s plots.json publishes its parcels (D-62)', () => {
+  // A venue tree that exists only here: the real district, plus a copy of it
+  // renamed, carrying its own parcels. Nothing is added to venues/.
+  const tree = mkdtempSync(join(tmpdir(), 'world-venues-'));
+  cpSync('venues/district', join(tree, 'district'), { recursive: true });
+  cpSync('venues/district', join(tree, 'north'), { recursive: true });
+
+  const northVenue = JSON.parse(readFileSync(join(tree, 'north', 'venue.json'), 'utf8'));
+  northVenue.id = 'north';
+  northVenue.label = 'North';
+  writeFileSync(join(tree, 'north', 'venue.json'), JSON.stringify(northVenue));
+
+  const northPlots = JSON.parse(readFileSync(join(tree, 'north', 'plots.json'), 'utf8'));
+  northPlots.plots = northPlots.plots.slice(0, 3).map((p, i) => ({ ...p, id: `plot_n${i + 1}` }));
+  writeFileSync(join(tree, 'north', 'plots.json'), JSON.stringify(northPlots));
+
+  const out = mkdtempSync(join(tmpdir(), 'world-out-'));
+  const gen = mkdtempSync(join(tmpdir(), 'world-gen-'));
+  worldBake({
+    pack: 'fixture', srcRoot: 'test/fixtures/pack-src', outDir: out, generatedDir: gen,
+    venuesDirs: [tree],
+  });
+  const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
+
+  const parcels = pub.filter(v => v.archetype === 'plot').map(v => v.id);
+  for (const id of ['plot_n1', 'plot_n2', 'plot_n3']) {
+    assert.ok(parcels.includes(id),
+      `${id} is authored under venues/north/plots.json and the bake published nothing for it — `
+      + 'the plot walk is looking at one hardcoded district again');
+  }
+  assert.ok(parcels.includes('plot_1'), 'the first district’s parcels stopped publishing');
+  assert.ok(pub.some(v => v.id === 'north' && v.indoor === false), 'the second district itself');
+});
+
+test('a district with no plots.json is a district with no parcels, not a crash', () => {
+  const tree = mkdtempSync(join(tmpdir(), 'world-venues-'));
+  cpSync('venues/district', join(tree, 'district'), { recursive: true });
+  rmSync(join(tree, 'district', 'plots.json'));
+
+  const out = mkdtempSync(join(tmpdir(), 'world-out-'));
+  const gen = mkdtempSync(join(tmpdir(), 'world-gen-'));
+  worldBake({
+    pack: 'fixture', srcRoot: 'test/fixtures/pack-src', outDir: out, generatedDir: gen,
+    venuesDirs: [tree],
+  });
+  const pub = JSON.parse(readFileSync(join(out, 'venues.json'), 'utf8'));
+  assert.deepEqual(pub.filter(v => v.archetype === 'plot'), []);
+  assert.ok(pub.some(v => v.id === 'district'), 'the district itself still publishes');
 });

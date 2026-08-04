@@ -9,7 +9,8 @@ export interface GameEvents {
   'agent:moved': { agentId: string; x: number; y: number };
   'task:started': { agentId: string };
   'task:done': { agentId: string };
-  'scene:changed': { scene: string };
+  /** `districtId` accompanies the outdoor scene: one scene key draws N districts (D-62). */
+  'scene:changed': { scene: string; districtId?: string };
   'time:changed': { hour: number };
   'dispatch:task': { agentId: string; task: string };
   'dispatch:move': { agentId: string; locationId: string };
