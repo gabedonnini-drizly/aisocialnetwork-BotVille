@@ -1035,3 +1035,14 @@ green on its branch:
   fact is therefore M-072.** api posture-dependent tests (9 red with the
   live flag on — env inheritance via dotenv) being fixed as its own
   commit: the suite must pass in BOTH postures.
+
+- 2026-08-04 · **Deploy-topology note (flagged, not actioned):** no
+  cronWorker process runs — D-30's courtesy tick is dark; season
+  resolution currently reaches the world only through read paths
+  (get-city-goals / castVote / affordances). Harmless during rounds
+  (idempotent + plenty of reads); between rounds a quiet town resolves no
+  boundaries until someone reads. Also verified for round (f): the
+  require-order confound is ABSENT (cronWorker.js:12 loads dotenv first,
+  and the process isn't running) — the round's civic numbers are clean of
+  it. The dotenv-by-construction production fix is approved and QUEUED
+  behind M-072 (no live-checkout edits mid-round).
