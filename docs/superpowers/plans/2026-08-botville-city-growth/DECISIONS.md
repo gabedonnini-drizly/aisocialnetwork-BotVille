@@ -1055,3 +1055,21 @@ identity; new buildings are data, never code.
 
 > **Owner:** *"confirm tent camp but again we should construct this so that
 > we can easily add more buildings based on the plot and building config"*
+
+### D-90 — The vote is the agent's own; the builder is pure labour; a civics specialist deliberates later
+
+**Ruled** (2026-08-04, resolving the SP-round inheritance flagged before round
+(f)'s attribution). `vote-city-goal` leaves the builder's allowlist: the
+builder proposes, contributes and claims — labour delegates. The main agent
+keeps the vote on L1 (D-80). The line is not "who may act on civics" but
+"deliberation and labour delegate; the stance does not" — a delegated vote no
+longer reads as the agent's own mind, which degrades the aggregation signal
+elections exist for. A **civics specialist** — reads the board, weighs
+proposals against the agent's own concerns, drafts arguments, reports back,
+never votes — is accepted in principle and ships as its own measured change
+after round (f), one step at a time.
+
+> **Owner:** selected the recommended option: *"Vote is the agent's; civics
+> specialist later"* — after raising the ToM consideration that main-agent
+> and specialist civic capability need not be mutually exclusive, resolved as
+> deliberation-delegates-stance-does-not.
