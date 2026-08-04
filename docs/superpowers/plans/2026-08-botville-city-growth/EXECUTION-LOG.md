@@ -963,3 +963,54 @@ green on its branch:
   declarations + unhoused_self 0/85 expected — all 85 agents are ROOFED,
   D-64's tent image applies to a fresh town) → M-071. Flag stays ON after
   the round: the growth world is now the world.
+
+- 2026-08-04 · **ROUND (f) HALTED AT THE PROBE — the round did not start.**
+  Flag flipped and LEFT ON (`BOTVILLE_GROWTH_SURFACES=on` in the live api
+  `.env`, nodemon restarted 11:03Z, api main `f2b0b37`); agents main
+  `e2e4c28` untouched. **Step A all five PASS**: catalog 8→9 with
+  `claim-plot`; get-city-map 18 venues/3425 B → 41 paged 17+18+6 with
+  `moreVenues` and every open public venue + the caller's home/workplace on
+  page 1; `## City` at `## ` depth between Goal Recency and What's New, 120
+  chars of 600; `unhoused: false` for a roofed caller; founding goal SEATED
+  (`7774593b…`, build/system, plot_18, target 62 from
+  `{floor:10, active_pop:85, area_tiles:36, coefficient:0.02}`, 11:05:25Z).
+  **Probe assertions 1/3/5 pass, 4 passes out of band, 2 FAILS.**
+  ⛔ **BLOCKER — the flip closed the civic vacuum.** `SEATS_PER_SEASON`=3
+  and `vacancy.seatedCount` counts every active goal in the season
+  (`botvilleAffordancesController.js:160`), so the founding goal took the
+  third and last season-1 seat (2→3). `_pred_city_propose` needs
+  `seated_count < seats ∨ pool_empty`; the pool holds 5 live proposals, so
+  both disjuncts are false town-wide. MEASURED, dev-85, all 85 agents
+  polled 11:17Z through the shipped predicates against their own live
+  affordances payloads: **`city_propose` fires 0/85, `unhoused_self` fires
+  0/85** — both builder triggers dark, so no wake can produce a builder
+  delegation and D-85's write-layer question would be measured on n=0.
+  Confirmed on 2/2 real probe wakes (ben_carter, sara_kim), ledger
+  `{"fired":["own_thread_activity"],"won":"own_thread_activity",
+  "chosen":false}`. Same caller's captured bytes either side of the flip:
+  pre `seated_count=2` → fires True, post `seated_count=3` → fires False.
+  Not transient (season 1 runs to 08-10) and **not undone by reverting the
+  flag** — seating is flag-gated (`seasonService.js:622`) but the seated
+  row and `activeGoals`/`seatedCount` are not, and
+  `uniq_botville_founding_goal` makes the seating once-ever.
+  `unhoused_self` at 0/85 was expected and declared (85/85 ROOFED); it
+  therefore diluted nothing, so the seam contract's lottery-dilution
+  declaration does not apply to this round.
+  ⚠ **Second finding — the claim verb landed on L1, not on the builder.**
+  `claim-plot` is in no agents-side allowlist: absent from
+  `configs/subagents/builder.yaml` `tools:` (6 entries) AND absent from
+  `EXCLUDED_TOOLS` (23) — so the principal got it. Main ACT surface grew
+  27→28 MCP schemas (28→29 with `delegate-tasks`), measured against
+  M-070's probe log. Inverts D-90 / the seam contract's declaration 2 and
+  moves M-054's baseline without a measured round (C8).
+  Probe artifacts + full result:
+  `aisocialnetwork-agents/output/probes/round_f/` (see
+  `round_f_PROBE-RESULT.txt`). `claim-plot` proved mechanically sound
+  (claim row + `-3 plot-claim` effort-ledger row + plot state) and its
+  writes were CLEANED UP and re-verified; the two probe wakes' own writes
+  (1 rest, 1 create-post) are declared, not cleanable. D-87 attribution
+  confirmed live (`ToolCallRecord.source` populated). No round ran, no
+  analyzer write-up, **M-071 not registered — still the next free id.**
+  **Owner call:** reopen the vacuum (raise seats / exclude system founding
+  goals from `seatedCount` / delete the founding goal as the 08-04 stray
+  incident did), and rule where `claim-plot` belongs — then (f) restarts.
