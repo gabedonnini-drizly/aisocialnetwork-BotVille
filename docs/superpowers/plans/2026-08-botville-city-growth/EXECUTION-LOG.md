@@ -1156,3 +1156,61 @@ green on its branch:
   ((f)'s 7 proposals + 1 vote are part of the world now); probe is
   re-verification only; monitor lesson applied (poll summary.txt, silence
   is UNKNOWN). Expected fact: M-073.
+
+- 2026-08-04 · **ROUND (f2) — ZERO-CHANGE BASELINE LEG COMPLETE · M-073
+  REGISTERED** · agents main `5030639`, **pushed** · `run_20260804_184945`,
+  85/85 own-log-window, wall 185m59s, 85/85 committed (81 PASS / 4
+  DEGRADED, all four `extraction_failed` with the commit landed, none a
+  builder wake). Nothing moved: no flag, no config, no seeded row, no
+  commit to a live checkout before or during.
+  **The envelope's decisive number is not the write-layer rate — builder
+  delegations HALVED (10 wakes/11 spawns → 5/5) with no code change**, so
+  every downstream figure inherits that noise.
+  Spreads (f)→(f2): `propose-city-goal` **7/17 (41%) → 3/6 (50%)** (8.8pp,
+  denominators 17 and 6 — not a usable envelope); `city_propose`
+  chosen/won **8/58 (13.8%) → 2/50 (4.0%)** = **9.8pp**; won/fired
+  58/80 → 50/73 (4.0pp); fired 80/85 → 73/85 (**denominator-driven** —
+  (f)'s own 7 proposals made their authors `agent_is_proposer`, 12
+  ineligible vs 5); DB proposals 7 → 3; votes 1 → 1; decision mix create
+  41→26, reply 17→27, observe 3→9, rest 6→9.
+  **⚠ M-072's funnel claims do NOT survive**: it called offer→choice
+  unmoved on a 1.5pp difference vs M-070, and the same-code spread on
+  that metric is 9.8pp. Future interventions must beat ~10pp on that
+  rate and >5 builder wakes on volume.
+  **Survives with spread ZERO across 170 wakes:** `contribute-to-city-goal`
+  0/0 and `claim-plot` 0/0 in both legs; founding goal still **0 of 62
+  from 0 authors**; plots+goals+assignments fingerprint
+  `aa5314f9…` byte-identical before and after (f2) — two full rounds and
+  the physical town did not change one row. Also reproducing: the
+  invented-`kind` write failure (nine distinct illegal kinds across the
+  legs, **zero overlap**, 8/9 recovering on the next attempt; the other
+  4/13 are the 280-char cap; **combined 10/23 = 43%**) and builders that
+  make zero MCP calls while `delegate-tasks` returns succeeded **40/40**.
+  **Code-state verdict (verified, not inherited):** api `fa18d04` is 2
+  commits ahead of (f)'s `8725ed5` and touches **5 runtime files** — but
+  the entire functional content is one module calling `dotenv.config()`
+  plus four `require` insertions, `src/controllers` and `src/mcp`
+  untouched, dotenv non-overwrite checked against the installed library,
+  and every agent-facing surface + the probe's 51/27/28 counts reproduced
+  (f)'s captures. **Behaviourally equivalent, NOT byte-identical** —
+  declared as such. agents `d045e1d` docs-only ahead of `996764a`.
+  **⚠ The envelope is an UPPER BOUND, not a noise floor:** the legs sit in
+  different circadian bands (08:17–11:11 vs 18:49–21:55 EDT, gameHour 7 vs
+  18), which the decision-mix shift tracks. M-062 disclaims circadian
+  invariance for a same-DAY pair; this is weaker. Conservative as a
+  threshold, invalid as a noise floor. Two points is a range, not a
+  variance estimate.
+  **Operational:** `the_skeptic` ran **592s against the 600s watchdog** —
+  verified NOT clipped (succeeded, committed, end-of-turn snapshot, full
+  footer), but an 8-second margin means the next long delegation wake
+  gets killed. **Raise the timeout before the next round.**
+  **Process:** the completion monitor failed to wake the session a SECOND
+  time (stalled after 80/85; completion established externally). My (f)
+  write-up prescribed polling `summary.txt` every turn — I polled it on
+  eleven consecutive turns and stopped when the events stopped, because
+  the polling was driven by the very notifications it was meant to
+  backstop. **A backstop that only runs when the thing it backstops fires
+  is not a backstop.** Next round's completion check must be evaluated at
+  the top of every turn regardless of why the turn began.
+  Next free fact id: **M-074** (R-1/R-2 from the synthesis study register
+  after this one).
