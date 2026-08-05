@@ -65,9 +65,18 @@ worktrees → probe → ONE measured round → analyzer → fact → push)
   input schema carries the closed `kind` enum + rationale `maxLength` (the
   natively-read channel — check every growth tool schema for the same);
   receipt truth: `delegate-tasks` reports propagate the specialist's actual
-  receipt status (kills the belief-drift source). Prediction on record:
-  write layer 41% → **80–100%**; if it does not move, that discriminates
-  T3's confounded terms — report it as such, do not explain it away.
+  receipt status (kills the belief-drift source — 40/40 false successes
+  across (f)+f2). Prediction on record: write layer (combined baseline
+  **10/23 = 43%** [M-072+M-073]) → **80–100%**. **M-073's envelope sets the
+  bars: an intervention claim must beat ~10pp on offer→choice conversion
+  and accumulate >5 builder wakes before its write-layer rate means
+  anything** — the invented-kind contract gap (9 distinct illegal kinds,
+  zero overlap between legs, 8/9 next-attempt recovery) is the reproducible
+  target; the rates are the noisy ones. Also from f2, BEFORE the next
+  round: **raise the 600s wake watchdog** (a wake ran 592s; a killed wake
+  silently shrinks a corpus), and the completion condition of any long run
+  is evaluated at the top of every turn regardless of why the turn began
+  (the monitor failed twice, both times as idle-reads-as-running).
 - **Stage C′ — the contribute verb.** The rung exists and is mis-verbed
   ("stop by / pitch in" reads as movement). Rewrite to act+stakes copy
   carrying the mechanics at the point of choice ("Put 3 effort into 'Raise
